@@ -13,4 +13,29 @@ class Api
 
     /** @var integer */
     protected $version = 1;
+
+    /**
+     * Return API host
+     *
+     * Default : api.iliad78.net
+     *
+     * @return string
+     */
+    public function getHost() : string
+    {
+        return $this->host;
+    }
+
+    /**
+     * Update API host
+     *
+     * @param string $host New host
+     * @return self
+     */
+    public function setHost(string $host) : self
+    {
+        $this->host = $host;
+
+        return $this;
+    }
 }
