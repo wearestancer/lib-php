@@ -39,6 +39,30 @@ class Api extends atoum
         ;
     }
 
+    public function testGetUri()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->assert('Default values')
+                ->then
+                    ->string($this->testedInstance->getUri())
+                        ->isIdenticalTo('https://api.iliad78.net/v1/')
+            ->assert('Random values')
+                ->if($host = uniqid())
+                ->and($port = rand(0, PHP_INT_MAX))
+                ->and($version = rand(0, PHP_INT_MAX))
+                ->and($protocol = 'https')
+
+                ->given($this->testedInstance->setHost($host))
+                ->and($this->testedInstance->setPort($port))
+                ->and($this->testedInstance->setVersion($version))
+
+                ->then
+                    ->string($this->testedInstance->getUri())
+                        ->isIdenticalTo(sprintf('%s://%s:%d/v%d/', $protocol, $host, $port, $version))
+        ;
+    }
+
     public function testGetVersion_SetVersion()
     {
         $this

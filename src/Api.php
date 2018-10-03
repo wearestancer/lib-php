@@ -44,6 +44,29 @@ class Api
     }
 
     /**
+     * Return API URI
+     *
+     * Default : 1
+     *
+     * @return string
+     */
+    public function getUri() : string
+    {
+        $pattern = '%1$s://%2$s/v%4$s/';
+
+        if ($this->port) {
+            $pattern = '%1$s://%2$s:%3$d/v%4$s/';
+        }
+
+        return vsprintf($pattern, [
+            'https',
+            $this->getHost(),
+            $this->getPort(),
+            $this->getVersion(),
+        ]);
+    }
+
+    /**
      * Return API version
      *
      * Default : 1
