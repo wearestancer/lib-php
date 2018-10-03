@@ -3,8 +3,18 @@
     "description": "Ild78 PHP library",
     "type": "library",
     "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "ild78\\": "src/"
+        }
+    },
     "require": {
         "php": ">=7.1.0"
+    },
+    "require-dev": {
+        "atoum/atoum": "^3.3",
+        "atoum/autoloop-extension": "^0.3.0",
+        "atoum/stubs": "^2.6"
     },
     "config": {
         "sort-packages": true
