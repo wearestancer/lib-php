@@ -1,0 +1,12 @@
+{
+    "name": "ild78/lib-php",
+    "description": "Ild78 PHP library",
+    "type": "library",
+    "license": "MIT",
+    "require": {
+        "php": ">=7.1.0"
+    },
+    "config": {
+        "sort-packages": true
+    }
+}
