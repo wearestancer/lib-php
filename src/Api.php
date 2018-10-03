@@ -27,6 +27,18 @@ class Api
     }
 
     /**
+     * Return API version
+     *
+     * Default : 1
+     *
+     * @return string
+     */
+    public function getVersion() : int
+    {
+        return $this->version;
+    }
+
+    /**
      * Update API host
      *
      * @param string $host New host
@@ -35,6 +47,19 @@ class Api
     public function setHost(string $host) : self
     {
         $this->host = $host;
+
+        return $this;
+    }
+
+    /**
+     * Update API version
+     *
+     * @param integer $version New version
+     * @return self
+     */
+    public function setVersion(int $version) : self
+    {
+        $this->version = $version;
 
         return $this;
     }

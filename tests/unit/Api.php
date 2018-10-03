@@ -22,4 +22,20 @@ class Api extends atoum
                     ->isIdenticalTo($randomHost)
         ;
     }
+
+    public function testGetVersion_SetVersion()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($defaultVersion = 1)
+            ->and($randomVersion = rand(0, PHP_INT_MAX))
+            ->then
+                ->integer($this->testedInstance->getVersion())
+                    ->isIdenticalTo($defaultVersion)
+                ->object($this->testedInstance->setVersion($randomVersion))
+                    ->isTestedInstance
+                ->integer($this->testedInstance->getVersion())
+                    ->isIdenticalTo($randomVersion)
+        ;
+    }
 }
