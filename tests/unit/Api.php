@@ -23,6 +23,22 @@ class Api extends atoum
         ;
     }
 
+    public function testGetPort_SetPort()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($defaultPort = 443)
+            ->and($randomPort = rand(0, PHP_INT_MAX))
+            ->then
+                ->integer($this->testedInstance->getPort())
+                    ->isIdenticalTo($defaultPort)
+                ->object($this->testedInstance->setPort($randomPort))
+                    ->isTestedInstance
+                ->integer($this->testedInstance->getPort())
+                    ->isIdenticalTo($randomPort)
+        ;
+    }
+
     public function testGetVersion_SetVersion()
     {
         $this
