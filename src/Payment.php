@@ -8,6 +8,10 @@ namespace ild78;
  */
 class Payment extends Core
 {
+    /** @var string */
+    protected $endpoint = 'checkout';
+
+
     /** @var integer */
     protected $amount;
 

@@ -15,4 +15,14 @@ class Payment extends atoum
                 ->isSubclassOf(Core::class)
         ;
     }
+
+    public function testGetEndpoint()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->string($this->testedInstance->getEndpoint())
+                    ->isIdenticalTo('checkout')
+        ;
+    }
 }

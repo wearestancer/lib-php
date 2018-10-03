@@ -8,4 +8,16 @@ namespace ild78;
  */
 abstract class Core
 {
+    /** @var string */
+    protected $endpoint = '';
+
+    /**
+     * Return API endpoint
+     *
+     * @return string
+     */
+    public function getEndpoint() : string
+    {
+        return $this->endpoint;
+    }
 }

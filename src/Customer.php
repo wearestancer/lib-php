@@ -9,6 +9,10 @@ namespace ild78;
 class Customer extends Core
 {
     /** @var string */
+    protected $endpoint = 'customers';
+
+
+    /** @var string */
     protected $email;
 
     /** @var string */
