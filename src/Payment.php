@@ -5,6 +5,17 @@ namespace ild78;
 
 /**
  * Representation of a payment
+ *
+ * @method integer getAmount()
+ * @method ild78\\Card getCard()
+ * @method string getCountry()
+ * @method string getCurrency()
+ * @method string|null getDescription()
+ * @method integer|null getId_customer()
+ * @method string getMethod()
+ * @method integer getOrder_id()
+ * @method string getResponse()
+ * @method string getStatus()
  */
 class Payment extends Core
 {
@@ -19,11 +30,26 @@ class Payment extends Core
     protected $card;
 
     /** @var string */
-    protected $currency;
-
-    /** @var ild78\\Customer */
-    protected $customer;
+    protected $country;
 
     /** @var string */
+    protected $currency;
+
+    /** @var string|null */
     protected $description;
+
+    /** @var integer|null */
+    protected $id_customer;
+
+    /** @var string */
+    protected $method;
+
+    /** @var integer */
+    protected $order_id;
+
+    /** @var string */
+    protected $response;
+
+    /** @var string */
+    protected $status;
 }
