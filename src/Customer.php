@@ -5,6 +5,10 @@ namespace ild78;
 
 /**
  * Representation of a customer
+ *
+ * @method string getEmail()
+ * @method string getMobile()
+ * @method string getName()
  */
 class Customer extends Core
 {
