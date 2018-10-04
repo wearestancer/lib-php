@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace ild78;
 
+use ild78\Exceptions\InvalidArgumentException;
+
 /**
  * Handle configuration, connection and credential to API
  */
@@ -10,6 +12,9 @@ class Api
 {
     const LIVE_MODE = 'live';
     const TEST_MODE = 'test';
+
+    /** @var self */
+    protected static $instance;
 
     /** @var string */
     protected $host = 'api.iliad78.net';
@@ -37,6 +42,7 @@ class Api
     public function __construct(string $key)
     {
         $this->setKey($key);
+        static::setInstance($this);
     }
 
     /**
@@ -49,6 +55,24 @@ class Api
     public function getHost() : string
     {
         return $this->host;
+    }
+
+    /**
+     * Return current instance
+     *
+     * This is used to prevent passing an API instance on everycall.
+     * `Api::setInstance()` is called on every new instance to simplify your workflow.
+     *
+     * @return self
+     * @throws InvalidArgumentException When no previous instance was stored (just do a `new Api($key)`)
+     */
+    public static function getInstance() : self
+    {
+        if (static::$instance instanceof static) {
+            return static::$instance;
+        }
+
+        throw new InvalidArgumentException('You need to provide API credential.');
     }
 
     /**
@@ -177,6 +201,19 @@ class Api
         $this->host = $host;
 
         return $this;
+    }
+
+    /**
+     * Register the current API instance for deferred API call
+     *
+     * @param self $instance Current API instance
+     * @return self
+     */
+    public static function setInstance(self $instance) : self
+    {
+        static::$instance = $instance;
+
+        return $instance;
     }
 
     /**

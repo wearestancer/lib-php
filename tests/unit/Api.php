@@ -5,9 +5,23 @@ namespace ild78\tests\unit;
 use atoum;
 use ild78\Api as testedClass;
 use ild78\Exceptions\InvalidArgumentException;
+use ild78\Exceptions\NotAuthorizedException;
 
 class Api extends atoum
 {
+    public function test__construct()
+    {
+        $this
+            ->given($key = uniqid())
+            ->and($this->newTestedInstance($key))
+            ->then
+                ->string($this->testedInstance->getKey())
+                    ->isIdenticalTo($key)
+                ->object(testedClass::getInstance())
+                    ->isTestedInstance
+        ;
+    }
+
     public function testGetHost_SetHost()
     {
         $this
@@ -21,6 +35,26 @@ class Api extends atoum
                     ->isTestedInstance
                 ->string($this->testedInstance->getHost())
                     ->isIdenticalTo($randomHost)
+        ;
+    }
+
+    public function testGetInstance_SetInstance()
+    {
+        $this
+            ->exception(function () {
+                testedClass::getInstance();
+            })
+                ->isInstanceOf(InvalidArgumentException::class)
+                ->message
+                    ->contains('You need to provide API credential')
+
+            ->if($this->newTestedInstance(uniqid()))
+            ->then
+                ->object(testedClass::setInstance($this->testedInstance))
+                    ->isTestedInstance
+
+                ->object(testedClass::getInstance())
+                    ->isTestedInstance
         ;
     }
 
