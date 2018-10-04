@@ -99,6 +99,46 @@ class Api
     }
 
     /**
+     * Indicate if API is in live mode
+     *
+     * @return boolean
+     */
+    public function isLiveMode() : bool
+    {
+        return $this->getMode() === static::LIVE_MODE;
+    }
+
+    /**
+     * Indicate if API is not in live mode
+     *
+     * @return boolean
+     */
+    public function isNotLiveMode() : bool
+    {
+        return !$this->isLiveMode();
+    }
+
+    /**
+     * Indicate if API is not in test mode
+     *
+     * @return boolean
+     */
+    public function isNotTestMode() : bool
+    {
+        return !$this->isTestMode();
+    }
+
+    /**
+     * Indicate if API is in test mode
+     *
+     * @return boolean
+     */
+    public function isTestMode() : bool
+    {
+        return $this->getMode() === static::TEST_MODE;
+    }
+
+    /**
      * Update API host
      *
      * @param string $host New host

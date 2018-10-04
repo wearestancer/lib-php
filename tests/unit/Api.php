@@ -102,4 +102,33 @@ class Api extends atoum
                     ->isIdenticalTo($randomVersion)
         ;
     }
+
+    public function testModes()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->assert('Defaults values')
+                    ->boolean($this->testedInstance->isLiveMode())->isTrue
+                    ->boolean($this->testedInstance->isNotLiveMode())->isFalse
+                    ->boolean($this->testedInstance->isTestMode())->isFalse
+                    ->boolean($this->testedInstance->isNotTestMode())->isTrue
+
+                ->assert('Force test mode')
+                    ->if($this->testedInstance->setMode(testedClass::TEST_MODE))
+                    ->then
+                        ->boolean($this->testedInstance->isLiveMode())->isFalse
+                        ->boolean($this->testedInstance->isNotLiveMode())->isTrue
+                        ->boolean($this->testedInstance->isTestMode())->isTrue
+                        ->boolean($this->testedInstance->isNotTestMode())->isFalse
+
+                ->assert('Force live mode')
+                    ->if($this->testedInstance->setMode(testedClass::LIVE_MODE))
+                    ->then
+                        ->boolean($this->testedInstance->isLiveMode())->isTrue
+                        ->boolean($this->testedInstance->isNotLiveMode())->isFalse
+                        ->boolean($this->testedInstance->isTestMode())->isFalse
+                        ->boolean($this->testedInstance->isNotTestMode())->isTrue
+        ;
+    }
 }
