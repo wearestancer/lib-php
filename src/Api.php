@@ -8,8 +8,14 @@ namespace ild78;
  */
 class Api
 {
+    const LIVE_MODE = 'live';
+    const TEST_MODE = 'test';
+
     /** @var string */
     protected $host = 'api.iliad78.net';
+
+    /** @var string */
+    protected $mode;
 
     /** @var integer */
     protected $port;
@@ -27,6 +33,20 @@ class Api
     public function getHost() : string
     {
         return $this->host;
+    }
+
+    /**
+     * Return API mode (test or live)
+     *
+     * Default : live
+     *
+     * You should use class constant `LIVE_MODE` and `TEST_MODE`.
+     *
+     * @return string
+     */
+    public function getMode() : string
+    {
+        return $this->mode ?: static::LIVE_MODE;
     }
 
     /**
@@ -87,6 +107,33 @@ class Api
     public function setHost(string $host) : self
     {
         $this->host = $host;
+
+        return $this;
+    }
+
+    /**
+     * Update API mode
+     *
+     * You should use class constant `LIVE_MODE` and `TEST_MODE` to be sure
+     *
+     * @param string $mode New mode. Should be class constant `LIVE_MODE` or `TEST_MODE`
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException If new mode is not valid
+     */
+    public function setMode(string $mode) : self
+    {
+        $validMode = [
+            static::LIVE_MODE,
+            static::TEST_MODE,
+        ];
+
+        if (!in_array($mode, $validMode, true)) {
+            $message = 'Unknonw mode "%s". Please use class constant "LIVE_MODE" or "TEST_MODE".';
+
+            throw new Exceptions\InvalidArgumentException(sprintf($message, $mode));
+        }
+
+        $this->mode = $mode;
 
         return $this;
     }

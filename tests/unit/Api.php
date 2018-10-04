@@ -4,6 +4,7 @@ namespace ild78\tests\unit;
 
 use atoum;
 use ild78\Api as testedClass;
+use ild78\Exceptions\InvalidArgumentException;
 
 class Api extends atoum
 {
@@ -20,6 +21,29 @@ class Api extends atoum
                     ->isTestedInstance
                 ->string($this->testedInstance->getHost())
                     ->isIdenticalTo($randomHost)
+        ;
+    }
+
+    public function testGetMode_SetMode()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($invalidMode = uniqid())
+            ->then
+                ->string($this->testedInstance->getMode())
+                    ->isIdenticalTo(testedClass::LIVE_MODE)
+                ->object($this->testedInstance->setMode(testedClass::TEST_MODE))
+                    ->isTestedInstance
+                ->string($this->testedInstance->getMode())
+                    ->isIdenticalTo(testedClass::TEST_MODE)
+                ->exception(function () use ($invalidMode) {
+                    $this->testedInstance->setMode($invalidMode);
+                })
+                    ->isInstanceOf(InvalidArgumentException::class)
+                    ->message
+                        ->contains($invalidMode)
+                        ->contains('LIVE_MODE')
+                        ->contains('TEST_MODE')
         ;
     }
 
