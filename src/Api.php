@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace ild78;
 
+use GuzzleHttp\Client;
+use GuzzleHttp\ClientInterface;
 use ild78\Exceptions\InvalidArgumentException;
 
 /**
@@ -18,6 +20,9 @@ class Api
 
     /** @var string */
     protected $host = 'api.iliad78.net';
+
+    /** @var GuzzleHttp\ClientInterface */
+    protected $httpClient;
 
     /** @var string */
     protected $key;
@@ -55,6 +60,30 @@ class Api
     public function getHost() : string
     {
         return $this->host;
+    }
+
+    /**
+     * Return an instance of GuzzleHttp\Client
+     *
+     * We call give your instance of `GuzzleHttp\Client` with `Api::setHttpClient()` method.
+     * If none provided, we will spawn an instance for you.
+     *
+     * @return GuzzleHttp\ClientInterface
+     */
+    public function getHttpClient() : ClientInterface
+    {
+        if ($this->httpClient) {
+            return $this->httpClient;
+        }
+
+        $params = [
+            'base_uri' => $this->getUri(),
+        ];
+        $client = new Client($params);
+
+        $this->setHttpClient($client);
+
+        return $client;
     }
 
     /**
@@ -199,6 +228,19 @@ class Api
     public function setHost(string $host) : self
     {
         $this->host = $host;
+
+        return $this;
+    }
+
+    /**
+     * Update GuzzleHttp\Client instance
+     *
+     * @param GuzzleHttp\ClientInterface $client New instance
+     * @return self
+     */
+    public function setHttpClient(ClientInterface $client) : self
+    {
+        $this->httpClient = $client;
 
         return $this;
     }

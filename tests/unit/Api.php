@@ -6,6 +6,7 @@ use atoum;
 use ild78\Api as testedClass;
 use ild78\Exceptions\InvalidArgumentException;
 use ild78\Exceptions\NotAuthorizedException;
+use mock;
 
 class Api extends atoum
 {
@@ -35,6 +36,24 @@ class Api extends atoum
                     ->isTestedInstance
                 ->string($this->testedInstance->getHost())
                     ->isIdenticalTo($randomHost)
+        ;
+    }
+
+    public function testGetHttpClient_SetHttpClient()
+    {
+        $mock = new mock\GuzzleHttp\ClientInterface;
+
+        $this
+            ->given($this->newTestedInstance(uniqid()))
+            ->then
+                ->object($this->testedInstance->getHttpClient())
+                    ->isInstanceOf('GuzzleHttp\Client') // Automagicaly created instance
+
+                ->object($this->testedInstance->setHttpClient($mock))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getHttpClient())
+                    ->isIdenticalTo($mock)
         ;
     }
 
