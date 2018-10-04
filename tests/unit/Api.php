@@ -11,7 +11,7 @@ class Api extends atoum
     public function testGetHost_SetHost()
     {
         $this
-            ->given($this->newTestedInstance)
+            ->given($this->newTestedInstance(uniqid()))
             ->and($defaultHost = 'api.iliad78.net')
             ->and($randomHost = uniqid())
             ->then
@@ -24,10 +24,28 @@ class Api extends atoum
         ;
     }
 
+    public function testGetKey_SetKey()
+    {
+        $this
+            ->given($key1 = uniqid())
+            ->and($key2 = uniqid())
+            ->and($this->newTestedInstance($key1))
+            ->then
+                ->string($this->testedInstance->getKey())
+                    ->isIdenticalTo($key1)
+
+                ->object($this->testedInstance->setKey($key2))
+                    ->isTestedInstance
+
+                ->string($this->testedInstance->getKey())
+                    ->isIdenticalTo($key2)
+        ;
+    }
+
     public function testGetMode_SetMode()
     {
         $this
-            ->given($this->newTestedInstance)
+            ->given($this->newTestedInstance(uniqid()))
             ->and($invalidMode = uniqid())
             ->then
                 ->string($this->testedInstance->getMode())
@@ -50,7 +68,7 @@ class Api extends atoum
     public function testGetPort_SetPort()
     {
         $this
-            ->given($this->newTestedInstance)
+            ->given($this->newTestedInstance(uniqid()))
             ->and($defaultPort = 443)
             ->and($randomPort = rand(0, PHP_INT_MAX))
             ->then
@@ -66,7 +84,7 @@ class Api extends atoum
     public function testGetUri()
     {
         $this
-            ->given($this->newTestedInstance)
+            ->given($this->newTestedInstance(uniqid()))
             ->assert('Default values')
                 ->then
                     ->string($this->testedInstance->getUri())
@@ -90,7 +108,7 @@ class Api extends atoum
     public function testGetVersion_SetVersion()
     {
         $this
-            ->given($this->newTestedInstance)
+            ->given($this->newTestedInstance(uniqid()))
             ->and($defaultVersion = 1)
             ->and($randomVersion = rand(0, PHP_INT_MAX))
             ->then
@@ -106,7 +124,7 @@ class Api extends atoum
     public function testModes()
     {
         $this
-            ->given($this->newTestedInstance)
+            ->given($this->newTestedInstance(uniqid()))
             ->then
                 ->assert('Defaults values')
                     ->boolean($this->testedInstance->isLiveMode())->isTrue

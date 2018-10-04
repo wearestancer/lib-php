@@ -15,6 +15,9 @@ class Api
     protected $host = 'api.iliad78.net';
 
     /** @var string */
+    protected $key;
+
+    /** @var string */
     protected $mode;
 
     /** @var integer */
@@ -22,6 +25,19 @@ class Api
 
     /** @var integer */
     protected $version = 1;
+
+    /**
+     * Create an API connection
+     *
+     * An authentication key is required to make a new instance. It will be used on every API call.
+     *
+     * @param string $key Authentication key
+     * @return self
+     */
+    public function __construct(string $key)
+    {
+        $this->setKey($key);
+    }
 
     /**
      * Return API host
@@ -33,6 +49,18 @@ class Api
     public function getHost() : string
     {
         return $this->host;
+    }
+
+    /**
+     * Return API key
+     *
+     * Default : ''
+     *
+     * @return string
+     */
+    public function getKey() : string
+    {
+        return $this->key;
     }
 
     /**
@@ -147,6 +175,19 @@ class Api
     public function setHost(string $host) : self
     {
         $this->host = $host;
+
+        return $this;
+    }
+
+    /**
+     * Update API key
+     *
+     * @param string $key New key
+     * @return self
+     */
+    public function setKey(string $key) : self
+    {
+        $this->key = $key;
 
         return $this;
     }
