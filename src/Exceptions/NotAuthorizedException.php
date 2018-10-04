@@ -8,6 +8,6 @@ namespace ild78\Exceptions;
  *
  * This represent an 401 HTTP return on the API.
  */
-class NotAuthorizedException extends Exception
+class NotAuthorizedException extends ClientException
 {
 }

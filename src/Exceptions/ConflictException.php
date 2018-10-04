@@ -8,6 +8,6 @@ namespace ild78\Exceptions;
  *
  * This represent an 409 HTTP return on the API.
  */
-class ConflictException extends Exception
+class ConflictException extends ClientException
 {
 }

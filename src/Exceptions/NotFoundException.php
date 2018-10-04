@@ -8,6 +8,6 @@ namespace ild78\Exceptions;
  *
  * This represent an 404 HTTP return on the API.
  */
-class NotFoundException extends Exception
+class NotFoundException extends ClientException
 {
 }

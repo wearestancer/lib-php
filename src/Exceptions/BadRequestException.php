@@ -8,6 +8,6 @@ namespace ild78\Exceptions;
  *
  * This represent an 400 HTTP return on the API.
  */
-class BadRequestException extends Exception
+class BadRequestException extends ClientException
 {
 }

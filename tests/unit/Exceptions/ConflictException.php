@@ -12,7 +12,7 @@ class ConflictException extends atoum
     {
         $this
             ->class(testedClass::class)
-                ->isSubclassOf(Exceptions\Exception::class)
+                ->isSubclassOf(Exceptions\ClientException::class)
         ;
     }
 }
