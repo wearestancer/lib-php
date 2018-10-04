@@ -9,6 +9,8 @@ use ild78\Exceptions;
 
 /**
  * Manage common code between API object
+ *
+ * @throws ild78\Exceptions\BadMethodCallException when calling unknonw method
  */
 abstract class Core
 {
@@ -92,6 +94,18 @@ abstract class Core
                 }
             }
         }
+    }
+
+    public function __call($method, $arguments)
+    {
+        $action = substr($method, 0, 3);
+        $property = lcfirst(substr($method, 3));
+
+        if ($action === 'get' && property_exists($this, $property)) {
+            return $this->$property;
+        }
+
+        throw new Exceptions\BadMethodCallException(sprintf('Method "%s" unknonw', $method));
     }
 
     /**
