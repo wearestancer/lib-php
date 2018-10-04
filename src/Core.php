@@ -11,6 +11,9 @@ abstract class Core
     /** @var string */
     protected $endpoint = '';
 
+    /** @var string */
+    protected $id;
+
     /**
      * Return API endpoint
      *
@@ -19,5 +22,15 @@ abstract class Core
     public function getEndpoint() : string
     {
         return $this->endpoint;
+    }
+
+    /**
+     * Return object ID
+     *
+     * @return string|null
+     */
+    public function getId()
+    {
+        return $this->id;
     }
 }

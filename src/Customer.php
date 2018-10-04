@@ -16,9 +16,6 @@ class Customer extends Core
     protected $email;
 
     /** @var string */
-    protected $id;
-
-    /** @var string */
     protected $mobile;
 
     /** @var string */

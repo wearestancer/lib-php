@@ -16,4 +16,14 @@ class Core extends atoum
                     ->isEmpty
         ;
     }
+
+    public function testGetId()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getId())
+                    ->isNull // No default value
+        ;
+    }
 }

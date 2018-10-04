@@ -26,7 +26,4 @@ class Payment extends Core
 
     /** @var string */
     protected $description;
-
-    /** @var string */
-    protected $id;
 }
