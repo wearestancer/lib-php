@@ -40,23 +40,37 @@ class Object extends atoum
         ;
     }
 
-    public function testGetEndpoint()
+    public function test__call()
     {
         $this
             ->given($this->newTestedInstance)
+            ->and($data = [
+                'id' => uniqid(),
+                'created' => rand(946681200, 1893452400),
+            ])
             ->then
                 ->string($this->testedInstance->getEndpoint())
                     ->isEmpty
-        ;
-    }
-
-    public function testGetId()
-    {
-        $this
-            ->given($this->newTestedInstance)
-            ->then
                 ->variable($this->testedInstance->getId())
                     ->isNull // No default value
+
+            ->if($this->testedInstance->hydrate($data))
+            ->then
+                ->variable($this->testedInstance->getId())
+                    ->isIdenticalTo($data['id'])
+                ->dateTime($date = $this->testedInstance->getCreationDate())
+                ->variable($date->format('U'))
+                    ->isEqualTo($data['created'])
+
+            ->assert('Unknown method')
+                ->if($method = uniqid())
+                ->then
+                    ->exception(function () use ($method) {
+                        $this->testedInstance->$method();
+                    })
+                        ->isInstanceOf(Exceptions\BadMethodCallException::class)
+                        ->message
+                            ->contains($method)
         ;
     }
 

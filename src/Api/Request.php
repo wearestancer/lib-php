@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ild78\Api;
 
 use GuzzleHttp;
+use Exception;
 use ild78\Exceptions;
 
 /**

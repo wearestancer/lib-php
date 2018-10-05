@@ -3,6 +3,7 @@
 namespace ild78\tests\unit\Api;
 
 use atoum;
+use Exception;
 use GuzzleHttp;
 use ild78;
 use ild78\Api\Request as testedClass;
@@ -122,6 +123,24 @@ class Request extends atoum
                         ->hasNestedException
                         ->message
                             ->isIdenticalTo('You are not authorized to access that resource')
+
+            ->assert('Every Guzzle exceptions (except the ones below)')
+                ->given($content = file_get_contents(__DIR__ . '/../fixtures/auth/not-authorized.json'))
+                ->and($response = new Exception())
+                ->and($mock = new GuzzleHttp\Handler\MockHandler([$response]))
+                ->and($handler = GuzzleHttp\HandlerStack::create($mock))
+                ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
+                ->and($config->setHttpClient($client))
+
+                ->if($object = new mock\ild78\Api\Object)
+                ->then
+                    ->exception(function () use ($object) {
+                        $this->testedInstance->request('GET', $object);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\Exception::class)
+                        ->hasNestedException
+                        ->message
+                            ->isIdenticalTo('Unknown error, may be a network error')
         ;
 
         $errors = [
