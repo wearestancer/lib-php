@@ -17,7 +17,7 @@ namespace ild78;
  * @method string getResponse()
  * @method string getStatus()
  */
-class Payment extends Core
+class Payment extends Api\Object
 {
     /** @var string */
     protected $endpoint = 'checkout';

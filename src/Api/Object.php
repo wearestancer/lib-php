@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace ild78;
+namespace ild78\Api;
 
 use DateTime;
 use GuzzleHttp;
@@ -12,7 +12,7 @@ use ild78\Exceptions;
  *
  * @throws ild78\Exceptions\BadMethodCallException when calling unknonw method
  */
-abstract class Core
+abstract class Object
 {
     /** @var string */
     protected $endpoint = '';
@@ -38,7 +38,7 @@ abstract class Core
     public function __construct(string $id = null)
     {
         if ($id) {
-            $api = Api::getInstance();
+            $api = Config::getGlobal();
             $client = $api->getHttpClient();
 
             $options = [

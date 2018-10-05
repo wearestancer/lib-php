@@ -10,7 +10,7 @@ namespace ild78;
  * @method string getMobile()
  * @method string getName()
  */
-class Customer extends Core
+class Customer extends Api\Object
 {
     /** @var string */
     protected $endpoint = 'customers';

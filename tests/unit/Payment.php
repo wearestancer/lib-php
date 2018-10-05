@@ -9,7 +9,6 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use ild78\Api;
 use ild78\Card;
-use ild78\Core;
 use ild78\Customer;
 use ild78\Exceptions\NotFoundException;
 use ild78\Payment as testedClass;
@@ -20,7 +19,7 @@ class Payment extends atoum
     {
         $this
             ->class(testedClass::class)
-                ->isSubclassOf(Core::class)
+                ->isSubclassOf(Api\Object::class)
         ;
     }
 
@@ -34,7 +33,7 @@ class Payment extends atoum
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
 
-        $api = new Api(uniqid());
+        $api = Api\Config::init(uniqid());
         $api->setHttpClient($client);
 
         $this

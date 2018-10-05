@@ -3,8 +3,8 @@
 namespace ild78\tests\unit;
 
 use atoum;
+use ild78\Api;
 use ild78\Card as testedClass;
-use ild78\Core;
 
 class Card extends atoum
 {
@@ -12,7 +12,7 @@ class Card extends atoum
     {
         $this
             ->class(testedClass::class)
-                ->isSubclassOf(Core::class)
+                ->isSubclassOf(Api\Object::class)
         ;
     }
 }

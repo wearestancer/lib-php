@@ -8,7 +8,6 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use ild78\Api;
-use ild78\Core;
 use ild78\Customer as testedClass;
 use ild78\Exceptions\NotFoundException;
 
@@ -18,7 +17,7 @@ class Customer extends atoum
     {
         $this
             ->class(testedClass::class)
-                ->isSubclassOf(Core::class)
+                ->isSubclassOf(Api\Object::class)
         ;
     }
 
@@ -35,7 +34,7 @@ class Customer extends atoum
         $handler = HandlerStack::create($mock);
         $client = new Client(['handler' => $handler]);
 
-        $api = new Api(uniqid());
+        $api = Api\Config::init(uniqid());
         $api->setHttpClient($client);
 
         $this

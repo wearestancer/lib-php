@@ -1,16 +1,16 @@
 <?php
 declare(strict_types=1);
 
-namespace ild78;
+namespace ild78\Api;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
-use ild78\Exceptions\InvalidArgumentException;
+use ild78\Exceptions;
 
 /**
  * Handle configuration, connection and credential to API
  */
-class Api
+class Config
 {
     const LIVE_MODE = 'live';
     const TEST_MODE = 'test';
@@ -37,17 +37,18 @@ class Api
     protected $version = 1;
 
     /**
-     * Create an API connection
+     * Create an API configuration
      *
      * An authentication key is required to make a new instance. It will be used on every API call.
+     * You needed to set a configuration as global to be used on every API call.
      *
+     * @see self::init() for a quick config setup
      * @param string $key Authentication key
      * @return self
      */
     public function __construct(string $key)
     {
         $this->setKey($key);
-        static::setInstance($this);
     }
 
     /**
@@ -90,18 +91,19 @@ class Api
      * Return current instance
      *
      * This is used to prevent passing an API instance on everycall.
-     * `Api::setInstance()` is called on every new instance to simplify your workflow.
+     * `Api::setGlobal()` is called on every new instance to simplify your workflow.
      *
      * @return self
-     * @throws InvalidArgumentException When no previous instance was stored (just do a `new Api($key)`)
+     * @throws ild78\Exceptions\InvalidArgumentException
+     *    When no previous instance was stored (just do a `new Api($key)`)
      */
-    public static function getInstance() : self
+    public static function getGlobal() : self
     {
         if (static::$instance instanceof static) {
             return static::$instance;
         }
 
-        throw new InvalidArgumentException('You need to provide API credential.');
+        throw new Exceptions\InvalidArgumentException('You need to provide API credential.');
     }
 
     /**
@@ -180,6 +182,18 @@ class Api
     }
 
     /**
+     * Proxy that create a new instance of configuration and register it as global.
+     *
+     * @see self::setGlobal()
+     * @param string $key Authentication key
+     * @return self
+     */
+    public static function init(string $key) : self
+    {
+        return static::setGlobal(new static($key));
+    }
+
+    /**
      * Indicate if API is in live mode
      *
      * @return boolean
@@ -246,12 +260,12 @@ class Api
     }
 
     /**
-     * Register the current API instance for deferred API call
+     * Register a configuration for deferred API call
      *
      * @param self $instance Current API instance
      * @return self
      */
-    public static function setInstance(self $instance) : self
+    public static function setGlobal(self $instance) : self
     {
         static::$instance = $instance;
 

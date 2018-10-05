@@ -1,14 +1,14 @@
 <?php
 
-namespace ild78\tests\unit;
+namespace ild78\tests\unit\Api;
 
 use atoum;
-use ild78\Api as testedClass;
+use ild78\Api\Config as testedClass;
 use ild78\Exceptions\InvalidArgumentException;
 use ild78\Exceptions\NotAuthorizedException;
 use mock;
 
-class Api extends atoum
+class Config extends atoum
 {
     public function test__construct()
     {
@@ -18,8 +18,6 @@ class Api extends atoum
             ->then
                 ->string($this->testedInstance->getKey())
                     ->isIdenticalTo($key)
-                ->object(testedClass::getInstance())
-                    ->isTestedInstance
         ;
     }
 
@@ -57,11 +55,11 @@ class Api extends atoum
         ;
     }
 
-    public function testGetInstance_SetInstance()
+    public function testGetGlobal_SetGlobal()
     {
         $this
             ->exception(function () {
-                testedClass::getInstance();
+                testedClass::getGlobal();
             })
                 ->isInstanceOf(InvalidArgumentException::class)
                 ->message
@@ -69,10 +67,10 @@ class Api extends atoum
 
             ->if($this->newTestedInstance(uniqid()))
             ->then
-                ->object(testedClass::setInstance($this->testedInstance))
+                ->object(testedClass::setGlobal($this->testedInstance))
                     ->isTestedInstance
 
-                ->object(testedClass::getInstance())
+                ->object(testedClass::getGlobal())
                     ->isTestedInstance
         ;
     }
@@ -171,6 +169,20 @@ class Api extends atoum
                     ->isTestedInstance
                 ->integer($this->testedInstance->getVersion())
                     ->isIdenticalTo($randomVersion)
+        ;
+    }
+
+    public function testInit()
+    {
+        $this
+            ->given($key = uniqid())
+            ->then
+                ->object($obj = testedClass::init($key))
+                    ->isInstanceOf(testedClass::class)
+                ->string($obj->getKey())
+                    ->isIdenticalTo($key)
+                ->object(testedClass::getGlobal())
+                    ->isIdenticalTo($obj)
         ;
     }
 

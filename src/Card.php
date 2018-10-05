@@ -6,7 +6,7 @@ namespace ild78;
 /**
  * Representation of a card
  */
-class Card extends Core
+class Card extends Api\Object
 {
     /** @var integer */
     protected $cvc;

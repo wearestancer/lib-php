@@ -1,6 +1,6 @@
 <?php
 
-namespace ild78\tests\unit;
+namespace ild78\tests\unit\Api;
 
 use atoum;
 use GuzzleHttp;
@@ -10,10 +10,10 @@ use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Request;
 use GuzzleHttp\Psr7\Response;
 use ild78\Api;
-use ild78\Core as testedClass;
+use ild78\Api\Object as testedClass;
 use ild78\Exceptions;
 
-class Core extends atoum
+class Object extends atoum
 {
     public function test__construct()
     {
@@ -22,11 +22,11 @@ class Core extends atoum
             ->and($timestamp = rand())
             ->and($mock = new MockHandler([
                 new Response(200, [], '{"id":"' . $id . '","created":' . $timestamp . '}'),
-                new Response(401, [], file_get_contents(__DIR__ . '/fixtures/auth/not-authorized.json')),
+                new Response(401, [], file_get_contents(__DIR__ . '/../fixtures/auth/not-authorized.json')),
             ]))
             ->and($handler = HandlerStack::create($mock))
             ->and($client = new Client(['handler' => $handler]))
-            ->and($api = new Api(uniqid()))
+            ->and($api = Api\Config::init(uniqid()))
             ->and($api->setHttpClient($client))
 
             ->assert('Without id')
