@@ -56,6 +56,25 @@ class Payment extends atoum
                     ->integer($this->testedInstance->getAmount())
                         ->isIdenticalTo(3406)
 
+                    ->object($card = $this->testedInstance->getCard())
+                        ->isInstanceOf(Card::class)
+                    ->string($card->getBrand())
+                        ->isIdenticalTo('visa')
+                    ->string($card->getCountry())
+                        ->isIdenticalTo('US')
+                    ->integer($card->getExpMonth())
+                        ->isIdenticalTo(3)
+                    ->integer($card->getExpYear())
+                        ->isIdenticalTo(2021)
+                    ->string($card->getId())
+                        ->isIdenticalTo('card_jSmaDq5t5lMnz6H8tCZ0AbRG')
+                    ->string($card->getLast4())
+                        ->isIdenticalTo('4242')
+                    ->variable($card->getName())
+                        ->isIdenticalTo(null)
+                    ->variable($card->getZipCode())
+                        ->isIdenticalTo(null)
+
                     ->string($this->testedInstance->getCountry())
                         ->isIdenticalTo('FR')
 
@@ -106,6 +125,51 @@ class Payment extends atoum
             ->then
                 ->string($this->testedInstance->getEndpoint())
                     ->isIdenticalTo('checkout')
+        ;
+    }
+
+    public function testHydrateCard()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($data = [
+                'id' => uniqid(),
+                'brand' => uniqid(),
+                'country' => uniqid(),
+                'cvc' => rand(0, PHP_INT_MAX),
+                'exp_month' => rand(0, PHP_INT_MAX),
+                'exp_year' => rand(0, PHP_INT_MAX),
+                'last4' => uniqid(),
+                'name' => uniqid(),
+                'number' => rand(0, PHP_INT_MAX),
+                'zip_code' => uniqid(),
+            ])
+            ->then
+                ->object($this->testedInstance->hydrateCard($data))
+                    ->isTestedInstance
+                ->object($card = $this->testedInstance->getCard())
+                    ->isInstanceOf(Card::class)
+
+                ->string($card->getId())
+                    ->isIdenticalTo($data['id'])
+                ->string($card->getBrand())
+                    ->isIdenticalTo($data['brand'])
+                ->string($card->getCountry())
+                    ->isIdenticalTo($data['country'])
+                ->integer($card->getCvc())
+                    ->isIdenticalTo($data['cvc'])
+                ->integer($card->getExpMonth())
+                    ->isIdenticalTo($data['exp_month'])
+                ->integer($card->getExpYear())
+                    ->isIdenticalTo($data['exp_year'])
+                ->string($card->getLast4())
+                    ->isIdenticalTo($data['last4'])
+                ->string($card->getName())
+                    ->isIdenticalTo($data['name'])
+                ->integer($card->getNumber())
+                    ->isIdenticalTo($data['number'])
+                ->string($card->getZipCode())
+                    ->isIdenticalTo($data['zip_code'])
         ;
     }
 }

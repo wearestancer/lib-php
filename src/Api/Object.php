@@ -91,6 +91,7 @@ abstract class Object
     {
         foreach ($data as $key => $value) {
             $property = $key;
+            $method = 'hydrate' . ucfirst($property);
 
             if (strpos($key, '_') !== false) {
                 $property = preg_replace_callback('`_\w`', function ($matches) {
@@ -100,6 +101,8 @@ abstract class Object
 
             if ($property === 'created') {
                 $this->created = new DateTime('@' . $value);
+            } elseif (method_exists($this, $method)) {
+                $this->$method($value);
             } elseif (property_exists($this, $property)) {
                 $this->$property = $value;
             }

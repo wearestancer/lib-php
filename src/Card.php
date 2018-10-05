@@ -8,15 +8,30 @@ namespace ild78;
  */
 class Card extends Api\Object
 {
+    /** @var string */
+    protected $brand;
+
+    /** @var string */
+    protected $country;
+
     /** @var integer */
     protected $cvc;
 
     /** @var integer */
-    protected $exp_month;
+    protected $expMonth;
 
     /** @var integer */
-    protected $exp_year;
+    protected $expYear;
+
+    /** @var string */
+    protected $last4;
+
+    /** @var string|null */
+    protected $name;
 
     /** @var integer */
     protected $number;
+
+    /** @var string|null */
+    protected $zipCode;
 }
