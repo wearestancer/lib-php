@@ -79,7 +79,7 @@ class Object extends atoum
         $this
             ->given($data = [
                 'id' => uniqid(),
-                'created' => rand(0, PHP_INT_MAX),
+                'created' => rand(946681200, 1893452400),
             ])
             ->and($this->newTestedInstance)
             ->then
