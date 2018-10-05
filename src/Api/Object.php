@@ -48,6 +48,7 @@ abstract class Object implements JsonSerializable
 
     public function __call($method, $arguments)
     {
+        $message = sprintf('Method "%s" unknown', $method);
         $action = substr($method, 0, 3);
         $property = lcfirst(substr($method, 3));
 
@@ -55,7 +56,29 @@ abstract class Object implements JsonSerializable
             return $this->$property;
         }
 
-        throw new Exceptions\BadMethodCallException(sprintf('Method "%s" unknonw', $method));
+        $forbiddenChanges = [
+            'created',
+            'endpoint',
+            'id',
+        ];
+
+        if ($action === 'set' && property_exists($this, $property)) {
+            if (!in_array($property, $forbiddenChanges, true)) {
+                $this->$property = $arguments[0];
+
+                return $this;
+            }
+
+            $tmp = $property;
+
+            if ($property === 'created') {
+                $tmp = 'creation date';
+            }
+
+            $message = sprintf('You are not allowed to modify the %s.', $tmp);
+        }
+
+        throw new Exceptions\BadMethodCallException($message);
     }
 
     public function __toString() : string

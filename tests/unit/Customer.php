@@ -79,6 +79,31 @@ class Customer extends atoum
         ;
     }
 
+    public function test__call()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($email = uniqid())
+            ->and($mobile = uniqid())
+            ->and($name = uniqid())
+            ->then
+                ->object($this->testedInstance->setEmail($email))
+                    ->isTestedInstance
+                ->string($this->testedInstance->getEmail())
+                    ->isIdenticalTo($email)
+
+                ->object($this->testedInstance->setMobile($mobile))
+                    ->isTestedInstance
+                ->string($this->testedInstance->getMobile())
+                    ->isIdenticalTo($mobile)
+
+                ->object($this->testedInstance->setName($name))
+                    ->isTestedInstance
+                ->string($this->testedInstance->getName())
+                    ->isIdenticalTo($name)
+        ;
+    }
+
     public function testGetEndpoint()
     {
         $this

@@ -44,23 +44,50 @@ class Object extends atoum
     {
         $this
             ->given($this->newTestedInstance)
-            ->and($data = [
-                'id' => uniqid(),
-                'created' => rand(946681200, 1893452400),
-            ])
-            ->then
-                ->string($this->testedInstance->getEndpoint())
-                    ->isEmpty
-                ->variable($this->testedInstance->getId())
-                    ->isNull // No default value
+            ->assert('getter')
+                ->and($data = [
+                    'id' => uniqid(),
+                    'created' => rand(946681200, 1893452400),
+                ])
+                ->then
+                    ->string($this->testedInstance->getEndpoint())
+                        ->isEmpty
+                    ->variable($this->testedInstance->getId())
+                        ->isNull // No default value
 
-            ->if($this->testedInstance->hydrate($data))
-            ->then
-                ->variable($this->testedInstance->getId())
-                    ->isIdenticalTo($data['id'])
-                ->dateTime($date = $this->testedInstance->getCreationDate())
-                ->variable($date->format('U'))
-                    ->isEqualTo($data['created'])
+                ->if($this->testedInstance->hydrate($data))
+                ->then
+                    ->variable($this->testedInstance->getId())
+                        ->isIdenticalTo($data['id'])
+                    ->dateTime($date = $this->testedInstance->getCreationDate())
+                    ->variable($date->format('U'))
+                        ->isEqualTo($data['created'])
+
+            ->assert('setter')
+                // Impossible to test, `Object`'s properties are not allowed for changes
+                // See `Customer` test case for real setter test
+
+            ->assert('Not allowed changes')
+                ->exception(function () {
+                    $this->testedInstance->setCreated(uniqid());
+                })
+                    ->isInstanceOf(Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify the creation date.')
+
+                ->exception(function () {
+                    $this->testedInstance->setEndpoint(uniqid());
+                })
+                    ->isInstanceOf(Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify the endpoint.')
+
+                ->exception(function () {
+                    $this->testedInstance->setId(uniqid());
+                })
+                    ->isInstanceOf(Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify the id.')
 
             ->assert('Unknown method')
                 ->if($method = uniqid())
