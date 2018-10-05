@@ -38,53 +38,9 @@ abstract class Object
     public function __construct(string $id = null)
     {
         if ($id) {
-            $api = Config::getGlobal();
-            $client = $api->getHttpClient();
-
-            $options = [
-                'headers' => [
-                    'Authorization' => 'Basic ' . $api->getKey(),
-                ],
-            ];
-
-            try {
-                $response = $client->request('GET', $this->getEndpoint() . '/' . $id);
-            } catch (GuzzleHttp\Exception\ServerException $exception) { // HTTP 5**
-                $message = 'Servor error, please leave a minute to repair it and try again';
-                throw new Exceptions\ServerException($message, 0, $exception);
-            } catch (GuzzleHttp\Exception\TooManyRedirectsException $exception) {
-                throw new Exceptions\TooManyRedirectsException('Too many redirection', 0, $exception);
-            } catch (GuzzleHttp\Exception\ClientException $exception) { // HTTP 4**
-                $response = $exception->getResponse();
-                $class = Exceptions\ClientException::class;
-                $message = vsprintf('%d - %s', [
-                    $response->getStatusCode(),
-                    $response->getReasonPhrase(),
-                ]);
-
-                switch ($response->getStatusCode()) {
-                    case 400:
-                        $class = Exceptions\BadRequestException::class;
-                        break;
-
-                    case 401:
-                        $body = json_decode((string) $response->getBody());
-                        $class = Exceptions\NotAuthorizedException::class;
-                        $message = $body->error->message;
-                        break;
-
-                    case 404:
-                        $class = Exceptions\NotFoundException::class;
-                        $message = sprintf('%s "%s" unknonw', get_class($this), $id);
-                        break;
-                }
-
-                throw new $class($message, 0, $exception);
-            } catch (Exception $exception) {
-                throw new Exceptions\Exception('Unknown error, may be a network error', 0, $exception);
-            }
-
-            $body = json_decode((string) $response->getBody(), true);
+            $request = new Request;
+            $response = $request->get($this, $id);
+            $body = json_decode($response, true);
 
             foreach ($body as $key => $value) {
                 $property = $key;

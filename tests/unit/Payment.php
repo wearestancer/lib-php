@@ -25,6 +25,9 @@ class Payment extends atoum
 
     public function test__construct()
     {
+        // Other HTTP errors are tested in Api\Request test case
+        // Here we are testing that we will use everything in the response and we have a custom error for 404
+
         $mock = new MockHandler([
             new Response(200, [], file_get_contents(__DIR__ . '/fixtures/payment/read.json')),
             new Response(404),
