@@ -58,6 +58,11 @@ abstract class Object implements JsonSerializable
         throw new Exceptions\BadMethodCallException(sprintf('Method "%s" unknonw', $method));
     }
 
+    public function __toString() : string
+    {
+        return $this->toString();
+    }
+
     /**
      * Return API endpoint
      *
@@ -114,6 +119,11 @@ abstract class Object implements JsonSerializable
 
     public function jsonSerialize() : array
     {
+        return $this->toArray();
+    }
+
+    public function toArray() : array
+    {
         $json = [];
 
         foreach (get_object_vars($this) as $property => $value) {
@@ -127,5 +137,15 @@ abstract class Object implements JsonSerializable
         }
 
         return $json;
+    }
+
+    public function toJson() : string
+    {
+        return json_encode($this);
+    }
+
+    public function toString() : string
+    {
+        return $this->toJson();
     }
 }

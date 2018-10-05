@@ -110,4 +110,52 @@ class Object extends atoum
                 ->json(json_encode($this->testedInstance))
         ;
     }
+
+    public function testToArray()
+    {
+        $this
+            ->given($data = [
+                'id' => uniqid(),
+                'created' => rand(946681200, 1893452400),
+            ])
+            ->and($this->newTestedInstance)
+            ->and($this->testedInstance->hydrate($data))
+            ->then
+                ->array($this->testedInstance->toArray())
+                    ->string['id']->isIdenticalTo($data['id'])
+                    ->integer['created']->isIdenticalTo($data['created'])
+                    ->notHasKey('endpoint')
+        ;
+    }
+
+    public function testToJson()
+    {
+        $this
+            ->given($data = [
+                'id' => uniqid(),
+                'created' => rand(946681200, 1893452400),
+            ])
+            ->and($this->newTestedInstance)
+            ->and($this->testedInstance->hydrate($data))
+            ->then
+                ->json($this->testedInstance->toJson())
+                    ->isIdenticalTo(json_encode($this->testedInstance))
+        ;
+    }
+
+    public function testToString()
+    {
+        $this
+            ->given($data = [
+                'id' => uniqid(),
+                'created' => rand(946681200, 1893452400),
+            ])
+            ->and($this->newTestedInstance)
+            ->and($this->testedInstance->hydrate($data))
+            ->then
+                ->string($this->testedInstance->toString())
+                    ->isIdenticalTo((string) $this->testedInstance)
+                    ->isIdenticalTo(json_encode($this->testedInstance))
+        ;
+    }
 }
