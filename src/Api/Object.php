@@ -41,22 +41,7 @@ abstract class Object
             $request = new Request;
             $response = $request->get($this, $id);
             $body = json_decode($response, true);
-
-            foreach ($body as $key => $value) {
-                $property = $key;
-
-                if (strpos($key, '_') !== false) {
-                    $property = preg_replace_callback('`_\w`', function ($matches) {
-                        return trim(strtoupper($matches[0]), '_');
-                    }, $key);
-                }
-
-                if ($property === 'created') {
-                    $this->created = new DateTime('@' . $value);
-                } elseif (property_exists($this, $property)) {
-                    $this->$property = $value;
-                }
-            }
+            $this->hydrate($body);
         }
     }
 
