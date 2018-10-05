@@ -6,13 +6,14 @@ namespace ild78\Api;
 use DateTime;
 use GuzzleHttp;
 use ild78\Exceptions;
+use JsonSerializable;
 
 /**
  * Manage common code between API object
  *
  * @throws ild78\Exceptions\BadMethodCallException when calling unknonw method
  */
-abstract class Object
+abstract class Object implements JsonSerializable
 {
     /** @var string */
     protected $endpoint = '';
@@ -109,5 +110,22 @@ abstract class Object
         }
 
         return $this;
+    }
+
+    public function jsonSerialize() : array
+    {
+        $json = [];
+
+        foreach (get_object_vars($this) as $property => $value) {
+            if ($value && $property !== 'endpoint') {
+                $json[$property] = $value;
+
+                if ($value instanceof DateTime) {
+                    $json[$property] = (int) $value->format('U');
+                }
+            }
+        }
+
+        return $json;
     }
 }

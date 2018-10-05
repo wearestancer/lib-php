@@ -78,4 +78,22 @@ class Object extends atoum
                         ->isEqualTo($data['created'])
         ;
     }
+
+    public function testJsonSerialize()
+    {
+        $this
+            ->given($data = [
+                'id' => uniqid(),
+                'created' => rand(946681200, 1893452400),
+            ])
+            ->and($this->newTestedInstance)
+            ->and($this->testedInstance->hydrate($data))
+            ->then
+                ->array($this->testedInstance->jsonSerialize())
+                    ->string['id']->isIdenticalTo($data['id'])
+                    ->integer['created']->isIdenticalTo($data['created'])
+                    ->notHasKey('endpoint')
+                ->json(json_encode($this->testedInstance))
+        ;
+    }
 }
