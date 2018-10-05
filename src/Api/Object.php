@@ -82,12 +82,12 @@ abstract class Object
      *
      * @return DateTime|null
      */
-    public function getCreationDate()
+    public function getCreationDate() : DateTime
     {
         return $this->created;
     }
 
-    public function hydrate(array $data)
+    public function hydrate(array $data) : self
     {
         foreach ($data as $key => $value) {
             $property = $key;

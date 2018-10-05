@@ -53,7 +53,7 @@ class Payment extends Api\Object
     /** @var string */
     protected $status;
 
-    public function hydrateCard(array $data)
+    public function hydrateCard(array $data) : self
     {
         $card = new Card;
         $card->hydrate($data);
