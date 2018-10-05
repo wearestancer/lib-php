@@ -38,14 +38,14 @@ class Payment extends Core
     /** @var string|null */
     protected $description;
 
-    /** @var integer|null */
-    protected $id_customer;
+    /** @var string */
+    protected $idCustomer;
 
     /** @var string */
     protected $method;
 
-    /** @var integer */
-    protected $order_id;
+    /** @var string */
+    protected $orderId;
 
     /** @var string */
     protected $response;

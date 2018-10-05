@@ -63,8 +63,14 @@ class Payment extends atoum
                     ->variable($this->testedInstance->getDescription())
                         ->isNull
 
+                    ->variable($this->testedInstance->getIdCustomer())
+                        ->isNull
+
                     ->string($this->testedInstance->getMethod())
                         ->isIdenticalTo('card')
+
+                    ->string($this->testedInstance->getOrderId())
+                        ->isIdenticalTo('815730837')
 
                     ->string($this->testedInstance->getResponse())
                         ->isIdenticalTo('00')
