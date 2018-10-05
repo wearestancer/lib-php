@@ -101,6 +101,17 @@ class Object extends atoum
         ;
     }
 
+    public function testGetUri()
+    {
+        $this
+            ->given($config = Api\Config::init(uniqid()))
+            ->and($this->newTestedInstance)
+            ->then
+                ->string($this->testedInstance->getUri())
+                    ->isIdenticalTo($config->getUri() . $this->testedInstance->getEndpoint())
+        ;
+    }
+
     public function testHydrate()
     {
         $this

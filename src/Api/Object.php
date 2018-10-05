@@ -116,6 +116,16 @@ abstract class Object implements JsonSerializable
         return $this->id;
     }
 
+    /**
+     * Return ressource location
+     *
+     * @return string
+     */
+    public function getUri() : string
+    {
+        return Config::getGlobal()->getUri() . $this->getEndpoint();
+    }
+
     public function hydrate(array $data) : self
     {
         foreach ($data as $key => $value) {
