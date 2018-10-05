@@ -87,6 +87,16 @@ abstract class Object implements JsonSerializable
     }
 
     /**
+     * Return creation date
+     *
+     * @return DateTime|null
+     */
+    public function getCreationDate() : DateTime
+    {
+        return $this->created;
+    }
+
+    /**
      * Return API endpoint
      *
      * @return string
@@ -104,16 +114,6 @@ abstract class Object implements JsonSerializable
     public function getId()
     {
         return $this->id;
-    }
-
-    /**
-     * Return creation date
-     *
-     * @return DateTime|null
-     */
-    public function getCreationDate() : DateTime
-    {
-        return $this->created;
     }
 
     public function hydrate(array $data) : self
