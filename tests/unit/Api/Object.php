@@ -34,10 +34,9 @@ class Object extends atoum
                     ->string($this->testedInstance->getId())
                         ->isIdenticalTo($id)
 
-                    ->object($date = $this->testedInstance->getCreationDate())
-                        ->isInstanceOf('DateTime')
-                    ->variable($date->format('U'))
-                        ->isEqualTo($timestamp)
+                    ->dateTime($date = $this->testedInstance->getCreationDate())
+                        ->variable($date->format('U'))
+                            ->isEqualTo($timestamp)
         ;
     }
 
