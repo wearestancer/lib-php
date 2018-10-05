@@ -101,4 +101,25 @@ abstract class Object
     {
         return $this->created;
     }
+
+    public function hydrate(array $data)
+    {
+        foreach ($data as $key => $value) {
+            $property = $key;
+
+            if (strpos($key, '_') !== false) {
+                $property = preg_replace_callback('`_\w`', function ($matches) {
+                    return trim(strtoupper($matches[0]), '_');
+                }, $key);
+            }
+
+            if ($property === 'created') {
+                $this->created = new DateTime('@' . $value);
+            } elseif (property_exists($this, $property)) {
+                $this->$property = $value;
+            }
+        }
+
+        return $this;
+    }
 }

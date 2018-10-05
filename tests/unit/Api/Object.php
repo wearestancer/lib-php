@@ -60,4 +60,23 @@ class Object extends atoum
                     ->isNull // No default value
         ;
     }
+
+    public function testHydrate()
+    {
+        $this
+            ->given($data = [
+                'id' => uniqid(),
+                'created' => rand(0, PHP_INT_MAX),
+            ])
+            ->and($this->newTestedInstance)
+            ->then
+                ->object($this->testedInstance->hydrate($data))
+                    ->isTestedInstance
+                ->string($this->testedInstance->getId())
+                    ->isIdenticalTo($data['id'])
+                ->dateTime($date = $this->testedInstance->getCreationDate())
+                    ->variable($date->format('U'))
+                        ->isEqualTo($data['created'])
+        ;
+    }
 }
