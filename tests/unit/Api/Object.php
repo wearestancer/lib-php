@@ -149,6 +149,9 @@ class Object extends atoum
         ;
     }
 
+    // There are no test for `Object::save()` method here
+    // Nothing can be saved in `Object`, real test are availaible in `Customer` test case (`Customer::testSave()`)
+
     public function testToArray()
     {
         $this

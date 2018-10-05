@@ -39,7 +39,7 @@ class Request
      */
     public function post(Object $object, string $location = null) : string
     {
-        return $this->request(static::POST, $object, $location);
+        return $this->request(static::POST, $object, $location, ['body' => json_encode($object)]);
     }
 
     /**
@@ -62,6 +62,7 @@ class Request
      * @param string $method HTTP verb for the call. Use one of class constant.
      * @param ild78\Api\Object $id Object id
      * @param string|null $location
+     * @param array $options Guzzle options
      * @return string
      * @throws ild78\Exceptions\InvalidArgumentException when calling with unsupported method
      * @throws ild78\Exceptions\TooManyRedirectsException on too many redirection case (HTTP 310)
@@ -71,7 +72,7 @@ class Request
      * @throws ild78\Exceptions\ServerException on HTTP 5** errors
      * @throws ild78\Exceptions\Exception on every over exception send by GuzzleHttp
      */
-    public function request(string $method, Object $object, string $location = null) : string
+    public function request(string $method, Object $object, string $location = null, array $options = []) : string
     {
         $allowedMethods = [
             static::GET,
@@ -83,15 +84,14 @@ class Request
             throw new Exceptions\InvalidArgumentException(sprintf('Method "%s" unsupported', $method));
         }
 
-
         $config = Config::getGlobal();
         $client = $config->getHttpClient();
 
-        $options = [
-            'headers' => [
-                'Authorization' => 'Basic ' . $config->getKey(),
-            ],
-        ];
+        if (!array_key_exists('headers', $options)) {
+            $options['headers'] = [];
+        }
+
+        $options['headers']['Authorization'] = 'Basic ' . $config->getKey();
 
         $endpoint = $object->getEndpoint();
 
@@ -100,7 +100,7 @@ class Request
         }
 
         try {
-            $response = $client->request(strtoupper($method), $endpoint);
+            $response = $client->request(strtoupper($method), $endpoint, $options);
         } catch (GuzzleHttp\Exception\ServerException $exception) { // HTTP 5**
             $message = 'Servor error, please leave a minute to repair it and try again';
             throw new Exceptions\ServerException($message, 0, $exception);

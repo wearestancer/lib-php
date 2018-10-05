@@ -155,6 +155,16 @@ abstract class Object implements JsonSerializable
         return $this->toArray();
     }
 
+    public function save() : self
+    {
+        $request = new Request;
+        $response = $request->post($this);
+        $body = json_decode($response, true);
+        $this->hydrate($body);
+
+        return $this;
+    }
+
     public function toArray() : array
     {
         $json = [];
