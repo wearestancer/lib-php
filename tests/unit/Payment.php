@@ -220,12 +220,12 @@ class Payment extends atoum
         ;
     }
 
-    public function testSave()
+    public function testSave_withCard()
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client)
             ->and($response = new mock\GuzzleHttp\Psr7\Response)
-            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create.json'))
+            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-card.json'))
             ->and($this->calling($response)->getBody = $body)
             ->and($this->calling($client)->request = $response)
             ->and($config = Api\Config::init(uniqid()))
