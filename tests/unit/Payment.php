@@ -3,6 +3,7 @@
 namespace ild78\tests\unit;
 
 use atoum;
+use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
@@ -12,6 +13,7 @@ use ild78\Card;
 use ild78\Customer;
 use ild78\Exceptions\NotFoundException;
 use ild78\Payment as testedClass;
+use mock;
 
 class Payment extends atoum
 {
@@ -215,6 +217,100 @@ class Payment extends atoum
                         ->isIdenticalTo($data['number'])
                     ->string($card->getZipCode())
                         ->isIdenticalTo($data['zip_code'])
+        ;
+    }
+
+    public function testSave()
+    {
+        $this
+            ->given($client = new mock\GuzzleHttp\Client)
+            ->and($response = new mock\GuzzleHttp\Psr7\Response)
+            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create.json'))
+            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($client)->request = $response)
+            ->and($config = Api\Config::init(uniqid()))
+            ->and($config->setHttpClient($client))
+
+            ->if($card = new Card)
+            ->and($card->setCvc(rand(1, 1000)))
+            ->and($card->setExpMonth(rand(1, 12)))
+            ->and($card->setExpYear(rand(2000, 3000)))
+            ->and($card->setName(uniqid()))
+            ->and($card->setNumber($number = rand(0, PHP_INT_MAX)))
+            ->and($card->setZipCode(uniqid()))
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount(rand(100, 999999)))
+            ->and($this->testedInstance->setCard($card))
+            ->and($this->testedInstance->setCurrency(uniqid()))
+            ->and($this->testedInstance->setDescription(uniqid()))
+            ->and($this->testedInstance->setOrderId(uniqid()))
+
+            ->and($json = json_encode($this->testedInstance))
+            ->and($options = [
+                'body' => $json,
+                'headers' => ['Authorization' => 'Basic ' . $config->getKey()]
+            ])
+            ->then
+                ->variable($this->testedInstance->getId())
+                    ->isNull
+                ->object($this->testedInstance->save())
+                    ->isTestedInstance
+
+                ->mock($client)
+                    ->call('request')
+                        ->withArguments('POST', $this->testedInstance->getEndpoint(), $options)
+                            ->once
+
+                // Payment object
+                ->string($this->testedInstance->getId())
+                    ->isIdenticalTo('paym_KIVaaHi7G8QAYMQpQOYBrUQE')
+
+                ->dateTime($this->testedInstance->getCreationDate())
+                    ->isEqualTo(new DateTime('@1538564253'))
+
+                ->integer($this->testedInstance->getAmount())
+                    ->isIdenticalTo(100)
+
+                ->object($this->testedInstance->getCard())
+                    ->isInstanceOf($card)
+
+                ->string($this->testedInstance->getCurrency())
+                    ->isIdenticalTo('eur')
+
+                ->string($this->testedInstance->getDescription())
+                    ->isIdenticalTo('le test restfull v1')
+
+                ->variable($this->testedInstance->getOrderId())
+                    ->isNull
+
+                // Card object
+                ->string($card->getBrand())
+                    ->isIdenticalTo('mastercard')
+
+                ->string($card->getCountry())
+                    ->isIdenticalTo('US')
+
+                ->integer($card->getExpMonth())
+                    ->isIdenticalTo(2)
+
+                ->integer($card->getExpYear())
+                    ->isIdenticalTo(2020)
+
+                ->string($card->getId())
+                    ->isIdenticalTo('card_xognFbZs935LMKJYeHyCAYUd')
+
+                ->string($card->getLast4())
+                    ->isIdenticalTo('4444')
+
+                ->variable($card->getName())
+                    ->isNull
+
+                ->integer($card->getNumber())
+                    ->isIdenticalTo($number) // Number is unchanged in save process
+
+                ->variable($card->getZipCode())
+                    ->isNull
         ;
     }
 }
