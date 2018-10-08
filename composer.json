@@ -2,6 +2,12 @@
     "name": "ild78/lib-php",
     "description": "Ild78 PHP library",
     "type": "library",
+    "keywords": [
+        "payments",
+        "payment solution",
+        "card",
+        "sepa"
+    ],
     "license": "MIT",
     "autoload": {
         "psr-4": {
