@@ -34,4 +34,31 @@ class Card extends Api\Object
 
     /** @var string|null */
     protected $zipCode;
+
+    /**
+     * Return an array of properties not allowed to change with a setter
+     *
+     * @see self::__call()
+     * @return array
+     */
+    public function getForbiddenProperties() : array
+    {
+        return array_merge(parent::getForbiddenProperties(), [
+            'last4',
+        ]);
+    }
+
+    /**
+     * Add a card number
+     *
+     * @param integer $number A valid card number
+     * @return self
+     */
+    public function setNumber(int $number) : self
+    {
+        $this->last4 = substr((string) $number, -4);
+        $this->number = $number;
+
+        return $this;
+    }
 }
