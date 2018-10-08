@@ -56,14 +56,8 @@ abstract class Object implements JsonSerializable
             return $this->$property;
         }
 
-        $forbiddenChanges = [
-            'created',
-            'endpoint',
-            'id',
-        ];
-
         if ($action === 'set' && property_exists($this, $property)) {
-            if (!in_array($property, $forbiddenChanges, true)) {
+            if (!in_array($property, $this->getForbiddenProperties(), true)) {
                 $this->$property = $arguments[0];
 
                 return $this;
@@ -104,6 +98,21 @@ abstract class Object implements JsonSerializable
     public function getEndpoint() : string
     {
         return $this->endpoint;
+    }
+
+    /**
+     * Return an array of properties not allowed to change with a setter
+     *
+     * @see self::__call()
+     * @return array
+     */
+    public function getForbiddenProperties() : array
+    {
+        return [
+            'created',
+            'endpoint',
+            'id',
+        ];
     }
 
     /**

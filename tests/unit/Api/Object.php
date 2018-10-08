@@ -101,6 +101,18 @@ class Object extends atoum
         ;
     }
 
+    public function testGetForbiddenProperties()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->array($this->testedInstance->getForbiddenProperties())
+                    ->contains('created')
+                    ->contains('endpoint')
+                    ->contains('id')
+        ;
+    }
+
     public function testGetUri()
     {
         $this
