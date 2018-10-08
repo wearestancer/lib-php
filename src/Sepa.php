@@ -23,6 +23,19 @@ class Sepa extends Api\Object
     protected $name;
 
     /**
+     * Return an array of properties not allowed to change with a setter
+     *
+     * @see self::__call()
+     * @return array
+     */
+    public function getForbiddenProperties() : array
+    {
+        return array_merge(parent::getForbiddenProperties(), [
+            'country',
+        ]);
+    }
+
+    /**
      * Add or update a Bank Identifier Code (BIC)
      *
      * @param string $bic A Bank Identifier Code
