@@ -15,6 +15,7 @@ namespace ild78;
  * @method string getMethod()
  * @method integer getOrder_id()
  * @method string getResponse()
+ * @method ild78\\Sepa getSepa()
  * @method string getStatus()
  */
 class Payment extends Api\Object
@@ -50,7 +51,9 @@ class Payment extends Api\Object
     /** @var string */
     protected $response;
 
+    /** @var ild78\\Sepa */
+    protected $sepa;
+
     /** @var string */
     protected $status;
-
 }

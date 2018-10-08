@@ -13,6 +13,7 @@ use ild78\Card;
 use ild78\Customer;
 use ild78\Exceptions\NotFoundException;
 use ild78\Payment as testedClass;
+use ild78\Sepa;
 use mock;
 
 class Payment extends atoum
@@ -221,6 +222,79 @@ class Payment extends atoum
 
                 ->variable($card->getZipCode())
                     ->isNull
+        ;
+    }
+
+    public function testSave_withSepa()
+    {
+        $this
+            ->given($client = new mock\GuzzleHttp\Client)
+            ->and($response = new mock\GuzzleHttp\Psr7\Response)
+            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-sepa.json'))
+            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($client)->request = $response)
+            ->and($config = Api\Config::init(uniqid()))
+            ->and($config->setHttpClient($client))
+
+            ->if($sepa = new Sepa)
+            ->and($sepa->setBic('DEUTDEFF')) // Thx Wikipedia
+            ->and($sepa->setIban('DE91 1000 0000 0123 4567 89')) // Thx Wikipedia
+            ->and($sepa->setName(uniqid()))
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount(rand(100, 999999)))
+            ->and($this->testedInstance->setSepa($sepa))
+            ->and($this->testedInstance->setCurrency(uniqid()))
+            ->and($this->testedInstance->setDescription(uniqid()))
+            ->and($this->testedInstance->setOrderId(uniqid()))
+
+            ->and($json = json_encode($this->testedInstance))
+            ->and($options = [
+                'body' => $json,
+                'headers' => ['Authorization' => 'Basic ' . $config->getKey()]
+            ])
+            ->then
+                ->variable($this->testedInstance->getId())
+                    ->isNull
+                ->object($this->testedInstance->save())
+                    ->isTestedInstance
+
+                ->mock($client)
+                    ->call('request')
+                        ->withArguments('POST', $this->testedInstance->getEndpoint(), $options)
+                            ->once
+
+                // Payment object
+                ->string($this->testedInstance->getId())
+                    ->isIdenticalTo('paym_5IptC9R1Wu2wKBR5cjM2so7k')
+
+                ->dateTime($this->testedInstance->getCreationDate())
+                    ->isEqualTo(new DateTime('@1538564504'))
+
+                ->integer($this->testedInstance->getAmount())
+                    ->isIdenticalTo(100)
+
+                ->object($this->testedInstance->getSepa())
+                    ->isInstanceOf($sepa)
+
+                ->string($this->testedInstance->getCurrency())
+                    ->isIdenticalTo('eur')
+
+                ->string($this->testedInstance->getDescription())
+                    ->isIdenticalTo('le test restfull v1')
+
+                ->variable($this->testedInstance->getOrderId())
+                    ->isNull
+
+                // Sepa object
+                ->string($sepa->getId())
+                    ->isIdenticalTo('sepa_oazGliEo6BuqUlyCzE42hcNp')
+
+                ->string($sepa->getBic())
+                    ->isIdenticalTo('ILADFRPP')
+
+                ->string($sepa->getName())
+                    ->isIdenticalTo('David Coaster')
         ;
     }
 }
