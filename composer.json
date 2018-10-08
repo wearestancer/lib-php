@@ -14,7 +14,8 @@
     "require-dev": {
         "atoum/atoum": "^3.3",
         "atoum/autoloop-extension": "^0.3.0",
-        "atoum/stubs": "^2.6"
+        "atoum/stubs": "^2.6",
+        "squizlabs/php_codesniffer": "^3.3"
     },
     "config": {
         "sort-packages": true
