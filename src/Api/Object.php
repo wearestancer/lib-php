@@ -139,7 +139,7 @@ abstract class Object implements JsonSerializable
     {
         foreach ($data as $key => $value) {
             $property = $key;
-            $method = 'hydrate' . ucfirst($property);
+            $class = 'ild78\\' . ucfirst($property);
 
             if (strpos($key, '_') !== false) {
                 $property = preg_replace_callback('`_\w`', function ($matches) {
@@ -149,10 +149,16 @@ abstract class Object implements JsonSerializable
 
             if ($property === 'created') {
                 $this->created = new DateTime('@' . $value);
-            } elseif (method_exists($this, $method)) {
-                $this->$method($value);
             } elseif (property_exists($this, $property)) {
-                $this->$property = $value;
+                if (class_exists($class)) {
+                    if (!$this->$property) {
+                        $this->$property = new $class;
+                    }
+
+                    $this->$property->hydrate($value);
+                } else {
+                    $this->$property = $value;
+                }
             }
         }
 

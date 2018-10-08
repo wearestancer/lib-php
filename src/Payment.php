@@ -53,14 +53,4 @@ class Payment extends Api\Object
     /** @var string */
     protected $status;
 
-    public function hydrateCard(array $data) : self
-    {
-        if (!$this->card) {
-            $this->card = new Card;
-        }
-
-        $this->card->hydrate($data);
-
-        return $this;
-    }
 }
