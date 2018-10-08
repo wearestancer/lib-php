@@ -9,6 +9,23 @@ use ild78\Sepa as testedClass;
 
 class Sepa extends atoum
 {
+    public function ibanDataProvider()
+    {
+        // Thanks Wikipedia
+        return [
+            'BE71 0961 2345 6769',
+            'FR76 3000 6000 0112 3456 7890 189',
+            'DE91 1000 0000 0123 4567 89',
+            'GR9608100010000001234567890',
+            'RO09 BCYP 0000 0012 3456 7890',
+            'SA4420000001234567891234',
+            'ES79 2100 0813 6101 2345 6789',
+            'CH56 0483 5012 3456 7800 9 ',
+            'GB98 MIDL 0700 9312 3456 78',
+            'GB82WEST12345698765432',
+        ];
+    }
+
     public function testClass()
     {
         $this
@@ -27,6 +44,25 @@ class Sepa extends atoum
                     ->contains('endpoint') // from parent
                     ->contains('id') // from parent
                     ->contains('country')
+        ;
+    }
+
+    /**
+     * @dataProvider ibanDataProvider
+     */
+    public function testGetFormattedIban($iban)
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($withoutSpaces = str_replace(' ', '', $iban))
+            ->and($withSpaces = chunk_split($withoutSpaces, 4, ' '))
+            ->and($this->testedInstance->setIban($iban))
+            ->then
+                ->string($this->testedInstance->getIban())
+                    ->isIdenticalTo($withoutSpaces)
+
+                ->string($this->testedInstance->getFormattedIban())
+                    ->isIdenticalTo($withSpaces)
         ;
     }
 

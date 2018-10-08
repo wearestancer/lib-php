@@ -36,6 +36,16 @@ class Sepa extends Api\Object
     }
 
     /**
+     * Return IBAN with usual readeable format (AAAA BBBB CCCC ...)
+     *
+     * @return string
+     */
+    public function getFormattedIban() : string
+    {
+        return chunk_split($this->iban, 4, ' ');
+    }
+
+    /**
      * Add or update a Bank Identifier Code (BIC)
      *
      * @param string $bic A Bank Identifier Code
