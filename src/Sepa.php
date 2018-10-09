@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace ild78;
 
-use ild78\Exceptions;
+use ild78;
 
 /**
  * Representation of a SEPA account
@@ -30,9 +30,11 @@ class Sepa extends Api\Object
      */
     public function getForbiddenProperties() : array
     {
-        return array_merge(parent::getForbiddenProperties(), [
+        $forbidden = [
             'country',
-        ]);
+        ];
+
+        return array_merge(parent::getForbiddenProperties(), $forbidden);
     }
 
     /**
@@ -48,16 +50,16 @@ class Sepa extends Api\Object
     /**
      * Add or update a Bank Identifier Code (BIC)
      *
-     * @param string $bic A Bank Identifier Code
+     * @param string $bic A Bank Identifier Code.
      * @return self
-     * @throws ild78\Exceptions\InvalidArgumentException when BIC seems invalid
+     * @throws ild78\Exceptions\InvalidArgumentException When BIC seems invalid.
      */
-    public function setBic($bic) : self
+    public function setBic(string $bic) : self
     {
         $length = strlen($bic);
 
         if ($length !== 8 && $length !== 11) {
-            throw new Exceptions\InvalidArgumentException(sprintf('"%s" is not a valid BIC', $bic));
+            throw new ild78\Exceptions\InvalidArgumentException(sprintf('"%s" is not a valid BIC', $bic));
         }
 
         $this->bic = $bic;
@@ -68,9 +70,9 @@ class Sepa extends Api\Object
     /**
      * Add or update an International Bank Account Number (IBAN)
      *
-     * @param string $iban An International Bank Account Number
+     * @param string $iban An International Bank Account Number.
      * @return self
-     * @throws ild78\Exceptions\InvalidArgumentException when IBAN is invalid
+     * @throws ild78\Exceptions\InvalidArgumentException When IBAN is invalid.
      */
     public function setIban(string $iban) : self
     {
@@ -98,7 +100,7 @@ class Sepa extends Api\Object
         }
 
         if ($check !== 1) {
-            throw new Exceptions\InvalidArgumentException(sprintf('"%s" is not a valid IBAN', $iban));
+            throw new ild78\Exceptions\InvalidArgumentException(sprintf('"%s" is not a valid IBAN', $iban));
         }
 
         $this->country = $country;

@@ -43,15 +43,17 @@ class Card extends Api\Object
      */
     public function getForbiddenProperties() : array
     {
-        return array_merge(parent::getForbiddenProperties(), [
+        $forbidden = [
             'last4',
-        ]);
+        ];
+
+        return array_merge(parent::getForbiddenProperties(), $forbidden);
     }
 
     /**
      * Add a card number
      *
-     * @param integer $number A valid card number
+     * @param integer $number A valid card number.
      * @return self
      */
     public function setNumber(int $number) : self

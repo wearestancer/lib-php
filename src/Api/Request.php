@@ -1,11 +1,13 @@
 <?php
 declare(strict_types=1);
 
+// phpcs:disable Generic.NamingConventions.ConstructorName.OldStyle
+
 namespace ild78\Api;
 
 use GuzzleHttp;
 use Exception;
-use ild78\Exceptions;
+use ild78;
 
 /**
  * Handle request on API
@@ -19,9 +21,9 @@ class Request
     /**
      * Simple proxy for a GET request
      *
-     * @see self::request
-     * @param ild78\Api\Object $id Object id
-     * @param string|null $location
+     * @see self::request For full documentation.
+     * @param ild78\Api\Object $object Object.
+     * @param string|null $location Optionnal ressource identifier.
      * @return string
      */
     public function get(Object $object, string $location = null) : string
@@ -32,9 +34,9 @@ class Request
     /**
      * Simple proxy for a POST request
      *
-     * @see self::request
-     * @param ild78\Api\Object $id Object id
-     * @param string|null $location
+     * @see self::request For full documentation.
+     * @param ild78\Api\Object $object Object.
+     * @param string|null $location Optionnal ressource identifier.
      * @return string
      */
     public function post(Object $object, string $location = null) : string
@@ -45,9 +47,9 @@ class Request
     /**
      * Simple proxy for a PUT request
      *
-     * @see self::request
-     * @param ild78\Api\Object $id Object id
-     * @param string|null $location
+     * @see self::request For full documentation.
+     * @param ild78\Api\Object $object Object.
+     * @param string|null $location Optionnal ressource identifier.
      * @return string
      */
     public function put(Object $object, string $location = null) : string
@@ -55,22 +57,25 @@ class Request
         return $this->request(static::PUT, $object, $location);
     }
 
+    // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
+    // Prevent PHPCS warning due to `thrown new $class`.
+
     /**
      * Make a call to API
      *
      * @uses ild78\Api\Config
      * @param string $method HTTP verb for the call. Use one of class constant.
-     * @param ild78\Api\Object $id Object id
-     * @param string|null $location
-     * @param array $options Guzzle options
+     * @param ild78\Api\Object $object Object.
+     * @param string|null $location Optionnal ressource identifier.
+     * @param array $options Guzzle options.
      * @return string
-     * @throws ild78\Exceptions\InvalidArgumentException when calling with unsupported method
-     * @throws ild78\Exceptions\TooManyRedirectsException on too many redirection case (HTTP 310)
-     * @throws ild78\Exceptions\NotAuthorizedException on credential problem (HTTP 401)
-     * @throws ild78\Exceptions\NotFoundException if an `id` is provided but it seems unknonw (HTTP 404)
-     * @throws ild78\Exceptions\ClientException on HTTP 4** errors
-     * @throws ild78\Exceptions\ServerException on HTTP 5** errors
-     * @throws ild78\Exceptions\Exception on every over exception send by GuzzleHttp
+     * @throws ild78\Exceptions\InvalidArgumentException When calling with unsupported method.
+     * @throws ild78\Exceptions\TooManyRedirectsException On too many redirection case (HTTP 310).
+     * @throws ild78\Exceptions\NotAuthorizedException On credential problem (HTTP 401).
+     * @throws ild78\Exceptions\NotFoundException If an `id` is provided but it seems unknonw (HTTP 404).
+     * @throws ild78\Exceptions\ClientException On HTTP 4** errors.
+     * @throws ild78\Exceptions\ServerException On HTTP 5** errors.
+     * @throws ild78\Exceptions\Exception On every over exception send by GuzzleHttp.
      */
     public function request(string $method, Object $object, string $location = null, array $options = []) : string
     {
@@ -81,7 +86,7 @@ class Request
         ];
 
         if (!in_array(strtoupper($method), $allowedMethods, true)) {
-            throw new Exceptions\InvalidArgumentException(sprintf('Method "%s" unsupported', $method));
+            throw new ild78\Exceptions\InvalidArgumentException(sprintf('Method "%s" unsupported', $method));
         }
 
         $config = Config::getGlobal();
@@ -101,41 +106,56 @@ class Request
 
         try {
             $response = $client->request(strtoupper($method), $endpoint, $options);
-        } catch (GuzzleHttp\Exception\ServerException $exception) { // HTTP 5**
+
+        // HTTP 5**.
+        } catch (GuzzleHttp\Exception\ServerException $exception) {
             $message = 'Servor error, please leave a minute to repair it and try again';
-            throw new Exceptions\ServerException($message, 0, $exception);
+            throw new ild78\Exceptions\ServerException($message, 0, $exception);
+
+        // Too many redirection.
         } catch (GuzzleHttp\Exception\TooManyRedirectsException $exception) {
-            throw new Exceptions\TooManyRedirectsException('Too many redirection', 0, $exception);
-        } catch (GuzzleHttp\Exception\ClientException $exception) { // HTTP 4**
+            throw new ild78\Exceptions\TooManyRedirectsException('Too many redirection', 0, $exception);
+
+        // HTTP 4**.
+        } catch (GuzzleHttp\Exception\ClientException $exception) {
             $response = $exception->getResponse();
-            $class = Exceptions\ClientException::class;
-            $message = vsprintf('%d - %s', [
+            $class = ild78\Exceptions\ClientException::class;
+
+            $params = [
                 $response->getStatusCode(),
                 $response->getReasonPhrase(),
-            ]);
+            ];
+            $message = vsprintf('%d - %s', $params);
 
             switch ($response->getStatusCode()) {
                 case 400:
-                    $class = Exceptions\BadRequestException::class;
+                    $class = ild78\Exceptions\BadRequestException::class;
                     break;
 
                 case 401:
                     $body = json_decode((string) $response->getBody());
-                    $class = Exceptions\NotAuthorizedException::class;
+                    $class = ild78\Exceptions\NotAuthorizedException::class;
                     $message = $body->error->message;
                     break;
 
                 case 404:
-                    $class = Exceptions\NotFoundException::class;
+                    $class = ild78\Exceptions\NotFoundException::class;
                     $message = sprintf('Ressource "%s" unknonw for %s', $location, get_class($object));
+                    break;
+
+                default:
+                    // Useless, it's just for PHPCS.
                     break;
             }
 
             throw new $class($message, 0, $exception);
+
+        // Others exceptions ...
         } catch (Exception $exception) {
-            throw new Exceptions\Exception('Unknown error, may be a network error', 0, $exception);
+            throw new ild78\Exceptions\Exception('Unknown error, may be a network error', 0, $exception);
         }
 
         return (string) $response->getBody();
     }
+    // phpcs:enable
 }

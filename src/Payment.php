@@ -23,7 +23,6 @@ class Payment extends Api\Object
     /** @var string */
     protected $endpoint = 'checkout';
 
-
     /** @var integer */
     protected $amount;
 

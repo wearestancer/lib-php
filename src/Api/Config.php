@@ -5,7 +5,7 @@ namespace ild78\Api;
 
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
-use ild78\Exceptions;
+use ild78;
 
 /**
  * Handle configuration, connection and credential to API
@@ -43,7 +43,7 @@ class Config
      * You needed to set a configuration as global to be used on every API call.
      *
      * @see self::init() for a quick config setup
-     * @param string $key Authentication key
+     * @param string $key Authentication key.
      * @return self
      */
     public function __construct(string $key)
@@ -94,8 +94,7 @@ class Config
      * `Api::setGlobal()` is called on every new instance to simplify your workflow.
      *
      * @return self
-     * @throws ild78\Exceptions\InvalidArgumentException
-     *    When no previous instance was stored (just do a `new Api($key)`)
+     * @throws ild78\Exceptions\InvalidArgumentException When no previous instance was stored (use `Config::init()`).
      */
     public static function getGlobal() : self
     {
@@ -103,7 +102,7 @@ class Config
             return static::$instance;
         }
 
-        throw new Exceptions\InvalidArgumentException('You need to provide API credential.');
+        throw new ild78\Exceptions\InvalidArgumentException('You need to provide API credential.');
     }
 
     /**
@@ -137,7 +136,7 @@ class Config
      *
      * Default : 443 (HTTPS)
      *
-     * If defaut port is used, it will not be shown in API URI
+     * If defaut port is used, it will not be shown in API URI.
      *
      * @return string
      */
@@ -161,12 +160,14 @@ class Config
             $pattern = '%1$s://%2$s:%3$d/v%4$s/';
         }
 
-        return vsprintf($pattern, [
+        $params = [
             'https',
             $this->getHost(),
             $this->getPort(),
             $this->getVersion(),
-        ]);
+        ];
+
+        return vsprintf($pattern, $params);
     }
 
     /**
@@ -185,12 +186,14 @@ class Config
      * Proxy that create a new instance of configuration and register it as global.
      *
      * @see self::setGlobal()
-     * @param string $key Authentication key
+     * @param string $key Authentication key.
      * @return self
      */
     public static function init(string $key) : self
     {
-        return static::setGlobal(new static($key));
+        $obj = new static($key);
+
+        return static::setGlobal($obj);
     }
 
     /**
@@ -236,7 +239,7 @@ class Config
     /**
      * Update API host
      *
-     * @param string $host New host
+     * @param string $host New host.
      * @return self
      */
     public function setHost(string $host) : self
@@ -249,7 +252,7 @@ class Config
     /**
      * Update GuzzleHttp\Client instance
      *
-     * @param GuzzleHttp\ClientInterface $client New instance
+     * @param GuzzleHttp\ClientInterface $client New instance.
      * @return self
      */
     public function setHttpClient(ClientInterface $client) : self
@@ -262,7 +265,7 @@ class Config
     /**
      * Register a configuration for deferred API call
      *
-     * @param self $instance Current API instance
+     * @param self $instance Current API instance.
      * @return self
      */
     public static function setGlobal(self $instance) : self
@@ -275,7 +278,7 @@ class Config
     /**
      * Update API key
      *
-     * @param string $key New key
+     * @param string $key New key.
      * @return self
      */
     public function setKey(string $key) : self
@@ -290,9 +293,9 @@ class Config
      *
      * You should use class constant `LIVE_MODE` and `TEST_MODE` to be sure
      *
-     * @param string $mode New mode. Should be class constant `LIVE_MODE` or `TEST_MODE`
+     * @param string $mode New mode. Should be class constant `LIVE_MODE` or `TEST_MODE`.
      * @return self
-     * @throws ild78\Exceptions\InvalidArgumentException If new mode is not valid
+     * @throws ild78\Exceptions\InvalidArgumentException If new mode is not valid.
      */
     public function setMode(string $mode) : self
     {
@@ -304,7 +307,7 @@ class Config
         if (!in_array($mode, $validMode, true)) {
             $message = 'Unknonw mode "%s". Please use class constant "LIVE_MODE" or "TEST_MODE".';
 
-            throw new Exceptions\InvalidArgumentException(sprintf($message, $mode));
+            throw new ild78\Exceptions\InvalidArgumentException(sprintf($message, $mode));
         }
 
         $this->mode = $mode;
@@ -315,7 +318,7 @@ class Config
     /**
      * Update API port
      *
-     * @param integer $port New port
+     * @param integer $port New port.
      * @return self
      */
     public function setPort(int $port) : self
@@ -328,7 +331,7 @@ class Config
     /**
      * Update API version
      *
-     * @param integer $version New version
+     * @param integer $version New version.
      * @return self
      */
     public function setVersion(int $version) : self
