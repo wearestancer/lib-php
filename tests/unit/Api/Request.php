@@ -145,14 +145,30 @@ class Request extends atoum
                 ->and($config->setHttpClient($client))
 
                 ->if($object = new mock\ild78\Api\Object)
+                ->and($method = 'PUT')
+
+                ->if($logger = new mock\ild78\Api\Logger)
+                ->and($config->setLogger($logger))
+                ->and($infoMessage = vsprintf('API call : %s %s', [
+                    $method,
+                    $config->getUri() . $object->getEndpoint(),
+                ]))
+                ->and($noticeMessage = vsprintf('HTTP 401 - Invalid credential : %s', [
+                    $config->getKey(),
+                ]))
                 ->then
-                    ->exception(function () use ($object) {
-                        $this->testedInstance->request('PUT', $object);
+                    ->exception(function () use ($object, $method) {
+                        $this->testedInstance->request($method, $object);
                     })
                         ->isInstanceOf(ild78\Exceptions\NotAuthorizedException::class)
                         ->hasNestedException
                         ->message
                             ->isIdenticalTo('You are not authorized to access that resource')
+
+                    ->mock($logger)
+                        ->call('info')->withArguments($infoMessage, [])->once
+                        ->call('error')->never
+                        ->call('notice')->withArguments($noticeMessage, [])->once
 
             ->assert('Every Guzzle exceptions (except the ones below)')
                 ->given($content = file_get_contents(__DIR__ . '/../fixtures/auth/not-authorized.json'))
