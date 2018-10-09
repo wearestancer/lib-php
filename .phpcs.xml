@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<ruleset name="PHPCS ruleset">
+  <file>src/</file>
+  <exclude-pattern>tests/*</exclude-pattern>
+
+  <arg name="colors" />
+  <arg value="sp" />
+
+  <rule ref="PSR2" />
+  <rule ref="PSR12" />
+
+  <rule ref="Squiz">
+    <exclude name="Generic.Commenting.DocComment.ContentAfterOpen" />
+    <exclude name="Generic.Commenting.DocComment.ContentBeforeClose" />
+    <exclude name="Generic.Commenting.DocComment.MissingShort" />
+    <exclude name="Generic.Commenting.DocComment.NonParamGroup" />
+    <exclude name="Generic.Commenting.DocComment.TagValueIndent" />
+
+    <exclude name="Generic.Formatting.MultipleStatementAlignment.NotSame" />
+
+    <exclude name="Generic.PHP.LowerCaseType.ParamTypeFound" />
+
+    <exclude name="Squiz.Arrays.ArrayDeclaration.MultiLineNotAllowed" />
+
+    <exclude name="Squiz.Commenting.ClassComment.TagNotAllowed" />
+    <exclude name="Squiz.Commenting.ClosingDeclarationComment.Missing" />
+    <exclude name="Squiz.Commenting.FileComment.Missing" />
+    <exclude name="Squiz.Commenting.FunctionComment.SpacingAfterParamName" />
+    <exclude name="Squiz.Commenting.FunctionComment.SpacingAfterParamType" />
+    <exclude name="Squiz.Commenting.LongConditionClosingComment.Missing" />
+
+    <exclude name="Squiz.ControlStructures.ElseIfDeclaration.NotAllowed" />
+    <exclude name="Squiz.ControlStructures.InlineIfDeclaration.NoBrackets" />
+    <exclude name="Squiz.ControlStructures.SwitchDeclaration.BreakIndent" />
+
+    <exclude name="Squiz.Files.FileExtension.ClassFound" />
+
+    <exclude name="Squiz.Formatting.OperatorBracket.MissingBrackets" />
+
+    <exclude name="Squiz.PHP.DisallowInlineIf.Found" />
+
+    <exclude name="Squiz.Operators.ComparisonOperatorUsage.ImplicitTrue" />
+    <exclude name="Squiz.Operators.ComparisonOperatorUsage.NotAllowed" />
+
+    <exclude name="Squiz.WhiteSpace.FunctionClosingBraceSpace.SpacingBeforeClose" />
+    <exclude name="Squiz.WhiteSpace.MemberVarSpacing.FirstIncorrect" />
+  </rule>
+
+  <rule ref="Squiz.Strings.ConcatenationSpacing">
+    <properties>
+      <property name="spacing" value="1" /> <!-- echo $foo . $bar; instead of echo $foo.$bar; -->
+    </properties>
+  </rule>
+
+  <rule ref="Squiz.WhiteSpace.FunctionSpacing">
+    <properties>
+      <property name="spacing" value="1" /> <!-- One line before and after a function declaration -->
+      <property name="spacingBeforeFirst" value="0" /> <!-- Exception for the first one ... -->
+      <property name="spacingAfterLast" value="0" /> <!-- ... and last one -->
+    </properties>
+  </rule>
+</ruleset>
