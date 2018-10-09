@@ -172,21 +172,36 @@ class Request extends atoum
 
             ->assert('Every Guzzle exceptions (except the ones below)')
                 ->given($content = file_get_contents(__DIR__ . '/../fixtures/auth/not-authorized.json'))
-                ->and($response = new Exception())
+                ->and($exceptionMessage = uniqid())
+                ->and($response = new Exception($exceptionMessage))
                 ->and($mock = new GuzzleHttp\Handler\MockHandler([$response]))
                 ->and($handler = GuzzleHttp\HandlerStack::create($mock))
                 ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
                 ->and($config->setHttpClient($client))
 
                 ->if($object = new mock\ild78\Api\Object)
+                ->and($method = 'GET')
+
+                ->if($logger = new mock\ild78\Api\Logger)
+                ->and($config->setLogger($logger))
+                ->and($infoMessage = vsprintf('API call : %s %s', [
+                    $method,
+                    $config->getUri() . $object->getEndpoint(),
+                ]))
+                ->and($errorMessage = sprintf('Unknown error : %s', $exceptionMessage))
                 ->then
-                    ->exception(function () use ($object) {
-                        $this->testedInstance->request('GET', $object);
+                    ->exception(function () use ($object, $method) {
+                        $this->testedInstance->request($method, $object);
                     })
                         ->isInstanceOf(ild78\Exceptions\Exception::class)
                         ->hasNestedException
                         ->message
                             ->isIdenticalTo('Unknown error, may be a network error')
+
+                    ->mock($logger)
+                        ->call('info')->withArguments($infoMessage, [])->once
+                        ->call('error')->withArguments($errorMessage)->once
+                        ->call('notice')->never
         ;
 
         $errors = [
