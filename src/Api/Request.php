@@ -108,7 +108,7 @@ class Request
         }
 
         try {
-            $logger->info(sprintf('API call : %s %s', strtoupper($method), $config->getUri() . $endpoint));
+            $logger->debug(sprintf('API call : %s %s', strtoupper($method), $config->getUri() . $endpoint));
             $response = $client->request(strtoupper($method), $endpoint, $options);
 
         // HTTP 5**.

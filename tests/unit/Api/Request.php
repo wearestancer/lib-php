@@ -68,7 +68,7 @@ class Request extends atoum
 
                 ->if($logger = new mock\ild78\Api\Logger)
                 ->and($config->setLogger($logger))
-                ->and($infoMessage = 'API call : ' . $method . ' ' . $config->getUri() . $object->getEndpoint())
+                ->and($debugMessage = 'API call : ' . $method . ' ' . $config->getUri() . $object->getEndpoint())
                 ->then
                     ->string($this->testedInstance->request($method, $object))
                         ->isIdenticalTo($body)
@@ -77,7 +77,7 @@ class Request extends atoum
                             ->withIdenticalArguments($method, $object->getEndpoint())
                                 ->once
                     ->mock($logger)
-                        ->call('info')->withArguments($infoMessage, [])->once
+                        ->call('debug')->withArguments($debugMessage, [])->once
                         ->call('error')->never
                         ->call('notice')->never
 
@@ -97,7 +97,7 @@ class Request extends atoum
 
                 ->if($logger = new mock\ild78\Api\Logger)
                 ->and($config->setLogger($logger))
-                ->and($infoMessage = vsprintf('API call : %s %s', [
+                ->and($debugMessage = vsprintf('API call : %s %s', [
                     $method,
                     $config->getUri() . $object->getEndpoint() . '/' . $location,
                 ]))
@@ -109,7 +109,7 @@ class Request extends atoum
                             ->withIdenticalArguments($method, $object->getEndpoint() . '/' . $location)
                                 ->once
                     ->mock($logger)
-                        ->call('info')->withArguments($infoMessage, [])->once
+                        ->call('debug')->withArguments($debugMessage, [])->once
                         ->call('error')->never
                         ->call('notice')->never
 
@@ -132,7 +132,7 @@ class Request extends atoum
                             ->contains($method)
 
                     ->mock($logger)
-                        ->call('info')->never
+                        ->call('debug')->never
                         ->call('error')->withArguments($errorMessage)->once
                         ->call('notice')->never
 
@@ -149,7 +149,7 @@ class Request extends atoum
 
                 ->if($logger = new mock\ild78\Api\Logger)
                 ->and($config->setLogger($logger))
-                ->and($infoMessage = vsprintf('API call : %s %s', [
+                ->and($debugMessage = vsprintf('API call : %s %s', [
                     $method,
                     $config->getUri() . $object->getEndpoint(),
                 ]))
@@ -166,7 +166,7 @@ class Request extends atoum
                             ->isIdenticalTo('You are not authorized to access that resource')
 
                     ->mock($logger)
-                        ->call('info')->withArguments($infoMessage, [])->once
+                        ->call('debug')->withArguments($debugMessage, [])->once
                         ->call('error')->never
                         ->call('notice')->withArguments($noticeMessage, [])->once
 
@@ -184,7 +184,7 @@ class Request extends atoum
 
                 ->if($logger = new mock\ild78\Api\Logger)
                 ->and($config->setLogger($logger))
-                ->and($infoMessage = vsprintf('API call : %s %s', [
+                ->and($debugMessage = vsprintf('API call : %s %s', [
                     $method,
                     $config->getUri() . $object->getEndpoint(),
                 ]))
@@ -199,7 +199,7 @@ class Request extends atoum
                             ->isIdenticalTo('Unknown error, may be a network error')
 
                     ->mock($logger)
-                        ->call('info')->withArguments($infoMessage, [])->once
+                        ->call('debug')->withArguments($debugMessage, [])->once
                         ->call('error')->withArguments($errorMessage)->once
                         ->call('notice')->never
         ;
@@ -298,7 +298,7 @@ class Request extends atoum
 
                     ->if($logger = new mock\ild78\Api\Logger)
                     ->and($config->setLogger($logger))
-                    ->and($infoMessage = vsprintf('API call : %s %s', [
+                    ->and($debugMessage = vsprintf('API call : %s %s', [
                         $method,
                         $config->getUri() . $object->getEndpoint() . '/' . $location,
                     ]))
@@ -319,7 +319,7 @@ class Request extends atoum
                             ->hasNestedException
 
                         ->mock($logger)
-                            ->call('info')->withArguments($infoMessage, [])->once
+                            ->call('debug')->withArguments($debugMessage, [])->once
                             ->call($infos['logLevel'])->withArguments($logMessage)->once
             ;
         }
