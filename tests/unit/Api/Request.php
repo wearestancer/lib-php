@@ -193,62 +193,74 @@ class Request extends atoum
             310 => [
                 'expected' => ild78\Exceptions\TooManyRedirectsException::class,
                 'thrown' => GuzzleHttp\Exception\TooManyRedirectsException::class,
-                'message' => 'Too many redirect',
+                'message' => 'Too many redirection',
+                'logLevel' => 'critical',
             ],
             400 => [
                 'expected' => ild78\Exceptions\BadRequestException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
                 'message' => 'Bad request',
+                'logLevel' => 'critical',
             ],
             402 => [ // not handled
                 'expected' => ild78\Exceptions\ClientException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
-                'message' => 'Payment required',
+                'message' => 'Payment Required',
+                'logLevel' => 'error',
             ],
             403 => [ // not handled
                 'expected' => ild78\Exceptions\ClientException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
                 'message' => 'Forbidden',
+                'logLevel' => 'error',
             ],
             404 => [
                 'expected' => ild78\Exceptions\NotFoundException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
                 'message' => 'Not found',
+                'logLevel' => 'error',
             ],
             405 => [ // not handled
                 'expected' => ild78\Exceptions\ClientException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
                 'message' => 'Method Not Allowed',
+                'logLevel' => 'critical',
             ],
             406 => [ // not handled
                 'expected' => ild78\Exceptions\ClientException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
                 'message' => 'Not Acceptable',
+                'logLevel' => 'error',
             ],
             407 => [ // not handled
                 'expected' => ild78\Exceptions\ClientException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
                 'message' => 'Proxy Authentication Required',
+                'logLevel' => 'error',
             ],
             408 => [ // not handled
                 'expected' => ild78\Exceptions\ClientException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
                 'message' => 'Request Time-out',
+                'logLevel' => 'error',
             ],
             409 => [ // not handled
                 'expected' => ild78\Exceptions\ClientException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
                 'message' => 'Conflict',
+                'logLevel' => 'error',
             ],
             410 => [ // not handled
                 'expected' => ild78\Exceptions\ClientException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
                 'message' => 'Gone',
+                'logLevel' => 'error',
             ],
             500 => [
                 'expected' => ild78\Exceptions\ServerException::class,
                 'thrown' => GuzzleHttp\Exception\ServerException::class,
                 'message' => 'Internal Server Error',
+                'logLevel' => 'critical',
             ],
         ];
 
@@ -266,12 +278,34 @@ class Request extends atoum
                     ->and($config->setHttpClient($client))
 
                     ->if($object = new mock\ild78\Api\Object)
+                    ->and($method = 'GET')
+                    ->and($location = uniqid())
+
+                    ->if($logger = new mock\ild78\Api\Logger)
+                    ->and($config->setLogger($logger))
+                    ->and($infoMessage = vsprintf('API call : %s %s', [
+                        $method,
+                        $config->getUri() . $object->getEndpoint() . '/' . $location,
+                    ]))
+                    ->and($logMessage = sprintf('HTTP %d - %s', $code, $infos['message']))
+                    ->when(function () use ($object, $code, $location, &$logMessage) {
+                        if ($code === 404) {
+                            $logMessage .= vsprintf(' : Ressource "%s" unknown for %s', [
+                                $location,
+                                get_class($object),
+                            ]);
+                        }
+                    })
                     ->then
-                        ->exception(function () use ($object) {
-                            $this->testedInstance->request('GET', $object);
+                        ->exception(function () use ($object, $method, $location) {
+                            $this->testedInstance->request($method, $object, $location);
                         })
                             ->isInstanceOf($infos['expected'])
                             ->hasNestedException
+
+                        ->mock($logger)
+                            ->call('info')->withArguments($infoMessage, [])->once
+                            ->call($infos['logLevel'])->withArguments($logMessage)->once
             ;
         }
     }
