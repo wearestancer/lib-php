@@ -6,6 +6,7 @@ namespace ild78\Api;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use ild78;
+use Psr\Log\LoggerInterface;
 
 /**
  * Handle configuration, connection and credential to API
@@ -26,6 +27,9 @@ class Config
 
     /** @var string */
     protected $key;
+
+    /** @var Psr\\Log\\LoggerInterface */
+    protected $logger;
 
     /** @var string */
     protected $mode;
@@ -115,6 +119,16 @@ class Config
     public function getKey() : string
     {
         return $this->key;
+    }
+
+    /**
+     * Return a valid and PSR3 compatible logger instance
+     *
+     * @return Psr\\Log\\LoggerInterface
+     */
+    public function getLogger()
+    {
+        return $this->logger ?: new Logger();
     }
 
     /**
@@ -284,6 +298,19 @@ class Config
     public function setKey(string $key) : self
     {
         $this->key = $key;
+
+        return $this;
+    }
+
+    /**
+     * Update logger handler
+     *
+     * @param Psr\Log\LoggerInterface $logger A PSR3 compatible logger.
+     * @return self
+     */
+    public function setLogger(LoggerInterface $logger) : self
+    {
+        $this->logger = $logger;
 
         return $this;
     }
