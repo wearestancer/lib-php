@@ -19,6 +19,9 @@ class Sepa extends Api\Object
     /** @var string */
     protected $iban;
 
+    /** @var string */
+    protected $last4;
+
     /** @var string|null */
     protected $name;
 
@@ -32,6 +35,7 @@ class Sepa extends Api\Object
     {
         $forbidden = [
             'country',
+            'last4',
         ];
 
         return array_merge(parent::getForbiddenProperties(), $forbidden);
@@ -105,6 +109,7 @@ class Sepa extends Api\Object
 
         $this->country = $country;
         $this->iban = $iban;
+        $this->last4 = substr($iban, -4);
 
         return $this;
     }

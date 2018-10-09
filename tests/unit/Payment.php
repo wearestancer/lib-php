@@ -293,6 +293,9 @@ class Payment extends atoum
                 ->string($sepa->getBic())
                     ->isIdenticalTo('ILADFRPP')
 
+                ->string($sepa->getLast4())
+                    ->isIdenticalTo('2606')
+
                 ->string($sepa->getName())
                     ->isIdenticalTo('David Coaster')
         ;

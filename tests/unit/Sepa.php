@@ -44,6 +44,7 @@ class Sepa extends atoum
                     ->contains('endpoint') // from parent
                     ->contains('id') // from parent
                     ->contains('country')
+                    ->contains('last4')
         ;
     }
 
@@ -114,6 +115,7 @@ class Sepa extends atoum
                 ->and($validation = $bban . '1527' . '00') // 15 => F / 27 => R
                 ->and($check = sprintf('%02d', 98 - ($validation % 97)))
                 ->and($iban = $country . $check . $bban)
+                ->and($last = substr($bban, -4))
 
                 ->if($this->newTestedInstance)
                 ->then
@@ -123,6 +125,9 @@ class Sepa extends atoum
                     ->variable($this->testedInstance->getIban())
                         ->isNull
 
+                    ->variable($this->testedInstance->getLast4())
+                        ->isNull
+
                     ->object($this->testedInstance->setIban($iban))
                         ->isTestedInstance
 
@@ -131,9 +136,13 @@ class Sepa extends atoum
 
                     ->string($this->testedInstance->getIban())
                         ->isIdenticalTo($iban)
+
+                    ->string($this->testedInstance->getLast4())
+                        ->isIdenticalTo($last)
 
             ->assert('Add a valid BE IBAN from wikipedia')
                 ->given($iban = 'BE71096123456769')
+                ->and($last = '6769')
                 ->and($country = substr($iban, 0, 2))
                 ->and($this->newTestedInstance)
                 ->then
@@ -141,6 +150,9 @@ class Sepa extends atoum
                         ->isNull
 
                     ->variable($this->testedInstance->getIban())
+                        ->isNull
+
+                    ->variable($this->testedInstance->getLast4())
                         ->isNull
 
                     ->object($this->testedInstance->setIban($iban))
@@ -151,9 +163,13 @@ class Sepa extends atoum
 
                     ->string($this->testedInstance->getIban())
                         ->isIdenticalTo($iban)
+
+                    ->string($this->testedInstance->getLast4())
+                        ->isIdenticalTo($last)
 
             ->assert('Add a valid GB IBAN from wikipedia')
                 ->given($iban = 'GB82WEST12345698765432')
+                ->and($last = '5432')
                 ->and($country = substr($iban, 0, 2))
                 ->and($this->newTestedInstance)
                 ->then
@@ -161,6 +177,9 @@ class Sepa extends atoum
                         ->isNull
 
                     ->variable($this->testedInstance->getIban())
+                        ->isNull
+
+                    ->variable($this->testedInstance->getLast4())
                         ->isNull
 
                     ->object($this->testedInstance->setIban($iban))
@@ -172,8 +191,12 @@ class Sepa extends atoum
                     ->string($this->testedInstance->getIban())
                         ->isIdenticalTo($iban)
 
+                    ->string($this->testedInstance->getLast4())
+                        ->isIdenticalTo($last)
+
             ->assert('It should accept space for readeability')
                 ->given($iban = 'GR96 0810 0010 0000 0123 4567 890')
+                ->and($last = '7890')
                 ->and($country = substr($iban, 0, 2))
                 ->and($this->newTestedInstance)
                 ->then
@@ -181,6 +204,9 @@ class Sepa extends atoum
                         ->isNull
 
                     ->variable($this->testedInstance->getIban())
+                        ->isNull
+
+                    ->variable($this->testedInstance->getLast4())
                         ->isNull
 
                     ->object($this->testedInstance->setIban($iban))
@@ -191,6 +217,9 @@ class Sepa extends atoum
 
                     ->string($this->testedInstance->getIban())
                         ->isIdenticalTo(str_replace(' ', '', $iban))
+
+                    ->string($this->testedInstance->getLast4())
+                        ->isIdenticalTo($last)
 
             ->assert('Add an invalid IBAN')
                 ->given($iban = 'FR87BARC20658244971655')
