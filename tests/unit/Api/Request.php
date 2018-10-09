@@ -65,6 +65,10 @@ class Request extends atoum
                 ->if($this->newTestedInstance)
                 ->and($method = 'GET')
                 ->and($object = new mock\ild78\Api\Object)
+
+                ->if($logger = new mock\ild78\Api\Logger)
+                ->and($config->setLogger($logger))
+                ->and($infoMessage = 'API call : ' . $method . ' ' . $config->getUri() . $object->getEndpoint())
                 ->then
                     ->string($this->testedInstance->request($method, $object))
                         ->isIdenticalTo($body)
@@ -72,6 +76,10 @@ class Request extends atoum
                         ->call('request')
                             ->withIdenticalArguments($method, $object->getEndpoint())
                                 ->once
+                    ->mock($logger)
+                        ->call('info')->withArguments($infoMessage, [])->once
+                        ->call('error')->never
+                        ->call('notice')->never
 
             ->assert('Use test of GuzzleHttp\Client and location')
                 ->given($client = new mock\GuzzleHttp\Client)
@@ -86,6 +94,13 @@ class Request extends atoum
                 ->and($method = 'POST')
                 ->and($object = new mock\ild78\Api\Object)
                 ->and($location = uniqid())
+
+                ->if($logger = new mock\ild78\Api\Logger)
+                ->and($config->setLogger($logger))
+                ->and($infoMessage = vsprintf('API call : %s %s', [
+                    $method,
+                    $config->getUri() . $object->getEndpoint() . '/' . $location,
+                ]))
                 ->then
                     ->string($this->testedInstance->request($method, $object, $location))
                         ->isIdenticalTo($body)
@@ -93,6 +108,10 @@ class Request extends atoum
                         ->call('request')
                             ->withIdenticalArguments($method, $object->getEndpoint() . '/' . $location)
                                 ->once
+                    ->mock($logger)
+                        ->call('info')->withArguments($infoMessage, [])->once
+                        ->call('error')->never
+                        ->call('notice')->never
 
             ->assert('Unsupported method')
                 ->if($this->newTestedInstance)
