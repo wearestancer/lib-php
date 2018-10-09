@@ -19,6 +19,9 @@
         "atoum/stubs": "^2.6",
         "squizlabs/php_codesniffer": "^3.3"
     },
+    "suggest": {
+        "monolog/monolog": "Allows to log interaction with the API"
+    },
     "config": {
         "sort-packages": true
     }
