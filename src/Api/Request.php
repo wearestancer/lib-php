@@ -139,7 +139,7 @@ class Request
                 case 400:
                     $class = ild78\Exceptions\BadRequestException::class;
 
-                    $logger->critical('HTTP 400 - Bad request');
+                    $logger->critical('HTTP 400 - Bad Request');
                     break;
 
                 case 401:
@@ -152,7 +152,12 @@ class Request
 
                 case 404:
                     $class = ild78\Exceptions\NotFoundException::class;
-                    $message = sprintf('Ressource "%s" unknown for %s', $location, get_class($object));
+
+                    $tmp = get_class($object);
+                    $parts = explode('\\', $tmp);
+                    $ressource = end($parts);
+
+                    $message = sprintf('Ressource "%s" unknown for %s', $location, $ressource);
 
                     $logger->error(sprintf('HTTP 404 - Not found : %s', $message));
                     break;

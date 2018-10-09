@@ -214,7 +214,7 @@ class Request extends atoum
             400 => [
                 'expected' => ild78\Exceptions\BadRequestException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
-                'message' => 'Bad request',
+                'message' => 'Bad Request',
                 'logLevel' => 'critical',
             ],
             402 => [ // not handled
@@ -303,12 +303,22 @@ class Request extends atoum
                         $config->getUri() . $object->getEndpoint() . '/' . $location,
                     ]))
                     ->and($logMessage = sprintf('HTTP %d - %s', $code, $infos['message']))
-                    ->when(function () use ($object, $code, $location, &$logMessage) {
+                    ->when(function () use ($object, $code, $location, &$logMessage, &$infos) {
                         if ($code === 404) {
-                            $logMessage .= vsprintf(' : Ressource "%s" unknown for %s', [
+                            $tmp = get_class($object);
+                            $parts = explode('\\', $tmp);
+                            $class = end($parts);
+
+                            $infos['message'] = vsprintf('Ressource "%s" unknown for %s', [
                                 $location,
-                                get_class($object),
+                                $class,
                             ]);
+
+                            $logMessage .= ' : ' . $infos['message'];
+                        }
+
+                        if ($code === 500) {
+                            $infos['message'] = 'Servor error, please leave a minute to repair it and try again';
                         }
                     })
                     ->then
@@ -317,6 +327,8 @@ class Request extends atoum
                         })
                             ->isInstanceOf($infos['expected'])
                             ->hasNestedException
+                            ->message
+                                ->contains($infos['message'])
 
                         ->mock($logger)
                             ->call('debug')->withArguments($debugMessage, [])->once
