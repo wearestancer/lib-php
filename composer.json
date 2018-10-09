@@ -16,7 +16,8 @@
     },
     "require": {
         "php": ">=7.1.0",
-        "guzzlehttp/guzzle": "^6.3"
+        "guzzlehttp/guzzle": "^6.3",
+        "psr/log": "^1.0"
     },
     "require-dev": {
         "atoum/atoum": "^3.3",
@@ -24,6 +25,9 @@
         "atoum/json-schema-extension": "^2.1",
         "atoum/stubs": "^2.6",
         "squizlabs/php_codesniffer": "^3.3"
+    },
+    "suggest": {
+        "monolog/monolog": "Allows to log interaction with the API"
     },
     "config": {
         "sort-packages": true

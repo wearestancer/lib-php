@@ -3,10 +3,12 @@
 namespace ild78\tests\unit\Api;
 
 use atoum;
+use ild78;
 use ild78\Api\Config as testedClass;
 use ild78\Exceptions\InvalidArgumentException;
 use ild78\Exceptions\NotAuthorizedException;
 use mock;
+use Psr;
 
 class Config extends atoum
 {
@@ -18,6 +20,26 @@ class Config extends atoum
             ->then
                 ->string($this->testedInstance->getKey())
                     ->isIdenticalTo($key)
+        ;
+    }
+
+    public function testGetGlobal_SetGlobal()
+    {
+        $this
+            ->exception(function () {
+                testedClass::getGlobal();
+            })
+                ->isInstanceOf(InvalidArgumentException::class)
+                ->message
+                    ->contains('You need to provide API credential')
+
+            ->if($this->newTestedInstance(uniqid()))
+            ->then
+                ->object(testedClass::setGlobal($this->testedInstance))
+                    ->isTestedInstance
+
+                ->object(testedClass::getGlobal())
+                    ->isTestedInstance
         ;
     }
 
@@ -55,26 +77,6 @@ class Config extends atoum
         ;
     }
 
-    public function testGetGlobal_SetGlobal()
-    {
-        $this
-            ->exception(function () {
-                testedClass::getGlobal();
-            })
-                ->isInstanceOf(InvalidArgumentException::class)
-                ->message
-                    ->contains('You need to provide API credential')
-
-            ->if($this->newTestedInstance(uniqid()))
-            ->then
-                ->object(testedClass::setGlobal($this->testedInstance))
-                    ->isTestedInstance
-
-                ->object(testedClass::getGlobal())
-                    ->isTestedInstance
-        ;
-    }
-
     public function testGetKey_SetKey()
     {
         $this
@@ -90,6 +92,23 @@ class Config extends atoum
 
                 ->string($this->testedInstance->getKey())
                     ->isIdenticalTo($key2)
+        ;
+    }
+
+    public function testGetLogger_SetLogger()
+    {
+        $this
+            ->given($this->newTestedInstance(uniqid()))
+            ->and($mock = new mock\Psr\Log\LoggerInterface)
+            ->then
+                ->object($this->testedInstance->getLogger())
+                    ->isInstanceOf(ild78\Api\Logger::class)
+
+                ->object($this->testedInstance->setLogger($mock))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getLogger())
+                    ->isIdenticalTo($mock)
         ;
     }
 

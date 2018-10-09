@@ -79,6 +79,10 @@ class Request
      */
     public function request(string $method, Object $object, string $location = null, array $options = []) : string
     {
+        $config = Config::getGlobal();
+        $client = $config->getHttpClient();
+        $logger = $config->getLogger();
+
         $allowedMethods = [
             static::GET,
             static::POST,
@@ -86,11 +90,10 @@ class Request
         ];
 
         if (!in_array(strtoupper($method), $allowedMethods, true)) {
+            $logger->error(sprintf('Unknown HTTP verb "%s"', $method));
+
             throw new ild78\Exceptions\InvalidArgumentException(sprintf('Method "%s" unsupported', $method));
         }
-
-        $config = Config::getGlobal();
-        $client = $config->getHttpClient();
 
         if (!array_key_exists('headers', $options)) {
             $options['headers'] = [];
@@ -105,15 +108,20 @@ class Request
         }
 
         try {
+            $logger->info(sprintf('API call : %s %s', strtoupper($method), $config->getUri() . $endpoint));
             $response = $client->request(strtoupper($method), $endpoint, $options);
 
         // HTTP 5**.
         } catch (GuzzleHttp\Exception\ServerException $exception) {
+            $logger->critical('HTTP 500 - Internal Server Error');
+
             $message = 'Servor error, please leave a minute to repair it and try again';
             throw new ild78\Exceptions\ServerException($message, 0, $exception);
 
         // Too many redirection.
         } catch (GuzzleHttp\Exception\TooManyRedirectsException $exception) {
+            $logger->critical('HTTP 310 - Too many redirection');
+
             throw new ild78\Exceptions\TooManyRedirectsException('Too many redirection', 0, $exception);
 
         // HTTP 4**.
@@ -130,21 +138,31 @@ class Request
             switch ($response->getStatusCode()) {
                 case 400:
                     $class = ild78\Exceptions\BadRequestException::class;
+
+                    $logger->critical('HTTP 400 - Bad request');
                     break;
 
                 case 401:
                     $body = json_decode((string) $response->getBody());
                     $class = ild78\Exceptions\NotAuthorizedException::class;
                     $message = $body->error->message;
+
+                    $logger->notice(sprintf('HTTP 401 - Invalid credential : %s', $config->getKey()));
                     break;
 
                 case 404:
                     $class = ild78\Exceptions\NotFoundException::class;
-                    $message = sprintf('Ressource "%s" unknonw for %s', $location, get_class($object));
+                    $message = sprintf('Ressource "%s" unknown for %s', $location, get_class($object));
+
+                    $logger->error(sprintf('HTTP 404 - Not found : %s', $message));
+                    break;
+
+                case 405:
+                    $logger->critical('HTTP ' . $message);
                     break;
 
                 default:
-                    // Useless, it's just for PHPCS.
+                    $logger->error('HTTP ' . $message);
                     break;
             }
 
@@ -152,6 +170,8 @@ class Request
 
         // Others exceptions ...
         } catch (Exception $exception) {
+            $logger->error(sprintf('Unknown error : %s', $exception->getMessage()));
+
             throw new ild78\Exceptions\Exception('Unknown error, may be a network error', 0, $exception);
         }
 

@@ -6,6 +6,7 @@ namespace ild78\Api;
 use GuzzleHttp\Client;
 use GuzzleHttp\ClientInterface;
 use ild78;
+use Psr\Log\LoggerInterface;
 
 /**
  * Handle configuration, connection and credential to API
@@ -15,17 +16,20 @@ class Config
     const LIVE_MODE = 'live';
     const TEST_MODE = 'test';
 
-    /** @var self */
-    protected static $instance;
-
     /** @var string */
     protected $host = 'api.iliad78.net';
 
     /** @var GuzzleHttp\ClientInterface */
     protected $httpClient;
 
+    /** @var self */
+    protected static $instance;
+
     /** @var string */
     protected $key;
+
+    /** @var Psr\\Log\\LoggerInterface */
+    protected $logger;
 
     /** @var string */
     protected $mode;
@@ -49,6 +53,24 @@ class Config
     public function __construct(string $key)
     {
         $this->setKey($key);
+    }
+
+    /**
+     * Return current instance
+     *
+     * This is used to prevent passing an API instance on everycall.
+     * `Api::setGlobal()` is called on every new instance to simplify your workflow.
+     *
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When no previous instance was stored (use `Config::init()`).
+     */
+    public static function getGlobal() : self
+    {
+        if (static::$instance instanceof static) {
+            return static::$instance;
+        }
+
+        throw new ild78\Exceptions\InvalidArgumentException('You need to provide API credential.');
     }
 
     /**
@@ -88,24 +110,6 @@ class Config
     }
 
     /**
-     * Return current instance
-     *
-     * This is used to prevent passing an API instance on everycall.
-     * `Api::setGlobal()` is called on every new instance to simplify your workflow.
-     *
-     * @return self
-     * @throws ild78\Exceptions\InvalidArgumentException When no previous instance was stored (use `Config::init()`).
-     */
-    public static function getGlobal() : self
-    {
-        if (static::$instance instanceof static) {
-            return static::$instance;
-        }
-
-        throw new ild78\Exceptions\InvalidArgumentException('You need to provide API credential.');
-    }
-
-    /**
      * Return API key
      *
      * Default : ''
@@ -115,6 +119,16 @@ class Config
     public function getKey() : string
     {
         return $this->key;
+    }
+
+    /**
+     * Return a valid and PSR3 compatible logger instance
+     *
+     * @return Psr\\Log\\LoggerInterface
+     */
+    public function getLogger()
+    {
+        return $this->logger ?: new Logger();
     }
 
     /**
@@ -237,6 +251,19 @@ class Config
     }
 
     /**
+     * Register a configuration for deferred API call
+     *
+     * @param self $instance Current API instance.
+     * @return self
+     */
+    public static function setGlobal(self $instance) : self
+    {
+        static::$instance = $instance;
+
+        return $instance;
+    }
+
+    /**
      * Update API host
      *
      * @param string $host New host.
@@ -263,19 +290,6 @@ class Config
     }
 
     /**
-     * Register a configuration for deferred API call
-     *
-     * @param self $instance Current API instance.
-     * @return self
-     */
-    public static function setGlobal(self $instance) : self
-    {
-        static::$instance = $instance;
-
-        return $instance;
-    }
-
-    /**
      * Update API key
      *
      * @param string $key New key.
@@ -284,6 +298,19 @@ class Config
     public function setKey(string $key) : self
     {
         $this->key = $key;
+
+        return $this;
+    }
+
+    /**
+     * Update logger handler
+     *
+     * @param Psr\Log\LoggerInterface $logger A PSR3 compatible logger.
+     * @return self
+     */
+    public function setLogger(LoggerInterface $logger) : self
+    {
+        $this->logger = $logger;
 
         return $this;
     }
