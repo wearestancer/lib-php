@@ -15,14 +15,14 @@ class Config
     const LIVE_MODE = 'live';
     const TEST_MODE = 'test';
 
-    /** @var self */
-    protected static $instance;
-
     /** @var string */
     protected $host = 'api.iliad78.net';
 
     /** @var GuzzleHttp\ClientInterface */
     protected $httpClient;
+
+    /** @var self */
+    protected static $instance;
 
     /** @var string */
     protected $key;
@@ -49,6 +49,24 @@ class Config
     public function __construct(string $key)
     {
         $this->setKey($key);
+    }
+
+    /**
+     * Return current instance
+     *
+     * This is used to prevent passing an API instance on everycall.
+     * `Api::setGlobal()` is called on every new instance to simplify your workflow.
+     *
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When no previous instance was stored (use `Config::init()`).
+     */
+    public static function getGlobal() : self
+    {
+        if (static::$instance instanceof static) {
+            return static::$instance;
+        }
+
+        throw new ild78\Exceptions\InvalidArgumentException('You need to provide API credential.');
     }
 
     /**
@@ -85,24 +103,6 @@ class Config
         $this->setHttpClient($client);
 
         return $client;
-    }
-
-    /**
-     * Return current instance
-     *
-     * This is used to prevent passing an API instance on everycall.
-     * `Api::setGlobal()` is called on every new instance to simplify your workflow.
-     *
-     * @return self
-     * @throws ild78\Exceptions\InvalidArgumentException When no previous instance was stored (use `Config::init()`).
-     */
-    public static function getGlobal() : self
-    {
-        if (static::$instance instanceof static) {
-            return static::$instance;
-        }
-
-        throw new ild78\Exceptions\InvalidArgumentException('You need to provide API credential.');
     }
 
     /**
@@ -237,6 +237,19 @@ class Config
     }
 
     /**
+     * Register a configuration for deferred API call
+     *
+     * @param self $instance Current API instance.
+     * @return self
+     */
+    public static function setGlobal(self $instance) : self
+    {
+        static::$instance = $instance;
+
+        return $instance;
+    }
+
+    /**
      * Update API host
      *
      * @param string $host New host.
@@ -260,19 +273,6 @@ class Config
         $this->httpClient = $client;
 
         return $this;
-    }
-
-    /**
-     * Register a configuration for deferred API call
-     *
-     * @param self $instance Current API instance.
-     * @return self
-     */
-    public static function setGlobal(self $instance) : self
-    {
-        static::$instance = $instance;
-
-        return $instance;
     }
 
     /**

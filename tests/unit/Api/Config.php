@@ -21,6 +21,26 @@ class Config extends atoum
         ;
     }
 
+    public function testGetGlobal_SetGlobal()
+    {
+        $this
+            ->exception(function () {
+                testedClass::getGlobal();
+            })
+                ->isInstanceOf(InvalidArgumentException::class)
+                ->message
+                    ->contains('You need to provide API credential')
+
+            ->if($this->newTestedInstance(uniqid()))
+            ->then
+                ->object(testedClass::setGlobal($this->testedInstance))
+                    ->isTestedInstance
+
+                ->object(testedClass::getGlobal())
+                    ->isTestedInstance
+        ;
+    }
+
     public function testGetHost_SetHost()
     {
         $this
@@ -52,26 +72,6 @@ class Config extends atoum
 
                 ->object($this->testedInstance->getHttpClient())
                     ->isIdenticalTo($mock)
-        ;
-    }
-
-    public function testGetGlobal_SetGlobal()
-    {
-        $this
-            ->exception(function () {
-                testedClass::getGlobal();
-            })
-                ->isInstanceOf(InvalidArgumentException::class)
-                ->message
-                    ->contains('You need to provide API credential')
-
-            ->if($this->newTestedInstance(uniqid()))
-            ->then
-                ->object(testedClass::setGlobal($this->testedInstance))
-                    ->isTestedInstance
-
-                ->object(testedClass::getGlobal())
-                    ->isTestedInstance
         ;
     }
 
