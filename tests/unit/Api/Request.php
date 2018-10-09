@@ -117,6 +117,12 @@ class Request extends atoum
                 ->if($this->newTestedInstance)
                 ->and($object = new mock\ild78\Api\Object)
                 ->and($method = uniqid())
+
+                ->if($logger = new mock\ild78\Api\Logger)
+                ->and($config->setLogger($logger))
+                ->and($errorMessage = vsprintf('Unknown HTTP verb "%s"', [
+                    $method,
+                ]))
                 ->then
                     ->exception(function () use ($method, $object) {
                         $this->testedInstance->request($method, $object);
@@ -124,6 +130,11 @@ class Request extends atoum
                         ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
                         ->message
                             ->contains($method)
+
+                    ->mock($logger)
+                        ->call('info')->never
+                        ->call('error')->withArguments($errorMessage)->once
+                        ->call('notice')->never
 
             ->assert('With bad credential')
                 ->given($content = file_get_contents(__DIR__ . '/../fixtures/auth/not-authorized.json'))
