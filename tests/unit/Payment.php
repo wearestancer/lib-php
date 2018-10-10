@@ -11,7 +11,7 @@ use GuzzleHttp\Psr7\Response;
 use ild78\Api;
 use ild78\Card;
 use ild78\Customer;
-use ild78\Exceptions\NotFoundException;
+use ild78\Exceptions;
 use ild78\Payment as testedClass;
 use ild78\Sepa;
 use mock;
@@ -113,7 +113,7 @@ class Payment extends atoum
                     ->exception(function () use ($id) {
                         $this->newTestedInstance($id);
                     })
-                        ->isInstanceOf(NotFoundException::class)
+                        ->isInstanceOf(Exceptions\NotFoundException::class)
                         ->hasNestedException
                         ->message
                             ->contains($id)
@@ -312,6 +312,41 @@ class Payment extends atoum
 
                 ->string($sepa->getName())
                     ->isIdenticalTo('David Coaster')
+        ;
+    }
+
+    public function testSetAmount()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->assert('0 is not a valid amount')
+                    ->exception(function () {
+                        $this->testedInstance->setAmount(0);
+                    })
+                        ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo('Amount must be greater than or equal to 50')
+
+                ->assert('49 is not a valid amount')
+                    ->exception(function () {
+                        $this->testedInstance->setAmount(49);
+                    })
+                        ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo('Amount must be greater than or equal to 50')
+
+                ->assert('50 is valid')
+                    ->object($this->testedInstance->setAmount(50))
+                        ->isTestedInstance
+                    ->integer($this->testedInstance->getAmount())
+                        ->isEqualTo(50)
+
+                ->assert('random value')
+                    ->object($this->testedInstance->setAmount($amount = rand(50, 999999)))
+                        ->isTestedInstance
+                    ->integer($this->testedInstance->getAmount())
+                        ->isEqualTo($amount)
         ;
     }
 }

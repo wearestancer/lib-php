@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace ild78;
 
+use ild78;
+
 /**
  * Representation of a payment
  *
@@ -87,6 +89,26 @@ class Payment extends Api\Object
         }
 
         Api\Config::getGlobal()->getLogger()->info($message);
+
+        return $this;
+    }
+
+    /**
+     * Set a transaction amount.
+     *
+     * The amount need to be in cents, aka 10€ => 1000 or $123.45 => 12345, and must be greater than or equal to 50.
+     *
+     * @param integer $amount The amount (in cents).
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When the amount is less than 50.
+     */
+    public function setAmount(int $amount) : self
+    {
+        if ($amount < 50) {
+            throw new ild78\Exceptions\InvalidArgumentException('Amount must be greater than or equal to 50');
+        }
+
+        $this->amount = $amount;
 
         return $this;
     }
