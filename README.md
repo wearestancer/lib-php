@@ -99,6 +99,22 @@ You can see other exceptions, not related to HTTP traffic :
 For these two exceptions, you need to check you code, they should never appear in real world.
 
 
+### Logger
+
+You can add a [PSR3 compatible logger](https://www.php-fig.org/psr/psr-3/).
+
+We suggeset [monolog](https://seldaek.github.io/monolog/) but anything implementing
+(log interfaces)[https://github.com/php-fig/log] can be use.
+
+```php
+<?php
+$log = new Monolog\Logger('ild78');
+$log->pushHandler(new Monolog\Handler\StreamHandler('path/to/your.log', Monolog\Logger::INFO));
+
+$config->setLogger($logger);
+```
+
+
 ## Security
 
 * Never, never, NEVER register a card or a bank account number in your database.
