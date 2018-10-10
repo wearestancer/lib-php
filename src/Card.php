@@ -38,6 +38,17 @@ class Card extends Api\Object
     protected $zipCode;
 
     /**
+     * Alias for `self::getExpMonth()`
+     *
+     * @see self::getExpMonth() Return the expiration month.
+     * @return integer|null
+     */
+    public function getExpirationMonth()
+    {
+        return $this->getExpMonth();
+    }
+
+    /**
      * Return an array of properties not allowed to change with a setter
      *
      * @see self::__call()
@@ -50,6 +61,36 @@ class Card extends Api\Object
         ];
 
         return array_merge(parent::getForbiddenProperties(), $forbidden);
+    }
+
+    /**
+     * Alias for `self::setExpMonth()`
+     *
+     * @see self::setExpMonth() Return the expiration month.
+     * @param integer $month The expiration month.
+     * @return self
+     */
+    public function setExpirationMonth(int $month) : self
+    {
+        return $this->setExpMonth($month);
+    }
+
+    /**
+     * Return the expiration month.
+     *
+     * @param integer $month The expiration month.
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When expiration is invalid (not between 1 and 12).
+     */
+    public function setExpMonth(int $month) : self
+    {
+        if ($month < 1 || $month > 12) {
+            throw new ild78\Exceptions\InvalidArgumentException(sprintf('Invalid expiration month "%d"', $month));
+        }
+
+        $this->expMonth = $month;
+
+        return $this;
     }
 
     /**

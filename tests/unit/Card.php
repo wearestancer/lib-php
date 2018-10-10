@@ -83,6 +83,57 @@ class Card extends atoum
         ;
     }
 
+    public function testGetExpMonth_SetExpMonth()
+    {
+        foreach (range(1, 12) as $month) {
+            $this
+                ->assert('Test month ' . $month)
+                    ->given($this->newTestedInstance)
+                    ->then
+                        ->variable($this->testedInstance->getExpMonth())
+                            ->isNull
+
+                        ->object($this->testedInstance->setExpMonth($month))
+                            ->isTestedInstance
+
+                        ->integer($this->testedInstance->getExpMonth())
+                            ->isIdenticalTo($month)
+
+                ->assert('Test month ' . $month . ' : alias')
+                    ->given($this->newTestedInstance)
+                    ->then
+                        ->variable($this->testedInstance->getExpirationMonth())
+                            ->isNull
+
+                        ->object($this->testedInstance->setExpirationMonth($month))
+                            ->isTestedInstance
+
+                        ->integer($this->testedInstance->getExpirationMonth())
+                            ->isIdenticalTo($month)
+            ;
+        }
+
+        $months = [0, 13];
+
+        for ($index = 0; $index < rand(1, 10) ; $index ++) {
+            $months[] = rand(14, 100);
+        }
+
+        foreach ($months as $month) {
+            $this
+                ->assert($month . ' is not a valid month')
+                    ->given($this->newTestedInstance)
+                    ->then
+                        ->exception(function () use ($month) {
+                            $this->testedInstance->setExpMonth($month);
+                        })
+                            ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                            ->message
+                                ->isIdenticalTo('Invalid expiration month "' . $month . '"')
+            ;
+        }
+    }
+
     public function testGetForbiddenProperties()
     {
         $this
