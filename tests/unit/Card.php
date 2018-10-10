@@ -3,6 +3,7 @@
 namespace ild78\tests\unit;
 
 use atoum;
+use DateTime;
 use ild78\Api;
 use ild78\Card as testedClass;
 use ild78\Exceptions;
@@ -80,6 +81,55 @@ class Card extends atoum
         $this
             ->class(testedClass::class)
                 ->isSubclassOf(Api\Object::class)
+        ;
+    }
+
+    public function testGetExpDate()
+    {
+        $this
+            ->assert('Month and year already set')
+                ->given($this->newTestedInstance)
+                ->and($month = rand(1, 12))
+                ->and($year = date('Y') + rand(0, 10))
+                ->and($this->testedInstance->setExpirationMonth($month))
+                ->and($this->testedInstance->setExpirationYear($year))
+
+                ->if($date = new DateTime($year . '-' . $month . '-01T23:59:59'))
+                ->and($date->modify('last day of'))
+                ->then
+                    ->dateTime($this->testedInstance->getExpDate())
+                        ->hasYear($year)
+                        ->hasMonth($month)
+                        ->isEqualTo($date)
+
+                    ->dateTime($this->testedInstance->getExpirationDate()) // alias
+                        ->isEqualTo($date)
+
+            ->assert('Month not set')
+                ->given($this->newTestedInstance)
+                ->and($year = date('Y') + rand(0, 10))
+                ->and($this->testedInstance->setExpirationYear($year))
+
+                ->then
+                    ->exception(function () {
+                        $this->testedInstance->getExpDate();
+                    })
+                        ->isInstanceOf(Exceptions\RangeException::class)
+                        ->message
+                            ->isIdenticalTo('You must set an expiration month before asking for a date.')
+
+            ->assert('Year not set')
+                ->given($this->newTestedInstance)
+                ->and($month = rand(1, 12))
+                ->and($this->testedInstance->setExpirationMonth($month))
+
+                ->then
+                    ->exception(function () {
+                        $this->testedInstance->getExpDate();
+                    })
+                        ->isInstanceOf(Exceptions\RangeException::class)
+                        ->message
+                            ->isIdenticalTo('You must set an expiration year before asking for a date.')
         ;
     }
 

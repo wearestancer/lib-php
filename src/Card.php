@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace ild78;
 
+use DateInterval;
+use DateTime;
 use ild78;
 
 /**
@@ -36,6 +38,49 @@ class Card extends Api\Object
 
     /** @var string|null */
     protected $zipCode;
+
+    /**
+     * Return the expiration date.
+     *
+     * The DateTime object is at last second of the last day in the expiration month.
+     *
+     * @return DateTime
+     * @throws ild78\Exceptions\RangeException When month or year is not set.
+     */
+    public function getExpDate() : DateTime
+    {
+        $month = $this->getExpMonth();
+        $year = $this->getExpYear();
+
+        if (!$month) {
+            throw new ild78\Exceptions\RangeException('You must set an expiration month before asking for a date.');
+        }
+
+        if (!$year) {
+            throw new ild78\Exceptions\RangeException('You must set an expiration year before asking for a date.');
+        }
+
+        $date = new DateTime(sprintf('%d-%d-01', $year, $month));
+
+        $oneMonth = new DateInterval('P1M');
+        $date->add($oneMonth);
+
+        $oneSecond = new DateInterval('PT1S');
+        $date->sub($oneSecond);
+
+        return $date;
+    }
+
+    /**
+     * Alias for `self::getExpDate()`
+     *
+     * @see self::getExpDate() Return the expiration date.
+     * @return DateTime
+     */
+    public function getExpirationDate() : DateTime
+    {
+        return $this->getExpDate();
+    }
 
     /**
      * Alias for `self::getExpMonth()`
