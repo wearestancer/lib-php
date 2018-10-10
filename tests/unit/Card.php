@@ -5,9 +5,76 @@ namespace ild78\tests\unit;
 use atoum;
 use ild78\Api;
 use ild78\Card as testedClass;
+use ild78\Exceptions;
 
 class Card extends atoum
 {
+    public function cardNumberDataProvider()
+    {
+        // Card number found on https://www.freeformatter.com/credit-card-number-generator-validator.html
+        return [
+            // VISA
+            4532160583905253,
+            4103344114503410,
+            4716929813250776300,
+
+            // MasterCard
+            5312580044202748,
+            2720995588028031,
+            5217849688268117,
+
+            // American Express (AMEX)
+            370301138747716,
+            340563568138644,
+            371461161518951,
+
+            // Discover
+            6011651456571367,
+            6011170656779399,
+            6011693048292929421,
+
+            // JCB
+            3532433013111566,
+            3544337258139297,
+            3535502591342895821,
+
+            // Diners Club - North America
+            5480649643931654,
+            5519243149714783,
+            5509141180527803,
+
+            // Diners Club - Carte Blanche
+            30267133988393,
+            30089013015810,
+            30109478108973,
+
+            // Diners Club - International
+            36052879958170,
+            36049904526204,
+            36768208048819,
+
+            // Maestro
+            5893433915020244,
+            6759761854174320,
+            6759998953884124,
+
+            // Visa Electron
+            4026291468019846,
+            4844059039871494,
+            4913054050962393,
+
+            // InstaPayment
+            6385037148943057,
+            6380659492219803,
+            6381454097795863,
+
+            // Classic one
+            4111111111111111,
+            4242424242424242,
+            4444333322221111,
+        ];
+    }
+
     public function testClass()
     {
         $this
@@ -29,27 +96,41 @@ class Card extends atoum
         ;
     }
 
-    public function testSetNumber()
+    /**
+     * @dataProvider cardNumberDataProvider
+     */
+    public function testSetNumber($number)
     {
         $this
-            ->given($this->newTestedInstance)
-            ->and($number = rand(pow(10, 15), pow(10, 16) - 1))
-            ->and($last = substr((string) $number, -4))
-            ->then
-                ->variable($this->testedInstance->getNumber())
-                    ->isNull
+            ->assert('Accept valid card')
+                ->given($this->newTestedInstance)
+                ->and($last = substr((string) $number, -4))
+                ->then
+                    ->variable($this->testedInstance->getNumber())
+                        ->isNull
 
-                ->variable($this->testedInstance->getLast4())
-                    ->isNull
+                    ->variable($this->testedInstance->getLast4())
+                        ->isNull
 
-                ->object($this->testedInstance->setNumber($number))
-                    ->isTestedInstance
+                    ->object($this->testedInstance->setNumber($number))
+                        ->isTestedInstance
 
-                ->integer($this->testedInstance->getNumber())
-                    ->isIdenticalTo($number)
+                    ->integer($this->testedInstance->getNumber())
+                        ->isIdenticalTo($number)
 
-                ->string($this->testedInstance->getLast4())
-                    ->isIdenticalTo($last)
+                    ->string($this->testedInstance->getLast4())
+                        ->isIdenticalTo($last)
+
+            ->assert('Throw exception if invalid')
+                ->given($this->newTestedInstance)
+                ->and($badNumber = $number + 1)
+                ->then
+                    ->exception(function () use ($badNumber) {
+                        $this->testedInstance->setNumber($badNumber);
+                    })
+                        ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo('"' . $badNumber . '" is not a valid credit card number.')
         ;
     }
 }

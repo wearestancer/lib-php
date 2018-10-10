@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace ild78;
 
+use ild78;
+
 /**
  * Representation of a card
  */
@@ -55,9 +57,34 @@ class Card extends Api\Object
      *
      * @param integer $number A valid card number.
      * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When the card number is invalid.
      */
     public function setNumber(int $number) : self
     {
+        $parts = str_split((string) $number);
+        $reversed = array_reverse($parts);
+        $sum = 0;
+
+        $manip = function ($n, $index) use (&$sum) {
+            if ($index % 2) {
+                $n *= 2;
+
+                if ($n > 9) {
+                    $n -= 9;
+                }
+            }
+
+            $sum += $n;
+        };
+
+        array_walk($reversed, $manip);
+
+        if ($sum % 10) {
+            $message = sprintf('"%s" is not a valid credit card number.', $number);
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
         $this->last4 = substr((string) $number, -4);
         $this->number = $number;
 
