@@ -25,7 +25,7 @@ All you need is a valid API key.
 ```php
 <?php
 
-$key = ''
+$key = '';
 
 ild78\Api\Config::init($key);
 
@@ -38,7 +38,7 @@ $card->setName('John Doe');
 
 $payment = new ild78\Payment;
 $payment->setCard($card);
-$payment->setAmmount(1000); // You must put an integer, here we wanted USD$10
+$payment->setAmmount(1000); // You must put an integer, here we wanted USD$10.00
 $payment->setCurrency('USD');
 $payment->description('My first payment');
 $payment->save();
