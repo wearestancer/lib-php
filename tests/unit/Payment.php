@@ -398,4 +398,37 @@ class Payment extends atoum
                             ->contains($upper)
         ;
     }
+
+    public function testSetDescription()
+    {
+        $this->newTestedInstance;
+        $description = '';
+
+        for ($idx = 0; $idx < 70; $idx++) {
+            $length = strlen($description);
+
+            if ($length < 3 || $length > 64) {
+                $this
+                    ->assert($length . ' characters => Not valid')
+                        ->exception(function () use ($description) {
+                            $this->testedInstance->setDescription($description);
+                        })
+                            ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                            ->message
+                                ->isIdenticalTo('A valid description must be between 3 and 64 characters')
+                ;
+            } else {
+                $this
+                    ->assert($length . ' characters => Valid')
+                        ->object($this->testedInstance->setDescription($description))
+                            ->isTestedInstance
+
+                        ->string($this->testedInstance->getDescription())
+                            ->isIdenticalTo($description)
+                ;
+            }
+
+            $description .= chr(rand(65, 90));
+        }
+    }
 }

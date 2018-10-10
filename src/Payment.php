@@ -117,6 +117,30 @@ class Payment extends Api\Object
     }
 
     /**
+     * Set a description
+     *
+     * A valid description must be between 3 and 64 characters.
+     *
+     * @param string $description A description.
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When the description is not between 3 and 64 characters.
+     */
+    public function setDescription(string $description) : self
+    {
+        $length = strlen($description);
+
+        if ($length < 3 || $length > 64) {
+            $message = 'A valid description must be between 3 and 64 characters';
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
      * Set the currency.
      *
      * @param string $currency The currency, must one in the following : EUR, USD, GBP.
