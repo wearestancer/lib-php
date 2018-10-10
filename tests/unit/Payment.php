@@ -147,7 +147,7 @@ class Payment extends atoum
             ->and($card->setExpMonth(rand(1, 12)))
             ->and($card->setExpYear(rand(2000, 3000)))
             ->and($card->setName(uniqid()))
-            ->and($card->setNumber($number = rand(0, PHP_INT_MAX)))
+            ->and($card->setNumber($number = 4111111111111111))
             ->and($card->setZipCode(uniqid()))
 
             ->if($this->newTestedInstance)
