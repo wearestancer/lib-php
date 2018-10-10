@@ -157,6 +157,10 @@ class Payment extends atoum
             ->and($this->testedInstance->setDescription(uniqid()))
             ->and($this->testedInstance->setOrderId(uniqid()))
 
+            ->if($logger = new mock\ild78\Api\Logger)
+            ->and($config->setLogger($logger))
+            ->and($logMessage = 'Payment of 1.00 eur with mastercard "4444"')
+
             ->and($json = json_encode($this->testedInstance))
             ->and($options = [
                 'body' => $json,
@@ -172,6 +176,9 @@ class Payment extends atoum
                     ->call('request')
                         ->withArguments('POST', $this->testedInstance->getEndpoint(), $options)
                             ->once
+
+                ->mock($logger)
+                    ->call('info')->withArguments($logMessage)->once
 
                 // Payment object
                 ->string($this->testedInstance->getId())
@@ -248,6 +255,10 @@ class Payment extends atoum
             ->and($this->testedInstance->setDescription(uniqid()))
             ->and($this->testedInstance->setOrderId(uniqid()))
 
+            ->if($logger = new mock\ild78\Api\Logger)
+            ->and($config->setLogger($logger))
+            ->and($logMessage = 'Payment of 1.00 eur with IBAN "2606" / BIC "ILADFRPP"')
+
             ->and($json = json_encode($this->testedInstance))
             ->and($options = [
                 'body' => $json,
@@ -263,6 +274,9 @@ class Payment extends atoum
                     ->call('request')
                         ->withArguments('POST', $this->testedInstance->getEndpoint(), $options)
                             ->once
+
+                ->mock($logger)
+                    ->call('info')->withArguments($logMessage)->once
 
                 // Payment object
                 ->string($this->testedInstance->getId())

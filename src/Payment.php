@@ -55,4 +55,39 @@ class Payment extends Api\Object
 
     /** @var string */
     protected $status;
+
+    /**
+     * Save the current object.
+     *
+     * @uses Request::post()
+     * @return self
+     */
+    public function save() : Api\Object
+    {
+        parent::save();
+
+        $params = [
+            $this->getAmount() / 100,
+            $this->getCurrency(),
+        ];
+
+        $card = $this->getCard();
+        $sepa = $this->getSepa();
+
+        if ($card) {
+            $params[] = $card->getBrand();
+            $params[] = $card->getLast4();
+            $message = vsprintf('Payment of %.02f %s with %s "%s"', $params);
+        }
+
+        if ($sepa) {
+            $params[] = $sepa->getLast4();
+            $params[] = $sepa->getBic();
+            $message = vsprintf('Payment of %.02f %s with IBAN "%s" / BIC "%s"', $params);
+        }
+
+        Api\Config::getGlobal()->getLogger()->info($message);
+
+        return $this;
+    }
 }
