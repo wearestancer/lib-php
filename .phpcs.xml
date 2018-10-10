@@ -20,6 +20,7 @@
 
     <exclude name="Generic.PHP.LowerCaseType.ParamTypeFound" />
 
+    <exclude name="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned" />
     <exclude name="Squiz.Arrays.ArrayDeclaration.MultiLineNotAllowed" />
 
     <exclude name="Squiz.Commenting.ClassComment.TagNotAllowed" />
