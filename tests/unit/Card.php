@@ -134,6 +134,53 @@ class Card extends atoum
         }
     }
 
+    public function testGetExpYear_SetExpYear()
+    {
+        $currentYear = (int) date('Y');
+
+        for ($year = $currentYear; $year < $currentYear + 20; $year++) {
+            $this
+                ->assert('Test year ' . $year)
+                    ->given($this->newTestedInstance)
+                    ->then
+                        ->variable($this->testedInstance->getExpYear())
+                            ->isNull
+
+                        ->object($this->testedInstance->setExpYear($year))
+                            ->isTestedInstance
+
+                        ->integer($this->testedInstance->getExpYear())
+                            ->isIdenticalTo($year)
+
+                ->assert('Test year ' . $year . ' : alias')
+                    ->given($this->newTestedInstance)
+                    ->then
+                        ->variable($this->testedInstance->getExpirationYear())
+                            ->isNull
+
+                        ->object($this->testedInstance->setExpirationYear($year))
+                            ->isTestedInstance
+
+                        ->integer($this->testedInstance->getExpirationYear())
+                            ->isIdenticalTo($year)
+            ;
+        }
+
+        for ($year = $currentYear - 10; $year < $currentYear; $year++) {
+            $this
+                ->assert('Test year ' . $year)
+                    ->given($this->newTestedInstance)
+                    ->then
+                        ->exception(function () use ($year) {
+                            $this->testedInstance->setExpYear($year);
+                        })
+                            ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                            ->message
+                                ->isIdenticalTo('Invalid expiration year "' . $year . '"')
+            ;
+        }
+    }
+
     public function testGetForbiddenProperties()
     {
         $this

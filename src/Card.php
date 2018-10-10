@@ -49,6 +49,17 @@ class Card extends Api\Object
     }
 
     /**
+     * Alias for `self::getExpYear()`
+     *
+     * @see self::getExpYear() Return the expiration year.
+     * @return integer|null
+     */
+    public function getExpirationYear()
+    {
+        return $this->getExpYear();
+    }
+
+    /**
      * Return an array of properties not allowed to change with a setter
      *
      * @see self::__call()
@@ -76,6 +87,18 @@ class Card extends Api\Object
     }
 
     /**
+     * Alias for `self::setExpYear()`
+     *
+     * @see self::setExpYear() Return the expiration year.
+     * @param integer $year The expiration year.
+     * @return integer|null
+     */
+    public function setExpirationYear(int $year) : self
+    {
+        return $this->setExpYear($year);
+    }
+
+    /**
      * Return the expiration month.
      *
      * @param integer $month The expiration month.
@@ -89,6 +112,24 @@ class Card extends Api\Object
         }
 
         $this->expMonth = $month;
+
+        return $this;
+    }
+
+    /**
+     * Return the expiration year.
+     *
+     * @param integer $year The expiration year.
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When expiration is invalid (in past).
+     */
+    public function setExpYear(int $year) : self
+    {
+        if ($year < date('Y')) {
+            throw new ild78\Exceptions\InvalidArgumentException(sprintf('Invalid expiration year "%d"', $year));
+        }
+
+        $this->expYear = $year;
 
         return $this;
     }
