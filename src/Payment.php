@@ -112,4 +112,36 @@ class Payment extends Api\Object
 
         return $this;
     }
+
+    /**
+     * Set the currency.
+     *
+     * @param string $currency The currency, must one in the following : EUR, USD, GBP.
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When currency is not EUR, USD or GBP.
+     */
+    public function setCurrency(string $currency) : self
+    {
+        $cur = strtolower($currency);
+
+        $valid = [
+            'eur',
+            'usd',
+            'gbp',
+        ];
+
+        if (!in_array($cur, $valid, true)) {
+            $params = [
+                $currency,
+                strtoupper(implode(', ', $valid)),
+            ];
+            $message = vsprintf('"%s" is not a valid currency, please use one of the following : %s', $params);
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
+        $this->currency = $cur;
+
+        return $this;
+    }
 }

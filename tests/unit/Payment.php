@@ -18,6 +18,15 @@ use mock;
 
 class Payment extends atoum
 {
+    public function currencyDataProvider()
+    {
+        return [
+            'EUR',
+            'USD',
+            'GBP',
+        ];
+    }
+
     public function testClass()
     {
         $this
@@ -153,7 +162,7 @@ class Payment extends atoum
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setAmount(rand(100, 999999)))
             ->and($this->testedInstance->setCard($card))
-            ->and($this->testedInstance->setCurrency(uniqid()))
+            ->and($this->testedInstance->setCurrency('EUR'))
             ->and($this->testedInstance->setDescription(uniqid()))
             ->and($this->testedInstance->setOrderId(uniqid()))
 
@@ -251,7 +260,7 @@ class Payment extends atoum
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setAmount(rand(100, 999999)))
             ->and($this->testedInstance->setSepa($sepa))
-            ->and($this->testedInstance->setCurrency(uniqid()))
+            ->and($this->testedInstance->setCurrency('EUR'))
             ->and($this->testedInstance->setDescription(uniqid()))
             ->and($this->testedInstance->setOrderId(uniqid()))
 
@@ -347,6 +356,46 @@ class Payment extends atoum
                         ->isTestedInstance
                     ->integer($this->testedInstance->getAmount())
                         ->isEqualTo($amount)
+        ;
+    }
+
+    /**
+     * @dataProvider currencyDataProvider
+     */
+    public function testSetCurrency($currency)
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($fakeCurrency = uniqid())
+            ->and($upper = strtoupper($currency))
+            ->and($lower = strtolower($currency))
+            ->then
+                ->assert('Valid currency : ' . $upper)
+                    ->variable($this->testedInstance->getCurrency())
+                        ->isNull
+
+                    ->object($this->testedInstance->setCurrency($upper))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getCurrency())
+                        ->isIdenticalTo($lower)
+
+                ->assert('Valid currency : ' . $lower)
+                    ->object($this->testedInstance->setCurrency($lower))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getCurrency())
+                        ->isIdenticalTo($lower)
+
+                ->assert('Invalid currency')
+                    ->exception(function () use ($fakeCurrency) {
+                        $this->testedInstance->setCurrency($fakeCurrency);
+                    })
+                        ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->contains('"' . $fakeCurrency . '" is not a valid currency')
+                            ->contains('please use one of the following :')
+                            ->contains($upper)
         ;
     }
 }
