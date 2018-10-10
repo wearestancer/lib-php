@@ -431,4 +431,37 @@ class Payment extends atoum
             $description .= chr(rand(65, 90));
         }
     }
+
+    public function testSetOrderId()
+    {
+        $this->newTestedInstance;
+        $orderId = '';
+
+        for ($idx = 0; $idx < 30; $idx++) {
+            $length = strlen($orderId);
+
+            if ($length < 1 || $length > 24) {
+                $this
+                    ->assert($length . ' characters => Not valid')
+                        ->exception(function () use ($orderId) {
+                            $this->testedInstance->setOrderId($orderId);
+                        })
+                            ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                            ->message
+                                ->isIdenticalTo('A valid order ID must be between 1 and 24 characters')
+                ;
+            } else {
+                $this
+                    ->assert($length . ' characters => Valid')
+                        ->object($this->testedInstance->setOrderId($orderId))
+                            ->isTestedInstance
+
+                        ->string($this->testedInstance->getOrderId())
+                            ->isIdenticalTo($orderId)
+                ;
+            }
+
+            $orderId .= chr(rand(65, 90));
+        }
+    }
 }

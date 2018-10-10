@@ -171,4 +171,28 @@ class Payment extends Api\Object
 
         return $this;
     }
+
+    /**
+     * Set a order ID
+     *
+     * A valid order ID must be between 1 and 24 characters.
+     *
+     * @param string $orderId A order ID.
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When the order ID is not between 1 and 24 characters.
+     */
+    public function setOrderId(string $orderId) : self
+    {
+        $length = strlen($orderId);
+
+        if ($length < 1 || $length > 24) {
+            $message = 'A valid order ID must be between 1 and 24 characters';
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
+        $this->orderId = $orderId;
+
+        return $this;
+    }
 }
