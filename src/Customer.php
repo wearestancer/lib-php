@@ -15,12 +15,12 @@ class Customer extends Api\Object
     /** @var string */
     protected $endpoint = 'customers';
 
-    /** @var string */
+    /** @var string|null */
     protected $email;
 
-    /** @var string */
+    /** @var string|null */
     protected $mobile;
 
-    /** @var string */
+    /** @var string|null */
     protected $name;
 }

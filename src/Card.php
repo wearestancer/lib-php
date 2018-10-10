@@ -36,6 +36,9 @@ class Card extends Api\Object
     /** @var integer */
     protected $number;
 
+    /** @var boolean */
+    protected $tokenize;
+
     /** @var string|null */
     protected $zipCode;
 

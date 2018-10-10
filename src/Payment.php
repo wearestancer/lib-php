@@ -28,6 +28,9 @@ class Payment extends Api\Object
     /** @var integer */
     protected $amount;
 
+    /** @var boolean */
+    protected $capture;
+
     /** @var ild78\\Card */
     protected $card;
 
@@ -46,7 +49,7 @@ class Payment extends Api\Object
     /** @var string */
     protected $method;
 
-    /** @var string */
+    /** @var string|null */
     protected $orderId;
 
     /** @var string */
