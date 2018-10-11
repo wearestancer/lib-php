@@ -191,6 +191,12 @@ abstract class Object implements JsonSerializable
         $isLower = false;
         $isUpper = false;
 
+        if (array_key_exists('fixed', $model['size']) && $model['size']['fixed'] !== $length) {
+            $message = sprintf('A valid %s must have %d characters.', $property, $model['size']['fixed']);
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
         if (!is_null($model['size']['max'])) {
             $hasMax = true;
             $isUpper = $length > $model['size']['max'];

@@ -143,7 +143,7 @@ class Payment extends atoum
             ->and($config->setHttpClient($client))
 
             ->if($card = new Card)
-            ->and($card->setCvc(rand(1, 1000)))
+            ->and($card->setCvc(substr(uniqid(), 0, 3)))
             ->and($card->setExpMonth(rand(1, 12)))
             ->and($card->setExpYear(rand(2000, 3000)))
             ->and($card->setName(uniqid()))

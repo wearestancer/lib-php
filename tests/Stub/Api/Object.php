@@ -26,6 +26,12 @@ class Object extends ild78\Api\Object
                 'max' => 20,
             ],
         ],
+        'string4' => [
+            'type' => self::STRING,
+            'size' => [
+                'fixed' => 5,
+            ],
+        ],
         'integer1' => [
             'type' => self::INTEGER,
             'size' => [

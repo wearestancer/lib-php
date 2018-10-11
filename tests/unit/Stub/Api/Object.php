@@ -151,6 +151,12 @@ class Object extends atoum
 
         // Fixed sizes
 
+        // string 4, exactly 5
+        $datas[] = [
+            'string4',
+            $this->stringWithFixedSize(5),
+        ];
+
         // string 1, between 10 and 20
         $datas[] = [
             'string1',
@@ -220,6 +226,22 @@ class Object extends atoum
                 $this->stringAtLeast(21),
                 ild78\Exceptions\InvalidArgumentException::class,
                 'A valid string3 must have less than 20 characters.',
+            ];
+
+            // string 4, exactly 5
+            $datas[] = [
+                'string4',
+                $this->stringAtLeast(6),
+                ild78\Exceptions\InvalidArgumentException::class,
+                'A valid string4 must have 5 characters.',
+            ];
+
+            // string 4, exactly 5
+            $datas[] = [
+                'string4',
+                $this->stringLessThan(4),
+                ild78\Exceptions\InvalidArgumentException::class,
+                'A valid string4 must have 5 characters.',
             ];
 
             // integer 1, between 10 and 20

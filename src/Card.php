@@ -22,7 +22,10 @@ class Card extends Api\Object
         ],
         'cvc' => [
             'required' => true,
-            'type' => self::INTEGER,
+            'size' => [
+                'fixed' => 3,
+            ],
+            'type' => self::STRING,
         ],
         'expMonth' => [
             'required' => true,
