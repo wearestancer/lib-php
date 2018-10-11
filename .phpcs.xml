@@ -48,6 +48,17 @@
     <exclude name="Squiz.WhiteSpace.MemberVarSpacing.FirstIncorrect" />
   </rule>
 
+  <rule ref="Generic.PHP.ForbiddenFunctions">
+    <properties>
+      <property name="forbiddenFunctions" type="array">
+        <element key="sizeof" value="count" />
+        <element key="delete" value="unset" />
+        <element key="print" value="echo" />
+        <element key="create_function" value="null" />
+      </property>
+    </properties>
+  </rule>
+
   <rule ref="Squiz.Strings.ConcatenationSpacing">
     <properties>
       <property name="spacing" value="1" /> <!-- echo $foo . $bar; instead of echo $foo.$bar; -->
