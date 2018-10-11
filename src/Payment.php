@@ -25,41 +25,53 @@ class Payment extends Api\Object
     /** @var string */
     protected $endpoint = 'checkout';
 
-    /** @var integer */
-    protected $amount;
-
-    /** @var boolean */
-    protected $capture;
-
-    /** @var ild78\\Card */
-    protected $card;
-
-    /** @var string */
-    protected $country;
-
-    /** @var string */
-    protected $currency;
-
-    /** @var string|null */
-    protected $description;
-
-    /** @var string */
-    protected $idCustomer;
-
-    /** @var string */
-    protected $method;
-
-    /** @var string|null */
-    protected $orderId;
-
-    /** @var string */
-    protected $response;
-
-    /** @var ild78\\Sepa */
-    protected $sepa;
-
-    /** @var string */
-    protected $status;
+    /** @var array */
+    protected $dataModel = [
+        'amount' => [
+            'required' => true,
+            'size' => [
+                'min' => 50,
+            ],
+            'type' => self::INTEGER,
+        ],
+        'capture' => [
+            'type' => self::BOOLEAN,
+        ],
+        'card' => [
+            'type' => ild78\Card::class,
+        ],
+        'country' => [
+            'type' => self::STRING,
+        ],
+        'currency' => [
+            'required' => true,
+            'type' => self::STRING,
+        ],
+        'description' => [
+            'size' => [
+                'min' => 3,
+                'max' => 64,
+            ],
+            'type' => self::STRING,
+        ],
+        'customer' => [
+            'type' => ild78\Customer::class,
+        ],
+        'method' => [
+            'restricted' => true,
+            'type' => self::STRING,
+        ],
+        'orderId' => [
+            'size' => [
+                'min' => 1,
+                'max' => 24,
+            ],
+            'type' => self::STRING,
+        ],
+        'sepa' => [
+            'type' => ild78\Sepa::class,
+        ],
+    ];
 
     /**
      * Save the current object.
@@ -97,50 +109,6 @@ class Payment extends Api\Object
     }
 
     /**
-     * Set a transaction amount.
-     *
-     * The amount need to be in cents, aka 10€ => 1000 or $123.45 => 12345, and must be greater than or equal to 50.
-     *
-     * @param integer $amount The amount (in cents).
-     * @return self
-     * @throws ild78\Exceptions\InvalidArgumentException When the amount is less than 50.
-     */
-    public function setAmount(int $amount) : self
-    {
-        if ($amount < 50) {
-            throw new ild78\Exceptions\InvalidArgumentException('Amount must be greater than or equal to 50');
-        }
-
-        $this->amount = $amount;
-
-        return $this;
-    }
-
-    /**
-     * Set a description
-     *
-     * A valid description must be between 3 and 64 characters.
-     *
-     * @param string $description A description.
-     * @return self
-     * @throws ild78\Exceptions\InvalidArgumentException When the description is not between 3 and 64 characters.
-     */
-    public function setDescription(string $description) : self
-    {
-        $length = strlen($description);
-
-        if ($length < 3 || $length > 64) {
-            $message = 'A valid description must be between 3 and 64 characters';
-
-            throw new ild78\Exceptions\InvalidArgumentException($message);
-        }
-
-        $this->description = $description;
-
-        return $this;
-    }
-
-    /**
      * Set the currency.
      *
      * @param string $currency The currency, must one in the following : EUR, USD, GBP.
@@ -167,31 +135,7 @@ class Payment extends Api\Object
             throw new ild78\Exceptions\InvalidArgumentException($message);
         }
 
-        $this->currency = $cur;
-
-        return $this;
-    }
-
-    /**
-     * Set a order ID
-     *
-     * A valid order ID must be between 1 and 24 characters.
-     *
-     * @param string $orderId A order ID.
-     * @return self
-     * @throws ild78\Exceptions\InvalidArgumentException When the order ID is not between 1 and 24 characters.
-     */
-    public function setOrderId(string $orderId) : self
-    {
-        $length = strlen($orderId);
-
-        if ($length < 1 || $length > 24) {
-            $message = 'A valid order ID must be between 1 and 24 characters';
-
-            throw new ild78\Exceptions\InvalidArgumentException($message);
-        }
-
-        $this->orderId = $orderId;
+        $this->dataModel['currency']['value'] = $cur;
 
         return $this;
     }

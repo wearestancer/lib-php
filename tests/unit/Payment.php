@@ -96,20 +96,11 @@ class Payment extends atoum
                     ->variable($this->testedInstance->getDescription())
                         ->isNull
 
-                    ->variable($this->testedInstance->getIdCustomer())
-                        ->isNull
-
                     ->string($this->testedInstance->getMethod())
                         ->isIdenticalTo('card')
 
                     ->string($this->testedInstance->getOrderId())
                         ->isIdenticalTo('815730837')
-
-                    ->string($this->testedInstance->getResponse())
-                        ->isIdenticalTo('00')
-
-                    ->string($this->testedInstance->getStatus())
-                        ->isIdenticalTo('to_capture')
 
                     ->object($date = $this->testedInstance->getCreationDate())
                         ->isInstanceOf('DateTime')
@@ -335,7 +326,7 @@ class Payment extends atoum
                     })
                         ->isInstanceOf(Exceptions\InvalidArgumentException::class)
                         ->message
-                            ->isIdenticalTo('Amount must be greater than or equal to 50')
+                            ->isIdenticalTo('Amount must be greater than or equal to 50.')
 
                 ->assert('49 is not a valid amount')
                     ->exception(function () {
@@ -343,7 +334,7 @@ class Payment extends atoum
                     })
                         ->isInstanceOf(Exceptions\InvalidArgumentException::class)
                         ->message
-                            ->isIdenticalTo('Amount must be greater than or equal to 50')
+                            ->isIdenticalTo('Amount must be greater than or equal to 50.')
 
                 ->assert('50 is valid')
                     ->object($this->testedInstance->setAmount(50))
@@ -415,7 +406,7 @@ class Payment extends atoum
                         })
                             ->isInstanceOf(Exceptions\InvalidArgumentException::class)
                             ->message
-                                ->isIdenticalTo('A valid description must be between 3 and 64 characters')
+                                ->isIdenticalTo('A valid description must be between 3 and 64 characters.')
                 ;
             } else {
                 $this
@@ -448,7 +439,7 @@ class Payment extends atoum
                         })
                             ->isInstanceOf(Exceptions\InvalidArgumentException::class)
                             ->message
-                                ->isIdenticalTo('A valid order ID must be between 1 and 24 characters')
+                                ->isIdenticalTo('A valid order ID must be between 1 and 24 characters.')
                 ;
             } else {
                 $this

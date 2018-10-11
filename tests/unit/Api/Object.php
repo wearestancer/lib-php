@@ -89,6 +89,13 @@ class Object extends atoum
                     ->message
                         ->isIdenticalTo('You are not allowed to modify the id.')
 
+                ->exception(function () {
+                    $this->testedInstance->setDataModel(uniqid());
+                })
+                    ->isInstanceOf(Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify the data model.')
+
             ->assert('Unknown method')
                 ->if($method = uniqid())
                 ->then
@@ -97,19 +104,7 @@ class Object extends atoum
                     })
                         ->isInstanceOf(Exceptions\BadMethodCallException::class)
                         ->message
-                            ->contains($method)
-        ;
-    }
-
-    public function testGetForbiddenProperties()
-    {
-        $this
-            ->given($this->newTestedInstance)
-            ->then
-                ->array($this->testedInstance->getForbiddenProperties())
-                    ->contains('created')
-                    ->contains('endpoint')
-                    ->contains('id')
+                            ->isIdenticalTo('Method "' . $method . '" unknown')
         ;
     }
 

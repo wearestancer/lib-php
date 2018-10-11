@@ -231,19 +231,6 @@ class Card extends atoum
         }
     }
 
-    public function testGetForbiddenProperties()
-    {
-        $this
-            ->given($this->newTestedInstance)
-            ->then
-                ->array($this->testedInstance->getForbiddenProperties())
-                    ->contains('created') // from parent
-                    ->contains('endpoint') // from parent
-                    ->contains('id') // from parent
-                    ->contains('last4')
-        ;
-    }
-
     /**
      * @dataProvider cardNumberDataProvider
      */

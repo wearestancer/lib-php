@@ -11,41 +11,45 @@ use mock;
 
 class Request extends atoum
 {
-    public function testGet_Post_Put()
+    public function httpVerbDataProvider()
     {
-        // testing a mock is not a good test but here we only want to test we call an other method
-
-        $methods = [
+        return [
             'GET',
             'POST',
             'PUT',
         ];
+    }
 
-        foreach ($methods as $method) {
-            $this
-                ->given($request = new mock\ild78\Api\Request)
-                ->and($result = uniqid())
-                ->and($this->calling($request)->request = $result)
-                ->if($object = new mock\ild78\Api\Object)
-                ->and($location = uniqid())
-                ->then
-                    ->assert('No location')
-                        ->string($request->$method($object))
-                            ->isIdenticalTo($result)
-                        ->mock($request)
-                            ->call('request')
-                                ->withIdenticalArguments($method, $object)
-                                    ->once
+    /**
+     * @dataProvider httpVerbDataProvider
+     */
+    public function testGet_Post_Put($verb)
+    {
+        // testing a mock is not a good test but here we only want to test we call an other method
 
-                    ->assert('with location')
-                        ->string($request->$method($object, $location))
-                            ->isIdenticalTo($result)
-                        ->mock($request)
-                            ->call('request')
-                                ->withIdenticalArguments($method, $object, $location)
-                                    ->once
-            ;
-        }
+        $this
+            ->given($request = new mock\ild78\Api\Request)
+            ->and($result = uniqid())
+            ->and($this->calling($request)->request = $result)
+            ->if($object = new mock\ild78\Api\Object)
+            ->and($location = uniqid())
+            ->then
+                ->assert('No location')
+                    ->string($request->$verb($object))
+                        ->isIdenticalTo($result)
+                    ->mock($request)
+                        ->call('request')
+                            ->withIdenticalArguments($verb, $object)
+                                ->once
+
+                ->assert('with location')
+                    ->string($request->$verb($object, $location))
+                        ->isIdenticalTo($result)
+                    ->mock($request)
+                        ->call('request')
+                            ->withIdenticalArguments($verb, $object, $location)
+                                ->once
+        ;
     }
 
     public function testRequest()

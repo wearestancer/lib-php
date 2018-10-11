@@ -15,12 +15,16 @@ class Customer extends Api\Object
     /** @var string */
     protected $endpoint = 'customers';
 
-    /** @var string|null */
-    protected $email;
-
-    /** @var string|null */
-    protected $mobile;
-
-    /** @var string|null */
-    protected $name;
+    /** @var array */
+    protected $dataModel = [
+        'email' => [
+            'type' => self::STRING,
+        ],
+        'mobile' => [
+            'type' => self::STRING,
+        ],
+        'name' => [
+            'type' => self::STRING,
+        ],
+    ];
 }

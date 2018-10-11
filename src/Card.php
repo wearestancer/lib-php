@@ -12,35 +12,44 @@ use ild78;
  */
 class Card extends Api\Object
 {
-    /** @var string */
-    protected $brand;
-
-    /** @var string */
-    protected $country;
-
-    /** @var integer */
-    protected $cvc;
-
-    /** @var integer */
-    protected $expMonth;
-
-    /** @var integer */
-    protected $expYear;
-
-    /** @var string */
-    protected $last4;
-
-    /** @var string|null */
-    protected $name;
-
-    /** @var integer */
-    protected $number;
-
-    /** @var boolean */
-    protected $tokenize;
-
-    /** @var string|null */
-    protected $zipCode;
+    /** @var array */
+    protected $dataModel = [
+        'brand' => [
+            'type' => self::STRING,
+        ],
+        'country' => [
+            'type' => self::STRING,
+        ],
+        'cvc' => [
+            'required' => true,
+            'type' => self::INTEGER,
+        ],
+        'expMonth' => [
+            'required' => true,
+            'type' => self::INTEGER,
+        ],
+        'expYear' => [
+            'required' => true,
+            'type' => self::INTEGER,
+        ],
+        'last4' => [
+            'restricted' => true,
+            'type' => self::STRING,
+        ],
+        'name' => [
+            'type' => self::STRING,
+        ],
+        'number' => [
+            'required' => true,
+            'type' => self::INTEGER,
+        ],
+        'tokenize' => [
+            'type' => self::BOOLEAN,
+        ],
+        'zipCode' => [
+            'type' => self::STRING,
+        ],
+    ];
 
     /**
      * Return the expiration date.
@@ -108,21 +117,6 @@ class Card extends Api\Object
     }
 
     /**
-     * Return an array of properties not allowed to change with a setter
-     *
-     * @see self::__call()
-     * @return array
-     */
-    public function getForbiddenProperties() : array
-    {
-        $forbidden = [
-            'last4',
-        ];
-
-        return array_merge(parent::getForbiddenProperties(), $forbidden);
-    }
-
-    /**
      * Alias for `self::setExpMonth()`
      *
      * @see self::setExpMonth() Return the expiration month.
@@ -159,7 +153,7 @@ class Card extends Api\Object
             throw new ild78\Exceptions\InvalidArgumentException(sprintf('Invalid expiration month "%d"', $month));
         }
 
-        $this->expMonth = $month;
+        $this->dataModel['expMonth']['value'] = $month;
 
         return $this;
     }
@@ -177,7 +171,7 @@ class Card extends Api\Object
             throw new ild78\Exceptions\InvalidArgumentException(sprintf('Invalid expiration year "%d"', $year));
         }
 
-        $this->expYear = $year;
+        $this->dataModel['expYear']['value'] = $year;
 
         return $this;
     }
@@ -215,8 +209,8 @@ class Card extends Api\Object
             throw new ild78\Exceptions\InvalidArgumentException($message);
         }
 
-        $this->last4 = substr((string) $number, -4);
-        $this->number = $number;
+        $this->dataModel['last4']['value'] = substr((string) $number, -4);
+        $this->dataModel['number']['value'] = $number;
 
         return $this;
     }

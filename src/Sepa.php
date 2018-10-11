@@ -10,36 +10,28 @@ use ild78;
  */
 class Sepa extends Api\Object
 {
-    /** @var string */
-    protected $bic;
-
-    /** @var string */
-    protected $country;
-
-    /** @var string */
-    protected $iban;
-
-    /** @var string */
-    protected $last4;
-
-    /** @var string|null */
-    protected $name;
-
-    /**
-     * Return an array of properties not allowed to change with a setter
-     *
-     * @see self::__call()
-     * @return array
-     */
-    public function getForbiddenProperties() : array
-    {
-        $forbidden = [
-            'country',
-            'last4',
-        ];
-
-        return array_merge(parent::getForbiddenProperties(), $forbidden);
-    }
+    /** @var array */
+    protected $dataModel = [
+        'bic' => [
+            'required' => true,
+            'type' => self::STRING,
+        ],
+        'country' => [
+            'restricted' => true,
+            'type' => self::STRING,
+        ],
+        'iban' => [
+            'required' => true,
+            'type' => self::STRING,
+        ],
+        'last4' => [
+            'restricted' => true,
+            'type' => self::STRING,
+        ],
+        'name' => [
+            'type' => self::STRING,
+        ],
+    ];
 
     /**
      * Return IBAN with usual readeable format (AAAA BBBB CCCC ...)
@@ -48,7 +40,7 @@ class Sepa extends Api\Object
      */
     public function getFormattedIban() : string
     {
-        return chunk_split($this->iban, 4, ' ');
+        return chunk_split($this->getIban(), 4, ' ');
     }
 
     /**
@@ -66,7 +58,7 @@ class Sepa extends Api\Object
             throw new ild78\Exceptions\InvalidArgumentException(sprintf('"%s" is not a valid BIC', $bic));
         }
 
-        $this->bic = $bic;
+        $this->dataModel['bic']['value'] = $bic;
 
         return $this;
     }
@@ -107,9 +99,9 @@ class Sepa extends Api\Object
             throw new ild78\Exceptions\InvalidArgumentException(sprintf('"%s" is not a valid IBAN', $iban));
         }
 
-        $this->country = $country;
-        $this->iban = $iban;
-        $this->last4 = substr($iban, -4);
+        $this->dataModel['country']['value'] = $country;
+        $this->dataModel['iban']['value'] = $iban;
+        $this->dataModel['last4']['value'] = substr($iban, -4);
 
         return $this;
     }

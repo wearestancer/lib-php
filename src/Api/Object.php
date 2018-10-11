@@ -15,8 +15,15 @@ use JsonSerializable;
  */
 abstract class Object implements JsonSerializable
 {
+    const BOOLEAN = 'boolean';
+    const INTEGER = 'integer';
+    const STRING = 'string';
+
     /** @var string */
     protected $endpoint = '';
+
+    /** @var array */
+    protected $dataModel = [];
 
     /** @var string */
     protected $id;
@@ -38,6 +45,21 @@ abstract class Object implements JsonSerializable
      */
     public function __construct(string $id = null)
     {
+        $defaults = [
+            'size' => [
+                'min' => null,
+                'max' => null,
+            ],
+            'restricted' => false,
+            'required' => false,
+            'value' => null,
+        ];
+
+        foreach ($this->dataModel as &$data) {
+            $data = array_merge($defaults, $data);
+            $data['size'] = array_merge($defaults['size'], $data['size']);
+        }
+
         if ($id) {
             $request = new Request();
             $response = $request->get($this, $id);
@@ -53,34 +75,153 @@ abstract class Object implements JsonSerializable
      * @param array $arguments Arguments used during the call.
      * @return mixed
      * @throws ild78\Exceptions\BadMethodCallException When an unhandled method is called.
+     * @throws ild78\Exceptions\InvalidArgumentException When the value do not match expected pattern (in setters).
      */
     public function __call(string $method, array $arguments)
     {
+        $class = ild78\Exceptions\BadMethodCallException::class;
         $message = sprintf('Method "%s" unknown', $method);
         $action = substr($method, 0, 3);
         $property = lcfirst(substr($method, 3));
 
-        if ($action === 'get' && property_exists($this, $property)) {
-            return $this->$property;
-        }
-
-        if ($action === 'set' && property_exists($this, $property)) {
-            if (!in_array($property, $this->getForbiddenProperties(), true)) {
-                $this->$property = $arguments[0];
-
-                return $this;
-            }
-
+        if (property_exists($this, $property)) {
             $tmp = $property;
 
             if ($property === 'created') {
                 $tmp = 'creation date';
             }
 
+            if ($property === 'dataModel') {
+                $tmp = 'data model';
+            }
+
             $message = sprintf('You are not allowed to modify the %s.', $tmp);
         }
 
-        throw new ild78\Exceptions\BadMethodCallException($message);
+        if (array_key_exists($property, $this->dataModel)) {
+            if ($action === 'get') {
+                return $this->dataModel[$property]['value'];
+            }
+
+            if ($action === 'set') {
+                if ($this->dataModel[$property]['restricted']) {
+                    $tmp = $property;
+
+                    if ($property === 'created') {
+                        $tmp = 'creation date';
+                    }
+
+                    $message = sprintf('You are not allowed to modify the %s.', $tmp);
+                }
+
+                $value = $arguments[0];
+                $type = gettype($value);
+
+                if ($type === 'object') {
+                    $type = get_class($value);
+                }
+
+                if ($type !== $this->dataModel[$property]['type']) {
+                    $params = [
+                        $type,
+                        $this->dataModel[$property]['type'],
+                    ];
+
+                    $class = ild78\Exceptions\InvalidArgumentException::class;
+                    $message = vsprintf('Type mismatch, given "%s" expected "%s"', $params);
+                    $value = null;
+                }
+
+                if (!is_null($value) && $type === 'integer') {
+                    $isLower = false;
+                    $isUpper = false;
+
+                    if (!is_null($this->dataModel[$property]['size']['max'])) {
+                        $isUpper = $value > $this->dataModel[$property]['size']['max'];
+                    }
+
+                    if (!is_null($this->dataModel[$property]['size']['min'])) {
+                        $isLower = $value < $this->dataModel[$property]['size']['min'];
+                    }
+
+                    if ($isLower || $isUpper) {
+                        $params = [
+                            ucfirst($property),
+                            $this->dataModel[$property]['size']['min'],
+                            $this->dataModel[$property]['size']['max'],
+                        ];
+
+                        $class = ild78\Exceptions\InvalidArgumentException::class;
+                        $message = vsprintf('%1$s must be ', $params);
+                        $value = null;
+
+                        if ($isLower) {
+                            $message .= vsprintf('greater than or equal to %2$d', $params);
+
+                            if ($isUpper) {
+                                $message .= ' or be ';
+                            }
+                        }
+
+                        if ($isUpper) {
+                            $message .= vsprintf('less than or equal to %3$d', $params);
+                        }
+
+                        $message .= '.';
+                    }
+                }
+
+                if (!is_null($value) && $type === 'string') {
+                    $length = strlen($value);
+                    $hasMax = false;
+                    $hasMin = false;
+                    $isLower = false;
+                    $isUpper = false;
+
+                    if (!is_null($this->dataModel[$property]['size']['max'])) {
+                        $hasMax = true;
+                        $isUpper = $length > $this->dataModel[$property]['size']['max'];
+                    }
+
+                    if (!is_null($this->dataModel[$property]['size']['min'])) {
+                        $hasMin = true;
+                        $isLower = $length < $this->dataModel[$property]['size']['min'];
+                    }
+
+                    if ($isLower || $isUpper) {
+                        $params = [
+                            $property,
+                            $this->dataModel[$property]['size']['min'],
+                            $this->dataModel[$property]['size']['max'],
+                        ];
+
+                        if ($property === 'orderId') {
+                            $params[0] = 'order ID';
+                        }
+
+                        $class = ild78\Exceptions\InvalidArgumentException::class;
+                        $message = vsprintf('A valid %s must be between %d and %d characters.', $params);
+                        $value = null;
+
+                        if (!$hasMax) {
+                            $message = vsprintf('A valid %s must be at least %d characters.', $params);
+                        }
+
+                        if (!$hasMin) {
+                            $message = vsprintf('A valid %s must have less than %d characters.', $params);
+                        }
+                    }
+                }
+
+                if (!is_null($value)) {
+                    $this->dataModel[$property]['value'] = $value;
+
+                    return $this;
+                }
+            }
+        }
+
+        throw new $class($message);
     }
 
     /**
@@ -115,21 +256,6 @@ abstract class Object implements JsonSerializable
     }
 
     /**
-     * Return an array of properties not allowed to change with a setter
-     *
-     * @see self::__call()
-     * @return array
-     */
-    public function getForbiddenProperties() : array
-    {
-        return [
-            'created',
-            'endpoint',
-            'id',
-        ];
-    }
-
-    /**
      * Return object ID
      *
      * @return string|null
@@ -159,7 +285,6 @@ abstract class Object implements JsonSerializable
     {
         foreach ($data as $key => $value) {
             $property = $key;
-            $class = 'ild78\\' . ucfirst($property);
 
             if (strpos($key, '_') !== false) {
                 $replace = function ($matches) {
@@ -169,17 +294,34 @@ abstract class Object implements JsonSerializable
                 $property = preg_replace_callback('`_\w`', $replace, $key);
             }
 
-            if ($property === 'created') {
+            if ($property === 'id') {
+                $this->id = $value;
+            } elseif ($property === 'created') {
                 $this->created = new DateTime('@' . $value);
-            } elseif (property_exists($this, $property)) {
-                if (class_exists($class)) {
-                    if (!$this->$property) {
-                        $this->$property = new $class();
+            } elseif (array_key_exists($property, $this->dataModel)) {
+                $types = [
+                    static::BOOLEAN,
+                    static::INTEGER,
+                    static::STRING,
+                ];
+
+                if (!in_array($this->dataModel[$property]['type'], $types, true)) {
+                    $id = null;
+
+                    if (is_string($value)) {
+                        $id = $value;
                     }
 
-                    $this->$property->hydrate($value);
+                    if (!$this->dataModel[$property]['value'] || $id) {
+                        $class = $this->dataModel[$property]['type'];
+                        $this->dataModel[$property]['value'] = new $class($id);
+                    }
+
+                    if (is_array($value)) {
+                        $this->dataModel[$property]['value']->hydrate($value);
+                    }
                 } else {
-                    $this->$property = $value;
+                    $this->dataModel[$property]['value'] = $value;
                 }
             }
         }
@@ -222,8 +364,19 @@ abstract class Object implements JsonSerializable
     public function toArray() : array
     {
         $json = [];
+        $data = [
+            'id' => [
+                'value' => $this->id,
+            ],
+            'created' => [
+                'value' => $this->created,
+            ],
+        ];
+        $data = array_merge($data, $this->dataModel);
 
-        foreach (get_object_vars($this) as $property => $value) {
+        foreach ($data as $property => $infos) {
+            $value = $infos['value'];
+
             if ($value && $property !== 'endpoint') {
                 $json[$property] = $value;
 
