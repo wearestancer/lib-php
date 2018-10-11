@@ -18,12 +18,24 @@ class Customer extends Api\Object
     /** @var array */
     protected $dataModel = [
         'email' => [
+            'size' => [
+                'min' => 5,
+                'max' => 64,
+            ],
             'type' => self::STRING,
         ],
         'mobile' => [
+            'size' => [
+                'min' => 4,
+                'max' => 64,
+            ],
             'type' => self::STRING,
         ],
         'name' => [
+            'size' => [
+                'min' => 8,
+                'max' => 16,
+            ],
             'type' => self::STRING,
         ],
     ];
