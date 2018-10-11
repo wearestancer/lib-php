@@ -108,6 +108,39 @@ class Object extends atoum
         ;
     }
 
+    public function testDataModelGetter()
+    {
+        // More test in stubs
+        $this
+            ->given($this->newTestedInstance)
+            ->and($property = uniqid())
+            ->then
+                ->exception(function () use ($property) {
+                    $this->testedInstance->dataModelGetter($property);
+                })
+                    ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Unknown property "' . $property . '"')
+        ;
+    }
+
+    public function testDataModelSetter()
+    {
+        // More test in stubs
+        $this
+            ->given($this->newTestedInstance)
+            ->and($property = uniqid())
+            ->and($value = uniqid())
+            ->then
+                ->exception(function () use ($property, $value) {
+                    $this->testedInstance->dataModelSetter($property, $value);
+                })
+                    ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Unknown property "' . $property . '"')
+        ;
+    }
+
     public function testGetUri()
     {
         $this

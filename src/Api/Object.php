@@ -236,6 +236,134 @@ abstract class Object implements JsonSerializable
     }
 
     /**
+     * Get a value stored in data model.
+     *
+     * This was initialy in `self::__call()` method, I removed it for simplicity.
+     *
+     * @param string $property Property to get.
+     * @return mixed
+     * @throws ild78\Exceptions\InvalidArgumentException When asking an unknown property.
+     */
+    public function dataModelGetter(string $property)
+    {
+        if (!array_key_exists($property, $this->dataModel)) {
+            throw new ild78\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
+        }
+
+        return $this->dataModel[$property]['value'];
+    }
+
+    /**
+     * Set a value in data model.
+     *
+     * This was initialy in `self::__call()` method, I removed it for simplicity.
+     *
+     * @param string $property Property to set.
+     * @param mixed $value Value to set.
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When asking an unknown property.
+     * @throws ild78\Exceptions\InvalidArgumentException When the value do not match expected pattern.
+     */
+    public function dataModelSetter(string $property, $value) : self
+    {
+        if (!array_key_exists($property, $this->dataModel)) {
+            throw new ild78\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
+        }
+
+        $model = $this->dataModel[$property];
+        $type = gettype($value);
+        $length = $value;
+
+        if ($model['restricted']) {
+            $message = sprintf('You are not allowed to modify "%s".', $property);
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
+        if ($type === 'object') {
+            $type = get_class($value);
+        }
+
+        if ($type !== $model['type']) {
+            $params = [
+                $type,
+                $model['type'],
+            ];
+
+            $message = vsprintf('Type mismatch, given "%s" expected "%s".', $params);
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
+        if ($type === 'string') {
+            $length = strlen($value);
+        }
+
+        $hasMax = false;
+        $hasMin = false;
+        $isLower = false;
+        $isUpper = false;
+
+        if (!is_null($model['size']['max'])) {
+            $hasMax = true;
+            $isUpper = $length > $model['size']['max'];
+        }
+
+        if (!is_null($model['size']['min'])) {
+            $hasMin = true;
+            $isLower = $length < $model['size']['min'];
+        }
+
+        if ($isLower || $isUpper) {
+            $params = [
+                $property,
+                ucfirst($property),
+                $model['size']['min'],
+                $model['size']['max'],
+            ];
+
+            if ($type === 'integer') {
+                $message = vsprintf('%2$s must be ', $params);
+                $value = null;
+
+                if ($isLower || ($hasMin && $hasMax)) {
+                    $message .= vsprintf('greater than or equal to %3$d', $params);
+
+                    if ($hasMax) {
+                        $message .= ' and be ';
+                    }
+                }
+
+                if ($isUpper || ($hasMin && $hasMax)) {
+                    $message .= vsprintf('less than or equal to %4$d', $params);
+                }
+
+                $message .= '.';
+            } else {
+                if ($property === 'orderId') {
+                    $params[0] = 'order ID';
+                }
+
+                $message = vsprintf('A valid %1$s must be between %3$d and %4$d characters.', $params);
+
+                if (!$hasMax) {
+                    $message = vsprintf('A valid %1$s must be at least %3$d characters.', $params);
+                }
+
+                if (!$hasMin) {
+                    $message = vsprintf('A valid %1$s must have less than %4$d characters.', $params);
+                }
+            }
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
+        $this->dataModel[$property]['value'] = $value;
+
+        return $this;
+    }
+
+    /**
      * Return creation date
      *
      * @return DateTime|null
