@@ -148,7 +148,7 @@ class Payment extends atoum
             ->and($card->setExpYear(rand(2000, 3000)))
             ->and($card->setName(uniqid()))
             ->and($card->setNumber($number = 4111111111111111))
-            ->and($card->setZipCode(uniqid()))
+            ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
 
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setAmount(rand(100, 999999)))

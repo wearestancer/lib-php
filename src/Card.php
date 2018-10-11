@@ -17,6 +17,9 @@ class Card extends Api\Object
         'brand' => [
             'type' => self::STRING,
         ],
+        'capture' => [
+            'type' => self::BOOLEAN,
+        ],
         'country' => [
             'type' => self::STRING,
         ],
@@ -40,6 +43,10 @@ class Card extends Api\Object
             'type' => self::STRING,
         ],
         'name' => [
+            'size' => [
+                'min' => 4,
+                'max' => 64,
+            ],
             'type' => self::STRING,
         ],
         'number' => [
@@ -50,6 +57,10 @@ class Card extends Api\Object
             'type' => self::BOOLEAN,
         ],
         'zipCode' => [
+            'size' => [
+                'min' => 2,
+                'max' => 8,
+            ],
             'type' => self::STRING,
         ],
     ];
