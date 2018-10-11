@@ -13,3 +13,14 @@ $runner
 
 // JSON schema
 $runner->addExtension(new mageekguy\atoum\jsonSchema\extension($script));
+
+// Reports (for HTML coverage)
+$script->addDefaultReport();
+
+$coverage = new mageekguy\atoum\reports\coverage\html();
+$coverage
+    ->addWriter(new mageekguy\atoum\writers\std\out())
+    ->setOutPutDirectory(__DIR__ . '/reports/coverage')
+;
+
+$runner->addReport($coverage);

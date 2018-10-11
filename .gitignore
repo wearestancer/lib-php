@@ -2,3 +2,6 @@
 # composer
 vendor/
 composer.lock
+
+# Tests report
+reports/
