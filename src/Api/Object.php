@@ -31,6 +31,9 @@ abstract class Object implements JsonSerializable
     /** @var DateTime */
     protected $created;
 
+    /** @var boolean */
+    protected $updated = false;
+
     /**
      * Create or get an API object
      *
@@ -366,7 +369,7 @@ abstract class Object implements JsonSerializable
      */
     public function populate() : self
     {
-        if ($this->id) {
+        if ($this->id && !$this->updated) {
             $request = new Request();
             $response = $request->get($this, $this->id);
             $body = json_decode($response, true);

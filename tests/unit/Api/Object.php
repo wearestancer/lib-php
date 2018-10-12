@@ -226,6 +226,24 @@ class Object extends atoum
                     ->dateTime($date = $this->testedInstance->getCreationDate())
                         ->variable($date->format('U'))
                             ->isEqualTo($timestamp)
+
+            ->assert('Only one request with two consecutive call')
+                ->if($client = new mock\GuzzleHttp\Client)
+                ->and($id = uniqid())
+                ->and($timestamp = time())
+                ->and($body = '{"id":"' . $id . '","created":' . $timestamp . '}')
+                ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
+                ->and($this->calling($client)->request = $response)
+                ->and($config->setHttpClient($client))
+
+                ->and($this->newTestedInstance($id))
+                ->then
+                    ->object($this->testedInstance->populate())
+                    ->object($this->testedInstance->populate())
+
+                    ->mock($client)
+                        ->call('request')
+                            ->once
         ;
     }
 
