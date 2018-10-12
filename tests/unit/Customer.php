@@ -104,6 +104,16 @@ class Customer extends atoum
 
                 ->string($this->testedInstance->getName())
                     ->isIdenticalTo('David Coaster')
+
+                // Check it was not called twice
+                ->object($this->testedInstance->save())
+                    ->isTestedInstance
+                    ->isInstanceOf($this->testedInstance->save())
+
+                ->mock($client)
+                    ->call('request')
+                        ->withArguments('POST', $this->testedInstance->getEndpoint(), $options)
+                            ->once
         ;
     }
 }

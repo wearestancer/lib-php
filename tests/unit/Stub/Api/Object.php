@@ -7,6 +7,7 @@ require_once __DIR__ . '/../../../Stub/Api/Object.php';
 use atoum;
 use GuzzleHttp;
 use ild78;
+use mock;
 
 class Object extends atoum
 {
@@ -35,38 +36,71 @@ class Object extends atoum
             ]))
             ->and($handler = GuzzleHttp\HandlerStack::create($mock))
             ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
-            ->and($config->setHttpClient($client))
 
-            ->if($this->newTestedInstance($id))
+            ->if($mock = new mock\GuzzleHttp\Client)
+            ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
+            ->and($this->calling($mock)->request = $response)
+
             ->then
-                ->object($this->testedInstance->populate())
-                    ->isTestedInstance
+                ->assert('Populate working normally')
+                    ->if($config->setHttpClient($client))
+                    ->and($this->newTestedInstance($id))
+                    ->then
+                        ->object($this->testedInstance->populate())
+                            ->isTestedInstance
 
-                ->string($this->testedInstance->getId())
-                    ->isIdenticalTo($id)
+                        ->string($this->testedInstance->getId())
+                            ->isIdenticalTo($id)
 
-                ->dateTime($date = $this->testedInstance->getCreationDate())
-                    ->variable($date->format('U'))
-                        ->isEqualTo($created)
+                        ->dateTime($date = $this->testedInstance->getCreationDate())
+                            ->variable($date->format('U'))
+                                ->isEqualTo($created)
 
-                ->string($this->testedInstance->getString1())
-                    ->isIdenticalTo($string1)
-                ->string($this->testedInstance->getString2())
-                    ->isIdenticalTo($string2)
-                ->string($this->testedInstance->getString3())
-                    ->isIdenticalTo($string3)
-                ->string($this->testedInstance->getString4())
-                    ->isIdenticalTo($string4)
+                        ->string($this->testedInstance->getString1())
+                            ->isIdenticalTo($string1)
+                        ->string($this->testedInstance->getString2())
+                            ->isIdenticalTo($string2)
+                        ->string($this->testedInstance->getString3())
+                            ->isIdenticalTo($string3)
+                        ->string($this->testedInstance->getString4())
+                            ->isIdenticalTo($string4)
 
-                ->integer($this->testedInstance->getInteger1())
-                    ->isIdenticalTo($integer1)
-                ->integer($this->testedInstance->getInteger2())
-                    ->isIdenticalTo($integer2)
-                ->integer($this->testedInstance->getInteger3())
-                    ->isIdenticalTo($integer3)
+                        ->integer($this->testedInstance->getInteger1())
+                            ->isIdenticalTo($integer1)
+                        ->integer($this->testedInstance->getInteger2())
+                            ->isIdenticalTo($integer2)
+                        ->integer($this->testedInstance->getInteger3())
+                            ->isIdenticalTo($integer3)
 
-                ->string($this->testedInstance->getRestricted1())
-                    ->isIdenticalTo($restricted1)
+                        ->string($this->testedInstance->getRestricted1())
+                            ->isIdenticalTo($restricted1)
+
+                ->assert('Update a property allow new request')
+                    ->if($config->setHttpClient($mock))
+                    ->and($this->newTestedInstance($id))
+                    ->and($this->testedInstance->populate())
+                    ->and($this->testedInstance->setString1(uniqid()))
+                    ->and($this->testedInstance->populate())
+                    ->then
+                        ->mock($mock)
+                            ->call('request')
+                                ->twice
+
+                ->assert('Save block populate')
+                    ->if($config->setHttpClient($mock))
+                    ->and($this->newTestedInstance($id))
+                    ->and($this->testedInstance->setString1(uniqid()))
+                    ->and($this->testedInstance->save())
+                    ->and($this->testedInstance->populate())
+                    ->then
+                        ->mock($mock)
+                            ->call('request')
+                                ->withAtLeastArguments(['POST']) // Save action
+                                    ->once
+
+                            ->call('request')
+                                ->withAtLeastArguments(['GET'])
+                                    ->never
         ;
     }
 

@@ -250,6 +250,7 @@ abstract class Object implements JsonSerializable
         }
 
         $this->dataModel[$property]['value'] = $value;
+        $this->updated = false;
 
         return $this;
     }
@@ -393,6 +394,8 @@ abstract class Object implements JsonSerializable
         $response = $request->post($this);
         $body = json_decode($response, true);
         $this->hydrate($body);
+
+        $this->updated = true;
 
         return $this;
     }
