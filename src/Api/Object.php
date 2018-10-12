@@ -34,6 +34,9 @@ abstract class Object implements JsonSerializable
     /** @var boolean */
     protected $updated = false;
 
+    /** @var boolean */
+    protected $modified = false;
+
     /**
      * Create or get an API object
      *
@@ -256,7 +259,7 @@ abstract class Object implements JsonSerializable
         }
 
         $this->dataModel[$property]['value'] = $value;
-        $this->updated = false;
+        $this->modified = true;
 
         return $this;
     }
@@ -389,6 +392,7 @@ abstract class Object implements JsonSerializable
             $this->hydrate($body);
 
             $this->updated = true;
+            $this->modified = false;
         }
 
         return $this;
@@ -402,12 +406,14 @@ abstract class Object implements JsonSerializable
      */
     public function save() : self
     {
-        $request = new Request();
-        $response = $request->post($this);
-        $body = json_decode($response, true);
-        $this->hydrate($body);
+        if ($this->modified) {
+            $request = new Request();
+            $response = $request->post($this);
+            $body = json_decode($response, true);
+            $this->hydrate($body);
 
-        $this->updated = true;
+            $this->modified = false;
+        }
 
         return $this;
     }

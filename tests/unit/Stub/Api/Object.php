@@ -74,33 +74,6 @@ class Object extends atoum
 
                         ->string($this->testedInstance->getRestricted1())
                             ->isIdenticalTo($restricted1)
-
-                ->assert('Update a property allow new request')
-                    ->if($config->setHttpClient($mock))
-                    ->and($this->newTestedInstance($id))
-                    ->and($this->testedInstance->populate())
-                    ->and($this->testedInstance->setString1(uniqid()))
-                    ->and($this->testedInstance->populate())
-                    ->then
-                        ->mock($mock)
-                            ->call('request')
-                                ->twice
-
-                ->assert('Save block populate')
-                    ->if($config->setHttpClient($mock))
-                    ->and($this->newTestedInstance($id))
-                    ->and($this->testedInstance->setString1(uniqid()))
-                    ->and($this->testedInstance->save())
-                    ->and($this->testedInstance->populate())
-                    ->then
-                        ->mock($mock)
-                            ->call('request')
-                                ->withAtLeastArguments(['POST']) // Save action
-                                    ->once
-
-                            ->call('request')
-                                ->withAtLeastArguments(['GET'])
-                                    ->never
         ;
     }
 

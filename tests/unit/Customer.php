@@ -114,6 +114,25 @@ class Customer extends atoum
                     ->call('request')
                         ->withArguments('POST', $this->testedInstance->getEndpoint(), $options)
                             ->once
+
+                ->assert('Update a property allow new request')
+                    ->if($this->testedInstance->setName(uniqid()))
+                    ->and($this->testedInstance->save())
+                    ->then
+                        ->mock($client)
+                            ->call('request')
+                                ->withAtLeastArguments(['POST'])
+                                    ->once
+
+                ->assert('Populate block save')
+                    ->if($this->testedInstance->setName(uniqid()))
+                    ->and($this->testedInstance->populate())
+                    ->and($this->testedInstance->save())
+                    ->then
+                        ->mock($client)
+                            ->call('request')
+                                ->withAtLeastArguments(['POST'])
+                                    ->never
         ;
     }
 }
