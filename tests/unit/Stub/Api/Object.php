@@ -148,6 +148,40 @@ class Object extends atoum
         ;
     }
 
+    public function testGetterWillCallPopulate()
+    {
+        $this
+            ->given($client = new mock\GuzzleHttp\Client)
+            ->and($id = uniqid())
+            ->and($timestamp = time())
+            ->and($string1 = $this->stringBetween(10, 20))
+            ->and($body = '{"id":"' . $id . '","created":' . $timestamp . ',"string1":"' . $string1 . '"}')
+            ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
+            ->and($this->calling($client)->request = $response)
+            ->and(ild78\Api\Config::init(uniqid())->setHttpClient($client))
+
+            ->assert('No call without id')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->dataModelGetter('string1'))
+                        ->isNull
+
+                    ->mock($client)
+                        ->call('request')
+                            ->never
+
+            ->assert('Will automatically call populate')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->string($this->testedInstance->dataModelGetter('string1'))
+                        ->isIdenticalTo($string1)
+
+                    ->mock($client)
+                        ->call('request')
+                            ->once
+        ;
+    }
+
     /**
      * @dataProvider invalidDataProvider
      */

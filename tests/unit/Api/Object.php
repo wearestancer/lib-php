@@ -3,6 +3,7 @@
 namespace ild78\tests\unit\Api;
 
 use atoum;
+use DateTime;
 use GuzzleHttp;
 use ild78\Api;
 use ild78\Api\Object as testedClass;
@@ -136,6 +137,28 @@ class Object extends atoum
                     ->isInstanceOf(Exceptions\InvalidArgumentException::class)
                     ->message
                         ->isIdenticalTo('Unknown property "' . $property . '"')
+        ;
+    }
+
+    public function testGetCreationDate()
+    {
+        $this
+            ->given($client = new mock\GuzzleHttp\Client)
+            ->and($id = uniqid())
+            ->and($timestamp = time())
+            ->and($body = '{"id":"' . $id . '","created":' . $timestamp . '}')
+            ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
+            ->and($this->calling($client)->request = $response)
+            ->and(Api\Config::init(uniqid())->setHttpClient($client))
+
+            ->if($this->newTestedInstance($id))
+            ->then
+                ->dateTime($this->testedInstance->getCreationDate())
+                    ->isEqualTo(new DateTime('@' . $timestamp))
+
+                ->mock($client)
+                    ->call('request')
+                        ->once
         ;
     }
 

@@ -135,7 +135,13 @@ abstract class Object implements JsonSerializable
             throw new ild78\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
         }
 
-        return $this->dataModel[$property]['value'];
+        $value = $this->dataModel[$property]['value'];
+
+        if (is_null($value) && $this->id && !$this->updated) {
+            $value = $this->populate()->dataModel[$property]['value'];
+        }
+
+        return $value;
     }
 
     /**
@@ -262,7 +268,13 @@ abstract class Object implements JsonSerializable
      */
     public function getCreationDate() : DateTime
     {
-        return $this->created;
+        $date = $this->created;
+
+        if (is_null($date) && $this->id && !$this->updated) {
+            $date = $this->populate()->created;
+        }
+
+        return $date;
     }
 
     /**
