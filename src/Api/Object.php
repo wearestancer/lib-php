@@ -60,12 +60,7 @@ abstract class Object implements JsonSerializable
             $data['size'] = array_merge($defaults['size'], $data['size']);
         }
 
-        if ($id) {
-            $request = new Request();
-            $response = $request->get($this, $id);
-            $body = json_decode($response, true);
-            $this->hydrate($body);
-        }
+        $this->id = $id;
     }
 
     /**
@@ -359,6 +354,28 @@ abstract class Object implements JsonSerializable
     public function jsonSerialize() : array
     {
         return $this->toArray();
+    }
+
+    /**
+     * Populate object with API data.
+     *
+     * This method is not supposed to be used directly, it will be used automaticaly when ask for some data.
+     * The purpose of this method is to limitate API call (and  avoid reaching the rate limit).
+     *
+     * @return self
+     */
+    public function populate() : self
+    {
+        if ($this->id) {
+            $request = new Request();
+            $response = $request->get($this, $this->id);
+            $body = json_decode($response, true);
+            $this->hydrate($body);
+
+            $this->updated = true;
+        }
+
+        return $this;
     }
 
     /**

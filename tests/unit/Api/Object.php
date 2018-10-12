@@ -7,36 +7,34 @@ use GuzzleHttp;
 use ild78\Api;
 use ild78\Api\Object as testedClass;
 use ild78\Exceptions;
+use mock;
 
 class Object extends atoum
 {
     public function test__construct()
     {
         $this
+            ->given($client = new mock\GuzzleHttp\Client)
+            ->and($api = Api\Config::init(uniqid()))
+            ->and($api->setHttpClient($client))
+
             ->assert('Without id')
                 ->given($this->newTestedInstance())
                     ->variable($this->testedInstance->getId())
                         ->isNull
 
-            ->assert('With valid id')
-                ->given($id = uniqid())
-                ->and($timestamp = rand())
-                ->and($mock = new GuzzleHttp\Handler\MockHandler([
-                    new GuzzleHttp\Psr7\Response(200, [], '{"id":"' . $id . '","created":' . $timestamp . '}'),
-                ]))
-                ->and($handler = GuzzleHttp\HandlerStack::create($mock))
-                ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
-                ->and($api = Api\Config::init(uniqid()))
-                ->and($api->setHttpClient($client))
+                    ->mock($client)
+                        ->wasNotCalled
 
-                ->if($this->newTestedInstance($id))
+            ->assert('With valid id')
+                ->if($id = uniqid())
+                ->and($this->newTestedInstance($id))
                 ->then
                     ->string($this->testedInstance->getId())
                         ->isIdenticalTo($id)
 
-                    ->dateTime($date = $this->testedInstance->getCreationDate())
-                        ->variable($date->format('U'))
-                            ->isEqualTo($timestamp)
+                    ->mock($client)
+                        ->wasNotCalled
         ;
     }
 
@@ -186,6 +184,48 @@ class Object extends atoum
                     ->integer['created']->isIdenticalTo($data['created'])
                     ->notHasKey('endpoint')
                 ->json(json_encode($this->testedInstance))
+        ;
+    }
+
+    public function testPopulate()
+    {
+        // More tests available in stubs
+
+        $this
+            ->given($config = Api\Config::init(uniqid()))
+
+            ->assert('No request if no id')
+                ->if($client = new mock\GuzzleHttp\Client)
+                ->and($config->setHttpClient($client))
+
+                ->then
+                    ->object($this->newTestedInstance()->populate())
+                        ->isTestedInstance
+
+                    ->mock($client)
+                        ->call('request')->never
+
+            ->assert('Work with an id')
+                ->given($id = uniqid())
+                ->and($timestamp = time())
+                ->and($mock = new GuzzleHttp\Handler\MockHandler([
+                    new GuzzleHttp\Psr7\Response(200, [], '{"id":"' . $id . '","created":' . $timestamp . '}'),
+                ]))
+                ->and($handler = GuzzleHttp\HandlerStack::create($mock))
+                ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
+                ->and($config->setHttpClient($client))
+
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->object($this->testedInstance->populate())
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getId())
+                        ->isIdenticalTo($id)
+
+                    ->dateTime($date = $this->testedInstance->getCreationDate())
+                        ->variable($date->format('U'))
+                            ->isEqualTo($timestamp)
         ;
     }
 

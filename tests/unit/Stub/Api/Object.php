@@ -5,10 +5,71 @@ namespace ild78\tests\unit\Stub\Api;
 require_once __DIR__ . '/../../../Stub/Api/Object.php';
 
 use atoum;
+use GuzzleHttp;
 use ild78;
 
 class Object extends atoum
 {
+    public function testPopulate()
+    {
+        $this
+            ->given($config = ild78\Api\Config::init(uniqid()))
+            ->and($id = uniqid())
+            ->and($created = time())
+
+            ->and($string1 = $this->stringBetween(10, 20))
+            ->and($string2 = $this->stringAtLeast(10))
+            ->and($string3 = $this->stringLessThan(20))
+            ->and($string4 = $this->stringWithFixedSize(5))
+
+            ->and($integer1 = $this->integerBetween(10, 20))
+            ->and($integer2 = $this->integerAtLeast(10))
+            ->and($integer3 = $this->integerLessThan(10))
+
+            ->and($restricted1 = $this->stringAtLeast(10))
+
+            ->and($body = json_encode(compact('id', 'created', 'string1', 'string2', 'string3', 'string4', 'integer1', 'integer2', 'integer3', 'restricted1')))
+
+            ->and($mock = new GuzzleHttp\Handler\MockHandler([
+                new GuzzleHttp\Psr7\Response(200, [], $body),
+            ]))
+            ->and($handler = GuzzleHttp\HandlerStack::create($mock))
+            ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
+            ->and($config->setHttpClient($client))
+
+            ->if($this->newTestedInstance($id))
+            ->then
+                ->object($this->testedInstance->populate())
+                    ->isTestedInstance
+
+                ->string($this->testedInstance->getId())
+                    ->isIdenticalTo($id)
+
+                ->dateTime($date = $this->testedInstance->getCreationDate())
+                    ->variable($date->format('U'))
+                        ->isEqualTo($created)
+
+                ->string($this->testedInstance->getString1())
+                    ->isIdenticalTo($string1)
+                ->string($this->testedInstance->getString2())
+                    ->isIdenticalTo($string2)
+                ->string($this->testedInstance->getString3())
+                    ->isIdenticalTo($string3)
+                ->string($this->testedInstance->getString4())
+                    ->isIdenticalTo($string4)
+
+                ->integer($this->testedInstance->getInteger1())
+                    ->isIdenticalTo($integer1)
+                ->integer($this->testedInstance->getInteger2())
+                    ->isIdenticalTo($integer2)
+                ->integer($this->testedInstance->getInteger3())
+                    ->isIdenticalTo($integer3)
+
+                ->string($this->testedInstance->getRestricted1())
+                    ->isIdenticalTo($restricted1)
+        ;
+    }
+
     public function testUnknownProperty()
     {
         $this
