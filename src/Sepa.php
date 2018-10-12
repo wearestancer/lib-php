@@ -29,6 +29,10 @@ class Sepa extends Api\Object
             'type' => self::STRING,
         ],
         'name' => [
+            'size' => [
+                'min' => 4,
+                'max' => 64,
+            ],
             'type' => self::STRING,
         ],
     ];

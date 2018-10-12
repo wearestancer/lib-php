@@ -15,6 +15,7 @@ class Card extends Api\Object
     /** @var array */
     protected $dataModel = [
         'brand' => [
+            'restricted' => true,
             'type' => self::STRING,
         ],
         'capture' => [
