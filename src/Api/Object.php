@@ -85,7 +85,7 @@ abstract class Object implements JsonSerializable
         $action = substr($method, 0, 3);
         $property = lcfirst(substr($method, 3));
 
-        if (property_exists($this, $property)) {
+        if ($action === 'set' && property_exists($this, $property)) {
             $tmp = $property;
 
             if ($property === 'created') {
