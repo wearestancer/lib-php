@@ -11,6 +11,259 @@ use mock;
 
 class Object extends atoum
 {
+    public function invalidDataProvider()
+    {
+        $datas = [];
+
+        // We will make 3 data of each
+        for ($idx = 0; $idx < 3; $idx++) {
+            // string 1, between 10 and 20
+            $datas[] = [
+                'string1',
+                $this->makeStringAtLeast(21),
+                ild78\Exceptions\InvalidArgumentException::class,
+                'A valid string1 must be between 10 and 20 characters.',
+            ];
+
+            // string 1, between 10 and 20
+            $datas[] = [
+                'string1',
+                $this->makeStringLessThan(9),
+                ild78\Exceptions\InvalidArgumentException::class,
+                'A valid string1 must be between 10 and 20 characters.',
+            ];
+
+            // string 2, at least 10
+            $datas[] = [
+                'string2',
+                $this->makeStringLessThan(9),
+                ild78\Exceptions\InvalidArgumentException::class,
+                'A valid string2 must be at least 10 characters.',
+            ];
+
+            // string 3, max 20
+            $datas[] = [
+                'string3',
+                $this->makeStringAtLeast(21),
+                ild78\Exceptions\InvalidArgumentException::class,
+                'A valid string3 must have less than 20 characters.',
+            ];
+
+            // string 4, exactly 5
+            $datas[] = [
+                'string4',
+                $this->makeStringAtLeast(6),
+                ild78\Exceptions\InvalidArgumentException::class,
+                'A valid string4 must have 5 characters.',
+            ];
+
+            // string 4, exactly 5
+            $datas[] = [
+                'string4',
+                $this->makeStringLessThan(4),
+                ild78\Exceptions\InvalidArgumentException::class,
+                'A valid string4 must have 5 characters.',
+            ];
+
+            // integer 1, between 10 and 20
+            $datas[] = [
+                'integer1',
+                $this->makeIntegerLessThan(9),
+                ild78\Exceptions\InvalidArgumentException::class,
+                'Integer1 must be greater than or equal to 10 and be less than or equal to 20.',
+            ];
+
+            // integer 1, between 10 and 20
+            $datas[] = [
+                'integer1',
+                $this->makeIntegerAtLeast(21),
+                ild78\Exceptions\InvalidArgumentException::class,
+                'Integer1 must be greater than or equal to 10 and be less than or equal to 20.',
+            ];
+
+            // integer 2, at least 10
+            $datas[] = [
+                'integer2',
+                $this->makeIntegerLessThan(9),
+                ild78\Exceptions\InvalidArgumentException::class,
+                'Integer2 must be greater than or equal to 10.',
+            ];
+
+            // integer 3, max 20
+            $datas[] = [
+                'integer3',
+                $this->makeIntegerAtLeast(21),
+                ild78\Exceptions\InvalidArgumentException::class,
+                'Integer3 must be less than or equal to 20.',
+            ];
+        }
+
+        // string 1 with integer
+        $datas[] = [
+            'string1',
+            $this->makeIntegerBetween(1, 10),
+            ild78\Exceptions\InvalidArgumentException::class,
+            'Type mismatch, given "integer" expected "string".',
+        ];
+
+        // integer 1 with string
+        $datas[] = [
+            'integer1',
+            $this->makeStringBetween(10, 20),
+            ild78\Exceptions\InvalidArgumentException::class,
+            'Type mismatch, given "string" expected "integer".',
+        ];
+
+        // object 1 with string
+        $datas[] = [
+            'object1',
+            $this->makeStringBetween(10, 20),
+            ild78\Exceptions\InvalidArgumentException::class,
+            'Type mismatch, given "string" expected "ild78\Card".',
+        ];
+
+        // restricted
+        $datas[] = [
+            'restricted1',
+            $this->makeStringBetween(10, 20),
+            ild78\Exceptions\InvalidArgumentException::class,
+            'You are not allowed to modify "restricted1".',
+        ];
+
+        return $datas;
+    }
+
+    public function makeIntegerAtLeast($min)
+    {
+        return $this->makeIntegerBetween($min, 1000);
+    }
+
+    public function makeIntegerBetween($min, $max)
+    {
+        return rand($min, $max);
+    }
+
+    public function makeIntegerLessThan($max)
+    {
+        return $this->makeIntegerBetween(0, $max);
+    }
+
+    public function makeStringAtLeast($min)
+    {
+        return $this->makeStringWithFixedSize($this->makeIntegerAtLeast($min));
+    }
+
+    public function makeStringBetween($min, $max)
+    {
+        return $this->makeStringWithFixedSize($this->makeIntegerBetween($min, $max));
+    }
+
+    public function makeStringLessThan($max)
+    {
+        return $this->makeStringWithFixedSize($this->makeIntegerLessThan($max));
+    }
+
+    public function makeStringWithFixedSize($length)
+    {
+        return substr(md5(uniqid()), 0, $length);
+    }
+
+    /**
+     * @dataProvider validDataProvider
+     */
+    public function testDataModelGetterAndSetter($property, $value)
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->assert(sprintf('Test with %s with value "%s" (%d chars)', $property, $value, strlen((string) $value)))
+                    ->variable($this->testedInstance->dataModelGetter($property))
+                        ->isNull
+
+                    ->object($this->testedInstance->dataModelSetter($property, $value))
+                        ->isTestedInstance
+
+                    ->variable($this->testedInstance->dataModelGetter($property))
+                        ->isIdenticalTo($value)
+        ;
+    }
+
+    public function testDataModelGetterWillCallPopulate()
+    {
+        $this
+            ->given($client = new mock\GuzzleHttp\Client)
+            ->and($id = uniqid())
+            ->and($timestamp = time())
+            ->and($string1 = $this->makeStringBetween(10, 20))
+            ->and($body = '{"id":"' . $id . '","created":' . $timestamp . ',"string1":"' . $string1 . '"}')
+            ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
+            ->and($this->calling($client)->request = $response)
+            ->and(ild78\Api\Config::init(uniqid())->setHttpClient($client))
+
+            ->assert('No call without id')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->dataModelGetter('string1'))
+                        ->isNull
+
+                    ->mock($client)
+                        ->call('request')
+                            ->never
+
+            ->assert('Will automatically call populate')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->string($this->testedInstance->dataModelGetter('string1'))
+                        ->isIdenticalTo($string1)
+
+                    ->mock($client)
+                        ->call('request')
+                            ->once
+        ;
+    }
+
+    public function testDataModelThrowsUnknownProperty()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($property = uniqid())
+            ->then
+                ->assert('On getter')
+                    ->exception(function () use ($property) {
+                        $this->testedInstance->dataModelGetter($property);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo('Unknown property "' . $property . '"')
+
+                ->assert('On setter')
+                    ->exception(function () use ($property) {
+                        $this->testedInstance->dataModelSetter($property, uniqid());
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo('Unknown property "' . $property . '"')
+        ;
+    }
+
+    /**
+     * @dataProvider invalidDataProvider
+     */
+    public function testInvalidData($property, $value, $class, $message)
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->assert(sprintf('$%s = "%s" (%d chars) => %s', $property, $value, strlen((string) $value), $message))
+                    ->exception(function () use ($property, $value) {
+                        $this->testedInstance->dataModelSetter($property, $value);
+                    })
+                        ->isInstanceOf($class)
+                        ->message
+                            ->isIdenticalTo($message)
+        ;
+    }
+
     public function testPopulate()
     {
         $this
@@ -18,16 +271,16 @@ class Object extends atoum
             ->and($id = uniqid())
             ->and($created = time())
 
-            ->and($string1 = $this->stringBetween(10, 20))
-            ->and($string2 = $this->stringAtLeast(10))
-            ->and($string3 = $this->stringLessThan(20))
-            ->and($string4 = $this->stringWithFixedSize(5))
+            ->and($string1 = $this->makeStringBetween(10, 20))
+            ->and($string2 = $this->makeStringAtLeast(10))
+            ->and($string3 = $this->makeStringLessThan(20))
+            ->and($string4 = $this->makeStringWithFixedSize(5))
 
-            ->and($integer1 = $this->integerBetween(10, 20))
-            ->and($integer2 = $this->integerAtLeast(10))
-            ->and($integer3 = $this->integerLessThan(10))
+            ->and($integer1 = $this->makeIntegerBetween(10, 20))
+            ->and($integer2 = $this->makeIntegerAtLeast(10))
+            ->and($integer3 = $this->makeIntegerLessThan(10))
 
-            ->and($restricted1 = $this->stringAtLeast(10))
+            ->and($restricted1 = $this->makeStringAtLeast(10))
 
             ->and($body = json_encode(compact('id', 'created', 'string1', 'string2', 'string3', 'string4', 'integer1', 'integer2', 'integer3', 'restricted1')))
 
@@ -82,7 +335,7 @@ class Object extends atoum
         $this
             ->assert('Throw exception if requirement are not provided')
                 ->given($this->newTestedInstance)
-                ->and($this->testedInstance->setString2($this->stringAtLeast(10)))
+                ->and($this->testedInstance->setString2($this->makeStringAtLeast(10)))
                 ->then
                     ->exception(function () {
                         $this->testedInstance->save();
@@ -92,8 +345,8 @@ class Object extends atoum
                             ->isIdenticalTo('You need to provide a value for : integer1, string1')
 
             ->assert('Save data if all requirement are complete')
-                ->if($string1 = $this->stringBetween(10, 20))
-                ->and($integer1 = $this->integerBetween(10, 20))
+                ->if($string1 = $this->makeStringBetween(10, 20))
+                ->and($integer1 = $this->makeIntegerBetween(10, 20))
                 ->and($id = uniqid())
                 ->and($created = time())
 
@@ -124,137 +377,6 @@ class Object extends atoum
         ;
     }
 
-    public function testUnknownProperty()
-    {
-        $this
-            ->given($this->newTestedInstance)
-            ->and($property = uniqid())
-            ->then
-                ->assert('On getter')
-                    ->exception(function () use ($property) {
-                        $this->testedInstance->dataModelGetter($property);
-                    })
-                        ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
-                        ->message
-                            ->isIdenticalTo('Unknown property "' . $property . '"')
-
-                ->assert('On setter')
-                    ->exception(function () use ($property) {
-                        $this->testedInstance->dataModelSetter($property, uniqid());
-                    })
-                        ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
-                        ->message
-                            ->isIdenticalTo('Unknown property "' . $property . '"')
-        ;
-    }
-
-    /**
-     * @dataProvider validDataProvider
-     */
-    public function testGetterAndSetter($property, $value)
-    {
-        $this
-            ->given($this->newTestedInstance)
-            ->then
-                ->assert(sprintf('Test with %s with value "%s" (%d chars)', $property, $value, strlen((string) $value)))
-                    ->variable($this->testedInstance->dataModelGetter($property))
-                        ->isNull
-
-                    ->object($this->testedInstance->dataModelSetter($property, $value))
-                        ->isTestedInstance
-
-                    ->variable($this->testedInstance->dataModelGetter($property))
-                        ->isIdenticalTo($value)
-        ;
-    }
-
-    public function testGetterWillCallPopulate()
-    {
-        $this
-            ->given($client = new mock\GuzzleHttp\Client)
-            ->and($id = uniqid())
-            ->and($timestamp = time())
-            ->and($string1 = $this->stringBetween(10, 20))
-            ->and($body = '{"id":"' . $id . '","created":' . $timestamp . ',"string1":"' . $string1 . '"}')
-            ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
-            ->and($this->calling($client)->request = $response)
-            ->and(ild78\Api\Config::init(uniqid())->setHttpClient($client))
-
-            ->assert('No call without id')
-                ->if($this->newTestedInstance)
-                ->then
-                    ->variable($this->testedInstance->dataModelGetter('string1'))
-                        ->isNull
-
-                    ->mock($client)
-                        ->call('request')
-                            ->never
-
-            ->assert('Will automatically call populate')
-                ->if($this->newTestedInstance($id))
-                ->then
-                    ->string($this->testedInstance->dataModelGetter('string1'))
-                        ->isIdenticalTo($string1)
-
-                    ->mock($client)
-                        ->call('request')
-                            ->once
-        ;
-    }
-
-    /**
-     * @dataProvider invalidDataProvider
-     */
-    public function testInvalidData($property, $value, $class, $message)
-    {
-        $this
-            ->given($this->newTestedInstance)
-            ->then
-                ->assert(sprintf('$%s = "%s" (%d chars) => %s', $property, $value, strlen((string) $value), $message))
-                    ->exception(function () use ($property, $value) {
-                        $this->testedInstance->dataModelSetter($property, $value);
-                    })
-                        ->isInstanceOf($class)
-                        ->message
-                            ->isIdenticalTo($message)
-        ;
-    }
-
-    public function integerBetween($min, $max)
-    {
-        return rand($min, $max);
-    }
-
-    public function integerAtLeast($min)
-    {
-        return $this->integerBetween($min, 1000);
-    }
-
-    public function integerLessThan($max)
-    {
-        return $this->integerBetween(0, $max);
-    }
-
-    public function stringWithFixedSize($length)
-    {
-        return substr(md5(uniqid()), 0, $length);
-    }
-
-    public function stringBetween($min, $max)
-    {
-        return $this->stringWithFixedSIze($this->integerBetween($min, $max));
-    }
-
-    public function stringAtLeast($min)
-    {
-        return $this->stringWithFixedSIze($this->integerAtLeast($min));
-    }
-
-    public function stringLessThan($max)
-    {
-        return $this->stringWithFixedSIze($this->integerLessThan($max));
-    }
-
     public function validDataProvider()
     {
         $datas = [];
@@ -264,37 +386,37 @@ class Object extends atoum
             // string 1, between 10 and 20
             $datas[] = [
                 'string1',
-                $this->stringBetween(10, 20),
+                $this->makeStringBetween(10, 20),
             ];
 
             // string 2, at least 10
             $datas[] = [
                 'string2',
-                $this->stringAtLeast(10),
+                $this->makeStringAtLeast(10),
             ];
 
             // string 3, max 20
             $datas[] = [
                 'string3',
-                $this->stringLessThan(20),
+                $this->makeStringLessThan(20),
             ];
 
             // integer 1, between 10 and 20
             $datas[] = [
                 'integer1',
-                $this->integerBetween(10, 20),
+                $this->makeIntegerBetween(10, 20),
             ];
 
             // integer 2, at least 10
             $datas[] = [
                 'integer2',
-                $this->integerAtLeast(10),
+                $this->makeIntegerAtLeast(10),
             ];
 
             // integer 3, max 20
             $datas[] = [
                 'integer3',
-                $this->integerLessThan(10),
+                $this->makeIntegerLessThan(10),
             ];
         }
 
@@ -303,19 +425,19 @@ class Object extends atoum
         // string 4, exactly 5
         $datas[] = [
             'string4',
-            $this->stringWithFixedSize(5),
+            $this->makeStringWithFixedSize(5),
         ];
 
         // string 1, between 10 and 20
         $datas[] = [
             'string1',
-            $this->stringWithFixedSize(10),
+            $this->makeStringWithFixedSize(10),
         ];
 
         // string 1, between 10 and 20
         $datas[] = [
             'string1',
-            $this->stringWithFixedSize(20),
+            $this->makeStringWithFixedSize(20),
         ];
 
         // integer 1, between 10 and 20
@@ -334,128 +456,6 @@ class Object extends atoum
         $datas[] = [
             'object1',
             new ild78\Card,
-        ];
-
-        return $datas;
-    }
-
-    public function invalidDataProvider()
-    {
-        $datas = [];
-
-        // We will make 3 data of each
-        for ($idx = 0; $idx < 3; $idx++) {
-            // string 1, between 10 and 20
-            $datas[] = [
-                'string1',
-                $this->stringAtLeast(21),
-                ild78\Exceptions\InvalidArgumentException::class,
-                'A valid string1 must be between 10 and 20 characters.',
-            ];
-
-            // string 1, between 10 and 20
-            $datas[] = [
-                'string1',
-                $this->stringLessThan(9),
-                ild78\Exceptions\InvalidArgumentException::class,
-                'A valid string1 must be between 10 and 20 characters.',
-            ];
-
-            // string 2, at least 10
-            $datas[] = [
-                'string2',
-                $this->stringLessThan(9),
-                ild78\Exceptions\InvalidArgumentException::class,
-                'A valid string2 must be at least 10 characters.',
-            ];
-
-            // string 3, max 20
-            $datas[] = [
-                'string3',
-                $this->stringAtLeast(21),
-                ild78\Exceptions\InvalidArgumentException::class,
-                'A valid string3 must have less than 20 characters.',
-            ];
-
-            // string 4, exactly 5
-            $datas[] = [
-                'string4',
-                $this->stringAtLeast(6),
-                ild78\Exceptions\InvalidArgumentException::class,
-                'A valid string4 must have 5 characters.',
-            ];
-
-            // string 4, exactly 5
-            $datas[] = [
-                'string4',
-                $this->stringLessThan(4),
-                ild78\Exceptions\InvalidArgumentException::class,
-                'A valid string4 must have 5 characters.',
-            ];
-
-            // integer 1, between 10 and 20
-            $datas[] = [
-                'integer1',
-                $this->integerLessThan(9),
-                ild78\Exceptions\InvalidArgumentException::class,
-                'Integer1 must be greater than or equal to 10 and be less than or equal to 20.',
-            ];
-
-            // integer 1, between 10 and 20
-            $datas[] = [
-                'integer1',
-                $this->integerAtLeast(21),
-                ild78\Exceptions\InvalidArgumentException::class,
-                'Integer1 must be greater than or equal to 10 and be less than or equal to 20.',
-            ];
-
-            // integer 2, at least 10
-            $datas[] = [
-                'integer2',
-                $this->integerLessThan(9),
-                ild78\Exceptions\InvalidArgumentException::class,
-                'Integer2 must be greater than or equal to 10.',
-            ];
-
-            // integer 3, max 20
-            $datas[] = [
-                'integer3',
-                $this->integerAtLeast(21),
-                ild78\Exceptions\InvalidArgumentException::class,
-                'Integer3 must be less than or equal to 20.',
-            ];
-        }
-
-        // string 1 with integer
-        $datas[] = [
-            'string1',
-            $this->integerBetween(1, 10),
-            ild78\Exceptions\InvalidArgumentException::class,
-            'Type mismatch, given "integer" expected "string".',
-        ];
-
-        // integer 1 with string
-        $datas[] = [
-            'integer1',
-            $this->stringBetween(10, 20),
-            ild78\Exceptions\InvalidArgumentException::class,
-            'Type mismatch, given "string" expected "integer".',
-        ];
-
-        // object 1 with string
-        $datas[] = [
-            'object1',
-            $this->stringBetween(10, 20),
-            ild78\Exceptions\InvalidArgumentException::class,
-            'Type mismatch, given "string" expected "ild78\Card".',
-        ];
-
-        // restricted
-        $datas[] = [
-            'restricted1',
-            $this->stringBetween(10, 20),
-            ild78\Exceptions\InvalidArgumentException::class,
-            'You are not allowed to modify "restricted1".',
         ];
 
         return $datas;
