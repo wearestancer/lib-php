@@ -59,7 +59,7 @@ class Payment extends atoum
             ->if($card = new Card)
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
             ->and($card->setExpMonth(rand(1, 12)))
-            ->and($card->setExpYear(rand(2000, 3000)))
+            ->and($card->setExpYear(rand(date('Y'), 3000)))
             ->and($card->setName(uniqid()))
             ->and($card->setNumber($number = 4111111111111111))
             ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
