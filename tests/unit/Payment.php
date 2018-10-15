@@ -229,6 +229,33 @@ class Payment extends atoum
         ;
     }
 
+    public function testSave_withoutCardOrSepa()
+    {
+        $this
+            ->given($client = new mock\GuzzleHttp\Client)
+            ->and($config = Api\Config::init(uniqid()))
+            ->and($config->setHttpClient($client))
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount(rand(100, 999999)))
+            ->and($this->testedInstance->setCurrency('EUR'))
+            ->and($this->testedInstance->setDescription(uniqid()))
+            ->and($this->testedInstance->setOrderId(uniqid()))
+
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->save();
+                })
+                    ->isInstanceOf(Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('You must provide a valid credit card or SEPA account to make a payment.')
+
+                ->mock($client)
+                    ->call('request')
+                        ->never
+        ;
+    }
+
     public function testSetAmount()
     {
         $this

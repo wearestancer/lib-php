@@ -78,18 +78,26 @@ class Payment extends Api\Object
      *
      * @uses Request::post()
      * @return self
+     * @throws ild78\Exceptions\BadMethodCallException When trying to pay something without any
+     *   credit card or SEPA account.
      */
     public function save() : Api\Object
     {
+        $card = $this->getCard();
+        $sepa = $this->getSepa();
+
+        if (!$card && !$sepa) {
+            $message = 'You must provide a valid credit card or SEPA account to make a payment.';
+
+            throw new ild78\Exceptions\BadMethodCallException($message);
+        }
+
         parent::save();
 
         $params = [
             $this->getAmount() / 100,
             $this->getCurrency(),
         ];
-
-        $card = $this->getCard();
-        $sepa = $this->getSepa();
 
         if ($card) {
             $params[] = $card->getBrand();
