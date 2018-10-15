@@ -8,6 +8,7 @@ class Object extends ild78\Api\Object
 {
     protected $dataModel = [
         'string1' => [
+            'required' => true,
             'type' => self::STRING,
             'size' => [
                 'min' => 10,
@@ -33,6 +34,7 @@ class Object extends ild78\Api\Object
             ],
         ],
         'integer1' => [
+            'required' => true,
             'type' => self::INTEGER,
             'size' => [
                 'min' => 10,

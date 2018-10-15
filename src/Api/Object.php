@@ -403,10 +403,27 @@ abstract class Object implements JsonSerializable
      *
      * @uses Request::post()
      * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
     public function save() : self
     {
         if ($this->modified) {
+            // phpcs:disable Squiz.PHP.DisallowBooleanStatement.Found
+            $filter = function ($model) {
+                return $model['required'] && is_null($model['value']);
+            };
+            // phpcs:enable
+            $required = array_filter($this->dataModel, $filter);
+
+            if ($required) {
+                $keys = array_keys($required);
+                sort($keys);
+                $properties = implode(', ', $keys);
+                $message = sprintf('You need to provide a value for : %s', $properties);
+
+                throw new ild78\Exceptions\InvalidArgumentException($message);
+            }
+
             $request = new Request();
             $response = $request->post($this);
             $body = json_decode($response, true);

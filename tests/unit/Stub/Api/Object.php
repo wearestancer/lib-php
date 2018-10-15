@@ -77,6 +77,53 @@ class Object extends atoum
         ;
     }
 
+    public function testSave()
+    {
+        $this
+            ->assert('Throw exception if requirement are not provided')
+                ->given($this->newTestedInstance)
+                ->and($this->testedInstance->setString2($this->stringAtLeast(10)))
+                ->then
+                    ->exception(function () {
+                        $this->testedInstance->save();
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo('You need to provide a value for : integer1, string1')
+
+            ->assert('Save data if all requirement are complete')
+                ->if($string1 = $this->stringBetween(10, 20))
+                ->and($integer1 = $this->integerBetween(10, 20))
+                ->and($id = uniqid())
+                ->and($created = time())
+
+                ->given($config = ild78\Api\Config::init(uniqid()))
+                ->and($body = json_encode(compact('id', 'created', 'string1', 'integer1')))
+                ->and($client = new mock\GuzzleHttp\Client)
+                ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
+                ->and($this->calling($client)->request = $response)
+                ->and($config->setHttpClient($client))
+
+                ->if($this->newTestedInstance)
+                ->and($this->testedInstance->setString1($string1))
+                ->and($this->testedInstance->setInteger1($integer1))
+
+                ->if($options = [])
+                ->and($options['headers'] = [
+                    'Authorization' => 'Basic ' . $config->getKey(),
+                ])
+                ->and($options['body'] = json_encode($this->testedInstance))
+                ->then
+                    ->object($this->testedInstance->save())
+                        ->isTestedInstance
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('POST', $this->testedInstance->getEndpoint(), $options)
+                                ->once
+        ;
+    }
+
     public function testUnknownProperty()
     {
         $this
