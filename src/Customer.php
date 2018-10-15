@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace ild78;
 
+use ild78;
+
 /**
  * Representation of a customer
  *
@@ -39,4 +41,23 @@ class Customer extends Api\Object
             'type' => self::STRING,
         ],
     ];
+
+    /**
+     * Save a customer.
+     *
+     * @uses Request::post()
+     * @return self
+     * @throws ild78\Exceptions\BadMethodCallException When trying to save a customer without an email
+     *    or a phone number.
+     */
+    public function save() : Api\Object
+    {
+        if (!$this->getEmail() && !$this->getMobile()) {
+            $message = 'You must provide an email or a phone number to create a customer.';
+
+            throw new ild78\Exceptions\BadMethodCallException($message);
+        }
+
+        return parent::save();
+    }
 }

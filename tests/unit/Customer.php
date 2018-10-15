@@ -9,6 +9,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use ild78\Api;
+use ild78\Exceptions;
 use ild78\Customer as testedClass;
 use ild78\Exceptions\NotFoundException;
 use mock;
@@ -133,6 +134,20 @@ class Customer extends atoum
                             ->call('request')
                                 ->withAtLeastArguments(['POST'])
                                     ->never
+
+                ->assert('An email or a phone number is required')
+                    ->given($this->newTestedInstance)
+                    ->then
+                        ->exception(function () {
+                            $this->testedInstance->save();
+                        })
+                            ->isInstanceOf(Exceptions\BadMethodCallException::class)
+                            ->message
+                                ->isIdenticalTo('You must provide an email or a phone number to create a customer.')
+
+                        ->mock($client)
+                            ->call('request')
+                                ->never
         ;
     }
 }
