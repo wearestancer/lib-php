@@ -53,6 +53,7 @@ abstract class Object implements JsonSerializable
     {
         $defaults = [
             'size' => [
+                'fixed' => null,
                 'min' => null,
                 'max' => null,
             ],
@@ -198,7 +199,10 @@ abstract class Object implements JsonSerializable
         $isLower = false;
         $isUpper = false;
 
-        if (array_key_exists('fixed', $model['size']) && $model['size']['fixed'] !== $length) {
+        if (array_key_exists('fixed', $model['size'])
+            && !is_null($model['size']['fixed'])
+            && $model['size']['fixed'] !== $length
+        ) {
             $message = sprintf('A valid %s must have %d characters.', $property, $model['size']['fixed']);
 
             throw new ild78\Exceptions\InvalidArgumentException($message);
@@ -298,6 +302,27 @@ abstract class Object implements JsonSerializable
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Return property model
+     *
+     * @param string|null $property Property name.
+     * @return array
+     */
+    public function getModel(string $property = null)
+    {
+        $model = $this->populate()->dataModel;
+
+        foreach ($model as $key => &$infos) {
+            $infos = array_diff_key($infos, ['value' => null]);
+        }
+
+        if ($property) {
+            return $model[$property];
+        }
+
+        return $model;
     }
 
     /**

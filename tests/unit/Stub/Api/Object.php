@@ -247,6 +247,49 @@ class Object extends atoum
     }
 
     /**
+     * @dataProvider validDataProvider
+     */
+    public function testGetModel($property, $value, $min, $max, $fixed)
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->array($this->testedInstance->getModel($property))
+                    ->child['size'](function ($size) use ($min, $max, $fixed) {
+                        $size
+                            ->variable['min']
+                                ->isIdenticalTo($min)
+                            ->variable['max']
+                                ->isIdenticalTo($max)
+                            ->variable['fixed']
+                                ->isIdenticalTo($fixed)
+                        ;
+                    })
+                    ->notHasKey('value')
+                    ->hasKeys(['restricted', 'required'])
+
+                ->array($this->testedInstance->getModel())
+                    ->hasKey($property)
+                    ->child[$property](function ($child) use ($min, $max, $fixed) {
+                        $child
+                            ->child['size'](function ($size) use ($min, $max, $fixed) {
+                                $size
+                                    ->variable['min']
+                                        ->isIdenticalTo($min)
+                                    ->variable['max']
+                                        ->isIdenticalTo($max)
+                                    ->variable['fixed']
+                                        ->isIdenticalTo($fixed)
+                                ;
+                            })
+                            ->notHasKey('value')
+                            ->hasKeys(['restricted', 'required'])
+                        ;
+                    })
+        ;
+    }
+
+    /**
      * @dataProvider invalidDataProvider
      */
     public function testInvalidData($property, $value, $class, $message)
@@ -387,36 +430,54 @@ class Object extends atoum
             $datas[] = [
                 'string1',
                 $this->makeStringBetween(10, 20),
+                10,
+                20,
+                null,
             ];
 
             // string 2, at least 10
             $datas[] = [
                 'string2',
                 $this->makeStringAtLeast(10),
+                10,
+                null,
+                null,
             ];
 
             // string 3, max 20
             $datas[] = [
                 'string3',
                 $this->makeStringLessThan(20),
+                null,
+                20,
+                null,
             ];
 
             // integer 1, between 10 and 20
             $datas[] = [
                 'integer1',
                 $this->makeIntegerBetween(10, 20),
+                10,
+                20,
+                null,
             ];
 
             // integer 2, at least 10
             $datas[] = [
                 'integer2',
                 $this->makeIntegerAtLeast(10),
+                10,
+                null,
+                null,
             ];
 
             // integer 3, max 20
             $datas[] = [
                 'integer3',
                 $this->makeIntegerLessThan(10),
+                null,
+                20,
+                null,
             ];
         }
 
@@ -426,36 +487,54 @@ class Object extends atoum
         $datas[] = [
             'string4',
             $this->makeStringWithFixedSize(5),
+            null,
+            null,
+            5,
         ];
 
         // string 1, between 10 and 20
         $datas[] = [
             'string1',
             $this->makeStringWithFixedSize(10),
+            10,
+            20,
+            null,
         ];
 
         // string 1, between 10 and 20
         $datas[] = [
             'string1',
             $this->makeStringWithFixedSize(20),
+            10,
+            20,
+            null,
         ];
 
         // integer 1, between 10 and 20
         $datas[] = [
             'integer1',
             10,
+            10,
+            20,
+            null,
         ];
 
         // integer 1, between 10 and 20
         $datas[] = [
             'integer1',
             20,
+            10,
+            20,
+            null,
         ];
 
-        // integer 1, between 10 and 20
+        // object 1
         $datas[] = [
             'object1',
             new ild78\Card,
+            null,
+            null,
+            null,
         ];
 
         return $datas;
