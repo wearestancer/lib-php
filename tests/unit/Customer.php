@@ -150,4 +150,49 @@ class Customer extends atoum
                                 ->never
         ;
     }
+
+    public function testSetEmail()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->setEmail('');
+                })
+                    ->isInstanceOf(Exceptions\InvalidEmailException::class)
+                    ->hasNestedException
+                    ->message
+                        ->isIdenticalTo('A valid email must be between 5 and 64 characters.')
+        ;
+    }
+
+    public function testSetMobile()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->setMobile('');
+                })
+                    ->isInstanceOf(Exceptions\InvalidMobileException::class)
+                    ->hasNestedException
+                    ->message
+                        ->isIdenticalTo('A valid mobile must be between 8 and 16 characters.')
+        ;
+    }
+
+    public function testSetName()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->setName('');
+                })
+                    ->isInstanceOf(Exceptions\InvalidNameException::class)
+                    ->hasNestedException
+                    ->message
+                        ->isIdenticalTo('A valid name must be between 4 and 64 characters.')
+        ;
+    }
 }
