@@ -114,7 +114,7 @@ class Card extends atoum
                     ->exception(function () {
                         $this->testedInstance->getExpDate();
                     })
-                        ->isInstanceOf(Exceptions\RangeException::class)
+                        ->isInstanceOf(Exceptions\InvalidExpirationMonthException::class)
                         ->message
                             ->isIdenticalTo('You must set an expiration month before asking for a date.')
 
@@ -127,7 +127,7 @@ class Card extends atoum
                     ->exception(function () {
                         $this->testedInstance->getExpDate();
                     })
-                        ->isInstanceOf(Exceptions\RangeException::class)
+                        ->isInstanceOf(Exceptions\InvalidExpirationYearException::class)
                         ->message
                             ->isIdenticalTo('You must set an expiration year before asking for a date.')
         ;
@@ -177,7 +177,7 @@ class Card extends atoum
                         ->exception(function () use ($month) {
                             $this->testedInstance->setExpMonth($month);
                         })
-                            ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                            ->isInstanceOf(Exceptions\InvalidExpirationMonthException::class)
                             ->message
                                 ->isIdenticalTo('Invalid expiration month "' . $month . '"')
             ;
@@ -224,11 +224,48 @@ class Card extends atoum
                         ->exception(function () use ($year) {
                             $this->testedInstance->setExpYear($year);
                         })
-                            ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                            ->isInstanceOf(Exceptions\InvalidExpirationYearException::class)
                             ->message
                                 ->isIdenticalTo('Invalid expiration year "' . $year . '"')
             ;
         }
+    }
+
+    public function testSetCvc()
+    {
+        for ($index = 0; $index < 5; $index++) {
+            if ($index === 3) {
+                continue;
+            }
+
+            $this
+                ->given($this->newTestedInstance)
+                ->and($cvc = substr(uniqid(), 0, $index))
+                ->then
+                    ->exception(function () use ($cvc) {
+                        $this->testedInstance->setCvc($cvc);
+                    })
+                        ->isInstanceOf(Exceptions\InvalidCardCvcException::class)
+                        ->hasNestedException
+                        ->message
+                            ->isIdenticalTo('A valid cvc must have 3 characters.')
+            ;
+        }
+    }
+
+    public function testSetName()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->setName('');
+                })
+                    ->isInstanceOf(Exceptions\InvalidNameException::class)
+                    ->hasNestedException
+                    ->message
+                        ->isIdenticalTo('A valid name must be between 4 and 64 characters.')
+        ;
     }
 
     /**
@@ -263,7 +300,7 @@ class Card extends atoum
                     ->exception(function () use ($badNumber) {
                         $this->testedInstance->setNumber($badNumber);
                     })
-                        ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                        ->isInstanceOf(Exceptions\InvalidCardNumberException::class)
                         ->message
                             ->isIdenticalTo('"' . $badNumber . '" is not a valid credit card number.')
         ;
