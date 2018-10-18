@@ -52,6 +52,10 @@ class Card extends Api\Object
         ],
         'number' => [
             'required' => true,
+            'size' => [
+                'min' => 16,
+                'max' => 19,
+            ],
             'type' => self::INTEGER,
         ],
         'tokenize' => [
