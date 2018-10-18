@@ -156,7 +156,7 @@ class Card extends Api\Object
     }
 
     /**
-     * Return the expiration month.
+     * Update the expiration month.
      *
      * @param integer $month The expiration month.
      * @return self
@@ -174,7 +174,7 @@ class Card extends Api\Object
     }
 
     /**
-     * Return the expiration year.
+     * Update the expiration year.
      *
      * @param integer $year The expiration year.
      * @return self
