@@ -52,14 +52,14 @@ class Sepa extends Api\Object
      *
      * @param string $bic A Bank Identifier Code.
      * @return self
-     * @throws ild78\Exceptions\InvalidArgumentException When BIC seems invalid.
+     * @throws ild78\Exceptions\InvalidBicException When BIC seems invalid.
      */
     public function setBic(string $bic) : self
     {
         $length = strlen($bic);
 
         if ($length !== 8 && $length !== 11) {
-            throw new ild78\Exceptions\InvalidArgumentException(sprintf('"%s" is not a valid BIC', $bic));
+            throw new ild78\Exceptions\InvalidBicException(sprintf('"%s" is not a valid BIC', $bic));
         }
 
         $this->dataModel['bic']['value'] = $bic;
@@ -72,7 +72,7 @@ class Sepa extends Api\Object
      *
      * @param string $iban An International Bank Account Number.
      * @return self
-     * @throws ild78\Exceptions\InvalidArgumentException When IBAN is invalid.
+     * @throws ild78\Exceptions\InvalidIbanException When IBAN is invalid.
      */
     public function setIban(string $iban) : self
     {
@@ -100,7 +100,7 @@ class Sepa extends Api\Object
         }
 
         if ($check !== 1) {
-            throw new ild78\Exceptions\InvalidArgumentException(sprintf('"%s" is not a valid IBAN', $iban));
+            throw new ild78\Exceptions\InvalidIbanException(sprintf('"%s" is not a valid IBAN', $iban));
         }
 
         $this->dataModel['country']['value'] = $country;
@@ -108,5 +108,21 @@ class Sepa extends Api\Object
         $this->dataModel['last4']['value'] = substr($iban, -4);
 
         return $this;
+    }
+
+    /**
+     * Add an account holder name
+     *
+     * @param string $name New holder name.
+     * @return self
+     * @throws ild78\Exceptions\InvalidNameException When the name is invalid.
+     */
+    public function setName(string $name) : self
+    {
+        try {
+            return parent::setName($name);
+        } catch (ild78\Exceptions\InvalidArgumentException $excep) {
+            throw new ild78\Exceptions\InvalidNameException($excep->getMessage(), $excep->getCode(), $excep);
+        }
     }
 }

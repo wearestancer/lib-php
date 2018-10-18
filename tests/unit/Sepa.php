@@ -84,7 +84,7 @@ class Sepa extends atoum
                     ->exception(function () use ($bic) {
                         $this->testedInstance->setBic($bic);
                     })
-                        ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                        ->isInstanceOf(Exceptions\InvalidBicException::class)
                         ->message
                             ->contains($bic)
                 ;
@@ -214,9 +214,24 @@ class Sepa extends atoum
                     ->exception(function () use ($iban) {
                         $this->testedInstance->setIban($iban);
                     })
-                        ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                        ->isInstanceOf(Exceptions\InvalidIbanException::class)
                         ->message
                             ->contains($iban)
+        ;
+    }
+
+    public function testSetName()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->setName('');
+                })
+                    ->isInstanceOf(Exceptions\InvalidNameException::class)
+                    ->hasNestedException
+                    ->message
+                        ->isIdenticalTo('A valid name must be between 4 and 64 characters.')
         ;
     }
 }
