@@ -246,7 +246,7 @@ class Payment extends atoum
                 ->exception(function () {
                     $this->testedInstance->save();
                 })
-                    ->isInstanceOf(Exceptions\BadMethodCallException::class)
+                    ->isInstanceOf(Exceptions\MissingPaymentMethodException::class)
                     ->message
                         ->isIdenticalTo('You must provide a valid credit card or SEPA account to make a payment.')
 
@@ -265,7 +265,8 @@ class Payment extends atoum
                     ->exception(function () {
                         $this->testedInstance->setAmount(0);
                     })
-                        ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                        ->isInstanceOf(Exceptions\InvalidAmountException::class)
+                        ->hasNestedException
                         ->message
                             ->isIdenticalTo('Amount must be greater than or equal to 50.')
 
@@ -273,7 +274,8 @@ class Payment extends atoum
                     ->exception(function () {
                         $this->testedInstance->setAmount(49);
                     })
-                        ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                        ->isInstanceOf(Exceptions\InvalidAmountException::class)
+                        ->hasNestedException
                         ->message
                             ->isIdenticalTo('Amount must be greater than or equal to 50.')
 
@@ -323,7 +325,7 @@ class Payment extends atoum
                     ->exception(function () use ($fakeCurrency) {
                         $this->testedInstance->setCurrency($fakeCurrency);
                     })
-                        ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                        ->isInstanceOf(Exceptions\InvalidCurrencyException::class)
                         ->message
                             ->contains('"' . $fakeCurrency . '" is not a valid currency')
                             ->contains('please use one of the following :')
@@ -345,7 +347,8 @@ class Payment extends atoum
                         ->exception(function () use ($description) {
                             $this->testedInstance->setDescription($description);
                         })
-                            ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                            ->isInstanceOf(Exceptions\InvalidDescriptionException::class)
+                            ->hasNestedException
                             ->message
                                 ->isIdenticalTo('A valid description must be between 3 and 64 characters.')
                 ;
@@ -378,7 +381,8 @@ class Payment extends atoum
                         ->exception(function () use ($orderId) {
                             $this->testedInstance->setOrderId($orderId);
                         })
-                            ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                            ->isInstanceOf(Exceptions\InvalidOrderIdException::class)
+                            ->hasNestedException
                             ->message
                                 ->isIdenticalTo('A valid order ID must be between 1 and 24 characters.')
                 ;

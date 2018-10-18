@@ -78,7 +78,7 @@ class Payment extends Api\Object
      *
      * @uses Request::post()
      * @return self
-     * @throws ild78\Exceptions\BadMethodCallException When trying to pay something without any
+     * @throws ild78\Exceptions\MissingPaymentMethodException When trying to pay something without any
      *   credit card or SEPA account.
      */
     public function save() : Api\Object
@@ -89,7 +89,7 @@ class Payment extends Api\Object
         if (!$card && !$sepa) {
             $message = 'You must provide a valid credit card or SEPA account to make a payment.';
 
-            throw new ild78\Exceptions\BadMethodCallException($message);
+            throw new ild78\Exceptions\MissingPaymentMethodException($message);
         }
 
         parent::save();
@@ -117,11 +117,27 @@ class Payment extends Api\Object
     }
 
     /**
+     * Update amount
+     *
+     * @param integer $amount New amount.
+     * @return self
+     * @throws ild78\Exceptions\InvalidAmountException When the amount is invalid.
+     */
+    public function setAmount(int $amount) : self
+    {
+        try {
+            return parent::setAmount($amount);
+        } catch (ild78\Exceptions\InvalidArgumentException $excep) {
+            throw new ild78\Exceptions\InvalidAmountException($excep->getMessage(), $excep->getCode(), $excep);
+        }
+    }
+
+    /**
      * Set the currency.
      *
      * @param string $currency The currency, must one in the following : EUR, USD, GBP.
      * @return self
-     * @throws ild78\Exceptions\InvalidArgumentException When currency is not EUR, USD or GBP.
+     * @throws ild78\Exceptions\InvalidCurrencyException When currency is not EUR, USD or GBP.
      */
     public function setCurrency(string $currency) : self
     {
@@ -140,11 +156,43 @@ class Payment extends Api\Object
             ];
             $message = vsprintf('"%s" is not a valid currency, please use one of the following : %s', $params);
 
-            throw new ild78\Exceptions\InvalidArgumentException($message);
+            throw new ild78\Exceptions\InvalidCurrencyException($message);
         }
 
         $this->dataModel['currency']['value'] = $cur;
 
         return $this;
+    }
+
+    /**
+     * Update description
+     *
+     * @param string $description New description.
+     * @return self
+     * @throws ild78\Exceptions\InvalidDescriptionException When the description is invalid.
+     */
+    public function setDescription(string $description) : self
+    {
+        try {
+            return parent::setDescription($description);
+        } catch (ild78\Exceptions\InvalidArgumentException $excep) {
+            throw new ild78\Exceptions\InvalidDescriptionException($excep->getMessage(), $excep->getCode(), $excep);
+        }
+    }
+
+    /**
+     * Update order ID
+     *
+     * @param string $orderId New order ID.
+     * @return self
+     * @throws ild78\Exceptions\InvalidOrderIdException When the order ID is invalid.
+     */
+    public function setOrderId(string $orderId) : self
+    {
+        try {
+            return parent::setOrderId($orderId);
+        } catch (ild78\Exceptions\InvalidArgumentException $excep) {
+            throw new ild78\Exceptions\InvalidOrderIdException($excep->getMessage(), $excep->getCode(), $excep);
+        }
     }
 }
