@@ -25,7 +25,7 @@ All you need is a valid API key.
 ```php
 <?php
 
-$key = '';
+$key = 'my_api_key_kSp7hBH3hyDQ36izsyKR';
 
 ild78\Api\Config::init($key);
 
@@ -33,7 +33,7 @@ $card = new ild78\Card;
 $card->setNumber('4111111111111111');
 $card->setExpMonth(12);
 $card->setExpYear(2022);
-$card->setCvc(999);
+$card->setCvc('999');
 $card->setName('John Doe');
 
 $payment = new ild78\Payment;
