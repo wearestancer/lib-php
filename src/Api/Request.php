@@ -100,6 +100,7 @@ class Request
         }
 
         $options['headers']['Authorization'] = $config->getBasicAuthHeader();
+        $options['headers']['Content-Type'] = 'application/json';
 
         $endpoint = $object->getEndpoint();
 

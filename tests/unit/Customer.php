@@ -78,7 +78,10 @@ class Customer extends atoum
             ->and($json = json_encode($this->testedInstance))
             ->and($options = [
                 'body' => $json,
-                'headers' => ['Authorization' => $config->getBasicAuthHeader()]
+                'headers' => [
+                    'Authorization' => $config->getBasicAuthHeader(),
+                    'Content-Type' => 'application/json',
+                ],
             ])
             ->then
                 ->variable($this->testedInstance->getId())
