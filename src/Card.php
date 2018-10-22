@@ -251,17 +251,21 @@ class Card extends Api\Object
         $parts = str_split($number);
         $reversed = array_reverse($parts);
         $sum = 0;
+        $calc = [
+            0,
+            2,
+            4,
+            6,
+            8,
+            1,
+            3,
+            5,
+            7,
+            9,
+        ];
 
-        $manip = function ($n, $index) use (&$sum) {
-            if ($index % 2) {
-                $n *= 2;
-
-                if ($n > 9) {
-                    $n -= 9;
-                }
-            }
-
-            $sum += $n;
+        $manip = function ($n, $index) use (&$sum, $calc) {
+            $sum += ($index % 2) ? $calc[$n] : $n;
         };
 
         array_walk($reversed, $manip);
