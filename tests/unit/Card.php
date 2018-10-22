@@ -305,4 +305,22 @@ class Card extends atoum
                             ->isIdenticalTo('"' . $badNumber . '" is not a valid credit card number.')
         ;
     }
+
+    /**
+     * @dataProvider cardNumberDataProvider
+     */
+    public function testToArray($number)
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($this->testedInstance->setNumber((string) $number))
+            ->then
+                ->array($this->testedInstance->toArray())
+                    ->notHasKey('last4')
+
+                    ->hasKey('number')
+                    ->string['number']
+                        ->isEqualTo($number)
+        ;
+    }
 }

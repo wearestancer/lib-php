@@ -64,4 +64,12 @@ class Object extends ild78\Api\Object
             'type' => self::STRING,
         ],
     ];
+
+    // Test only method
+    public function forceRestricted1(string $value) : self
+    {
+        $this->dataModel['restricted1']['value'] = $value;
+
+        return $this;
+    }
 }

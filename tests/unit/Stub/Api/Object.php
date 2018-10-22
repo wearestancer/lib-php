@@ -424,13 +424,16 @@ class Object extends atoum
     {
         $this
             ->given($this->newTestedInstance)
-            ->and($this->testedInstance->setCamelCaseProperty($value = uniqid()))
+            ->and($this->testedInstance->setCamelCaseProperty($camelCase = uniqid()))
+            ->and($this->testedInstance->forceRestricted1($restricted = uniqid()))
             ->then
                 ->array($this->testedInstance->toArray())
+                    ->notHasKey('restricted1')
+
                     ->notHasKey('camelCaseProperty')
                     ->hasKey('camel_case_property')
                     ->string['camel_case_property']
-                        ->isIdenticalTo($value)
+                        ->isIdenticalTo($camelCase)
         ;
     }
 

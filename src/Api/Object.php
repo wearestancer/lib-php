@@ -470,9 +470,11 @@ abstract class Object implements JsonSerializable
         $json = [];
         $data = [
             'id' => [
+                'restricted' => false,
                 'value' => $this->id,
             ],
             'created' => [
+                'restricted' => false,
                 'value' => $this->created,
             ],
         ];
@@ -484,13 +486,16 @@ abstract class Object implements JsonSerializable
 
         foreach ($data as $property => $infos) {
             $value = $infos['value'];
-            $prop = preg_replace_callback('`[A-Z]`', $replace, $property);
 
-            if ($value && $prop !== 'endpoint') {
-                $json[$prop] = $value;
+            if ($value && !$infos['restricted']) {
+                $prop = preg_replace_callback('`[A-Z]`', $replace, $property);
 
-                if ($value instanceof DateTime) {
-                    $json[$prop] = (int) $value->format('U');
+                if ($prop !== 'endpoint') {
+                    $json[$prop] = $value;
+
+                    if ($value instanceof DateTime) {
+                        $json[$prop] = (int) $value->format('U');
+                    }
                 }
             }
         }
