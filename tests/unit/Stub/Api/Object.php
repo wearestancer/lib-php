@@ -420,6 +420,20 @@ class Object extends atoum
         ;
     }
 
+    public function testToArray()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($this->testedInstance->setCamelCaseProperty($value = uniqid()))
+            ->then
+                ->array($this->testedInstance->toArray())
+                    ->notHasKey('camelCaseProperty')
+                    ->hasKey('camel_case_property')
+                    ->string['camel_case_property']
+                        ->isIdenticalTo($value)
+        ;
+    }
+
     public function validDataProvider()
     {
         $datas = [];

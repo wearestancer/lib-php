@@ -60,5 +60,8 @@ class Object extends ild78\Api\Object
             'restricted' => true,
             'type' => 'string',
         ],
+        'camelCaseProperty' => [
+            'type' => self::STRING,
+        ],
     ];
 }

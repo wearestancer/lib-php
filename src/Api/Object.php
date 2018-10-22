@@ -478,14 +478,19 @@ abstract class Object implements JsonSerializable
         ];
         $data = array_merge($data, $this->dataModel);
 
+        $replace = function ($matches) {
+            return '_' . strtolower($matches[0]);
+        };
+
         foreach ($data as $property => $infos) {
             $value = $infos['value'];
+            $prop = preg_replace_callback('`[A-Z]`', $replace, $property);
 
-            if ($value && $property !== 'endpoint') {
-                $json[$property] = $value;
+            if ($value && $prop !== 'endpoint') {
+                $json[$prop] = $value;
 
                 if ($value instanceof DateTime) {
-                    $json[$property] = (int) $value->format('U');
+                    $json[$prop] = (int) $value->format('U');
                 }
             }
         }
