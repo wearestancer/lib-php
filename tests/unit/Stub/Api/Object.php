@@ -406,7 +406,7 @@ class Object extends atoum
 
                 ->if($options = [])
                 ->and($options['headers'] = [
-                    'Authorization' => 'Basic ' . $config->getKey(),
+                    'Authorization' => $config->getBasicAuthHeader(),
                 ])
                 ->and($options['body'] = json_encode($this->testedInstance))
                 ->then

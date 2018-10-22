@@ -23,6 +23,17 @@ class Config extends atoum
         ;
     }
 
+    public function testGetBasicAuthHeader()
+    {
+        $this
+            ->given($key1 = uniqid())
+            ->and($this->newTestedInstance($key1))
+            ->then
+                ->string($this->testedInstance->getBasicAuthHeader())
+                    ->isIdenticalTo('Basic ' . base64_encode($key1 . ':'))
+        ;
+    }
+
     public function testGetGlobal_SetGlobal()
     {
         $this

@@ -99,7 +99,7 @@ class Request
             $options['headers'] = [];
         }
 
-        $options['headers']['Authorization'] = 'Basic ' . $config->getKey();
+        $options['headers']['Authorization'] = $config->getBasicAuthHeader();
 
         $endpoint = $object->getEndpoint();
 

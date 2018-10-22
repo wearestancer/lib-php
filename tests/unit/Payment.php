@@ -78,7 +78,7 @@ class Payment extends atoum
             ->and($json = json_encode($this->testedInstance))
             ->and($options = [
                 'body' => $json,
-                'headers' => ['Authorization' => 'Basic ' . $config->getKey()]
+                'headers' => ['Authorization' => $config->getBasicAuthHeader()]
             ])
             ->then
                 ->variable($this->testedInstance->getId())
@@ -176,7 +176,7 @@ class Payment extends atoum
             ->and($json = json_encode($this->testedInstance))
             ->and($options = [
                 'body' => $json,
-                'headers' => ['Authorization' => 'Basic ' . $config->getKey()]
+                'headers' => ['Authorization' => $config->getBasicAuthHeader()]
             ])
             ->then
                 ->variable($this->testedInstance->getId())

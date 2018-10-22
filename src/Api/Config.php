@@ -56,6 +56,16 @@ class Config
     }
 
     /**
+     * Return HTTP "basic" authentication header's value
+     *
+     * @return string
+     */
+    public function getBasicAuthHeader() : string
+    {
+        return 'Basic ' . base64_encode($this->getKey() . ':');
+    }
+
+    /**
      * Return current instance
      *
      * This is used to prevent passing an API instance on everycall.
