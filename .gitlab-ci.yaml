@@ -9,6 +9,10 @@ atoum:
   script: ./vendor/bin/atoum
   coverage: '/Code coverage value: \d+\.\d+%/'
 
+  artifacts:
+    reports:
+      junit: atoum.xunit.xml
+
   cache:
     paths:
       - vendor/
