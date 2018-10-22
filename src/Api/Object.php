@@ -473,10 +473,6 @@ abstract class Object implements JsonSerializable
                 'restricted' => false,
                 'value' => $this->id,
             ],
-            'created' => [
-                'restricted' => false,
-                'value' => $this->created,
-            ],
         ];
         $data = array_merge($data, $this->dataModel);
 

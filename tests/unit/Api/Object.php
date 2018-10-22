@@ -204,7 +204,7 @@ class Object extends atoum
             ->then
                 ->array($this->testedInstance->jsonSerialize())
                     ->string['id']->isIdenticalTo($data['id'])
-                    ->integer['created']->isIdenticalTo($data['created'])
+                    ->notHasKey('created')
                     ->notHasKey('endpoint')
                 ->json(json_encode($this->testedInstance))
         ;
@@ -285,7 +285,7 @@ class Object extends atoum
             ->then
                 ->array($this->testedInstance->toArray())
                     ->string['id']->isIdenticalTo($data['id'])
-                    ->integer['created']->isIdenticalTo($data['created'])
+                    ->notHasKey('created')
                     ->notHasKey('endpoint')
         ;
     }
@@ -318,6 +318,7 @@ class Object extends atoum
                 ->string($this->testedInstance->toString())
                     ->isIdenticalTo((string) $this->testedInstance)
                     ->isIdenticalTo(json_encode($this->testedInstance))
+                    ->isIdenticalTo('{"id":"' . $data['id'] . '"}')
         ;
     }
 }
