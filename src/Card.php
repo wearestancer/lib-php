@@ -56,7 +56,7 @@ class Card extends Api\Object
                 'min' => 16,
                 'max' => 19,
             ],
-            'type' => self::INTEGER,
+            'type' => self::STRING,
         ],
         'tokenize' => [
             'type' => self::BOOLEAN,
@@ -241,13 +241,14 @@ class Card extends Api\Object
     /**
      * Add a card number
      *
-     * @param integer $number A valid card number.
+     * @param string $number A valid card number.
      * @return self
      * @throws ild78\Exceptions\InvalidCardNumberException When the card number is invalid.
      */
-    public function setNumber(int $number) : self
+    public function setNumber(string $number) : self
     {
-        $parts = str_split((string) $number);
+        $number = preg_replace('`\s*`', '', $number);
+        $parts = str_split($number);
         $reversed = array_reverse($parts);
         $sum = 0;
 

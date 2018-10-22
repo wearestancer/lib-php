@@ -61,7 +61,7 @@ class Payment extends atoum
             ->and($card->setExpMonth(rand(1, 12)))
             ->and($card->setExpYear(rand(date('Y'), 3000)))
             ->and($card->setName(uniqid()))
-            ->and($card->setNumber($number = 4111111111111111))
+            ->and($card->setNumber($number = '4111111111111111'))
             ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
 
             ->if($this->newTestedInstance)
@@ -138,7 +138,7 @@ class Payment extends atoum
                 ->variable($card->getName())
                     ->isNull
 
-                ->integer($card->getNumber())
+                ->string($card->getNumber())
                     ->isIdenticalTo($number) // Number is unchanged in save process
 
                 ->variable($card->getZipCode())

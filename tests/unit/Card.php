@@ -284,11 +284,11 @@ class Card extends atoum
                     ->variable($this->testedInstance->getLast4())
                         ->isNull
 
-                    ->object($this->testedInstance->setNumber($number))
+                    ->object($this->testedInstance->setNumber((string) $number))
                         ->isTestedInstance
 
-                    ->integer($this->testedInstance->getNumber())
-                        ->isIdenticalTo($number)
+                    ->string($this->testedInstance->getNumber())
+                        ->isIdenticalTo((string) $number)
 
                     ->string($this->testedInstance->getLast4())
                         ->isIdenticalTo($last)
@@ -298,7 +298,7 @@ class Card extends atoum
                 ->and($badNumber = $number + 1)
                 ->then
                     ->exception(function () use ($badNumber) {
-                        $this->testedInstance->setNumber($badNumber);
+                        $this->testedInstance->setNumber((string) $badNumber);
                     })
                         ->isInstanceOf(Exceptions\InvalidCardNumberException::class)
                         ->message
