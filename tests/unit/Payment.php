@@ -520,6 +520,7 @@ class Payment extends atoum
 
             ->given($this->newTestedInstance(uniqid()))
             ->and($tooMuch = rand($paid + 1, 9999))
+            ->and($notEnough = rand(0, 49))
             ->then
                 ->assert('Without refunds we get an empty array')
                     ->if($this->calling($response)->getBody = json_encode($paymentData))
@@ -534,6 +535,15 @@ class Payment extends atoum
                         ->isInstanceOf(Exceptions\InvalidAmountException::class)
                         ->message
                             ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $tooMuch / 100) . ' EUR) more than paid (34.06 EUR).')
+
+                ->assert('Amount must be greater or equal than 50')
+                    ->exception(function () use ($notEnough) {
+                        $this->testedInstance->refund($notEnough);
+                    })
+                        ->isInstanceOf(Exceptions\InvalidAmountException::class)
+                        ->hasNestedException
+                        ->message
+                            ->isIdenticalTo('Amount must be greater than or equal to 50.')
 
                 ->assert('We can put a refund amount')
                     ->if($this->calling($response)->getBody = json_encode($refund1Data))
