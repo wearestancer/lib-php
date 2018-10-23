@@ -219,45 +219,93 @@ class Object extends atoum
     /**
      * @dataProvider validDataProvider
      */
+    public function testDataModelAdderThrowsNotAList($property, $value)
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->exception(function () use ($property, $value) {
+                    $this->testedInstance->dataModelAdder($property, $value);
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('"' . $property . '" is not a list, you can not add elements in it.')
+        ;
+    }
+
+    /**
+     * @dataProvider validDataProvider
+     */
     public function testDataModelGetterAndSetter($property, $value)
     {
-        if (is_array($value)) {
-            $assertMessage = vsprintf('Test with %s with %s', [
-                $property,
-                json_encode($value),
-            ]);
-        } else {
-            $assertMessage = vsprintf('Test with %s with value "%s" (%d chars)', [
-                $property,
-                $value,
-                strlen((string) $value),
-            ]);
-        }
+        $assertMessage = vsprintf('Test with %s with value "%s" (%d chars)', [
+            $property,
+            $value,
+            strlen((string) $value),
+        ]);
 
         $this
             ->given($this->newTestedInstance)
             ->then
                 ->assert($assertMessage)
-        ;
+                    ->variable($this->testedInstance->dataModelGetter($property))
+                        ->isNull
 
-        if (is_array($value)) {
-            $this
-                ->array($this->testedInstance->dataModelGetter($property))
-                    ->isEmpty
-            ;
-        } else {
-            $this
-                ->variable($this->testedInstance->dataModelGetter($property))
-                    ->isNull
-            ;
-        }
-
-        $this
                     ->object($this->testedInstance->dataModelSetter($property, $value))
                         ->isTestedInstance
 
                     ->variable($this->testedInstance->dataModelGetter($property))
                         ->isIdenticalTo($value)
+        ;
+    }
+
+    /**
+     * @dataProvider validArrayDataProvider
+     */
+    public function testDataModelGetterSetterAdderOnArray($property, $value, $extra)
+    {
+        $assertMessage = vsprintf('Test with %s with %s : ', [
+            $property,
+            json_encode($value),
+        ]);
+
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->assert($assertMessage . 'If nothing, we got an empty array')
+                    ->array($this->testedInstance->dataModelGetter($property))
+                        ->isEmpty
+
+                ->assert($assertMessage . '"set" will insert value like other')
+                    ->object($this->testedInstance->dataModelSetter($property, $value))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->dataModelGetter($property))
+                        ->isIdenticalTo($value)
+                        ->size
+                            ->isEqualTo(count($value))
+
+                ->assert($assertMessage . '"add" will add value without touching previous ones')
+                    ->object($this->testedInstance->dataModelAdder($property, $extra))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->dataModelGetter($property))
+                        ->containsValues($value)
+                        ->size
+                            ->isEqualTo(count($value) + 1)
+
+                ->assert($assertMessage . '"set" will truncate previous')
+                    ->array($this->testedInstance->dataModelGetter($property))
+                        ->size
+                            ->isGreaterThan(count($value))
+
+                    ->object($this->testedInstance->dataModelSetter($property, $value))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->dataModelGetter($property))
+                        ->isIdenticalTo($value)
+                        ->size
+                            ->isEqualTo(count($value))
         ;
     }
 
@@ -644,6 +692,12 @@ class Object extends atoum
             null,
         ];
 
+        return $datas;
+    }
+
+    public function validArrayDataProvider()
+    {
+        $datas = [];
         $array1 = [];
         $array2 = [];
         $array3 = [];
@@ -657,27 +711,21 @@ class Object extends atoum
             $datas[] = [
                 'array1',
                 $array1,
-                null,
-                null,
-                null,
+                $this->makeStringBetween(10, 20),
             ];
 
             // array 2, array of integer
             $datas[] = [
                 'array2',
                 $array2,
-                null,
-                null,
-                null,
+                $this->makeIntegerBetween(10, 20),
             ];
 
             // array 3, array of object
             $datas[] = [
                 'array3',
                 $array3,
-                null,
-                null,
-                null,
+                new ild78\Card,
             ];
         }
 

@@ -126,6 +126,35 @@ abstract class Object implements JsonSerializable
     }
 
     /**
+     * Add a value stored list in data model.
+     *
+     * @param string $property Property to set.
+     * @param mixed $value Value to set.
+     * @return self
+     * @uses self::dataModelGetter() To get actual values.
+     * @uses self::dataModelSetter() To set new values.
+     * @throws ild78\Exceptions\InvalidArgumentException When asking an unknown property.
+     * @throws ild78\Exceptions\InvalidArgumentException If used on properties not declared as list.
+     */
+    public function dataModelAdder(string $property, $value) : self
+    {
+        if (!array_key_exists($property, $this->dataModel)) {
+            throw new ild78\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
+        }
+
+        if (!$this->dataModel[$property]['list']) {
+            $message = sprintf('"%s" is not a list, you can not add elements in it.', $property);
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
+        $values = $this->dataModelGetter($property);
+        $values[] = $value;
+
+        return $this->dataModelSetter($property, $values);
+    }
+
+    /**
      * Get a value stored in data model.
      *
      * This was initialy in `self::__call()` method, I removed it for simplicity.
