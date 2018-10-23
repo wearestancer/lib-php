@@ -473,6 +473,52 @@ class Object extends atoum
         ;
     }
 
+    public function testHydrate()
+    {
+        $this
+            ->given($data = [
+                'created' => rand(946681200, 1893452400),
+            ])
+            ->and($withEmpty = array_merge($data, [
+                'object1' => null,
+                'array1' => [],
+                'array3' => [],
+            ]))
+
+            ->if($this->newTestedInstance)
+            ->then
+                ->assert('Normal hydratation')
+                    ->object($this->testedInstance->hydrate($data))
+                        ->isTestedInstance
+
+                    ->dateTime($date = $this->testedInstance->getCreationDate())
+                        ->variable($date->format('U'))
+                            ->isEqualTo($data['created'])
+
+                    ->variable($this->testedInstance->getObject1())
+                        ->isNull
+
+                    ->array($this->testedInstance->getArray1())
+                        ->isEmpty
+
+                    ->array($this->testedInstance->getArray3())
+                        ->isEmpty
+
+                ->assert('Hydratation with empty value')
+                    ->object($this->testedInstance->hydrate($withEmpty))
+                        ->isTestedInstance
+
+                    ->variable($this->testedInstance->getObject1())
+                        ->isNull
+
+                    ->array($this->testedInstance->getArray1())
+                        ->isEmpty
+
+                    ->array($this->testedInstance->getArray3())
+                        ->isEmpty
+        ;
+    }
+
     public function testPopulate()
     {
         $this
