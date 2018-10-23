@@ -24,6 +24,8 @@ use ild78;
  */
 class Payment extends Api\AbstractObject
 {
+    use ild78\Traits\AmountTrait;
+
     /** @var string */
     protected $endpoint = 'checkout';
 
@@ -407,22 +409,6 @@ class Payment extends Api\AbstractObject
         Api\Config::getGlobal()->getLogger()->info($message);
 
         return $this;
-    }
-
-    /**
-     * Update amount
-     *
-     * @param integer $amount New amount.
-     * @return self
-     * @throws ild78\Exceptions\InvalidAmountException When the amount is invalid.
-     */
-    public function setAmount(int $amount) : self
-    {
-        try {
-            return parent::setAmount($amount);
-        } catch (ild78\Exceptions\InvalidArgumentException $excep) {
-            throw new ild78\Exceptions\InvalidAmountException($excep->getMessage(), $excep->getCode(), $excep);
-        }
     }
 
     /**
