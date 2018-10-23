@@ -413,7 +413,25 @@ abstract class Object implements JsonSerializable
      */
     public function jsonSerialize() : array
     {
-        return $this->toArray();
+        $struct = $this->toArray();
+
+        foreach ($struct as $prop => &$value) {
+            $type = gettype($value);
+
+            if ($type === 'object' && $value->getId()) {
+                $value = $value->getId();
+            }
+
+            if ($type === 'array') {
+                foreach ($value as &$val) {
+                    if (gettype($val) === 'object' && $val->getId()) {
+                        $val = $val->getId();
+                    }
+                }
+            }
+        }
+
+        return $struct;
     }
 
     /**
