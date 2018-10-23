@@ -495,6 +495,91 @@ class Payment extends atoum
         ;
     }
 
+    public function testRefund()
+    {
+        $this
+            ->given($client = new mock\ild78\Http\Client)
+            ->and($response = new mock\ild78\Http\Response(200))
+            ->and($this->calling($client)->request = $response)
+            ->and($config = Api\Config::init(uniqid()))
+            ->and($config->setHttpClient($client))
+            // Behavior modification are done in assert part to prevent confusion on multiple calls mocking
+
+            ->if($body = file_get_contents(__DIR__ . '/fixtures/payment/read.json'))
+            ->and($paymentData = json_decode($body, true))
+            ->and($paid = $paymentData['amount'])
+
+            ->if($amount = rand(50, $paid))
+            ->and($body = file_get_contents(__DIR__ . '/fixtures/refund/read.json'))
+            ->and($refund1Data = json_decode($body, true))
+            ->and($refund1Data['amount'] = $amount)
+
+            ->if($lastPart = $paid - $amount)
+            ->and($refund2Data = json_decode($body, true))
+            ->and($refund2Data['amount'] = $lastPart)
+
+            ->given($this->newTestedInstance(uniqid()))
+            ->and($tooMuch = rand($paid + 1, 9999))
+            ->then
+                ->assert('Without refunds we get an empty array')
+                    ->if($this->calling($response)->getBody = json_encode($paymentData))
+                    ->then
+                        ->array($this->testedInstance->getRefunds())
+                            ->isEmpty
+
+                ->assert('We can not refund more than paid')
+                    ->exception(function () use ($tooMuch) {
+                        $this->testedInstance->refund($tooMuch);
+                    })
+                        ->isInstanceOf(Exceptions\InvalidAmountException::class)
+                        ->message
+                            ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $tooMuch / 100) . ' EUR) more than paid (34.06 EUR).')
+
+                ->assert('We can put a refund amount')
+                    ->if($this->calling($response)->getBody = json_encode($refund1Data))
+                    ->then
+                        ->object($this->testedInstance->refund($amount))
+                            ->isTestedInstance
+
+                        ->array($refunds = $this->testedInstance->getRefunds())
+                            ->object[0]
+                                ->isInstanceOf(ild78\Refund::class)
+                            ->size
+                                ->isEqualTo(1)
+
+                        ->object($refunds[0]->getPayment())
+                            ->isTestedInstance
+
+                        ->integer($refunds[0]->getAmount())
+                            ->isIdenticalTo($amount)
+
+                ->assert('Without amount we will refund all')
+                    ->if($this->calling($response)->getBody = json_encode($refund2Data))
+                    ->then
+                        ->object($this->testedInstance->refund())
+                            ->isTestedInstance
+
+                        ->array($refunds = $this->testedInstance->getRefunds())
+                            ->hasSize(2)
+                            ->object[0]
+                                ->isInstanceOf(ild78\Refund::class)
+                            ->object[1]
+                                ->isInstanceOf(ild78\Refund::class)
+
+                        ->object($refunds[0]->getPayment())
+                            ->isTestedInstance
+
+                        ->integer($refunds[0]->getAmount())
+                            ->isIdenticalTo($amount)
+
+                        ->object($refunds[1]->getPayment())
+                            ->isTestedInstance
+
+                        ->integer($refunds[1]->getAmount())
+                            ->isIdenticalTo($lastPart)
+        ;
+    }
+
     public function testSave_withCard()
     {
         $this

@@ -63,6 +63,10 @@ class Payment extends Api\AbstractObject
             'restricted' => true,
             'type' => self::STRING,
         ],
+        'refunds' => [
+            'list' => true,
+            'type' => ild78\Refund::class,
+        ],
         'orderId' => [
             'size' => [
                 'min' => 1,
@@ -327,6 +331,39 @@ class Payment extends Api\AbstractObject
         }
 
         return $this->setAmount($amount)->setCurrency($currency)->save();
+    }
+
+    /**
+     * Refund a payment, or part of it.
+     *
+     * @param integet|null $amount Amount to refund, if not present all paid amount will be refund.
+     * @return self
+     * @throws ild78\Exceptions\InvalidAmountException When trying to refund more than paid.
+     * @throws ild78\Exceptions\InvalidAmountException When the amount is invalid.
+     */
+    public function refund(int $amount = null) : self
+    {
+        $refund = new Refund();
+        $refund->setPayment($this);
+
+        if ($amount) {
+            if ($amount > $this->getAmount()) {
+                $params = [
+                    $amount / 100,
+                    strtoupper($this->getCurrency()),
+                    $this->getAmount() / 100,
+                    strtoupper($this->getCurrency()),
+                ];
+                $message = vsprintf('You are trying to refund (%.02f %s) more than paid (%.02f %s).', $params);
+
+                throw new ild78\Exceptions\InvalidAmountException($message);
+            }
+
+            $refund->setAmount($amount);
+        }
+
+        // `setPayment` is called again to force current instance
+        return $this->addRefunds($refund->save()->setPayment($this));
     }
 
     /**
