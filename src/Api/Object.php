@@ -146,6 +146,10 @@ abstract class Object implements JsonSerializable
             $value = $this->populate()->dataModel[$property]['value'];
         }
 
+        if (is_null($value) && $this->dataModel[$property]['list']) {
+            return [];
+        }
+
         return $value;
     }
 

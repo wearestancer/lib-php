@@ -238,9 +238,21 @@ class Object extends atoum
             ->given($this->newTestedInstance)
             ->then
                 ->assert($assertMessage)
-                    ->variable($this->testedInstance->dataModelGetter($property))
-                        ->isNull
+        ;
 
+        if (is_array($value)) {
+            $this
+                ->array($this->testedInstance->dataModelGetter($property))
+                    ->isEmpty
+            ;
+        } else {
+            $this
+                ->variable($this->testedInstance->dataModelGetter($property))
+                    ->isNull
+            ;
+        }
+
+        $this
                     ->object($this->testedInstance->dataModelSetter($property, $value))
                         ->isTestedInstance
 
