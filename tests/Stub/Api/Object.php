@@ -63,6 +63,18 @@ class Object extends ild78\Api\Object
         'camelCaseProperty' => [
             'type' => self::STRING,
         ],
+        'array1' => [
+            'list' => true,
+            'type' => self::STRING,
+        ],
+        'array2' => [
+            'list' => true,
+            'type' => self::INTEGER,
+        ],
+        'array3' => [
+            'list' => true,
+            'type' => ild78\Card::class,
+        ],
     ];
 
     // Test only method

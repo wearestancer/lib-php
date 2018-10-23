@@ -130,6 +130,54 @@ class Object extends atoum
             'You are not allowed to modify "restricted1".',
         ];
 
+        // array1, array of string
+        $datas[] = [
+            'array1',
+            $this->makeStringBetween(10, 20),
+            ild78\Exceptions\InvalidArgumentException::class,
+            'Type mismatch, given "string" expected "array".',
+        ];
+
+        // array1, array of string
+        $datas[] = [
+            'array1',
+            $this->makeIntegerBetween(10, 20),
+            ild78\Exceptions\InvalidArgumentException::class,
+            'Type mismatch, given "integer" expected "array".',
+        ];
+
+        // array1, array of string
+        $datas[] = [
+            'array1',
+            [$this->makeIntegerBetween(10, 20)],
+            ild78\Exceptions\InvalidArgumentException::class,
+            'Type mismatch, given "integer" expected "string".',
+        ];
+
+        // array2, array of intger
+        $datas[] = [
+            'array2',
+            [$this->makeStringBetween(10, 20)],
+            ild78\Exceptions\InvalidArgumentException::class,
+            'Type mismatch, given "string" expected "integer".',
+        ];
+
+        // array3, array of object
+        $datas[] = [
+            'array3',
+            [$this->makeStringBetween(10, 20)],
+            ild78\Exceptions\InvalidArgumentException::class,
+            'Type mismatch, given "string" expected "ild78\Card".',
+        ];
+
+        // array3, array of object
+        $datas[] = [
+            'array3',
+            [$this->makeIntegerBetween(10, 20)],
+            ild78\Exceptions\InvalidArgumentException::class,
+            'Type mismatch, given "integer" expected "ild78\Card".',
+        ];
+
         return $datas;
     }
 
@@ -173,10 +221,23 @@ class Object extends atoum
      */
     public function testDataModelGetterAndSetter($property, $value)
     {
+        if (is_array($value)) {
+            $assertMessage = vsprintf('Test with %s with %s', [
+                $property,
+                json_encode($value),
+            ]);
+        } else {
+            $assertMessage = vsprintf('Test with %s with value "%s" (%d chars)', [
+                $property,
+                $value,
+                strlen((string) $value),
+            ]);
+        }
+
         $this
             ->given($this->newTestedInstance)
             ->then
-                ->assert(sprintf('Test with %s with value "%s" (%d chars)', $property, $value, strlen((string) $value)))
+                ->assert($assertMessage)
                     ->variable($this->testedInstance->dataModelGetter($property))
                         ->isNull
 
@@ -247,6 +308,40 @@ class Object extends atoum
     }
 
     /**
+     * @dataProvider invalidDataProvider
+     */
+    public function testDataModelSetterThrowsInvalidData($property, $value, $class, $message)
+    {
+
+        if (is_array($value)) {
+            $assertMessage = vsprintf('$%s = %s => %s', [
+                $property,
+                json_encode($value),
+                $message,
+            ]);
+        } else {
+            $assertMessage = vsprintf('$%s = "%s" (%d chars) => %s', [
+                $property,
+                $value,
+                strlen((string) $value),
+                $message,
+            ]);
+        }
+
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->assert($assertMessage)
+                    ->exception(function () use ($property, $value) {
+                        $this->testedInstance->dataModelSetter($property, $value);
+                    })
+                        ->isInstanceOf($class)
+                        ->message
+                            ->isIdenticalTo($message)
+        ;
+    }
+
+    /**
      * @dataProvider validDataProvider
      */
     public function testGetModel($property, $value, $min, $max, $fixed)
@@ -286,24 +381,6 @@ class Object extends atoum
                             ->hasKeys(['restricted', 'required'])
                         ;
                     })
-        ;
-    }
-
-    /**
-     * @dataProvider invalidDataProvider
-     */
-    public function testInvalidData($property, $value, $class, $message)
-    {
-        $this
-            ->given($this->newTestedInstance)
-            ->then
-                ->assert(sprintf('$%s = "%s" (%d chars) => %s', $property, $value, strlen((string) $value), $message))
-                    ->exception(function () use ($property, $value) {
-                        $this->testedInstance->dataModelSetter($property, $value);
-                    })
-                        ->isInstanceOf($class)
-                        ->message
-                            ->isIdenticalTo($message)
         ;
     }
 
@@ -554,6 +631,43 @@ class Object extends atoum
             null,
             null,
         ];
+
+        $array1 = [];
+        $array2 = [];
+        $array3 = [];
+
+        for ($idx = 0; $idx <= 3; $idx ++) {
+            $array1[] = $this->makeStringBetween(10, 20);
+            $array2[] = $this->makeIntegerBetween(10, 20);
+            $array3[] = new ild78\Card;
+
+            // array 1, array of string
+            $datas[] = [
+                'array1',
+                $array1,
+                null,
+                null,
+                null,
+            ];
+
+            // array 2, array of integer
+            $datas[] = [
+                'array2',
+                $array2,
+                null,
+                null,
+                null,
+            ];
+
+            // array 3, array of object
+            $datas[] = [
+                'array3',
+                $array3,
+                null,
+                null,
+                null,
+            ];
+        }
 
         return $datas;
     }
