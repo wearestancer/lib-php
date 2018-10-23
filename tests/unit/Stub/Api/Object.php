@@ -216,6 +216,35 @@ class Object extends atoum
         return substr(md5(uniqid()), 0, $length);
     }
 
+    public function test__call()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->assert('get / set / add with array1 (array of string)')
+                    ->array($this->testedInstance->getArray1())
+                        ->isEmpty
+
+                    ->object($this->testedInstance->setArray1([$one = uniqid()]))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->getArray1())
+                        ->string[0]
+                            ->isIdenticalTo($one)
+                        ->size->isEqualTo(1)
+
+                    ->object($this->testedInstance->addArray1($two = uniqid()))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->getArray1())
+                        ->string[0]
+                            ->isIdenticalTo($one)
+                        ->string[1]
+                            ->isIdenticalTo($two)
+                        ->size->isEqualTo(2)
+        ;
+    }
+
     /**
      * @dataProvider validDataProvider
      */

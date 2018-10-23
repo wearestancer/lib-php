@@ -109,6 +109,10 @@ abstract class Object implements JsonSerializable
             if ($action === 'set') {
                 return $this->dataModelSetter($property, $arguments[0]);
             }
+
+            if ($action === 'add') {
+                return $this->dataModelAdder($property, $arguments[0]);
+            }
         }
 
         throw new $class($message);
