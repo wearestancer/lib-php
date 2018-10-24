@@ -334,6 +334,12 @@ class Request extends atoum
                             ->message
                                 ->contains($infos['message'])
 
+                        ->object($this->exception->getRequest())
+                            ->isInstanceOf($request)
+
+                        ->object($this->exception->getResponse())
+                            ->isInstanceOf($response)
+
                         ->mock($logger)
                             ->call('debug')->withArguments($debugMessage, [])->once
                             ->call($infos['logLevel'])->withArguments($logMessage)->once
