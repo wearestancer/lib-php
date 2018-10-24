@@ -6,6 +6,6 @@ namespace ild78\Exceptions;
 /**
  * Exception thrown for 400 level errors.
  */
-class ClientException extends Exception
+class ClientException extends HttpException
 {
 }

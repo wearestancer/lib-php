@@ -12,7 +12,7 @@ class RedirectionException extends atoum
     {
         $this
             ->class(testedClass::class)
-                ->isSubclassOf(Exceptions\Exception::class)
+                ->isSubclassOf(Exceptions\HttpException::class)
         ;
     }
 }

@@ -6,6 +6,6 @@ namespace ild78\Exceptions;
 /**
  * Exception thrown for 500 level errors.
  */
-class ServerException extends Exception
+class ServerException extends HttpException
 {
 }

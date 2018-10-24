@@ -6,6 +6,6 @@ namespace ild78\Exceptions;
 /**
  * Exception thrown for 300 level errors.
  */
-class RedirectionException extends Exception
+class RedirectionException extends HttpException
 {
 }
