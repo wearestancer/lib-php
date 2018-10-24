@@ -264,7 +264,7 @@ class Request extends atoum
                 'logLevel' => 'error',
             ],
             409 => [ // not handled
-                'expected' => ild78\Exceptions\ClientException::class,
+                'expected' => ild78\Exceptions\ConflictException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
                 'message' => 'Conflict',
                 'logLevel' => 'error',

@@ -169,6 +169,12 @@ class Request
                     $logger->critical('HTTP ' . $message);
                     break;
 
+                case 409:
+                    $class = ild78\Exceptions\ConflictException::class;
+
+                    $logger->error('HTTP ' . $message);
+                    break;
+
                 default:
                     $logger->error('HTTP ' . $message);
                     break;
