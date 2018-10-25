@@ -462,6 +462,19 @@ abstract class Object implements JsonSerializable
     }
 
     /**
+     * Retrieve an API object
+     *
+     * Added to simply transition from Stripe.
+     *
+     * @param string $id Identifier of the object.
+     * @return self
+     */
+    public function retrieve(string $id) : self
+    {
+        return new static($id);
+    }
+
+    /**
      * Save the current object.
      *
      * @uses Request::post()

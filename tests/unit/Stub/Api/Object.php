@@ -373,6 +373,21 @@ class Object extends atoum
         ;
     }
 
+    public function testRetrieve()
+    {
+        $this
+            ->if($id = uniqid())
+            ->and($class = (string) $this->testedClass)
+            ->then
+                ->object($obj = $class::retrieve($id))
+                    ->isInstanceOf($class)
+                    ->isEqualTo($this->newTestedInstance($id))
+
+                ->string($obj->getId())
+                    ->isIdenticalTo($id)
+        ;
+    }
+
     public function testSave()
     {
         $this
