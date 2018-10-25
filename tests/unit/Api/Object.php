@@ -103,7 +103,10 @@ class Object extends atoum
                     })
                         ->isInstanceOf(Exceptions\BadMethodCallException::class)
                         ->message
-                            ->isIdenticalTo('Method "' . $method . '" unknown')
+                            ->isIdenticalTo(vsprintf('Method "%s::%s()" unknown', [
+                                get_class($this->testedInstance),
+                                $method,
+                            ]))
         ;
     }
 
