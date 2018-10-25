@@ -114,6 +114,33 @@ abstract class Object implements JsonSerializable
     }
 
     /**
+     * Aliases
+     *
+     * @param string $property Property called.
+     * @return mixed
+     */
+    public function __get(string $property)
+    {
+        $prop = strtolower($property);
+
+        if (array_key_exists($prop, $this->dataModel)) {
+            return $this->{'get' . $prop}();
+        }
+
+        if (property_exists($this, $prop)) {
+            return $this->{'get' . $prop}();
+        }
+
+        switch ($prop) {
+            case 'creationdate':
+                return $this->getCreationDate();
+
+            default:
+                return $this->$prop();
+        }
+    }
+
+    /**
      * Return a string representation (as a JSON) of the current object.
      *
      * @uses self::toString()
