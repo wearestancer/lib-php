@@ -74,6 +74,27 @@ class Payment extends Api\Object
     ];
 
     /**
+     * Quick way to make a simple payment
+     *
+     * @param integer $amount Amount.
+     * @param string $currency Currency.
+     * @param ild78\Interfaces\PaymentMeansInterface $means Payment means.
+     * @return self
+     */
+    public function pay(int $amount, string $currency, ild78\Interfaces\PaymentMeansInterface $means) : self
+    {
+        if ($means instanceof Card) {
+            $this->setCard($means);
+        }
+
+        if ($means instanceof Sepa) {
+            $this->setSepa($means);
+        }
+
+        return $this->setAmount($amount)->setCurrency($currency)->save();
+    }
+
+    /**
      * Save the current object.
      *
      * @uses Request::post()

@@ -45,6 +45,53 @@ class Payment extends atoum
         ;
     }
 
+    public function testPay()
+    {
+        $this
+            ->given($client = new mock\GuzzleHttp\Client)
+            ->and($response = new mock\GuzzleHttp\Psr7\Response)
+            ->and($this->calling($client)->request = $response)
+            ->and($config = Api\Config::init(uniqid()))
+            ->and($config->setHttpClient($client))
+
+            ->then
+                ->assert('Pay with card')
+                    ->if($card = new Card)
+                    ->and($card->setCvc(substr(uniqid(), 0, 3)))
+                    ->and($card->setExpMonth(rand(1, 12)))
+                    ->and($card->setExpYear(date('Y') + rand(1, 10)))
+                    ->and($card->setName(uniqid()))
+                    ->and($card->setNumber('4111111111111111'))
+                    ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
+
+                    ->if($file = __DIR__ . '/fixtures/payment/create-card.json')
+                    ->and($this->calling($response)->getBody = file_get_contents($file))
+                    ->then
+                        ->object($this->newTestedInstance->pay(rand(50, 9999), 'EUR', $card))
+                            ->isTestedInstance
+
+                        ->mock($client)
+                            ->call('request')
+                                ->once
+
+                ->assert('Pay with SEPA')
+                    ->if($sepa = new Sepa)
+                    ->and($sepa->setBic('DEUTDEFF')) // Thx Wikipedia
+                    ->and($sepa->setIban('DE91 1000 0000 0123 4567 89')) // Thx Wikipedia
+                    ->and($sepa->setName(uniqid()))
+
+                    ->if($file = __DIR__ . '/fixtures/payment/create-sepa.json')
+                    ->and($this->calling($response)->getBody = file_get_contents($file))
+                    ->then
+                        ->object($this->newTestedInstance->pay(rand(50, 9999), 'EUR', $sepa))
+                            ->isTestedInstance
+
+                        ->mock($client)
+                            ->call('request')
+                                ->once
+        ;
+    }
+
     public function testSave_withCard()
     {
         $this
