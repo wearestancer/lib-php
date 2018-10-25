@@ -70,6 +70,11 @@ class Card extends Api\Object
         ],
     ];
 
+    /** @var array */
+    protected $aliases = [
+        'istokenized' => 'gettokenize',
+    ];
+
     /**
      * Return the expiration date.
      *
