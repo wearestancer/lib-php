@@ -89,7 +89,7 @@ abstract class Object implements JsonSerializable
             return $this->{$this->aliases[$lower]}();
         }
 
-        $message = sprintf('Method "%s" unknown', $method);
+        $message = sprintf('Method "%s::%s()" unknown', get_class($this), $method);
         $action = substr($method, 0, 3);
         $property = lcfirst(substr($method, 3));
 
