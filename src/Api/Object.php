@@ -163,6 +163,19 @@ abstract class Object implements JsonSerializable
     }
 
     /**
+     * Create a fresh instance of an API object
+     *
+     * @param array $data Additionnal data for creation.
+     * @return self
+     */
+    public static function create(array $data) : self
+    {
+        $obj = new static();
+
+        return $obj->hydrate($data);
+    }
+
+    /**
      * Get a value stored in data model.
      *
      * This was initialy in `self::__call()` method, I removed it for simplicity.
