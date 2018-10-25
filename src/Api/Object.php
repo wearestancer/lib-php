@@ -80,7 +80,6 @@ abstract class Object implements JsonSerializable
      * @param array $arguments Arguments used during the call.
      * @return mixed
      * @throws ild78\Exceptions\BadMethodCallException When an unhandled method is called.
-     * @throws ild78\Exceptions\InvalidArgumentException When the value do not match expected pattern (in setters).
      */
     public function __call(string $method, array $arguments)
     {
@@ -90,7 +89,6 @@ abstract class Object implements JsonSerializable
             return $this->{$this->aliases[$lower]}();
         }
 
-        $class = ild78\Exceptions\BadMethodCallException::class;
         $message = sprintf('Method "%s" unknown', $method);
         $action = substr($method, 0, 3);
         $property = lcfirst(substr($method, 3));
@@ -119,7 +117,7 @@ abstract class Object implements JsonSerializable
             }
         }
 
-        throw new $class($message);
+        throw new ild78\Exceptions\BadMethodCallException($message);
     }
 
     /**
