@@ -483,7 +483,7 @@ abstract class Object implements JsonSerializable
         foreach ($data as $property => $infos) {
             $value = $infos['value'];
 
-            if ($value && !$infos['restricted']) {
+            if ($value !== null && !$infos['restricted']) {
                 $prop = preg_replace_callback('`[A-Z]`', $replace, $property);
 
                 if ($prop !== 'endpoint') {
