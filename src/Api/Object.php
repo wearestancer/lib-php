@@ -416,7 +416,7 @@ abstract class Object implements JsonSerializable
                     static::STRING,
                 ];
 
-                if (!in_array($this->dataModel[$property]['type'], $types, true)) {
+                if (!in_array($this->dataModel[$property]['type'], $types, true) && !is_object($value)) {
                     $id = null;
 
                     if (is_string($value)) {
