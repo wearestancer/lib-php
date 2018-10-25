@@ -37,6 +37,9 @@ abstract class Object implements JsonSerializable
     /** @var boolean */
     protected $modified = false;
 
+    /** @var array */
+    protected $aliases = [];
+
     /**
      * Create or get an API object
      *
@@ -81,6 +84,12 @@ abstract class Object implements JsonSerializable
      */
     public function __call(string $method, array $arguments)
     {
+        $lower = strtolower($method);
+
+        if (array_key_exists($lower, $this->aliases)) {
+            return $this->{$this->aliases[$lower]}();
+        }
+
         $class = ild78\Exceptions\BadMethodCallException::class;
         $message = sprintf('Method "%s" unknown', $method);
         $action = substr($method, 0, 3);
@@ -122,6 +131,10 @@ abstract class Object implements JsonSerializable
     public function __get(string $property)
     {
         $prop = strtolower($property);
+
+        if (array_key_exists($prop, $this->aliases)) {
+            return $this->{$this->aliases[$prop]}();
+        }
 
         if (array_key_exists($prop, $this->dataModel)) {
             return $this->{'get' . $prop}();

@@ -264,6 +264,13 @@ class Card extends atoum
 
                     ->array($this->testedInstance->toArray())
                         ->hasKey('tokenize')
+
+                ->assert('Aliases')
+                    ->boolean($this->testedInstance->getTokenize())
+                        ->isIdenticalTo($this->testedInstance->getTokenize)
+                        ->isIdenticalTo($this->testedInstance->tokenize)
+                        ->isIdenticalTo($this->testedInstance->isTokenized())
+                        ->isIdenticalTo($this->testedInstance->isTokenized)
         ;
     }
 
