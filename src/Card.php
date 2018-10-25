@@ -70,6 +70,11 @@ class Card extends Api\Object
         ],
     ];
 
+    /** @var array */
+    protected $aliases = [
+        'istokenized' => 'gettokenize',
+    ];
+
     /**
      * Return the expiration date.
      *
@@ -138,6 +143,30 @@ class Card extends Api\Object
     public function getExpirationYear()
     {
         return $this->getExpYear();
+    }
+
+    /**
+     * Return tokenize status
+     *
+     * For every card sended to the API, you will get an ID representing it.
+     * This ID is not reusable, you can not use it for an other payment.
+     *
+     * If you needed to make later payment, you can set tokenize to true,
+     * in that case, the card ID may be reuse for other payment.
+     *
+     * This can be usefull for payments in multiple times.
+     *
+     * @return boolean
+     */
+    public function getTokenize() : bool
+    {
+        $tokenize = parent::getTokenize();
+
+        if (!is_bool($tokenize)) {
+            return false;
+        }
+
+        return $tokenize;
     }
 
     /**

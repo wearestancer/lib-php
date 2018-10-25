@@ -231,6 +231,49 @@ class Card extends atoum
         }
     }
 
+    public function testGetTokenize_SetTokenize()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->assert('Return false by default')
+                    ->boolean($this->testedInstance->getTokenize())
+                        ->isFalse
+
+                ->assert('Tokenize is not sended by default')
+                    ->array($this->testedInstance->toArray())
+                        ->notHasKey('tokenize')
+
+                ->assert('setTokenize return itself')
+                    ->object($this->testedInstance->setTokenize(true))
+                        ->isTestedInstance
+
+                ->assert('Now it\'s visible')
+                    ->boolean($this->testedInstance->getTokenize())
+                        ->isTrue
+
+                    ->array($this->testedInstance->toArray())
+                        ->hasKey('tokenize')
+
+                ->assert('Visible when forced to false')
+                    ->object($this->testedInstance->setTokenize(false))
+                        ->isTestedInstance
+
+                    ->boolean($this->testedInstance->getTokenize())
+                        ->isFalse
+
+                    ->array($this->testedInstance->toArray())
+                        ->hasKey('tokenize')
+
+                ->assert('Aliases')
+                    ->boolean($this->testedInstance->getTokenize())
+                        ->isIdenticalTo($this->testedInstance->getTokenize)
+                        ->isIdenticalTo($this->testedInstance->tokenize)
+                        ->isIdenticalTo($this->testedInstance->isTokenized())
+                        ->isIdenticalTo($this->testedInstance->isTokenized)
+        ;
+    }
+
     public function testSetCvc()
     {
         for ($index = 0; $index < 5; $index++) {

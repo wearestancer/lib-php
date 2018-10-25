@@ -37,6 +37,9 @@ abstract class Object implements JsonSerializable
     /** @var boolean */
     protected $modified = false;
 
+    /** @var array */
+    protected $aliases = [];
+
     /**
      * Create or get an API object
      *
@@ -77,12 +80,16 @@ abstract class Object implements JsonSerializable
      * @param array $arguments Arguments used during the call.
      * @return mixed
      * @throws ild78\Exceptions\BadMethodCallException When an unhandled method is called.
-     * @throws ild78\Exceptions\InvalidArgumentException When the value do not match expected pattern (in setters).
      */
     public function __call(string $method, array $arguments)
     {
-        $class = ild78\Exceptions\BadMethodCallException::class;
-        $message = sprintf('Method "%s" unknown', $method);
+        $lower = strtolower($method);
+
+        if (array_key_exists($lower, $this->aliases)) {
+            return $this->{$this->aliases[$lower]}();
+        }
+
+        $message = sprintf('Method "%s::%s()" unknown', get_class($this), $method);
         $action = substr($method, 0, 3);
         $property = lcfirst(substr($method, 3));
 
@@ -110,7 +117,38 @@ abstract class Object implements JsonSerializable
             }
         }
 
-        throw new $class($message);
+        throw new ild78\Exceptions\BadMethodCallException($message);
+    }
+
+    /**
+     * Aliases
+     *
+     * @param string $property Property called.
+     * @return mixed
+     */
+    public function __get(string $property)
+    {
+        $prop = strtolower($property);
+
+        if (array_key_exists($prop, $this->aliases)) {
+            return $this->{$this->aliases[$prop]}();
+        }
+
+        if (array_key_exists($prop, $this->dataModel)) {
+            return $this->{'get' . $prop}();
+        }
+
+        if (property_exists($this, $prop)) {
+            return $this->{'get' . $prop}();
+        }
+
+        switch ($prop) {
+            case 'creationdate':
+                return $this->getCreationDate();
+
+            default:
+                return $this->$prop();
+        }
     }
 
     /**
@@ -483,7 +521,7 @@ abstract class Object implements JsonSerializable
         foreach ($data as $property => $infos) {
             $value = $infos['value'];
 
-            if ($value && !$infos['restricted']) {
+            if ($value !== null && !$infos['restricted']) {
                 $prop = preg_replace_callback('`[A-Z]`', $replace, $property);
 
                 if ($prop !== 'endpoint') {

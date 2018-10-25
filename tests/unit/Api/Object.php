@@ -103,7 +103,32 @@ class Object extends atoum
                     })
                         ->isInstanceOf(Exceptions\BadMethodCallException::class)
                         ->message
-                            ->isIdenticalTo('Method "' . $method . '" unknown')
+                            ->isIdenticalTo(vsprintf('Method "%s::%s()" unknown', [
+                                get_class($this->testedInstance),
+                                $method,
+                            ]))
+        ;
+    }
+
+    public function test__get()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($data = [
+                'id' => uniqid(),
+                'created' => rand(946681200, 1893452400),
+            ])
+            ->and($this->testedInstance->hydrate($data))
+            ->then
+                ->variable($this->testedInstance->getId())
+                    ->isIdenticalTo($this->testedInstance->getId)
+                    ->isIdenticalTo($this->testedInstance->id)
+                    ->isIdenticalTo($this->testedInstance->GETID)
+
+                ->variable($this->testedInstance->getCreationDate())
+                    ->isIdenticalTo($this->testedInstance->getCreationDate)
+                    ->isIdenticalTo($this->testedInstance->creationDate)
+                    ->isIdenticalTo($this->testedInstance->GeTcReAtIoNdAtE)
         ;
     }
 

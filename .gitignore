@@ -5,3 +5,7 @@ composer.lock
 
 # Tests report
 reports/
+
+# macOS files
+.DS_Store
+._*
