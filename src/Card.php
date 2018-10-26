@@ -294,7 +294,7 @@ class Card extends Api\Object
         ];
 
         $manip = function ($n, $index) use (&$sum, $calc) {
-            $sum += ($index % 2) ? $calc[$n] : $n;
+            $sum += ($index % 2) ? $calc[$n] : (int) $n;
         };
 
         array_walk($reversed, $manip);
