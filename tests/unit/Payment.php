@@ -82,6 +82,7 @@ class Payment extends atoum
                     'Authorization' => $config->getBasicAuthHeader(),
                     'Content-Type' => 'application/json',
                 ],
+                'timeout' => $config->getTimeout(),
             ])
             ->then
                 ->variable($this->testedInstance->getId())
@@ -183,6 +184,7 @@ class Payment extends atoum
                     'Authorization' => $config->getBasicAuthHeader(),
                     'Content-Type' => 'application/json',
                 ],
+                'timeout' => $config->getTimeout(),
             ])
             ->then
                 ->variable($this->testedInstance->getId())

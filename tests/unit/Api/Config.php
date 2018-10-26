@@ -162,6 +162,32 @@ class Config extends atoum
         ;
     }
 
+    public function testGetTimeout_SetTimeout()
+    {
+        $this
+            ->given($this->newTestedInstance(uniqid()))
+            ->and($defaultTimeout = 5)
+            ->and($randomTimeout = rand(1, 60 * 3))
+            ->and($tooMuchTimeout = 60 * 3 + rand(1, 9999))
+            ->then
+                ->integer($this->testedInstance->getTimeout())
+                    ->isIdenticalTo($defaultTimeout)
+
+                ->object($this->testedInstance->setTimeout($randomTimeout))
+                    ->isTestedInstance
+
+                ->integer($this->testedInstance->getTimeout())
+                    ->isIdenticalTo($randomTimeout)
+
+                ->exception(function () use ($tooMuchTimeout) {
+                    $this->testedInstance->setTimeout($tooMuchTimeout);
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Timeout (' . $tooMuchTimeout . 's) is too high, the maximum allowed is 180 seconds (3 minutes, and it\'s already too much).')
+        ;
+    }
+
     public function testGetUri()
     {
         $this

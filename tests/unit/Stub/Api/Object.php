@@ -409,6 +409,7 @@ class Object extends atoum
                     'Authorization' => $config->getBasicAuthHeader(),
                     'Content-Type' => 'application/json',
                 ])
+                ->and($options['timeout'] = $config->getTimeout())
                 ->and($options['body'] = json_encode($this->testedInstance))
                 ->then
                     ->object($this->testedInstance->save())

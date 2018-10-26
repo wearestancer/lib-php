@@ -102,6 +102,8 @@ class Request
         $options['headers']['Authorization'] = $config->getBasicAuthHeader();
         $options['headers']['Content-Type'] = 'application/json';
 
+        $options['timeout'] = $config->getTimeout();
+
         $endpoint = $object->getEndpoint();
 
         if ($location) {

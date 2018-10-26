@@ -38,6 +38,9 @@ class Config
     protected $port;
 
     /** @var integer */
+    protected $timeout = 5;
+
+    /** @var integer */
     protected $version = 1;
 
     /**
@@ -167,6 +170,18 @@ class Config
     public function getPort() : int
     {
         return $this->port ?: 443;
+    }
+
+    /**
+     * Return API timeout
+     *
+     * Default : 5 (seconds)
+     *
+     * @return integer
+     */
+    public function getTimeout() : int
+    {
+        return $this->timeout;
     }
 
     /**
@@ -361,6 +376,38 @@ class Config
     public function setPort(int $port) : self
     {
         $this->port = $port;
+
+        return $this;
+    }
+
+    /**
+     * Update API timeout
+     *
+     * @param integer $timeout New timeout.
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When setting a too high timeout.
+     */
+    public function setTimeout(int $timeout) : self
+    {
+        $max = 180;
+
+        if ($timeout > $max) {
+            $params = [
+                $timeout,
+                $max,
+                $max / 60,
+            ];
+            $pattern = [
+                'Timeout (%ds) is too high,',
+                'the maximum allowed is %d seconds (%d minutes, and it\'s already too much).',
+            ];
+
+            $message = vsprintf(implode(' ', $pattern), $params);
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
+        $this->timeout = $timeout;
 
         return $this;
     }
