@@ -165,7 +165,7 @@ class Config
      *
      * If defaut port is used, it will not be shown in API URI.
      *
-     * @return string
+     * @return integer
      */
     public function getPort() : int
     {
