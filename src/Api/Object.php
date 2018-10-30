@@ -163,6 +163,19 @@ abstract class Object implements JsonSerializable
     }
 
     /**
+     * Create a fresh instance of an API object
+     *
+     * @param array $data Additionnal data for creation.
+     * @return self
+     */
+    public static function create(array $data) : self
+    {
+        $obj = new static();
+
+        return $obj->hydrate($data);
+    }
+
+    /**
      * Get a value stored in data model.
      *
      * This was initialy in `self::__call()` method, I removed it for simplicity.
@@ -403,7 +416,7 @@ abstract class Object implements JsonSerializable
                     static::STRING,
                 ];
 
-                if (!in_array($this->dataModel[$property]['type'], $types, true)) {
+                if (!in_array($this->dataModel[$property]['type'], $types, true) && !is_object($value)) {
                     $id = null;
 
                     if (is_string($value)) {
@@ -459,6 +472,19 @@ abstract class Object implements JsonSerializable
         }
 
         return $this;
+    }
+
+    /**
+     * Retrieve an API object
+     *
+     * Added to simply transition from Stripe.
+     *
+     * @param string $id Identifier of the object.
+     * @return self
+     */
+    public function retrieve(string $id) : self
+    {
+        return new static($id);
     }
 
     /**

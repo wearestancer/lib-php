@@ -3,6 +3,7 @@
 namespace ild78\tests\unit;
 
 use atoum;
+use ild78;
 use ild78\Api;
 use ild78\Exceptions;
 use ild78\Sepa as testedClass;
@@ -29,8 +30,9 @@ class Sepa extends atoum
     public function testClass()
     {
         $this
-            ->class(testedClass::class)
-                ->isSubclassOf(Api\Object::class)
+            ->testedClass
+                ->extends(ild78\Api\Object::class)
+                ->implements(ild78\Interfaces\PaymentMeansInterface::class)
         ;
     }
 

@@ -171,6 +171,23 @@ class Object extends atoum
     /**
      * @dataProvider validDataProvider
      */
+    public function testCreate($property, $value)
+    {
+        $this
+            ->if($class = (string) $this->testedClass)
+            ->and($this->newTestedInstance->dataModelSetter($property, $value))
+            ->then
+                ->object($obj = $class::create([$property => $value]))
+                    ->isInstanceOf($class)
+
+                ->variable($obj->dataModelGetter($property))
+                    ->isIdenticalTo($value)
+        ;
+    }
+
+    /**
+     * @dataProvider validDataProvider
+     */
     public function testDataModelGetterAndSetter($property, $value)
     {
         $this
@@ -370,6 +387,21 @@ class Object extends atoum
 
                         ->string($this->testedInstance->getRestricted1())
                             ->isIdenticalTo($restricted1)
+        ;
+    }
+
+    public function testRetrieve()
+    {
+        $this
+            ->if($id = uniqid())
+            ->and($class = (string) $this->testedClass)
+            ->then
+                ->object($obj = $class::retrieve($id))
+                    ->isInstanceOf($class)
+                    ->isEqualTo($this->newTestedInstance($id))
+
+                ->string($obj->getId())
+                    ->isIdenticalTo($id)
         ;
     }
 

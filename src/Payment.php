@@ -74,6 +74,74 @@ class Payment extends Api\Object
     ];
 
     /**
+     * Charge a card or a bank account.
+     *
+     * This method is Stripe compatible.
+     *
+     * @param array $options Charge options.
+     * @return self
+     */
+    public static function charge(array $options) : self
+    {
+        $obj = new static();
+        $source = $options['source'];
+        $id = null;
+        $class = Card::class;
+        $method = 'setCard';
+        $data = [];
+
+        if (is_array($source)) {
+            if (array_key_exists('id', $source)) {
+                $id = $source['id'];
+            }
+
+            $data = $source;
+        } else {
+            $id = $source;
+        }
+
+        if (strpos('sepa_', $id) === 0) {
+            $class = Sepa::class;
+            $method = 'setSepa';
+        }
+
+        if (array_key_exists('account_holder_name', $data)) {
+            $data['name'] = $data['account_holder_name'];
+        }
+
+        if (array_key_exists('account_number', $data)) {
+            $data['iban'] = $data['account_number'];
+            $class = Sepa::class;
+            $method = 'setSepa';
+        }
+
+        $means = new $class($id);
+
+        return $obj->hydrate($options)->$method($means->hydrate($data))->save();
+    }
+
+    /**
+     * Quick way to make a simple payment
+     *
+     * @param integer $amount Amount.
+     * @param string $currency Currency.
+     * @param ild78\Interfaces\PaymentMeansInterface $means Payment means.
+     * @return self
+     */
+    public function pay(int $amount, string $currency, ild78\Interfaces\PaymentMeansInterface $means) : self
+    {
+        if ($means instanceof Card) {
+            $this->setCard($means);
+        }
+
+        if ($means instanceof Sepa) {
+            $this->setSepa($means);
+        }
+
+        return $this->setAmount($amount)->setCurrency($currency)->save();
+    }
+
+    /**
      * Save the current object.
      *
      * @uses Request::post()

@@ -8,6 +8,7 @@ use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use ild78;
 use ild78\Api;
 use ild78\Card;
 use ild78\Customer;
@@ -27,6 +28,85 @@ class Payment extends atoum
         ];
     }
 
+    public function testCharge()
+    {
+        $this
+            ->if($client = new mock\GuzzleHttp\Client)
+            ->and($response = new mock\GuzzleHttp\Psr7\Response)
+            ->and($this->calling($response)->getBody = json_encode($json))
+            ->and($this->calling($client)->request = $response)
+            ->and($config = Api\Config::init(uniqid()))
+            ->and($config->setHttpClient($client))
+
+            ->assert('Test with a card token')
+                ->given($options = [
+                    'amount' => rand(50, 99999),
+                    'currency' => 'eur',
+                    'description' => 'Stripe compatible charge',
+                    'source' => 'card_' . uniqid(),
+                ])
+                ->and($json = [
+                    'amount' => $options['amount'],
+                    'currency' => $options['currency'],
+                    'description' => $options['description'],
+                    'card' => $options['source'],
+                ])
+
+                ->if($this->calling($response)->getBody = json_encode($json))
+                ->then
+                    ->object($obj = testedClass::charge($options))
+                        ->isInstanceOf(testedClass::class)
+
+                    ->integer($obj->getAmount())
+                        ->isIdenticalTo($options['amount'])
+
+                    ->object($card = $obj->getCard())
+                        ->isInstanceOf(ild78\Card::class)
+
+                    ->string($card->getId())
+                        ->isIdenticalTo($options['source'])
+
+            ->assert('Test with a sepa object')
+                ->given($options = [
+                    'amount' => rand(50, 99999),
+                    'currency' => 'eur',
+                    'description' => 'Stripe compatible charge',
+                    'source' => [
+                        'object' => 'bank_account',
+                        'account_number' => 'DE91 1000 0000 0123 4567 89',
+                        'account_holder_name' => uniqid(),
+                    ],
+                ])
+                ->and($json = [
+                    'amount' => $options['amount'],
+                    'currency' => $options['currency'],
+                    'description' => $options['description'],
+                    'sepa' => [
+                        'id' => 'sepa_' . uniqid(),
+                        'last' => '6789',
+                        'name' => $options['source']['account_holder_name'],
+                    ],
+                ])
+
+                ->if($this->calling($response)->getBody = json_encode($json))
+                ->then
+                    ->object($obj = testedClass::charge($options))
+                        ->isInstanceOf(testedClass::class)
+
+                    ->integer($obj->getAmount())
+                        ->isIdenticalTo($options['amount'])
+
+                    ->object($sepa = $obj->getSepa())
+                        ->isInstanceOf(ild78\Sepa::class)
+
+                    ->string($sepa->getIban())
+                        ->isIdenticalTo($options['source']['account_number'])
+
+                    ->string($sepa->getName())
+                        ->isIdenticalTo($options['source']['account_holder_name'])
+        ;
+    }
+
     public function testClass()
     {
         $this
@@ -42,6 +122,53 @@ class Payment extends atoum
             ->then
                 ->string($this->testedInstance->getEndpoint())
                     ->isIdenticalTo('checkout')
+        ;
+    }
+
+    public function testPay()
+    {
+        $this
+            ->given($client = new mock\GuzzleHttp\Client)
+            ->and($response = new mock\GuzzleHttp\Psr7\Response)
+            ->and($this->calling($client)->request = $response)
+            ->and($config = Api\Config::init(uniqid()))
+            ->and($config->setHttpClient($client))
+
+            ->then
+                ->assert('Pay with card')
+                    ->if($card = new Card)
+                    ->and($card->setCvc(substr(uniqid(), 0, 3)))
+                    ->and($card->setExpMonth(rand(1, 12)))
+                    ->and($card->setExpYear(date('Y') + rand(1, 10)))
+                    ->and($card->setName(uniqid()))
+                    ->and($card->setNumber('4111111111111111'))
+                    ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
+
+                    ->if($file = __DIR__ . '/fixtures/payment/create-card.json')
+                    ->and($this->calling($response)->getBody = file_get_contents($file))
+                    ->then
+                        ->object($this->newTestedInstance->pay(rand(50, 9999), 'EUR', $card))
+                            ->isTestedInstance
+
+                        ->mock($client)
+                            ->call('request')
+                                ->once
+
+                ->assert('Pay with SEPA')
+                    ->if($sepa = new Sepa)
+                    ->and($sepa->setBic('DEUTDEFF')) // Thx Wikipedia
+                    ->and($sepa->setIban('DE91 1000 0000 0123 4567 89')) // Thx Wikipedia
+                    ->and($sepa->setName(uniqid()))
+
+                    ->if($file = __DIR__ . '/fixtures/payment/create-sepa.json')
+                    ->and($this->calling($response)->getBody = file_get_contents($file))
+                    ->then
+                        ->object($this->newTestedInstance->pay(rand(50, 9999), 'EUR', $sepa))
+                            ->isTestedInstance
+
+                        ->mock($client)
+                            ->call('request')
+                                ->once
         ;
     }
 
