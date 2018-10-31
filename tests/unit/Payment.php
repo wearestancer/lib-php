@@ -33,7 +33,6 @@ class Payment extends atoum
         $this
             ->if($client = new mock\GuzzleHttp\Client)
             ->and($response = new mock\GuzzleHttp\Psr7\Response)
-            ->and($this->calling($response)->getBody = json_encode($json))
             ->and($this->calling($client)->request = $response)
             ->and($config = Api\Config::init(uniqid()))
             ->and($config->setHttpClient($client))
