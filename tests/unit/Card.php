@@ -11,6 +11,22 @@ use ild78\Exceptions;
 
 class Card extends atoum
 {
+    public function brandDataProvider()
+    {
+        $random = uniqid();
+
+        return [
+            ['visa', 'VISA'],
+            ['mastercard', 'MasterCard'],
+            ['amex', 'American Express'],
+            ['jcb', 'JCB'],
+            ['maestro', 'Maestro'],
+            ['discover', 'Discover'],
+            ['dankort', 'Dankort'],
+            [$random, $random],
+        ];
+    }
+
     public function cardNumberDataProvider()
     {
         // Card number found on https://www.freeformatter.com/credit-card-number-generator-validator.html
@@ -83,6 +99,26 @@ class Card extends atoum
             ->testedClass
                 ->extends(ild78\Api\Object::class)
                 ->implements(ild78\Interfaces\PaymentMeansInterface::class)
+        ;
+    }
+
+    /**
+     * @dataProvider brandDataProvider
+     */
+    public function testGetBrandName($tag, $name)
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($data = [
+                'brand' => $tag,
+            ])
+            ->and($this->testedInstance->hydrate($data))
+            ->then
+                ->string($this->testedInstance->getBrand())
+                    ->isIdenticalTo($tag)
+
+                ->string($this->testedInstance->getBrandName())
+                    ->isIdenticalTo($name)
         ;
     }
 

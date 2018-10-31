@@ -76,6 +76,35 @@ class Card extends Api\Object implements Interfaces\PaymentMeansInterface
     ];
 
     /**
+     * Return real brand name
+     *
+     * Whereas `Card::getBrand()` returns brand as a simple normalized string like "amex",
+     * `Card::getBrandName()` will return a complete and real brand name, like "American Express".
+     *
+     * @return string
+     */
+    public function getBrandName() : string
+    {
+        $names = [
+            'amex' => 'American Express',
+            'dankort' => 'Dankort',
+            'discover' => 'Discover',
+            'jcb' => 'JCB',
+            'maestro' => 'Maestro',
+            'mastercard' => 'MasterCard',
+            'visa' => 'VISA',
+        ];
+
+        $brand = $this->getBrand();
+
+        if (array_key_exists($brand, $names)) {
+            return $names[$brand];
+        }
+
+        return $brand;
+    }
+
+    /**
      * Return the expiration date.
      *
      * The DateTime object is at last second of the last day in the expiration month.
