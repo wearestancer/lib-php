@@ -35,7 +35,7 @@ abstract class Object implements JsonSerializable
     protected $updated = false;
 
     /** @var boolean */
-    protected $modified = false;
+    protected $modified = true;
 
     /** @var array */
     protected $aliases = [];
@@ -461,7 +461,7 @@ abstract class Object implements JsonSerializable
      */
     public function populate() : self
     {
-        if ($this->id && !$this->updated && $this->getEndpoint()) {
+        if ($this->id && $this->getEndpoint() && (!$this->updated || $this->modified)) {
             $request = new Request();
             $response = $request->get($this, $this->id);
             $body = json_decode($response, true);
@@ -518,6 +518,7 @@ abstract class Object implements JsonSerializable
             $body = json_decode($response, true);
             $this->hydrate($body);
 
+            $this->updated = true;
             $this->modified = false;
         }
 

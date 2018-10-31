@@ -370,6 +370,30 @@ class Object extends atoum
                         ->call('request')
                             ->once
 
+            ->assert('Save blocks populate')
+                ->given($config = ild78\Api\Config::init(uniqid()))
+                ->and($id = uniqid())
+                ->and($created = time())
+                ->and($string1 = $this->makeStringBetween(10, 20))
+                ->and($integer1 = $this->makeIntegerBetween(10, 20))
+
+                ->if($client = new mock\GuzzleHttp\Client)
+                ->and($body = json_encode(compact('id', 'created', 'string1', 'integer1')))
+                ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
+                ->and($this->calling($client)->request = $response)
+                ->and($config->setHttpClient($client))
+
+                ->and($this->newTestedInstance($id))
+                ->and($this->testedInstance->setString1($string1))
+                ->and($this->testedInstance->setInteger1($integer1))
+                ->then
+                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->populate())
+
+                    ->mock($client)
+                        ->call('request')
+                            ->once
+
             ->assert('Populate working normally')
                 ->given($config = ild78\Api\Config::init(uniqid()))
                 ->and($id = uniqid())
