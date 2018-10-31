@@ -461,7 +461,7 @@ abstract class Object implements JsonSerializable
      */
     public function populate() : self
     {
-        if ($this->id && !$this->updated) {
+        if ($this->id && !$this->updated && $this->getEndpoint()) {
             $request = new Request();
             $response = $request->get($this, $this->id);
             $body = json_decode($response, true);

@@ -327,35 +327,78 @@ class Object extends atoum
     public function testPopulate()
     {
         $this
-            ->given($config = ild78\Api\Config::init(uniqid()))
-            ->and($id = uniqid())
-            ->and($created = time())
+            ->assert('Work with an id')
+                ->given($config = ild78\Api\Config::init(uniqid()))
+                ->and($id = uniqid())
+                ->and($timestamp = time())
+                ->and($mock = new GuzzleHttp\Handler\MockHandler([
+                    new GuzzleHttp\Psr7\Response(200, [], '{"id":"' . $id . '","created":' . $timestamp . '}'),
+                ]))
+                ->and($handler = GuzzleHttp\HandlerStack::create($mock))
+                ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
+                ->and($config->setHttpClient($client))
 
-            ->and($string1 = $this->makeStringBetween(10, 20))
-            ->and($string2 = $this->makeStringAtLeast(10))
-            ->and($string3 = $this->makeStringLessThan(20))
-            ->and($string4 = $this->makeStringWithFixedSize(5))
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->object($this->testedInstance->populate())
+                        ->isTestedInstance
 
-            ->and($integer1 = $this->makeIntegerBetween(10, 20))
-            ->and($integer2 = $this->makeIntegerAtLeast(10))
-            ->and($integer3 = $this->makeIntegerLessThan(10))
+                    ->string($this->testedInstance->getId())
+                        ->isIdenticalTo($id)
 
-            ->and($restricted1 = $this->makeStringAtLeast(10))
+                    ->dateTime($date = $this->testedInstance->getCreationDate())
+                        ->variable($date->format('U'))
+                            ->isEqualTo($timestamp)
 
-            ->and($body = json_encode(compact('id', 'created', 'string1', 'string2', 'string3', 'string4', 'integer1', 'integer2', 'integer3', 'restricted1')))
+            ->assert('Only one request with two consecutive call')
+                ->given($config = ild78\Api\Config::init(uniqid()))
 
-            ->and($mock = new GuzzleHttp\Handler\MockHandler([
-                new GuzzleHttp\Psr7\Response(200, [], $body),
-            ]))
-            ->and($handler = GuzzleHttp\HandlerStack::create($mock))
-            ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
+                ->if($client = new mock\GuzzleHttp\Client)
+                ->and($id = uniqid())
+                ->and($timestamp = time())
+                ->and($body = '{"id":"' . $id . '","created":' . $timestamp . '}')
+                ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
+                ->and($this->calling($client)->request = $response)
+                ->and($config->setHttpClient($client))
 
-            ->if($mock = new mock\GuzzleHttp\Client)
-            ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
-            ->and($this->calling($mock)->request = $response)
+                ->and($this->newTestedInstance($id))
+                ->then
+                    ->object($this->testedInstance->populate())
+                    ->object($this->testedInstance->populate())
 
-            ->then
-                ->assert('Populate working normally')
+                    ->mock($client)
+                        ->call('request')
+                            ->once
+
+            ->assert('Populate working normally')
+                ->given($config = ild78\Api\Config::init(uniqid()))
+                ->and($id = uniqid())
+                ->and($created = time())
+
+                ->and($string1 = $this->makeStringBetween(10, 20))
+                ->and($string2 = $this->makeStringAtLeast(10))
+                ->and($string3 = $this->makeStringLessThan(20))
+                ->and($string4 = $this->makeStringWithFixedSize(5))
+
+                ->and($integer1 = $this->makeIntegerBetween(10, 20))
+                ->and($integer2 = $this->makeIntegerAtLeast(10))
+                ->and($integer3 = $this->makeIntegerLessThan(10))
+
+                ->and($restricted1 = $this->makeStringAtLeast(10))
+
+                ->and($body = json_encode(compact('id', 'created', 'string1', 'string2', 'string3', 'string4', 'integer1', 'integer2', 'integer3', 'restricted1')))
+
+                ->and($mock = new GuzzleHttp\Handler\MockHandler([
+                    new GuzzleHttp\Psr7\Response(200, [], $body),
+                ]))
+                ->and($handler = GuzzleHttp\HandlerStack::create($mock))
+                ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
+
+                ->if($mock = new mock\GuzzleHttp\Client)
+                ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
+                ->and($this->calling($mock)->request = $response)
+
+                ->then
                     ->if($config->setHttpClient($client))
                     ->and($this->newTestedInstance($id))
                     ->then

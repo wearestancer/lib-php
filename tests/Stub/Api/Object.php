@@ -6,6 +6,8 @@ use ild78;
 
 class Object extends ild78\Api\Object
 {
+    protected $endpoint = 'objects'; // invalid but must be not empty
+
     protected $dataModel = [
         'string1' => [
             'required' => true,

@@ -168,22 +168,15 @@ class Object extends atoum
     public function testGetCreationDate()
     {
         $this
-            ->given($client = new mock\GuzzleHttp\Client)
-            ->and($id = uniqid())
-            ->and($timestamp = time())
-            ->and($body = '{"id":"' . $id . '","created":' . $timestamp . '}')
-            ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
-            ->and($this->calling($client)->request = $response)
-            ->and(Api\Config::init(uniqid())->setHttpClient($client))
-
-            ->if($this->newTestedInstance($id))
+            ->given($timestamp = rand(946681200, 1893452400))
+            ->and($data = [
+                'created' => $timestamp,
+            ])
+            ->and($this->newTestedInstance)
+            ->and($this->testedInstance->hydrate($data))
             ->then
                 ->dateTime($this->testedInstance->getCreationDate())
                     ->isEqualTo(new DateTime('@' . $timestamp))
-
-                ->mock($client)
-                    ->call('request')
-                        ->once
         ;
     }
 
@@ -253,45 +246,16 @@ class Object extends atoum
                     ->mock($client)
                         ->call('request')->never
 
-            ->assert('Work with an id')
-                ->given($id = uniqid())
-                ->and($timestamp = time())
-                ->and($mock = new GuzzleHttp\Handler\MockHandler([
-                    new GuzzleHttp\Psr7\Response(200, [], '{"id":"' . $id . '","created":' . $timestamp . '}'),
-                ]))
-                ->and($handler = GuzzleHttp\HandlerStack::create($mock))
-                ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
+            ->assert('No request if no endpoint')
+                ->if($client = new mock\GuzzleHttp\Client)
                 ->and($config->setHttpClient($client))
 
-                ->if($this->newTestedInstance($id))
                 ->then
-                    ->object($this->testedInstance->populate())
+                    ->object($this->newTestedInstance()->populate())
                         ->isTestedInstance
 
-                    ->string($this->testedInstance->getId())
-                        ->isIdenticalTo($id)
-
-                    ->dateTime($date = $this->testedInstance->getCreationDate())
-                        ->variable($date->format('U'))
-                            ->isEqualTo($timestamp)
-
-            ->assert('Only one request with two consecutive call')
-                ->if($client = new mock\GuzzleHttp\Client)
-                ->and($id = uniqid())
-                ->and($timestamp = time())
-                ->and($body = '{"id":"' . $id . '","created":' . $timestamp . '}')
-                ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
-                ->and($this->calling($client)->request = $response)
-                ->and($config->setHttpClient($client))
-
-                ->and($this->newTestedInstance($id))
-                ->then
-                    ->object($this->testedInstance->populate())
-                    ->object($this->testedInstance->populate())
-
                     ->mock($client)
-                        ->call('request')
-                            ->once
+                        ->call('request')->never
         ;
     }
 
