@@ -153,6 +153,22 @@ class Payment extends atoum
         ;
     }
 
+    /**
+     * @dataProvider responseMessageDataProvider
+     */
+    public function testIsSuccess_IsNotSuccess($code, $message)
+    {
+        $this
+            ->assert($code . ' / ' . $message)
+                ->given($this->newTestedInstance)
+                ->and($this->testedInstance->hydrate(['response_code' => $code]))
+                ->then
+                    ->boolean($this->testedInstance->isSuccess())
+                        ->isIdenticalTo($code === '00')
+                        ->isIdenticalTo(!$this->testedInstance->isNotSuccess())
+        ;
+    }
+
     public function testPay()
     {
         $this

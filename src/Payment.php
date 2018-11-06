@@ -156,6 +156,26 @@ class Payment extends Api\Object
     }
 
     /**
+     * Indicates if payment is not a success
+     *
+     * @return boolean
+     */
+    public function isNotSuccess() : bool
+    {
+        return !$this->isSuccess();
+    }
+
+    /**
+     * Indicates if payment is a success or not
+     *
+     * @return boolean
+     */
+    public function isSuccess() : bool
+    {
+        return $this->getResponseCode() === '00';
+    }
+
+    /**
      * Quick way to make a simple payment
      *
      * @param integer $amount Amount.
