@@ -28,6 +28,20 @@ class Payment extends atoum
         ];
     }
 
+    public function responseMessageDataProvider()
+    {
+        $rand = substr(uniqid(), -2);
+
+        return [
+            [$rand, 'Unknown'],
+            ['00', 'OK'],
+            ['05', 'Do not honor'],
+            ['41', 'Lost card'],
+            ['42', 'Stolen card'],
+            ['51', 'Insufficient funds'],
+        ];
+    }
+
     public function testCharge()
     {
         $this
@@ -121,6 +135,37 @@ class Payment extends atoum
             ->then
                 ->string($this->testedInstance->getEndpoint())
                     ->isIdenticalTo('checkout')
+        ;
+    }
+
+    /**
+     * @dataProvider responseMessageDataProvider
+     */
+    public function testGetResponseMessage($code, $message)
+    {
+        $this
+            ->assert($code . ' / ' . $message)
+                ->given($this->newTestedInstance)
+                ->and($this->testedInstance->hydrate(['response_code' => $code]))
+                ->then
+                    ->string($this->testedInstance->getResponseMessage())
+                        ->isIdenticalTo($message)
+        ;
+    }
+
+    /**
+     * @dataProvider responseMessageDataProvider
+     */
+    public function testIsSuccess_IsNotSuccess($code, $message)
+    {
+        $this
+            ->assert($code . ' / ' . $message)
+                ->given($this->newTestedInstance)
+                ->and($this->testedInstance->hydrate(['response_code' => $code]))
+                ->then
+                    ->boolean($this->testedInstance->isSuccess())
+                        ->isIdenticalTo($code === '00')
+                        ->isIdenticalTo(!$this->testedInstance->isNotSuccess())
         ;
     }
 

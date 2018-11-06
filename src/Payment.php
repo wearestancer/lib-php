@@ -68,6 +68,17 @@ class Payment extends Api\Object
             ],
             'type' => self::STRING,
         ],
+        'responseCode' => [
+            'restricted' => true,
+            'size' => [
+                'fixed' => 2,
+            ],
+            'type' => self::STRING,
+        ],
+        'status' => [
+            'restricted' => true,
+            'type' => self::STRING,
+        ],
         'sepa' => [
             'type' => ild78\Sepa::class,
         ],
@@ -118,6 +129,50 @@ class Payment extends Api\Object
         $means = new $class($id);
 
         return $obj->hydrate($options)->$method($means->hydrate($data))->save();
+    }
+
+    /**
+     * Get a readable message of response code
+     *
+     * @return string
+     */
+    public function getResponseMessage() : string
+    {
+        $messages = [
+            '00' => 'OK',
+            '05' => 'Do not honor',
+            '41' => 'Lost card',
+            '42' => 'Stolen card',
+            '51' => 'Insufficient funds',
+        ];
+
+        $code = $this->getResponseCode();
+
+        if (array_key_exists($code, $messages)) {
+            return $messages[$code];
+        }
+
+        return 'Unknown';
+    }
+
+    /**
+     * Indicates if payment is not a success
+     *
+     * @return boolean
+     */
+    public function isNotSuccess() : bool
+    {
+        return !$this->isSuccess();
+    }
+
+    /**
+     * Indicates if payment is a success or not
+     *
+     * @return boolean
+     */
+    public function isSuccess() : bool
+    {
+        return $this->getResponseCode() === '00';
     }
 
     /**
