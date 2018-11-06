@@ -62,6 +62,10 @@ class Object extends atoum
                     ->variable($date->format('U'))
                         ->isEqualTo($data['created'])
 
+            ->assert('adder')
+                // Impossible to test, `Object`'s properties are not allowed for changes
+                // See `Stub\Object` test case for real adder test
+
             ->assert('setter')
                 // Impossible to test, `Object`'s properties are not allowed for changes
                 // See `Customer` test case for real setter test

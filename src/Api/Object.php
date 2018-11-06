@@ -55,6 +55,7 @@ abstract class Object implements JsonSerializable
     public function __construct(string $id = null)
     {
         $defaults = [
+            'list' => false,
             'size' => [
                 'fixed' => null,
                 'min' => null,
@@ -114,6 +115,10 @@ abstract class Object implements JsonSerializable
 
             if ($action === 'set') {
                 return $this->dataModelSetter($property, $arguments[0]);
+            }
+
+            if ($action === 'add') {
+                return $this->dataModelAdder($property, $arguments[0]);
             }
         }
 
@@ -176,6 +181,35 @@ abstract class Object implements JsonSerializable
     }
 
     /**
+     * Add a value stored list in data model.
+     *
+     * @param string $property Property to set.
+     * @param mixed $value Value to set.
+     * @return self
+     * @uses self::dataModelGetter() To get actual values.
+     * @uses self::dataModelSetter() To set new values.
+     * @throws ild78\Exceptions\InvalidArgumentException When asking an unknown property.
+     * @throws ild78\Exceptions\InvalidArgumentException If used on properties not declared as list.
+     */
+    public function dataModelAdder(string $property, $value) : self
+    {
+        if (!array_key_exists($property, $this->dataModel)) {
+            throw new ild78\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
+        }
+
+        if (!$this->dataModel[$property]['list']) {
+            $message = sprintf('"%s" is not a list, you can not add elements in it.', $property);
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
+        $values = $this->dataModelGetter($property);
+        $values[] = $value;
+
+        return $this->dataModelSetter($property, $values);
+    }
+
+    /**
      * Get a value stored in data model.
      *
      * This was initialy in `self::__call()` method, I removed it for simplicity.
@@ -196,6 +230,10 @@ abstract class Object implements JsonSerializable
             $value = $this->populate()->dataModel[$property]['value'];
         }
 
+        if (is_null($value) && $this->dataModel[$property]['list']) {
+            return [];
+        }
+
         return $value;
     }
 
@@ -207,7 +245,9 @@ abstract class Object implements JsonSerializable
      * @param string $property Property to set.
      * @param mixed $value Value to set.
      * @return self
+     * @uses self::validateDataModel() To check value's integrity.
      * @throws ild78\Exceptions\InvalidArgumentException When asking an unknown property.
+     * @throws ild78\Exceptions\InvalidArgumentException When setting a restricted property.
      * @throws ild78\Exceptions\InvalidArgumentException When the value do not match expected pattern.
      */
     public function dataModelSetter(string $property, $value) : self
@@ -216,101 +256,26 @@ abstract class Object implements JsonSerializable
             throw new ild78\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
         }
 
-        $model = $this->dataModel[$property];
-        $type = gettype($value);
-        $length = $value;
-
-        if ($model['restricted']) {
+        if ($this->dataModel[$property]['restricted']) {
             $message = sprintf('You are not allowed to modify "%s".', $property);
 
             throw new ild78\Exceptions\InvalidArgumentException($message);
         }
 
-        if ($type === 'object') {
-            $type = get_class($value);
-        }
+        $type = gettype($value);
 
-        if ($type !== $model['type']) {
-            $params = [
-                $type,
-                $model['type'],
-            ];
+        if ($this->dataModel[$property]['list']) {
+            if ($type !== 'array') {
+                $message = sprintf('Type mismatch, given "%s" expected "array".', $type);
 
-            $message = vsprintf('Type mismatch, given "%s" expected "%s".', $params);
-
-            throw new ild78\Exceptions\InvalidArgumentException($message);
-        }
-
-        if ($type === 'string') {
-            $length = strlen($value);
-        }
-
-        $hasMax = false;
-        $hasMin = false;
-        $isLower = false;
-        $isUpper = false;
-
-        if (array_key_exists('fixed', $model['size'])
-            && !is_null($model['size']['fixed'])
-            && $model['size']['fixed'] !== $length
-        ) {
-            $message = sprintf('A valid %s must have %d characters.', $property, $model['size']['fixed']);
-
-            throw new ild78\Exceptions\InvalidArgumentException($message);
-        }
-
-        if (!is_null($model['size']['max'])) {
-            $hasMax = true;
-            $isUpper = $length > $model['size']['max'];
-        }
-
-        if (!is_null($model['size']['min'])) {
-            $hasMin = true;
-            $isLower = $length < $model['size']['min'];
-        }
-
-        if ($isLower || $isUpper) {
-            $params = [
-                $property,
-                ucfirst($property),
-                $model['size']['min'],
-                $model['size']['max'],
-            ];
-
-            if ($type === 'integer') {
-                $message = vsprintf('%2$s must be ', $params);
-                $value = null;
-
-                if ($isLower || ($hasMin && $hasMax)) {
-                    $message .= vsprintf('greater than or equal to %3$d', $params);
-
-                    if ($hasMax) {
-                        $message .= ' and be ';
-                    }
-                }
-
-                if ($isUpper || ($hasMin && $hasMax)) {
-                    $message .= vsprintf('less than or equal to %4$d', $params);
-                }
-
-                $message .= '.';
-            } else {
-                if ($property === 'orderId') {
-                    $params[0] = 'order ID';
-                }
-
-                $message = vsprintf('A valid %1$s must be between %3$d and %4$d characters.', $params);
-
-                if (!$hasMax) {
-                    $message = vsprintf('A valid %1$s must be at least %3$d characters.', $params);
-                }
-
-                if (!$hasMin) {
-                    $message = vsprintf('A valid %1$s must have less than %4$d characters.', $params);
-                }
+                throw new ild78\Exceptions\InvalidArgumentException($message);
             }
 
-            throw new ild78\Exceptions\InvalidArgumentException($message);
+            foreach ($value as $val) {
+                $this->validateDataModel($property, $val);
+            }
+        } else {
+            $this->validateDataModel($property, $value);
         }
 
         $this->dataModel[$property]['value'] = $value;
@@ -416,7 +381,7 @@ abstract class Object implements JsonSerializable
                     static::STRING,
                 ];
 
-                if (!in_array($this->dataModel[$property]['type'], $types, true) && !is_object($value)) {
+                if ($value && !in_array($this->dataModel[$property]['type'], $types, true) && !is_object($value)) {
                     $id = null;
 
                     if (is_string($value)) {
@@ -583,5 +548,113 @@ abstract class Object implements JsonSerializable
     public function toString() : string
     {
         return $this->toJson();
+    }
+
+    /**
+     * Validate a value in a defined model
+     *
+     * We do not handle array here, this method only check one value.
+     * Array are checked in `self::dataModelSetter()`.
+     *
+     * @param string $property Property reference.
+     * @param mixed $value Value to validate.
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When the value do not match expected pattern.
+     */
+    protected function validateDataModel(string $property, $value) : self
+    {
+        $model = $this->dataModel[$property];
+
+        $type = gettype($value);
+        $length = $value;
+
+        if ($type === 'object') {
+            $type = get_class($value);
+        }
+
+        if ($type !== $model['type']) {
+            $params = [
+                $type,
+                $model['type'],
+            ];
+
+            $message = vsprintf('Type mismatch, given "%s" expected "%s".', $params);
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
+        if ($type === 'string') {
+            $length = strlen($value);
+        }
+
+        $hasMax = false;
+        $hasMin = false;
+        $isLower = false;
+        $isUpper = false;
+
+        if (array_key_exists('fixed', $model['size'])
+            && !is_null($model['size']['fixed'])
+            && $model['size']['fixed'] !== $length
+        ) {
+            $message = sprintf('A valid %s must have %d characters.', $property, $model['size']['fixed']);
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
+        if (!is_null($model['size']['max'])) {
+            $hasMax = true;
+            $isUpper = $length > $model['size']['max'];
+        }
+
+        if (!is_null($model['size']['min'])) {
+            $hasMin = true;
+            $isLower = $length < $model['size']['min'];
+        }
+
+        if ($isLower || $isUpper) {
+            $params = [
+                $property,
+                ucfirst($property),
+                $model['size']['min'],
+                $model['size']['max'],
+            ];
+
+            if ($type === 'integer') {
+                $message = vsprintf('%2$s must be ', $params);
+                $value = null;
+
+                if ($isLower || ($hasMin && $hasMax)) {
+                    $message .= vsprintf('greater than or equal to %3$d', $params);
+
+                    if ($hasMax) {
+                        $message .= ' and be ';
+                    }
+                }
+
+                if ($isUpper || ($hasMin && $hasMax)) {
+                    $message .= vsprintf('less than or equal to %4$d', $params);
+                }
+
+                $message .= '.';
+            } else {
+                if ($property === 'orderId') {
+                    $params[0] = 'order ID';
+                }
+
+                $message = vsprintf('A valid %1$s must be between %3$d and %4$d characters.', $params);
+
+                if (!$hasMax) {
+                    $message = vsprintf('A valid %1$s must be at least %3$d characters.', $params);
+                }
+
+                if (!$hasMin) {
+                    $message = vsprintf('A valid %1$s must have less than %4$d characters.', $params);
+                }
+            }
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
+        return $this;
     }
 }
