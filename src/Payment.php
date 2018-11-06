@@ -68,6 +68,17 @@ class Payment extends Api\Object
             ],
             'type' => self::STRING,
         ],
+        'responseCode' => [
+            'restricted' => true,
+            'size' => [
+                'fixed' => 2,
+            ],
+            'type' => self::STRING,
+        ],
+        'status' => [
+            'restricted' => true,
+            'type' => self::STRING,
+        ],
         'sepa' => [
             'type' => ild78\Sepa::class,
         ],
