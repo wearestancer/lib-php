@@ -132,6 +132,30 @@ class Payment extends Api\Object
     }
 
     /**
+     * Get a readable message of response code
+     *
+     * @return string
+     */
+    public function getResponseMessage() : string
+    {
+        $messages = [
+            '00' => 'OK',
+            '05' => 'Do not honor',
+            '41' => 'Lost card',
+            '42' => 'Stolen card',
+            '51' => 'Insufficient funds',
+        ];
+
+        $code = $this->getResponseCode();
+
+        if (array_key_exists($code, $messages)) {
+            return $messages[$code];
+        }
+
+        return 'Unknown';
+    }
+
+    /**
      * Quick way to make a simple payment
      *
      * @param integer $amount Amount.
