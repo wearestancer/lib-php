@@ -7,6 +7,14 @@ use ild78;
 
 class Client extends atoum
 {
+    public function testClass()
+    {
+        $this
+            ->testedClass
+                ->implements(ild78\Interfaces\HttpClientInterface::class)
+        ;
+    }
+
     public function test__construct__destruct()
     {
         $this
@@ -23,5 +31,9 @@ class Client extends atoum
                     ->wasCalledWithArguments($ressource)
                         ->once
         ;
+    }
+
+    public function testRequest()
+    {
     }
 }
