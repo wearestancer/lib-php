@@ -104,7 +104,7 @@ class Request
 
         $options['timeout'] = $config->getTimeout();
 
-        $endpoint = $object->getEndpoint();
+        $endpoint = $object->getUri();
 
         if ($location) {
             $endpoint .= '/' . $location;
@@ -116,7 +116,7 @@ class Request
         $excepParams = [];
 
         try {
-            $logger->debug(sprintf('API call : %s %s', strtoupper($method), $config->getUri() . $endpoint));
+            $logger->debug(sprintf('API call : %s %s', strtoupper($method), $endpoint));
             $response = $client->request(strtoupper($method), $endpoint, $options);
 
         // HTTP 5**.

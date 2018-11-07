@@ -52,12 +52,12 @@ class Request extends atoum
         ;
     }
 
-    public function testRequest()
+    public function testRequest_withGuzzle()
     {
         $this
             ->if($config = ild78\Api\Config::init(uniqid()))
 
-            ->assert('Use test of GuzzleHttp\Client and no more location')
+            ->assert('Use test of client and no more location')
                 ->given($client = new mock\GuzzleHttp\Client)
                 ->and($response = new mock\GuzzleHttp\Psr7\Response)
                 ->and($body = uniqid())
@@ -72,20 +72,20 @@ class Request extends atoum
 
                 ->if($logger = new mock\ild78\Api\Logger)
                 ->and($config->setLogger($logger))
-                ->and($debugMessage = 'API call : ' . $method . ' ' . $config->getUri() . $object->getEndpoint())
+                ->and($debugMessage = 'API call : ' . $method . ' ' . $object->getUri())
                 ->then
                     ->string($this->testedInstance->request($method, $object))
                         ->isIdenticalTo($body)
                     ->mock($client)
                         ->call('request')
-                            ->withIdenticalArguments($method, $object->getEndpoint())
+                            ->withIdenticalArguments($method, $object->getUri())
                                 ->once
                     ->mock($logger)
                         ->call('debug')->withArguments($debugMessage, [])->once
                         ->call('error')->never
                         ->call('notice')->never
 
-            ->assert('Use test of GuzzleHttp\Client and location')
+            ->assert('Use test of client and location')
                 ->given($client = new mock\GuzzleHttp\Client)
                 ->and($response = new mock\GuzzleHttp\Psr7\Response)
                 ->and($body = uniqid())
@@ -103,14 +103,14 @@ class Request extends atoum
                 ->and($config->setLogger($logger))
                 ->and($debugMessage = vsprintf('API call : %s %s', [
                     $method,
-                    $config->getUri() . $object->getEndpoint() . '/' . $location,
+                    $object->getUri() . '/' . $location,
                 ]))
                 ->then
                     ->string($this->testedInstance->request($method, $object, $location))
                         ->isIdenticalTo($body)
                     ->mock($client)
                         ->call('request')
-                            ->withIdenticalArguments($method, $object->getEndpoint() . '/' . $location)
+                            ->withIdenticalArguments($method, $object->getUri() . '/' . $location)
                                 ->once
                     ->mock($logger)
                         ->call('debug')->withArguments($debugMessage, [])->once

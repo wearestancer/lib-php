@@ -112,10 +112,7 @@ class Config
             return $this->httpClient;
         }
 
-        $params = [
-            'base_uri' => $this->getUri(),
-        ];
-        $client = new Client($params);
+        $client = new Client();
 
         $this->setHttpClient($client);
 
