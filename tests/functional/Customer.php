@@ -2,49 +2,13 @@
 
 namespace ild78\tests\functional;
 
-use atoum;
 use ild78;
 
 /**
  * @namespace \tests\functional
  */
-class Customer extends atoum
+class Customer extends TestCase
 {
-    protected $config;
-
-    public function beforeTestMethod($testMethod)
-    {
-        $env = [
-            'ILD_API_HOST' => '',
-            'ILD_API_KEY' => '',
-        ];
-
-        foreach ($env as $key => &$value) {
-            $value = getenv($key);
-
-            if (!$value) {
-                $this->skip('Missing env ' . $key);
-            }
-        }
-
-        if (!$this->config) {
-            $this->config = ild78\Api\Config::init($env['ILD_API_KEY']);
-        }
-
-        $this->config->setHost($env['ILD_API_HOST']);
-    }
-
-    public function getRandomNumber()
-    {
-        $number = '+33' . (rand(0, 1) + 6); // Simulate a french mobile phone number
-
-        for ($idx = 0; $idx < 4; $idx++) {
-            $number .= str_pad(rand(0, 99), 2, '0');
-        }
-
-        return $number;
-    }
-
     public function testSave()
     {
         $this
