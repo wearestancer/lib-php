@@ -270,6 +270,20 @@ class Response
     }
 
     /**
+     * Return an instance with the specified HTTP protocol version.
+     *
+     * @param string $version HTTP protocol version.
+     * @return self
+     */
+    public function withProtocolVersion(string $version) : self
+    {
+        $obj = clone $this;
+        $obj->protocol = $version;
+
+        return $obj;
+    }
+
+    /**
      * Return an instance with the specified status code and, optionally, reason phrase.
      *
      * If no reason phrase is specified, implementations MAY choose to default

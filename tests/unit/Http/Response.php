@@ -276,6 +276,51 @@ class Response extends atoum
         ;
     }
 
+    public function testWithProtocolVersion()
+    {
+        $this
+            ->given($code = rand(100, 600))
+            ->and($body = uniqid())
+            ->and($key = uniqid())
+            ->and($value = uniqid())
+            ->and($headers = [
+                $key => [$value],
+            ])
+            ->and($protocol = uniqid())
+            ->and($reason = uniqid())
+            ->and($this->newTestedInstance($code, $body, $headers, $protocol, $reason))
+
+            ->if($changes = uniqid())
+            ->then
+                ->object($obj = $this->testedInstance->withProtocolVersion($changes))
+                    ->isInstanceOfTestedClass
+                    ->isNotTestedInstance
+
+                ->string($obj->getProtocolVersion())
+                    ->isIdenticalTo($changes)
+
+                ->string($this->testedInstance->getProtocolVersion())
+                    ->isIdenticalTo($protocol)
+
+                // Check no diff on other properties
+                ->integer($this->testedInstance->getStatusCode())
+                    ->isIdenticalTo($obj->getStatusCode())
+                    ->isIdenticalTo($code)
+
+                ->string($this->testedInstance->getBody())
+                    ->isIdenticalTo($obj->getBody())
+                    ->isIdenticalTo($body)
+
+                ->array($this->testedInstance->getHeaders())
+                    ->isIdenticalTo($obj->getHeaders())
+                    ->isIdenticalTo($headers)
+
+                ->string($this->testedInstance->getReasonPhrase())
+                    ->isIdenticalTo($obj->getReasonPhrase())
+                    ->isIdenticalTo($reason)
+        ;
+    }
+
     public function testWithStatus()
     {
         $this
