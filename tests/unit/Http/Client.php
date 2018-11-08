@@ -81,6 +81,56 @@ class Client extends atoum
                     ->function('curl_exec')
                         ->wasCalled
                             ->once
+
+            ->assert('POST with headers and data')
+                ->given($this->newTestedInstance)
+                ->and($curl = $this->testedInstance->getCurlResource())
+                ->if($this->function->curl_setopt = true)
+                ->and($this->function->curl_exec = $body = uniqid())
+                ->and($this->function->curl_errno = 0)
+                ->and($this->function->curl_error = '')
+                ->and($method = 'POST')
+                ->and($host = uniqid())
+                ->and($options = [
+                    'timeout' => rand(1, 1000),
+                    'headers' => [
+                        uniqid() => uniqid(),
+                        uniqid() => uniqid(),
+                    ],
+                    'body' => [
+                        uniqid() => uniqid(),
+                        uniqid() => uniqid(),
+                    ],
+                ])
+                ->then
+                    ->object($response = $this->testedInstance->request($method, $host, $options))
+                        ->isInstanceOf(ild78\Http\Response::class)
+
+                    ->string($response->getBody())
+                        ->isIdenticalTo($body)
+
+                    ->function('curl_setopt')
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_URL, $host)
+                            ->once
+
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_CUSTOMREQUEST, $method)
+                            ->once
+
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_CONNECTTIMEOUT, $options['timeout'])
+                            ->once
+
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_TIMEOUT, $options['timeout'])
+                            ->once
+
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_HTTPHEADER, $options['headers'])
+                            ->once
+
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_POSTFIELDS, $options['body'])
+                            ->once
+
+                    ->function('curl_exec')
+                        ->wasCalled
+                            ->once
         ;
     }
 }

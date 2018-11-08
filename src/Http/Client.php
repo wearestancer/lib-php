@@ -64,6 +64,22 @@ class Client implements ild78\Interfaces\HttpClientInterface
         // Set HTTP method.
         curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, $method);
 
+        // Timeout.
+        if (array_key_exists('timeout', $options)) {
+            curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT, $options['timeout']);
+            curl_setopt($this->curl, CURLOPT_TIMEOUT, $options['timeout']);
+        }
+
+        // Headers.
+        if (array_key_exists('headers', $options)) {
+            curl_setopt($this->curl, CURLOPT_HTTPHEADER, $options['headers']);
+        }
+
+        // Data.
+        if (array_key_exists('body', $options)) {
+            curl_setopt($this->curl, CURLOPT_POSTFIELDS, $options['body']);
+        }
+
         // `curl_exec` will return the body.
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
 
