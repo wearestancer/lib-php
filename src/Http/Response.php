@@ -16,6 +16,9 @@ class Response
     /** @var integer */
     protected $code;
 
+    /** @var array */
+    protected $headers;
+
     /**
      * Create a response instance
      *
@@ -34,6 +37,10 @@ class Response
     ) {
         $this->code = $code;
         $this->body = $body;
+
+        foreach ($headers as $name => $value) {
+            $this->headers[$name] = (array) $value;
+        }
     }
 
     /**
@@ -44,6 +51,21 @@ class Response
     public function getBody() : string
     {
         return $this->body;
+    }
+
+    /**
+     * Retrieves all message header values.
+     *
+     * While header names are not case-sensitive, getHeaders() will preserve the
+     * exact case in which headers were originally specified.
+     *
+     * @return string[][] Returns an associative array of the message's headers. Each
+     *     key MUST be a header name, and each value MUST be an array of strings
+     *     for that header.
+     */
+    public function getHeaders() : array
+    {
+        return $this->headers;
     }
 
     /**
