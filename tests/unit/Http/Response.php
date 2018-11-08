@@ -235,69 +235,123 @@ class Response extends atoum
     {
         $this
             ->given($code = rand(100, 600))
-            ->and($before = uniqid())
-            ->and($after = uniqid())
-            ->and($this->newTestedInstance($code, $before))
+            ->and($body = uniqid())
+            ->and($key = uniqid())
+            ->and($value = uniqid())
+            ->and($headers = [
+                $key => [$value],
+            ])
+            ->and($protocol = uniqid())
+            ->and($reason = uniqid())
+            ->and($this->newTestedInstance($code, $body, $headers, $protocol, $reason))
+
+            ->if($changes = uniqid())
             ->then
-                ->object($obj = $this->testedInstance->withBody($after))
+                ->object($obj = $this->testedInstance->withBody($changes))
                     ->isInstanceOfTestedClass
                     ->isNotTestedInstance
 
                 ->string($obj->getBody())
-                    ->isIdenticalTo($after)
+                    ->isIdenticalTo($changes)
 
                 ->string($this->testedInstance->getBody())
-                    ->isIdenticalTo($before)
+                    ->isIdenticalTo($body)
+
+                // Check no diff on other properties
+                ->integer($this->testedInstance->getStatusCode())
+                    ->isIdenticalTo($obj->getStatusCode())
+                    ->isIdenticalTo($code)
+
+                ->array($this->testedInstance->getHeaders())
+                    ->isIdenticalTo($obj->getHeaders())
+                    ->isIdenticalTo($headers)
+
+                ->string($this->testedInstance->getProtocolVersion())
+                    ->isIdenticalTo($obj->getProtocolVersion())
+                    ->isIdenticalTo($protocol)
+
+                ->string($this->testedInstance->getReasonPhrase())
+                    ->isIdenticalTo($obj->getReasonPhrase())
+                    ->isIdenticalTo($reason)
         ;
     }
 
     public function testWithStatus()
     {
         $this
+            ->given($code = rand(100, 600))
+            ->and($body = uniqid())
+            ->and($key = uniqid())
+            ->and($value = uniqid())
+            ->and($headers = [
+                $key => [$value],
+            ])
+            ->and($protocol = uniqid())
+            ->and($reason = uniqid())
+            ->and($this->newTestedInstance($code, $body, $headers, $protocol, $reason))
+
             ->assert('Without changing reason')
-                ->given($before = rand(100, 600))
-                ->and($after = rand(100, 600))
-                ->and($reason = uniqid())
-                ->and($this->newTestedInstance($before, '', [], '', $reason))
+                ->if($changes = rand(100, 600))
                 ->then
-                    ->object($obj = $this->testedInstance->withStatus($after))
+                    ->object($obj = $this->testedInstance->withStatus($changes))
                         ->isInstanceOfTestedClass
                         ->isNotTestedInstance
 
                     ->integer($obj->getStatusCode())
-                        ->isIdenticalTo($after)
-
-                    ->string($obj->getReasonPhrase())
-                        ->isIdenticalTo($reason)
+                        ->isIdenticalTo($changes)
 
                     ->integer($this->testedInstance->getStatusCode())
-                        ->isIdenticalTo($before)
+                        ->isIdenticalTo($code)
+
+                    // Check no diff on other properties
+                    ->string($this->testedInstance->getBody())
+                        ->isIdenticalTo($obj->getBody())
+                        ->isIdenticalTo($body)
+
+                    ->array($this->testedInstance->getHeaders())
+                        ->isIdenticalTo($obj->getHeaders())
+                        ->isIdenticalTo($headers)
+
+                    ->string($this->testedInstance->getProtocolVersion())
+                        ->isIdenticalTo($obj->getProtocolVersion())
+                        ->isIdenticalTo($protocol)
 
                     ->string($this->testedInstance->getReasonPhrase())
+                        ->isIdenticalTo($obj->getReasonPhrase())
                         ->isIdenticalTo($reason)
 
             ->assert('Without new reason')
-                ->given($codeBefore = rand(100, 600))
-                ->and($codeAfter = rand(100, 600))
-                ->and($reasonBefore = uniqid())
-                ->and($reasonAfter = uniqid())
-                ->and($this->newTestedInstance($codeBefore, '', [], '', $reasonBefore))
+                ->if($newCode = rand(100, 600))
+                ->and($newReason = uniqid())
                 ->then
-                    ->object($obj = $this->testedInstance->withStatus($codeAfter, $reasonAfter))
+                    ->object($obj = $this->testedInstance->withStatus($newCode, $newReason))
                         ->isInstanceOfTestedClass
                         ->isNotTestedInstance
 
                     ->integer($obj->getStatusCode())
-                        ->isIdenticalTo($codeAfter)
+                        ->isIdenticalTo($newCode)
 
                     ->string($obj->getReasonPhrase())
-                        ->isIdenticalTo($reasonAfter)
+                        ->isIdenticalTo($newReason)
 
                     ->integer($this->testedInstance->getStatusCode())
-                        ->isIdenticalTo($codeBefore)
+                        ->isIdenticalTo($code)
 
                     ->string($this->testedInstance->getReasonPhrase())
-                        ->isIdenticalTo($reasonBefore)
+                        ->isIdenticalTo($reason)
+
+                    // Check no diff on other properties
+                    ->string($this->testedInstance->getBody())
+                        ->isIdenticalTo($obj->getBody())
+                        ->isIdenticalTo($body)
+
+                    ->array($this->testedInstance->getHeaders())
+                        ->isIdenticalTo($obj->getHeaders())
+                        ->isIdenticalTo($headers)
+
+                    ->string($this->testedInstance->getProtocolVersion())
+                        ->isIdenticalTo($obj->getProtocolVersion())
+                        ->isIdenticalTo($protocol)
         ;
     }
 }
