@@ -256,6 +256,30 @@ class Response
     }
 
     /**
+     * Return an instance with the specified header appended with the given value.
+     *
+     * Existing values for the specified header will be maintained. The new
+     * value(s) will be appended to the existing list. If the header did not
+     * exist previously, it will be added.
+     *
+     * @param string $name Case-insensitive header field name to add.
+     * @param string|string[] $value Header value(s).
+     * @return self
+     */
+    public function withAddedHeader(string $name, $value) : self
+    {
+        $obj = clone $this;
+
+        if ($obj->hasHeader($name)) {
+            $obj->headers[$name] = array_merge($obj->headers[$name], (array) $value);
+        } else {
+            $obj->headers[$name] = (array) $value;
+        }
+
+        return $obj;
+    }
+
+    /**
      * Return an instance with the specified message body.
      *
      * @param string $body Body.

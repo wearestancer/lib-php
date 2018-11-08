@@ -231,6 +231,82 @@ class Response extends atoum
         ;
     }
 
+    public function testWithAddedHeader()
+    {
+        $this
+            ->given($code = rand(100, 600))
+            ->and($body = uniqid())
+            ->and($key = uniqid())
+            ->and($value = uniqid())
+            ->and($headers = [
+                $key => [$value],
+            ])
+            ->and($protocol = uniqid())
+            ->and($reason = uniqid())
+            ->and($this->newTestedInstance($code, $body, $headers, $protocol, $reason))
+
+            ->if($changes = [uniqid()])
+            ->and($newKey = uniqid())
+            ->then
+                ->assert('With known header')
+                    ->object($obj = $this->testedInstance->withAddedHeader($key, $changes))
+                        ->isInstanceOfTestedClass
+                        ->isNotTestedInstance
+
+                    ->array($obj->getHeader($key))
+                        ->isIdenticalTo(array_merge((array) $value, $changes))
+
+                    ->array($this->testedInstance->getHeaders())
+                        ->isIdenticalTo($headers)
+
+                    // Check no diff on other properties
+                    ->integer($this->testedInstance->getStatusCode())
+                        ->isIdenticalTo($obj->getStatusCode())
+                        ->isIdenticalTo($code)
+
+                    ->string($this->testedInstance->getBody())
+                        ->isIdenticalTo($obj->getBody())
+                        ->isIdenticalTo($body)
+
+                    ->string($this->testedInstance->getProtocolVersion())
+                        ->isIdenticalTo($obj->getProtocolVersion())
+                        ->isIdenticalTo($protocol)
+
+                    ->string($this->testedInstance->getReasonPhrase())
+                        ->isIdenticalTo($obj->getReasonPhrase())
+                        ->isIdenticalTo($reason)
+
+                ->assert('With unknown header')
+                    ->object($obj = $this->testedInstance->withAddedHeader($newKey, $changes))
+                        ->isInstanceOfTestedClass
+                        ->isNotTestedInstance
+
+                    ->array($obj->getHeaders())
+                        ->hasKey($key)
+                        ->hasKey($newKey)
+
+                    ->array($this->testedInstance->getHeaders())
+                        ->isIdenticalTo($headers)
+
+                    // Check no diff on other properties
+                    ->integer($this->testedInstance->getStatusCode())
+                        ->isIdenticalTo($obj->getStatusCode())
+                        ->isIdenticalTo($code)
+
+                    ->string($this->testedInstance->getBody())
+                        ->isIdenticalTo($obj->getBody())
+                        ->isIdenticalTo($body)
+
+                    ->string($this->testedInstance->getProtocolVersion())
+                        ->isIdenticalTo($obj->getProtocolVersion())
+                        ->isIdenticalTo($protocol)
+
+                    ->string($this->testedInstance->getReasonPhrase())
+                        ->isIdenticalTo($obj->getReasonPhrase())
+                        ->isIdenticalTo($reason)
+        ;
+    }
+
     public function testWithBody()
     {
         $this
