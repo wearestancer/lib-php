@@ -50,4 +50,30 @@ class Response extends atoum
                     ->isIdenticalTo($code)
         ;
     }
+
+    public function testHasHeader()
+    {
+        $this
+            ->given($code = rand(100, 600))
+            ->and($body = uniqid())
+            ->and($key = uniqid())
+            ->and($value = uniqid())
+            ->and($headers = [
+                $key => $value,
+            ])
+            ->and($this->newTestedInstance($code, $body, $headers))
+            ->then
+                ->assert('Present')
+                    ->boolean($this->testedInstance->hasHeader($key))
+                        ->isTrue
+
+                ->assert('Not present')
+                    ->boolean($this->testedInstance->hasHeader(uniqid()))
+                        ->isFalse
+
+                ->assert('Case insensitive')
+                    ->boolean($this->testedInstance->hasHeader(strtoupper($key)))
+                        ->isTrue
+        ;
+    }
 }

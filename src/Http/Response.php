@@ -80,4 +80,20 @@ class Response
     {
         return $this->code;
     }
+
+    /**
+     * Checks if a header exists by the given case-insensitive name.
+     *
+     * @param string $name Case-insensitive header field name.
+     * @return boolean Returns true if any header names match the given header
+     *     name using a case-insensitive string comparison. Returns false if
+     *     no matching header name is found in the message.
+     */
+    public function hasHeader(string $name) : bool
+    {
+        $keys = array_keys($this->headers);
+        $keys = array_map('strtolower', $keys);
+
+        return in_array(strtolower($name), $keys, true);
+    }
 }
