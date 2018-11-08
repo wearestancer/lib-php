@@ -230,4 +230,24 @@ class Response extends atoum
                         ->isTrue
         ;
     }
+
+    public function testWithBody()
+    {
+        $this
+            ->given($code = rand(100, 600))
+            ->and($before = uniqid())
+            ->and($after = uniqid())
+            ->and($this->newTestedInstance($code, $before))
+            ->then
+                ->object($obj = $this->testedInstance->withBody($after))
+                    ->isInstanceOfTestedClass
+                    ->isNotTestedInstance
+
+                ->string($obj->getBody())
+                    ->isIdenticalTo($after)
+
+                ->string($this->testedInstance->getBody())
+                    ->isIdenticalTo($before)
+        ;
+    }
 }

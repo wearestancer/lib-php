@@ -254,4 +254,18 @@ class Response
 
         return in_array(strtolower($name), $keys, true);
     }
+
+    /**
+     * Return an instance with the specified message body.
+     *
+     * @param string $body Body.
+     * @return self
+     */
+    public function withBody(string $body) : self
+    {
+        $obj = clone $this;
+        $obj->body = $body;
+
+        return $obj;
+    }
 }
