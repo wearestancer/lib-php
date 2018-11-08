@@ -270,6 +270,22 @@ class Response
     }
 
     /**
+     * Return an instance with the provided value replacing the specified header.
+     *
+     * @param string $name Case-insensitive header field name.
+     * @param string|string[] $value Header value(s).
+     * @return self
+     */
+    public function withHeader(string $name, $value) : self
+    {
+        $obj = clone $this;
+
+        $obj->headers[$name] = (array) $value;
+
+        return $obj;
+    }
+
+    /**
      * Return an instance without the specified header.
      *
      * @param string $name Case-insensitive header field name to remove.
