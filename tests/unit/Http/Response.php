@@ -250,4 +250,54 @@ class Response extends atoum
                     ->isIdenticalTo($before)
         ;
     }
+
+    public function testWithStatus()
+    {
+        $this
+            ->assert('Without changing reason')
+                ->given($before = rand(100, 600))
+                ->and($after = rand(100, 600))
+                ->and($reason = uniqid())
+                ->and($this->newTestedInstance($before, '', [], '', $reason))
+                ->then
+                    ->object($obj = $this->testedInstance->withStatus($after))
+                        ->isInstanceOfTestedClass
+                        ->isNotTestedInstance
+
+                    ->integer($obj->getStatusCode())
+                        ->isIdenticalTo($after)
+
+                    ->string($obj->getReasonPhrase())
+                        ->isIdenticalTo($reason)
+
+                    ->integer($this->testedInstance->getStatusCode())
+                        ->isIdenticalTo($before)
+
+                    ->string($this->testedInstance->getReasonPhrase())
+                        ->isIdenticalTo($reason)
+
+            ->assert('Without new reason')
+                ->given($codeBefore = rand(100, 600))
+                ->and($codeAfter = rand(100, 600))
+                ->and($reasonBefore = uniqid())
+                ->and($reasonAfter = uniqid())
+                ->and($this->newTestedInstance($codeBefore, '', [], '', $reasonBefore))
+                ->then
+                    ->object($obj = $this->testedInstance->withStatus($codeAfter, $reasonAfter))
+                        ->isInstanceOfTestedClass
+                        ->isNotTestedInstance
+
+                    ->integer($obj->getStatusCode())
+                        ->isIdenticalTo($codeAfter)
+
+                    ->string($obj->getReasonPhrase())
+                        ->isIdenticalTo($reasonAfter)
+
+                    ->integer($this->testedInstance->getStatusCode())
+                        ->isIdenticalTo($codeBefore)
+
+                    ->string($this->testedInstance->getReasonPhrase())
+                        ->isIdenticalTo($reasonBefore)
+        ;
+    }
 }

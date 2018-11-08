@@ -268,4 +268,31 @@ class Response
 
         return $obj;
     }
+
+    /**
+     * Return an instance with the specified status code and, optionally, reason phrase.
+     *
+     * If no reason phrase is specified, implementations MAY choose to default
+     * to the RFC 7231 or IANA recommended reason phrase for the response's
+     * status code.
+     *
+     * @link http://tools.ietf.org/html/rfc7231#section-6
+     * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+     * @param integer $code The 3-digit integer result code to set.
+     * @param string $reasonPhrase The reason phrase to use with the
+     *     provided status code; if none is provided, implementations MAY
+     *     use the defaults as suggested in the HTTP specification.
+     * @return self
+     */
+    public function withStatus(int $code, string $reasonPhrase = '') : self
+    {
+        $obj = clone $this;
+        $obj->code = $code;
+
+        if ($reasonPhrase) {
+            $obj->reason = $reasonPhrase;
+        }
+
+        return $obj;
+    }
 }
