@@ -19,6 +19,9 @@ class Response
     /** @var array */
     protected $headers;
 
+    /** @var string */
+    protected $protocol;
+
     /**
      * Create a response instance
      *
@@ -37,6 +40,7 @@ class Response
     ) {
         $this->code = $code;
         $this->body = $body;
+        $this->protocol = $version;
 
         foreach ($headers as $name => $value) {
             $this->headers[$name] = (array) $value;
@@ -109,6 +113,16 @@ class Response
     public function getHeaders() : array
     {
         return $this->headers;
+    }
+
+    /**
+     * Retrieves the HTTP protocol version as a string.
+     *
+     * @return string HTTP protocol version.
+     */
+    public function getProtocolVersion() : string
+    {
+        return $this->protocol;
     }
 
     /**

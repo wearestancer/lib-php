@@ -83,6 +83,28 @@ class Response extends atoum
         ;
     }
 
+    public function testGetProtocolVersion()
+    {
+        $this
+            ->given($code = rand(100, 600))
+            ->and($body = uniqid())
+            ->and($headers = [])
+            ->and($protocol = uniqid())
+            ->then
+                ->assert('Defaults')
+                    ->if($this->newTestedInstance($code, $body, $headers))
+                    ->then
+                        ->string($this->testedInstance->getProtocolVersion())
+                            ->isIdenticalTo('1.1')
+
+                ->assert('Passed')
+                    ->if($this->newTestedInstance($code, $body, $headers, $protocol))
+                    ->then
+                        ->string($this->testedInstance->getProtocolVersion())
+                            ->isIdenticalTo($protocol)
+        ;
+    }
+
     public function testGetStatusCode()
     {
         $this
