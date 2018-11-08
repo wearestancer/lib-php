@@ -36,6 +36,18 @@ class Client implements ild78\Interfaces\HttpClientInterface
     }
 
     /**
+     * Return cURL resource
+     *
+     * This is mainly use for testing purpose. Be carefull if you need to use it.
+     *
+     * @return resource
+     */
+    public function getCurlResource()
+    {
+        return $this->curl;
+    }
+
+    /**
      * Create and send an HTTP request.
      *
      * @param string $method HTTP method.
@@ -46,5 +58,21 @@ class Client implements ild78\Interfaces\HttpClientInterface
      */
     public function request(string $method, string $uri, array $options = []) : Psr\Http\Message\ResponseInterface
     {
+        // Set URL.
+        curl_setopt($this->curl, CURLOPT_URL, $uri);
+
+        // Set HTTP method.
+        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, $method);
+
+        // `curl_exec` will return the body.
+        curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
+
+        $body = curl_exec($this->curl);
+
+        $code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
+
+        $response = new Response($code, $body);
+
+        return $response;
     }
 }

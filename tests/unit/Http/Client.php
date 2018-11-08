@@ -33,7 +33,54 @@ class Client extends atoum
         ;
     }
 
+    public function testGetCurlResource()
+    {
+        $this
+            ->if($this->newTestedInstance)
+            ->then
+                ->resource($this->testedInstance->getCurlResource())
+                    ->isOfType('curl')
+        ;
+    }
+
     public function testRequest()
     {
+        $this
+            ->assert('Basic request')
+                ->given($this->newTestedInstance)
+                ->and($curl = $this->testedInstance->getCurlResource())
+                ->if($this->function->curl_setopt = true)
+                ->and($this->function->curl_exec = $body = uniqid())
+                ->and($this->function->curl_errno = 0)
+                ->and($this->function->curl_error = '')
+                ->and($method = 'GET')
+                ->and($host = uniqid())
+                ->then
+                    ->object($response = $this->testedInstance->request($method, $host))
+                        ->isInstanceOf(ild78\Http\Response::class)
+
+                    ->string($response->getBody())
+                        ->isIdenticalTo($body)
+
+                    ->function('curl_setopt')
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_URL, $host)
+                            ->once
+
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_CUSTOMREQUEST, $method)
+                            ->once
+
+                        ->wasCalledWithArguments($curl, CURLOPT_CONNECTTIMEOUT)
+                            ->never
+
+                        ->wasCalledWithArguments($curl, CURLOPT_TIMEOUT)
+                            ->never
+
+                        ->wasCalledWithArguments($curl, CURLOPT_HTTPHEADER)
+                            ->never
+
+                    ->function('curl_exec')
+                        ->wasCalled
+                            ->once
+        ;
     }
 }
