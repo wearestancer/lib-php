@@ -276,6 +276,77 @@ class Response extends atoum
         ;
     }
 
+    public function testWithoutHeader()
+    {
+        $this
+            ->given($code = rand(100, 600))
+            ->and($body = uniqid())
+            ->and($key = uniqid())
+            ->and($value = uniqid())
+            ->and($headers = [
+                $key => [$value],
+            ])
+            ->and($protocol = uniqid())
+            ->and($reason = uniqid())
+            ->and($this->newTestedInstance($code, $body, $headers, $protocol, $reason))
+
+            ->then
+                ->assert('With known header')
+                    ->object($obj = $this->testedInstance->withoutHeader($key))
+                        ->isInstanceOfTestedClass
+                        ->isNotTestedInstance
+
+                    ->array($obj->getHeaders())
+                        ->isEmpty
+
+                    ->array($this->testedInstance->getHeaders())
+                        ->isIdenticalTo($headers)
+
+                    // Check no diff on other properties
+                    ->integer($this->testedInstance->getStatusCode())
+                        ->isIdenticalTo($obj->getStatusCode())
+                        ->isIdenticalTo($code)
+
+                    ->string($this->testedInstance->getBody())
+                        ->isIdenticalTo($obj->getBody())
+                        ->isIdenticalTo($body)
+
+                    ->string($this->testedInstance->getProtocolVersion())
+                        ->isIdenticalTo($obj->getProtocolVersion())
+                        ->isIdenticalTo($protocol)
+
+                    ->string($this->testedInstance->getReasonPhrase())
+                        ->isIdenticalTo($obj->getReasonPhrase())
+                        ->isIdenticalTo($reason)
+
+                ->assert('With unknown header')
+                    ->object($obj = $this->testedInstance->withoutHeader(uniqid()))
+                        ->isInstanceOfTestedClass
+                        ->isNotTestedInstance
+
+                    // Check no diff on other properties
+                    ->integer($this->testedInstance->getStatusCode())
+                        ->isIdenticalTo($obj->getStatusCode())
+                        ->isIdenticalTo($code)
+
+                    ->string($this->testedInstance->getBody())
+                        ->isIdenticalTo($obj->getBody())
+                        ->isIdenticalTo($body)
+
+                    ->array($this->testedInstance->getHeaders())
+                        ->isIdenticalTo($obj->getHeaders())
+                        ->isIdenticalTo($headers)
+
+                    ->string($this->testedInstance->getProtocolVersion())
+                        ->isIdenticalTo($obj->getProtocolVersion())
+                        ->isIdenticalTo($protocol)
+
+                    ->string($this->testedInstance->getReasonPhrase())
+                        ->isIdenticalTo($obj->getReasonPhrase())
+                        ->isIdenticalTo($reason)
+        ;
+    }
+
     public function testWithProtocolVersion()
     {
         $this

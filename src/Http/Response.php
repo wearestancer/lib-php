@@ -270,6 +270,27 @@ class Response
     }
 
     /**
+     * Return an instance without the specified header.
+     *
+     * @param string $name Case-insensitive header field name to remove.
+     * @return self
+     */
+    public function withoutHeader(string $name) : self
+    {
+        $obj = clone $this;
+
+        $headers = $this->getHeaders();
+
+        if (array_key_exists($name, $headers)) {
+            unset($headers[$name]);
+        }
+
+        $obj->headers = $headers;
+
+        return $obj;
+    }
+
+    /**
      * Return an instance with the specified HTTP protocol version.
      *
      * @param string $version HTTP protocol version.
