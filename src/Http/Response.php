@@ -10,6 +10,9 @@ use ild78;
  */
 class Response
 {
+    /** @var string */
+    protected $body;
+
     /** @var integer */
     protected $code;
 
@@ -30,6 +33,17 @@ class Response
         $reason = null
     ) {
         $this->code = $code;
+        $this->body = $body;
+    }
+
+    /**
+     * Gets the body of the message.
+     *
+     * @return string
+     */
+    public function getBody() : string
+    {
+        return $this->body;
     }
 
     /**
