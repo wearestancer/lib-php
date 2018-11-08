@@ -38,6 +38,29 @@ class Response extends atoum
         ;
     }
 
+    public function testGetHeaderLine()
+    {
+        $this
+            ->given($code = rand(100, 600))
+            ->and($body = uniqid())
+            ->and($key = uniqid())
+            ->and($value1 = uniqid())
+            ->and($value2 = uniqid())
+            ->and($headers = [
+                $key => [$value1, $value2],
+            ])
+            ->and($this->newTestedInstance($code, $body, $headers))
+            ->then
+                ->string($this->testedInstance->getHeaderLine($key))
+                    ->contains($value1)
+                    ->contains($value2)
+                    ->isIdenticalTo($value1 . ', ' . $value2)
+
+                ->string($this->testedInstance->getHeaderLine(uniqid()))
+                    ->isEmpty
+        ;
+    }
+
     public function testGetHeaders()
     {
         $this
