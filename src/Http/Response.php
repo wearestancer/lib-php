@@ -1,14 +1,18 @@
 <?php
 declare(strict_types=1);
 
+// Next line is required, we can not force type in function signature, it triggers a fatal error.
+// phpcs:disable Squiz.Commenting.FunctionComment.ScalarTypeHintMissing
+
 namespace ild78\Http;
 
 use ild78;
+use Psr;
 
 /**
  * Basic HTTP response
  */
-class Response
+class Response implements Psr\Http\Message\ResponseInterface
 {
     /** @var string */
     protected $body;
@@ -144,7 +148,7 @@ class Response
      *    header. If the header does not appear in the message, this method MUST
      *    return an empty array.
      */
-    public function getHeader(string $name) : array
+    public function getHeader($name) : array
     {
         if (!$this->hasHeader($name)) {
             return [];
@@ -168,7 +172,7 @@ class Response
      *    concatenated together using a comma. If the header does not appear in
      *    the message, this method MUST return an empty string.
      */
-    public function getHeaderLine(string $name) : string
+    public function getHeaderLine($name) : string
     {
         return implode(', ', $this->getHeader($name));
     }
@@ -247,7 +251,7 @@ class Response
      *     name using a case-insensitive string comparison. Returns false if
      *     no matching header name is found in the message.
      */
-    public function hasHeader(string $name) : bool
+    public function hasHeader($name) : bool
     {
         $keys = array_keys($this->headers);
         $keys = array_map('strtolower', $keys);
@@ -266,7 +270,7 @@ class Response
      * @param string|string[] $value Header value(s).
      * @return self
      */
-    public function withAddedHeader(string $name, $value) : self
+    public function withAddedHeader($name, $value) : self
     {
         $obj = clone $this;
 
@@ -282,13 +286,13 @@ class Response
     /**
      * Return an instance with the specified message body.
      *
-     * @param string $body Body.
+     * @param Psr\Http\Message\StreamInterface $body Body.
      * @return self
      */
-    public function withBody(string $body) : self
+    public function withBody(Psr\Http\Message\StreamInterface $body) : self
     {
         $obj = clone $this;
-        $obj->body = $body;
+        $obj->body = (string) $body;
 
         return $obj;
     }
@@ -300,7 +304,7 @@ class Response
      * @param string|string[] $value Header value(s).
      * @return self
      */
-    public function withHeader(string $name, $value) : self
+    public function withHeader($name, $value) : self
     {
         $obj = clone $this;
 
@@ -315,7 +319,7 @@ class Response
      * @param string $name Case-insensitive header field name to remove.
      * @return self
      */
-    public function withoutHeader(string $name) : self
+    public function withoutHeader($name) : self
     {
         $obj = clone $this;
 
@@ -336,7 +340,7 @@ class Response
      * @param string $version HTTP protocol version.
      * @return self
      */
-    public function withProtocolVersion(string $version) : self
+    public function withProtocolVersion($version) : self
     {
         $obj = clone $this;
         $obj->protocol = $version;
@@ -359,7 +363,7 @@ class Response
      *     use the defaults as suggested in the HTTP specification.
      * @return self
      */
-    public function withStatus(int $code, string $reasonPhrase = '') : self
+    public function withStatus($code, $reasonPhrase = '') : self
     {
         $obj = clone $this;
         $obj->code = $code;

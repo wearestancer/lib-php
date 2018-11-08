@@ -3,6 +3,8 @@
 namespace ild78\Http\tests\unit;
 
 use atoum;
+use Psr;
+use mock;
 
 class Response extends atoum
 {
@@ -72,6 +74,14 @@ class Response extends atoum
             [510, 'Not Extended'],
             [511, 'Network Authentication Required'],
         ];
+    }
+
+    public function testClass()
+    {
+        $this
+            ->testedClass
+                ->implements(Psr\Http\Message\ResponseInterface::class)
+        ;
     }
 
     public function testGetBody()
@@ -321,14 +331,15 @@ class Response extends atoum
             ->and($reason = uniqid())
             ->and($this->newTestedInstance($code, $body, $headers, $protocol, $reason))
 
-            ->if($changes = uniqid())
+            ->if($changes = new mock\Psr\Http\Message\StreamInterface)
+            ->and($this->calling($changes)->__toString = $newBody = uniqid())
             ->then
                 ->object($obj = $this->testedInstance->withBody($changes))
                     ->isInstanceOfTestedClass
                     ->isNotTestedInstance
 
                 ->string($obj->getBody())
-                    ->isIdenticalTo($changes)
+                    ->isIdenticalTo($newBody)
 
                 ->string($this->testedInstance->getBody())
                     ->isIdenticalTo($body)
