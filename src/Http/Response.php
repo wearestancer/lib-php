@@ -54,6 +54,29 @@ class Response
     }
 
     /**
+     * Retrieves a message header value by the given case-insensitive name.
+     *
+     * This method returns an array of all the header values of the given
+     * case-insensitive header name.
+     *
+     * If the header does not appear in the message, this method MUST return an
+     * empty array.
+     *
+     * @param string $name Case-insensitive header field name.
+     * @return string[] An array of string values as provided for the given
+     *    header. If the header does not appear in the message, this method MUST
+     *    return an empty array.
+     */
+    public function getHeader(string $name) : array
+    {
+        if (!$this->hasHeader($name)) {
+            return [];
+        }
+
+        return $this->headers[$name];
+    }
+
+    /**
      * Retrieves all message header values.
      *
      * While header names are not case-sensitive, getHeaders() will preserve the

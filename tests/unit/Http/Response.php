@@ -18,6 +18,26 @@ class Response extends atoum
         ;
     }
 
+    public function testGetHeader()
+    {
+        $this
+            ->given($code = rand(100, 600))
+            ->and($body = uniqid())
+            ->and($key = uniqid())
+            ->and($value = uniqid())
+            ->and($headers = [
+                $key => $value,
+            ])
+            ->and($this->newTestedInstance($code, $body, $headers))
+            ->then
+                ->array($this->testedInstance->getHeader($key))
+                    ->strictlyContains($value)
+
+                ->array($this->testedInstance->getHeader(uniqid()))
+                    ->isEmpty
+        ;
+    }
+
     public function testGetHeaders()
     {
         $this
