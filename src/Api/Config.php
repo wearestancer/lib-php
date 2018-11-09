@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace ild78\Api;
 
-use GuzzleHttp\Client;
-use GuzzleHttp\ClientInterface;
 use ild78;
 use Psr\Log\LoggerInterface;
 
@@ -19,7 +17,7 @@ class Config
     /** @var string */
     protected $host = 'api.iliad78.net';
 
-    /** @var GuzzleHttp\ClientInterface */
+    /** @var ild78\Http\Client|GuzzleHttp\ClientInterface */
     protected $httpClient;
 
     /** @var self */
@@ -99,20 +97,21 @@ class Config
     }
 
     /**
-     * Return an instance of GuzzleHttp\Client
+     * Return an instance of HTTP client
      *
-     * We call give your instance of `GuzzleHttp\Client` with `Api::setHttpClient()` method.
-     * If none provided, we will spawn an instance for you.
+     * You can give your instance of `ild78\Http\Client` or `GuzzleHttp\Client`
+     * with `Api::setHttpClient()` method.
+     * If none provided, we will spawn a default instance for you.
      *
-     * @return GuzzleHttp\ClientInterface
+     * @return object
      */
-    public function getHttpClient() : ClientInterface
+    public function getHttpClient()
     {
         if ($this->httpClient) {
             return $this->httpClient;
         }
 
-        $client = new Client();
+        $client = new ild78\Http\Client();
 
         $this->setHttpClient($client);
 
@@ -301,10 +300,13 @@ class Config
     /**
      * Update GuzzleHttp\Client instance
      *
-     * @param GuzzleHttp\ClientInterface $client New instance.
+     * Be carefull, no limitation is done on this method to allow you to use your own
+     * implementation of an HTTP client.
+     *
+     * @param ild78\Http\Client|GuzzleHttp\ClientInterface $client New instance.
      * @return self
      */
-    public function setHttpClient(ClientInterface $client) : self
+    public function setHttpClient($client) : self
     {
         $this->httpClient = $client;
 
