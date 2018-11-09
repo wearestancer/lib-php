@@ -2,8 +2,6 @@
 
 namespace ild78\tests\unit\Stub\Api;
 
-require_once __DIR__ . '/../../../Stub/Api/Object.php';
-
 use atoum;
 use GuzzleHttp;
 use ild78;

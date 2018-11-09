@@ -14,6 +14,11 @@
             "ild78\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "ild78\\Stub\\": "tests/Stub"
+        }
+    },
     "require": {
         "php": ">=7.1.0",
         "psr/http-message": "^1.0",
