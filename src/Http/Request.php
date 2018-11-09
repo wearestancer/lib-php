@@ -69,4 +69,26 @@ class Request
     {
         return $this->uri;
     }
+
+    /**
+     * Return an instance with the provided HTTP method.
+     *
+     * While HTTP method names are typically all uppercase characters, HTTP
+     * method names are case-sensitive and thus implementations SHOULD NOT
+     * modify the given string.
+     *
+     * This method MUST be implemented in such a way as to retain the
+     * immutability of the message, and MUST return an instance that has the
+     * changed request method.
+     *
+     * @param string $method Case-sensitive method.
+     * @return self
+     */
+    public function withMethod($method) : self
+    {
+        $obj = clone $this;
+        $obj->method = strtoupper($method);
+
+        return $obj;
+    }
 }
