@@ -8,6 +8,22 @@ use mock;
 
 class Message extends atoum
 {
+    public function testAddHeader()
+    {
+        $this
+            ->given($body = uniqid())
+            ->and($this->newTestedInstance($body))
+            ->and($name = uniqid())
+            ->and($value = uniqid())
+            ->then
+                ->object($this->testedInstance->addHeader($name, $value))
+                    ->isTestedInstance
+
+                ->array($this->testedInstance->getHeader($name))
+                    ->contains($value)
+        ;
+    }
+
     public function testGetBody()
     {
         $this
@@ -124,6 +140,28 @@ class Message extends atoum
                 ->assert('Case insensitive')
                     ->boolean($this->testedInstance->hasHeader(strtoupper($key)))
                         ->isTrue
+        ;
+    }
+
+    public function testRemoveHeader()
+    {
+        $this
+            ->given($body = uniqid())
+            ->and($key = uniqid())
+            ->and($value = uniqid())
+            ->and($headers = [
+                $key => $value,
+            ])
+            ->and($this->newTestedInstance($body, $headers))
+            ->then
+                ->array($this->testedInstance->getHeaders())
+                    ->isNotEmpty
+
+                ->object($this->testedInstance->removeHeader($key))
+                    ->isTestedInstance
+
+                ->array($this->testedInstance->getHeaders())
+                    ->isEmpty
         ;
     }
 

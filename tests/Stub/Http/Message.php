@@ -17,7 +17,7 @@ class Message
         $this->protocol = $version;
 
         foreach ($headers as $name => $value) {
-            $this->headers[$name] = (array) $value;
+            $this->addHeader($name, $value);
         }
     }
 }

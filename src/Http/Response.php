@@ -113,7 +113,7 @@ class Response implements Psr\Http\Message\ResponseInterface
         $this->reason = $reason;
 
         foreach ($headers as $name => $value) {
-            $this->headers[$name] = (array) $value;
+            $this->addHeader($name, $value);
         }
     }
 

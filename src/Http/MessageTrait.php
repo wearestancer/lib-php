@@ -18,10 +18,33 @@ trait MessageTrait
     protected $body;
 
     /** @var array */
-    protected $headers;
+    protected $headers = [];
 
     /** @var string */
     protected $protocol;
+
+    /**
+     * Add a value to an header
+     *
+     * @param string $name Header name.
+     * @param string|string[] $value Header value.
+     * @return self
+     */
+    public function addHeader(string $name, $value) : self
+    {
+        $key = strtolower($name);
+
+        if (!array_key_exists($key, $this->headers)) {
+            $this->headers[$key] = [
+                'name' => $name,
+                'values' => [],
+            ];
+        }
+
+        $this->headers[$key]['values'] = array_merge($this->headers[$key]['values'], (array) $value);
+
+        return $this;
+    }
 
     /**
      * Gets the body of the message.
@@ -53,7 +76,9 @@ trait MessageTrait
             return [];
         }
 
-        return $this->headers[$name];
+        $key = strtolower($name);
+
+        return $this->headers[$key]['values'];
     }
 
     /**
@@ -88,7 +113,14 @@ trait MessageTrait
      */
     public function getHeaders() : array
     {
-        return $this->headers;
+        $headers = [];
+        $func = function ($data, $key) use (&$headers) {
+            $headers[$data['name']] = $data['values'];
+        };
+
+        array_walk($this->headers, $func);
+
+        return $headers;
     }
 
     /**
@@ -111,10 +143,23 @@ trait MessageTrait
      */
     public function hasHeader($name) : bool
     {
-        $keys = array_keys($this->headers);
-        $keys = array_map('strtolower', $keys);
+        $key = strtolower($name);
 
-        return in_array(strtolower($name), $keys, true);
+        return array_key_exists($key, $this->headers);
+    }
+
+    /**
+     * Remove header by name
+     *
+     * @param string $name Header name to remove.
+     * @return self
+     */
+    public function removeHeader($name) : self
+    {
+        $key = strtolower($name);
+        unset($this->headers[$key]);
+
+        return $this;
     }
 
     /**
@@ -132,13 +177,7 @@ trait MessageTrait
     {
         $obj = clone $this;
 
-        if ($obj->hasHeader($name)) {
-            $obj->headers[$name] = array_merge($obj->headers[$name], (array) $value);
-        } else {
-            $obj->headers[$name] = (array) $value;
-        }
-
-        return $obj;
+        return $obj->addHeader($name, $value);
     }
 
     /**
@@ -164,11 +203,7 @@ trait MessageTrait
      */
     public function withHeader($name, $value) : self
     {
-        $obj = clone $this;
-
-        $obj->headers[$name] = (array) $value;
-
-        return $obj;
+        return $this->withoutHeader($name)->addHeader($name, $value);
     }
 
     /**
@@ -181,15 +216,7 @@ trait MessageTrait
     {
         $obj = clone $this;
 
-        $headers = $this->getHeaders();
-
-        if (array_key_exists($name, $headers)) {
-            unset($headers[$name]);
-        }
-
-        $obj->headers = $headers;
-
-        return $obj;
+        return $obj->removeHeader($name);
     }
 
     /**
