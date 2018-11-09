@@ -55,6 +55,16 @@ class Client implements ild78\Interfaces\HttpClientInterface
      * @param array $options Request options to apply.
      *
      * @return Psr\Http\Message\ResponseInterface
+     *
+     * @throws ild78\Exceptions\HttpException On cURL error.
+     * @throws ild78\Exceptions\TooManyRedirectsException On 310 HTTP error.
+     * @throws ild78\Exceptions\RedirectionException On over 300 level HTTP error.
+     * @throws ild78\Exceptions\BadRequestException On 400 HTTP error.
+     * @throws ild78\Exceptions\NotAuthorizedException On 401 HTTP error.
+     * @throws ild78\Exceptions\NotFoundException On 404 HTTP error.
+     * @throws ild78\Exceptions\ConflictException On 409 HTTP error.
+     * @throws ild78\Exceptions\ClientException On over 400 level HTTP error.
+     * @throws ild78\Exceptions\ServerException On over 500 level HTTP error.
      */
     public function request(string $method, string $uri, array $options = []) : Psr\Http\Message\ResponseInterface
     {
@@ -83,11 +93,57 @@ class Client implements ild78\Interfaces\HttpClientInterface
         // `curl_exec` will return the body.
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
 
-        $body = curl_exec($this->curl);
+        // Get response headers.
+        $headers = [];
+        $parse = function ($curl, $line) use (&$headers) {
+            list($name, $value) = explode(':', $line, 2);
 
+            if (!array_key_exists($name, $headers)) {
+                $headers[$name] = [];
+            }
+
+            $headers[$name][] = $value;
+
+            return strlen($line);
+        };
+        curl_setopt($this->curl, CURLOPT_HEADERFUNCTION, $parse);
+
+        $body = curl_exec($this->curl);
+        $error = curl_errno($this->curl);
         $code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
 
-        $response = new Response($code, $body);
+        $response = new Response($code, $body, $headers);
+
+        if ($error || $code >= 400) {
+            if ($error === CURLE_TOO_MANY_REDIRECTS) {
+                $code = 310;
+            }
+
+            if (!array_key_exists('headers', $options)) {
+                $options['headers'] = [];
+            }
+
+            if (!array_key_exists('body', $options)) {
+                $options['body'] = null;
+            }
+
+            $request = new Request($method, $uri, $options['headers'], $options['body']);
+
+            $params = [
+                'code' => $code,
+                'request' => $request,
+                'response' => $response,
+                'status' => $code,
+            ];
+
+            $class = ild78\Exceptions\HttpException::getClassFromStatus($code);
+
+            if ($class::getStatus() != $code) {
+                $params['message'] = curl_error($this->curl);
+            }
+
+            throw $class::create($params);
+        }
 
         return $response;
     }
