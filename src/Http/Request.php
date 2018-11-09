@@ -71,6 +71,25 @@ class Request
     }
 
     /**
+     * Update URI and host header
+     *
+     * @param string $uri New URI.
+     * @return self
+     */
+    public function updateUri(string $uri) : self
+    {
+        $matches = [];
+        $name = 'Host';
+
+        preg_match('!https?://([^/]+)(.*)!', $uri, $matches);
+
+        $this->removeHeader($name)->addHeader($name, $matches[1]);
+        $this->uri = $matches[2] ?: '/';
+
+        return $this;
+    }
+
+    /**
      * Return an instance with the provided HTTP method.
      *
      * While HTTP method names are typically all uppercase characters, HTTP

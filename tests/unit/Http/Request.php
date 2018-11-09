@@ -31,6 +31,85 @@ class Request extends atoum
         ;
     }
 
+    public function testUpdateUri()
+    {
+        $this
+            ->given($this->newTestedInstance(uniqid(), uniqid()))
+
+            ->assert('With HTTP')
+                ->if($host = uniqid())
+                ->and($query = '/' . uniqid())
+                ->and($uri = 'http://' . $host . $query)
+                ->then
+                    ->object($this->testedInstance->updateUri($uri))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getUri())
+                        ->isIdenticalTo($query)
+
+                    ->array($this->testedInstance->getHeader('host'))
+                        ->contains($host)
+
+            ->assert('With HTTPS')
+                ->if($host = uniqid())
+                ->and($query = '/' . uniqid())
+                ->and($uri = 'https://' . $host . $query)
+                ->then
+                    ->object($this->testedInstance->updateUri($uri))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getUri())
+                        ->isIdenticalTo($query)
+
+                    ->array($this->testedInstance->getHeader('host'))
+                        ->contains($host)
+
+            ->assert('With HTTP, host only')
+                ->if($host = uniqid())
+                ->and($uri = 'http://' . $host)
+                ->then
+                    ->object($this->testedInstance->updateUri($uri))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getUri())
+                        ->isIdenticalTo('/')
+
+                    ->array($this->testedInstance->getHeader('host'))
+                        ->contains($host)
+
+            ->assert('With HTTPS, host only')
+                ->if($host = uniqid())
+                ->and($uri = 'https://' . $host)
+                ->then
+                    ->object($this->testedInstance->updateUri($uri))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getUri())
+                        ->isIdenticalTo('/')
+
+                    ->array($this->testedInstance->getHeader('host'))
+                        ->contains($host)
+
+            ->assert('Double use will result only one header')
+                ->if($host1 = uniqid())
+                ->and($uri1 = 'https://' . $host1)
+                ->and($host2 = uniqid())
+                ->and($uri2 = 'https://' . $host2)
+                ->then
+                    ->object($this->testedInstance->updateUri($uri1))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->getHeader('host'))
+                        ->contains($host1)
+
+                    ->object($this->testedInstance->updateUri($uri2))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->getHeader('host'))
+                        ->contains($host2)
+        ;
+    }
+
     public function testWithMethod()
     {
         $this
