@@ -23,11 +23,13 @@ class Request extends atoum
     {
         $this
             ->given($method = uniqid())
-            ->and($uri = uniqid())
+            ->and($host = uniqid())
+            ->and($query = '/' . uniqid())
+            ->and($uri = 'http://' . $host . $query)
             ->if($this->newTestedInstance($method, $uri))
             ->then
                 ->string($this->testedInstance->getUri())
-                    ->isIdenticalTo($uri)
+                    ->isIdenticalTo($query)
         ;
     }
 
@@ -114,12 +116,15 @@ class Request extends atoum
     {
         $this
             ->given($method = uniqid())
-            ->and($uri = uniqid())
+            ->and($host = uniqid())
+            ->and($query = '/' . uniqid())
+            ->and($uri = 'https://' . $host . $query)
             ->and($body = uniqid())
             ->and($key = uniqid())
             ->and($value = uniqid())
             ->and($headers = [
                 $key => [$value],
+                'Host' => [$host],
             ])
             ->and($protocol = uniqid())
             ->and($this->newTestedInstance($method, $uri, $headers, $body, $protocol))

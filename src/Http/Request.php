@@ -38,13 +38,14 @@ class Request
         $version = '1.1'
     ) {
         $this->method = strtoupper($method);
-        $this->uri = $uri;
         $this->body = $body;
         $this->protocol = $version;
 
         foreach ($headers as $name => $value) {
             $this->addHeader($name, $value);
         }
+
+        $this->updateUri($uri);
     }
 
     /**
