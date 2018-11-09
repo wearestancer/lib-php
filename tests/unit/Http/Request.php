@@ -156,6 +156,46 @@ class Request extends atoum
         ;
     }
 
+    public function testWithRequestTarget()
+    {
+        $this
+            ->given($method = uniqid())
+            ->and($host = uniqid())
+            ->and($query = '/' . uniqid())
+            ->and($uri = 'https://' . $host . $query)
+            ->and($body = uniqid())
+            ->and($key = uniqid())
+            ->and($value = uniqid())
+            ->and($headers = [
+                $key => [$value],
+                'Host' => [$host],
+            ])
+            ->and($protocol = uniqid())
+            ->and($this->newTestedInstance($method, $uri, $headers, $body, $protocol))
+
+            ->if($changes = uniqid())
+            ->then
+                ->object($obj = $this->testedInstance->withRequestTarget($changes))
+                    ->isInstanceOfTestedClass
+                    ->isNotTestedInstance
+
+                ->string($obj->getRequestTarget())
+                    ->isIdenticalTo($changes)
+
+                ->string($this->testedInstance->getRequestTarget())
+                    ->isIdenticalTo($query)
+
+                // Check no diff on other properties
+                ->string($this->testedInstance->getBody())
+                    ->isIdenticalTo($obj->getBody())
+                    ->isIdenticalTo($body)
+
+                ->array($this->testedInstance->getHeaders())
+                    ->isIdenticalTo($obj->getHeaders())
+                    ->isIdenticalTo($headers)
+        ;
+    }
+
     public function testWithUri()
     {
         $this

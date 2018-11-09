@@ -135,6 +135,23 @@ class Request
     }
 
     /**
+     * Return an instance with the specific request-target.
+     *
+     * @link http://tools.ietf.org/html/rfc7230#section-5.3 (for the various
+     *     request-target forms allowed in request messages)
+     * @param mixed $requestTarget New target.
+     * @return self
+     */
+    public function withRequestTarget($requestTarget) : self
+    {
+        $obj = clone $this;
+
+        $obj->uri = $requestTarget;
+
+        return $obj;
+    }
+
+    /**
      * Returns an instance with the provided URI.
      *
      * This method MUST update the Host header of the returned request by
