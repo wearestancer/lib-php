@@ -12,7 +12,7 @@ use Psr;
 /**
  * Basic HTTP request
  */
-class Request
+class Request implements Psr\Http\Message\RequestInterface
 {
     use MessageTrait;
 
