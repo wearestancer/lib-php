@@ -17,6 +17,43 @@ class HttpException extends atoum
         ;
     }
 
+    public function testCreate()
+    {
+        $this
+            ->given($class = $this->testedClass->getClass())
+
+            ->assert('No params')
+                ->object($class::create())
+                    ->isInstanceOf($class)
+
+            ->assert('Complete params')
+                ->given($message = uniqid())
+                ->and($code = rand(0, 100))
+                ->and($previous = new mock\Exception)
+                ->and($request = new mock\Psr\Http\Message\RequestInterface)
+                ->and($response = new mock\Psr\Http\Message\ResponseInterface)
+                ->and($params = compact('message', 'code', 'previous', 'request', 'response'))
+                ->then
+                    ->object($obj = $class::create($params))
+                        ->isInstanceOf($class)
+
+                    ->string($obj->getMessage())
+                        ->isIdenticalTo($message)
+
+                    ->integer($obj->getCode())
+                        ->isIdenticalTo($code)
+
+                    ->object($obj->getPrevious())
+                        ->isIdenticalTo($previous)
+
+                    ->object($obj->getRequest())
+                        ->isIdenticalTo($request)
+
+                    ->object($obj->getResponse())
+                        ->isIdenticalTo($response)
+        ;
+    }
+
     public function testGetRequest()
     {
         $this

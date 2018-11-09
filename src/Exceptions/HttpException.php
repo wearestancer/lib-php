@@ -36,6 +36,43 @@ class HttpException extends Exception
     }
 
     /**
+     * Create an instance from an array
+     *
+     * @param array $params Parameters, keys must correspond to exception properties.
+     * @return self
+     */
+    public static function create(array $params = []) : self
+    {
+        $keys = [
+            'message' => '',
+            'code' => 0,
+            'previous' => null,
+            'request' => null,
+            'response' => null,
+        ];
+
+        foreach ($keys as $key => $default) {
+            $$key = $default;
+
+            if (array_key_exists($key, $params)) {
+                $$key = $params[$key];
+            }
+        }
+
+        $obj = new static($message, $code, $previous);
+
+        if ($request) {
+            $obj->request = $request;
+        }
+
+        if ($response) {
+            $obj->response = $response;
+        }
+
+        return $obj;
+    }
+
+    /**
      * Get the request that caused the exception
      *
      * @return Psr\Http\Message\RequestInterface|null
