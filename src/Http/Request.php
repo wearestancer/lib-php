@@ -56,4 +56,17 @@ class Request
     {
         return $this->method;
     }
+
+    /**
+     * Retrieves the URI instance.
+     *
+     * We will not implement the real interface as we will not return an UriInterface.
+     *
+     * @link http://tools.ietf.org/html/rfc3986#section-4.3
+     * @return string Returns the URI of the request.
+     */
+    public function getUri() : string
+    {
+        return $this->uri;
+    }
 }

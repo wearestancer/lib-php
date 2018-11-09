@@ -18,4 +18,16 @@ class Request extends atoum
                     ->isIdenticalTo(strtoupper($method))
         ;
     }
+
+    public function testGetUri()
+    {
+        $this
+            ->given($method = uniqid())
+            ->and($uri = uniqid())
+            ->if($this->newTestedInstance($method, $uri))
+            ->then
+                ->string($this->testedInstance->getUri())
+                    ->isIdenticalTo($uri)
+        ;
+    }
 }
