@@ -3,7 +3,8 @@
 namespace ild78\Http\tests\unit;
 
 use atoum;
-use Psr;
+use ild78;
+use mock;
 
 class Request extends atoum
 {
@@ -149,6 +150,21 @@ class Request extends atoum
                 ->array($this->testedInstance->getHeaders())
                     ->isIdenticalTo($obj->getHeaders())
                     ->isIdenticalTo($headers)
+        ;
+    }
+
+    public function testWithUri()
+    {
+        $this
+            ->if($this->newTestedInstance(uniqid(), uniqid()))
+            ->and($mock = new mock\Psr\Http\Message\UriInterface)
+            ->then
+                ->exception(function () use ($mock) {
+                    $this->testedInstance->withUri($mock);
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('This method is not implemented for now')
         ;
     }
 }
