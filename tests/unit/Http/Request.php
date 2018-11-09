@@ -20,7 +20,7 @@ class Request extends atoum
         ;
     }
 
-    public function testGetUri()
+    public function testGetUri_GetRequestTarget()
     {
         $this
             ->given($method = uniqid())
@@ -30,6 +30,9 @@ class Request extends atoum
             ->if($this->newTestedInstance($method, $uri))
             ->then
                 ->string($this->testedInstance->getUri())
+                    ->isIdenticalTo($query)
+
+                ->string($this->testedInstance->getRequestTarget())
                     ->isIdenticalTo($query)
         ;
     }
