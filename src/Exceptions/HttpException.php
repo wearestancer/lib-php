@@ -50,6 +50,14 @@ class HttpException extends Exception implements ExceptionInterface
      */
     public static function create(array $params = []) : Exception
     {
+        if (array_key_exists('status', $params)) {
+            $class = static::getClassFromStatus($params['status']);
+
+            if ($class !== static::class) {
+                return $class::create($params);
+            }
+        }
+
         $obj = parent::create($params);
 
         $keys = [
@@ -64,6 +72,49 @@ class HttpException extends Exception implements ExceptionInterface
         }
 
         return $obj;
+    }
+
+    /**
+     * Return classname for a given HTTP status
+     *
+     * @param integer $status HTTP status.
+     * @return string
+     */
+    public static function getClassFromStatus(int $status) : string
+    {
+        $list = [
+            310 => TooManyRedirectsException::class,
+            400 => BadRequestException::class,
+            401 => NotAuthorizedException::class,
+            402 => PaymentRequiredException::class,
+            403 => ForbiddenException::class,
+            404 => NotFoundException::class,
+            405 => MethodNotAllowedException::class,
+            406 => NotAcceptableException::class,
+            407 => ProxyAuthenticationRequiredException::class,
+            408 => RequestTimeoutException::class,
+            409 => ConflictException::class,
+            410 => GoneException::class,
+            500 => InternalServerErrorException::class,
+        ];
+
+        if (array_key_exists($status, $list)) {
+            return $list[$status];
+        }
+
+        $levels = [
+            3 => RedirectionException::class,
+            4 => ClientException::class,
+            5 => ServerException::class,
+        ];
+
+        $level = (int) floor($status / 100);
+
+        if (array_key_exists($level, $levels)) {
+            return $levels[$level];
+        }
+
+        return static::class;
     }
 
     /**
