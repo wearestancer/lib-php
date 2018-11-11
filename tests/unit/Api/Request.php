@@ -221,14 +221,14 @@ class Request extends atoum
                 'message' => 'Bad Request',
                 'logLevel' => 'critical',
             ],
-            402 => [ // not handled
-                'expected' => ild78\Exceptions\ClientException::class,
+            402 => [
+                'expected' => ild78\Exceptions\PaymentRequiredException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
                 'message' => 'Payment Required',
                 'logLevel' => 'error',
             ],
-            403 => [ // not handled
-                'expected' => ild78\Exceptions\ClientException::class,
+            403 => [
+                'expected' => ild78\Exceptions\ForbiddenException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
                 'message' => 'Forbidden',
                 'logLevel' => 'error',
@@ -239,44 +239,44 @@ class Request extends atoum
                 'message' => 'Not found',
                 'logLevel' => 'error',
             ],
-            405 => [ // not handled
-                'expected' => ild78\Exceptions\ClientException::class,
+            405 => [
+                'expected' => ild78\Exceptions\MethodNotAllowedException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
                 'message' => 'Method Not Allowed',
                 'logLevel' => 'critical',
             ],
-            406 => [ // not handled
-                'expected' => ild78\Exceptions\ClientException::class,
+            406 => [
+                'expected' => ild78\Exceptions\NotAcceptableException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
                 'message' => 'Not Acceptable',
                 'logLevel' => 'error',
             ],
-            407 => [ // not handled
-                'expected' => ild78\Exceptions\ClientException::class,
+            407 => [
+                'expected' => ild78\Exceptions\ProxyAuthenticationRequiredException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
                 'message' => 'Proxy Authentication Required',
                 'logLevel' => 'error',
             ],
-            408 => [ // not handled
-                'expected' => ild78\Exceptions\ClientException::class,
+            408 => [
+                'expected' => ild78\Exceptions\RequestTimeoutException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
                 'message' => 'Request Time-out',
                 'logLevel' => 'error',
             ],
-            409 => [ // not handled
+            409 => [
                 'expected' => ild78\Exceptions\ConflictException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
                 'message' => 'Conflict',
                 'logLevel' => 'error',
             ],
-            410 => [ // not handled
-                'expected' => ild78\Exceptions\ClientException::class,
+            410 => [
+                'expected' => ild78\Exceptions\GoneException::class,
                 'thrown' => GuzzleHttp\Exception\ClientException::class,
                 'message' => 'Gone',
                 'logLevel' => 'error',
             ],
             500 => [
-                'expected' => ild78\Exceptions\ServerException::class,
+                'expected' => ild78\Exceptions\InternalServerErrorException::class,
                 'thrown' => GuzzleHttp\Exception\ServerException::class,
                 'message' => 'Internal Server Error',
                 'logLevel' => 'critical',

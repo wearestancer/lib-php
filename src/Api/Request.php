@@ -124,7 +124,7 @@ class Request
         } catch (GuzzleHttp\Exception\ServerException $exception) {
             $logMethod = 'critical';
             $excepPrevious = $exception;
-            $excepClass = ild78\Exceptions\ServerException::class;
+            $excepClass = ild78\Exceptions\InternalServerErrorException::class;
             $logMessage = 'HTTP 500 - Internal Server Error';
 
         // Too many redirection.
@@ -160,6 +160,14 @@ class Request
                     $logMessage = sprintf('HTTP 401 - Invalid credential : %s', $config->getKey());
                     break;
 
+                case 402:
+                    $excepClass = ild78\Exceptions\PaymentRequiredException::class;
+                    break;
+
+                case 403:
+                    $excepClass = ild78\Exceptions\ForbiddenException::class;
+                    break;
+
                 case 404:
                     $excepClass = ild78\Exceptions\NotFoundException::class;
 
@@ -174,11 +182,28 @@ class Request
                     break;
 
                 case 405:
+                    $excepClass = ild78\Exceptions\MethodNotAllowedException::class;
                     $logMethod = 'critical';
+                    break;
+
+                case 406:
+                    $excepClass = ild78\Exceptions\NotAcceptableException::class;
+                    break;
+
+                case 407:
+                    $excepClass = ild78\Exceptions\ProxyAuthenticationRequiredException::class;
+                    break;
+
+                case 408:
+                    $excepClass = ild78\Exceptions\RequestTimeoutException::class;
                     break;
 
                 case 409:
                     $excepClass = ild78\Exceptions\ConflictException::class;
+                    break;
+
+                case 410:
+                    $excepClass = ild78\Exceptions\GoneException::class;
                     break;
 
                 default:
