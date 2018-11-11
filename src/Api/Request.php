@@ -113,8 +113,7 @@ class Request
         $logMethod = null;
         $logMessage = null;
         $excepClass = null;
-        $excepMessage = null;
-        $excepPrevious = null;
+        $excepParams = [];
 
         try {
             $logger->debug(sprintf('API call : %s %s', strtoupper($method), $config->getUri() . $endpoint));
@@ -123,87 +122,58 @@ class Request
         // HTTP 5**.
         } catch (GuzzleHttp\Exception\ServerException $exception) {
             $logMethod = 'critical';
-            $excepPrevious = $exception;
-            $excepClass = ild78\Exceptions\InternalServerErrorException::class;
             $logMessage = 'HTTP 500 - Internal Server Error';
+            $excepClass = ild78\Exceptions\InternalServerErrorException::class;
+            $excepParams['previous'] = $exception;
 
         // Too many redirection.
         } catch (GuzzleHttp\Exception\TooManyRedirectsException $exception) {
             $logMethod = 'critical';
-            $excepPrevious = $exception;
             $excepClass = ild78\Exceptions\TooManyRedirectsException::class;
+            $excepParams['previous'] = $exception;
 
         // HTTP 4**.
         } catch (GuzzleHttp\Exception\ClientException $exception) {
             $logMethod = 'error';
-            $excepPrevious = $exception;
-            $excepClass = ild78\Exceptions\ClientException::class;
 
             $response = $exception->getResponse();
-            $class = ild78\Exceptions\ClientException::class;
 
-            $excepMessage = sprintf('HTTP %d - %s', $response->getStatusCode(), $response->getReasonPhrase());
+            $excepClass = ild78\Exceptions\ClientException::class;
+            $excepParams['previous'] = $exception;
+            $excepParams['status'] = $response->getStatusCode();
+
+            $params = [
+                $response->getStatusCode(),
+                $response->getReasonPhrase(),
+            ];
+            $excepParams['message'] = vsprintf('HTTP %d - %s', $params);
 
             switch ($response->getStatusCode()) {
                 case 400:
-                    $excepClass = ild78\Exceptions\BadRequestException::class;
                     $logMethod = 'critical';
                     break;
 
                 case 401:
-                    $excepClass = ild78\Exceptions\NotAuthorizedException::class;
-
                     $body = json_decode((string) $response->getBody());
-                    $excepMessage = $body->error->message;
+                    $excepParams['message'] = $body->error->message;
 
                     $logMethod = 'notice';
                     $logMessage = sprintf('HTTP 401 - Invalid credential : %s', $config->getKey());
                     break;
 
-                case 402:
-                    $excepClass = ild78\Exceptions\PaymentRequiredException::class;
-                    break;
-
-                case 403:
-                    $excepClass = ild78\Exceptions\ForbiddenException::class;
-                    break;
-
                 case 404:
-                    $excepClass = ild78\Exceptions\NotFoundException::class;
-
                     $tmp = get_class($object);
                     $parts = explode('\\', $tmp);
                     $resource = end($parts);
 
-                    $excepMessage = sprintf('Ressource "%s" unknown for %s', $location, $resource);
+                    $excepParams['message'] = sprintf('Ressource "%s" unknown for %s', $location, $resource);
 
                     $logMethod = 'error';
-                    $logMessage = sprintf('HTTP 404 - Not found : %s', $excepMessage);
+                    $logMessage = sprintf('HTTP 404 - Not found : %s', $excepParams['message']);
                     break;
 
                 case 405:
-                    $excepClass = ild78\Exceptions\MethodNotAllowedException::class;
                     $logMethod = 'critical';
-                    break;
-
-                case 406:
-                    $excepClass = ild78\Exceptions\NotAcceptableException::class;
-                    break;
-
-                case 407:
-                    $excepClass = ild78\Exceptions\ProxyAuthenticationRequiredException::class;
-                    break;
-
-                case 408:
-                    $excepClass = ild78\Exceptions\RequestTimeoutException::class;
-                    break;
-
-                case 409:
-                    $excepClass = ild78\Exceptions\ConflictException::class;
-                    break;
-
-                case 410:
-                    $excepClass = ild78\Exceptions\GoneException::class;
                     break;
 
                 default:
@@ -216,21 +186,21 @@ class Request
             $logMethod = 'error';
             $logMessage = sprintf('Unknown error : %s', $exception->getMessage());
 
-            $excepPrevious = $exception;
             $excepClass = ild78\Exceptions\Exception::class;
-            $excepMessage = 'Unknown error, may be a network error';
+            $excepParams['previous'] = $exception;
+            $excepParams['message'] = 'Unknown error, may be a network error';
         }
 
         if ($logMethod) {
             if (!$logMessage) {
-                $logMessage = $excepMessage ?: $excepClass::getDefaultMessage();
+                $logMessage = $excepParams['message'] ?? $excepClass::getDefaultMessage();
             }
 
             $logger->$logMethod($logMessage);
         }
 
         if ($excepClass) {
-            throw $excepClass::create(['message' => $excepMessage, 'previous' => $excepPrevious]);
+            throw $excepClass::create($excepParams);
         }
 
         return (string) $response->getBody();
