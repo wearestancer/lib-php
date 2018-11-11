@@ -26,6 +26,31 @@ class Exception extends \Exception implements ExceptionInterface
     }
 
     /**
+     * Create an instance from an array
+     *
+     * @param array $params Parameters, keys must correspond to exception properties.
+     * @return self
+     */
+    public static function create(array $params = []) : self
+    {
+        $keys = [
+            'message' => '',
+            'code' => 0,
+            'previous' => null,
+        ];
+
+        foreach ($keys as $key => $default) {
+            $$key = $default;
+
+            if (array_key_exists($key, $params) && $params[$key]) {
+                $$key = $params[$key];
+            }
+        }
+
+        return new static($message, $code, $previous);
+    }
+
+    /**
      * Return default message for that kind of exception
      *
      * @return string

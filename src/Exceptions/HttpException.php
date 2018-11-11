@@ -42,32 +42,19 @@ class HttpException extends Exception implements ExceptionInterface
      * @param array $params Parameters, keys must correspond to exception properties.
      * @return self
      */
-    public static function create(array $params = []) : self
+    public static function create(array $params = []) : Exception
     {
+        $obj = parent::create($params);
+
         $keys = [
-            'message' => '',
-            'code' => 0,
-            'previous' => null,
-            'request' => null,
-            'response' => null,
+            'request',
+            'response',
         ];
 
-        foreach ($keys as $key => $default) {
-            $$key = $default;
-
+        foreach ($keys as $key) {
             if (array_key_exists($key, $params) && $params[$key]) {
-                $$key = $params[$key];
+                $obj->$key = $params[$key];
             }
-        }
-
-        $obj = new static($message, $code, $previous);
-
-        if ($request) {
-            $obj->request = $request;
-        }
-
-        if ($response) {
-            $obj->response = $response;
         }
 
         return $obj;
