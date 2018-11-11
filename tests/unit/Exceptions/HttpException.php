@@ -4,7 +4,7 @@ namespace ild78\tests\unit\Exceptions;
 
 use atoum;
 use GuzzleHttp;
-use ild78\Exceptions;
+use ild78;
 use mock;
 
 class HttpException extends atoum
@@ -13,7 +13,8 @@ class HttpException extends atoum
     {
         $this
             ->testedClass
-                ->isSubclassOf(Exceptions\Exception::class)
+                ->extends(ild78\Exceptions\Exception::class)
+                ->implements(ild78\Interfaces\ExceptionInterface::class)
         ;
     }
 
@@ -51,6 +52,16 @@ class HttpException extends atoum
 
                     ->object($obj->getResponse())
                         ->isIdenticalTo($response)
+        ;
+    }
+
+    public function testGetDefaultMessage()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getDefaultMessage())
+                    ->isIdenticalTo('HTTP error')
         ;
     }
 

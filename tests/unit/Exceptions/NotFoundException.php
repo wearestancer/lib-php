@@ -3,16 +3,26 @@
 namespace ild78\tests\unit\Exceptions;
 
 use atoum;
-use ild78\Exceptions;
-use ild78\Exceptions\NotFoundException as testedClass;
+use ild78;
 
 class NotFoundException extends atoum
 {
     public function testClass()
     {
         $this
-            ->class(testedClass::class)
-                ->isSubclassOf(Exceptions\ClientException::class)
+            ->testedClass
+                ->extends(ild78\Exceptions\ClientException::class)
+                ->implements(ild78\Interfaces\ExceptionInterface::class)
+        ;
+    }
+
+    public function testGetDefaultMessage()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getDefaultMessage())
+                    ->isIdenticalTo('Resource not found')
         ;
     }
 }

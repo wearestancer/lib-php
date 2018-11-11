@@ -4,13 +4,14 @@ declare(strict_types=1);
 namespace ild78\Exceptions;
 
 use GuzzleHttp\Exception\RequestException;
+use ild78\Interfaces\ExceptionInterface;
 use Throwable;
 use Psr;
 
 /**
  * Base exception class for all ild78 HTTP based exceptions.
  */
-class HttpException extends Exception
+class HttpException extends Exception implements ExceptionInterface
 {
     /** @var Psr\Http\Message\RequestInterface|null */
     protected $request;
@@ -70,6 +71,16 @@ class HttpException extends Exception
         }
 
         return $obj;
+    }
+
+    /**
+     * Return default message for that kind of exception
+     *
+     * @return string
+     */
+    public static function getDefaultMessage() : string
+    {
+        return 'HTTP error';
     }
 
     /**

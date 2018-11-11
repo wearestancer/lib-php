@@ -22,7 +22,7 @@ class NotAuthorizedException extends atoum
             ->if($class = $this->testedClass->getClass())
             ->then
                 ->string($class::getDefaultMessage())
-                    ->isIdenticalTo('You are not authorized to access that resource')
+                    ->isIdenticalTo('You are not authorized to access that resource.')
         ;
     }
 }

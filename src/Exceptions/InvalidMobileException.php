@@ -3,9 +3,20 @@ declare(strict_types=1);
 
 namespace ild78\Exceptions;
 
+use ild78\Interfaces\ExceptionInterface;
+
 /**
  * Exception thrown on miss-validation with a mobile phone number.
  */
-class InvalidMobileException extends InvalidArgumentException
+class InvalidMobileException extends InvalidArgumentException implements ExceptionInterface
 {
+    /**
+     * Return default message for that kind of exception
+     *
+     * @return string
+     */
+    public static function getDefaultMessage() : string
+    {
+        return 'Invalid mobile phone number';
+    }
 }
