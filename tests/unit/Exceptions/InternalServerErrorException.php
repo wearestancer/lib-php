@@ -5,13 +5,13 @@ namespace ild78\tests\unit\Exceptions;
 use atoum;
 use ild78;
 
-class ServerException extends atoum
+class InternalServerErrorException extends atoum
 {
     public function testClass()
     {
         $this
             ->testedClass
-                ->extends(ild78\Exceptions\HttpException::class)
+                ->extends(ild78\Exceptions\ServerException::class)
                 ->implements(ild78\Interfaces\ExceptionInterface::class)
         ;
     }
@@ -22,7 +22,7 @@ class ServerException extends atoum
             ->if($class = $this->testedClass->getClass())
             ->then
                 ->string($class::getDefaultMessage())
-                    ->isIdenticalTo('HTTP 5xx - Server error')
+                    ->isIdenticalTo('Servor error, please leave a minute to repair it and try again')
         ;
     }
 }

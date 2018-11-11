@@ -6,9 +6,11 @@ namespace ild78\Exceptions;
 use ild78\Interfaces\ExceptionInterface;
 
 /**
- * Exception thrown for 500 level errors.
+ * The server timed out waiting for the request.
+ *
+ * This represent an 408 HTTP return on the API.
  */
-class ServerException extends HttpException implements ExceptionInterface
+class RequestTimeoutException extends ClientException implements ExceptionInterface
 {
     /**
      * Return default message for that kind of exception
@@ -17,6 +19,6 @@ class ServerException extends HttpException implements ExceptionInterface
      */
     public static function getDefaultMessage() : string
     {
-        return 'HTTP 5xx - Server error';
+        return 'HTTP 408 - Request Timeout';
     }
 }

@@ -6,9 +6,11 @@ namespace ild78\Exceptions;
 use ild78\Interfaces\ExceptionInterface;
 
 /**
- * Exception thrown for 500 level errors.
+ * The requested resource is capable of generating only content not acceptable according to the Accept headers.
+ *
+ * This represent an 406 HTTP return.
  */
-class ServerException extends HttpException implements ExceptionInterface
+class NotAcceptableException extends ClientException implements ExceptionInterface
 {
     /**
      * Return default message for that kind of exception
@@ -17,6 +19,6 @@ class ServerException extends HttpException implements ExceptionInterface
      */
     public static function getDefaultMessage() : string
     {
-        return 'HTTP 5xx - Server error';
+        return 'HTTP 406 - Not Acceptable';
     }
 }

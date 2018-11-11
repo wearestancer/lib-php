@@ -6,9 +6,11 @@ namespace ild78\Exceptions;
 use ild78\Interfaces\ExceptionInterface;
 
 /**
- * Exception thrown for 500 level errors.
+ * Indicates that the resource requested is no longer available and will not be available again.
+ *
+ * This represent an 410 HTTP return on the API.
  */
-class ServerException extends HttpException implements ExceptionInterface
+class GoneException extends ClientException implements ExceptionInterface
 {
     /**
      * Return default message for that kind of exception
@@ -17,6 +19,6 @@ class ServerException extends HttpException implements ExceptionInterface
      */
     public static function getDefaultMessage() : string
     {
-        return 'HTTP 5xx - Server error';
+        return 'HTTP 410 - Gone';
     }
 }

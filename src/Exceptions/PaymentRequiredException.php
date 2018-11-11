@@ -6,9 +6,13 @@ namespace ild78\Exceptions;
 use ild78\Interfaces\ExceptionInterface;
 
 /**
- * Exception thrown for 500 level errors.
+ * Indicates that the resource requested is locked and needs some payment.
+ *
+ * This is not used in API.
+ *
+ * This represent an 402 HTTP return.
  */
-class ServerException extends HttpException implements ExceptionInterface
+class PaymentRequiredException extends ClientException implements ExceptionInterface
 {
     /**
      * Return default message for that kind of exception
@@ -17,6 +21,6 @@ class ServerException extends HttpException implements ExceptionInterface
      */
     public static function getDefaultMessage() : string
     {
-        return 'HTTP 5xx - Server error';
+        return 'HTTP 402 - Payment Required';
     }
 }
