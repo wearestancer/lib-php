@@ -12,6 +12,12 @@ use ild78\Interfaces\ExceptionInterface;
  */
 class NotAuthorizedException extends ClientException implements ExceptionInterface
 {
+    /** @var string */
+    protected static $defaultMessage = 'Unauthorized';
+
+    /** @var string */
+    protected static $status = '401';
+
     /**
      * Return default message for that kind of exception
      *

@@ -25,4 +25,14 @@ class RedirectionException extends atoum
                     ->isIdenticalTo('HTTP 3xx - Redirection')
         ;
     }
+
+    public function testGetStatus()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getStatus())
+                    ->isIdenticalTo('3xx')
+        ;
+    }
 }

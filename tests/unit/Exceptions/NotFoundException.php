@@ -25,4 +25,14 @@ class NotFoundException extends atoum
                     ->isIdenticalTo('Resource not found')
         ;
     }
+
+    public function testGetStatus()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getStatus())
+                    ->isIdenticalTo('404')
+        ;
+    }
 }

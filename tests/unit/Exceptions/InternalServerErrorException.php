@@ -25,4 +25,14 @@ class InternalServerErrorException extends atoum
                     ->isIdenticalTo('Servor error, please leave a minute to repair it and try again')
         ;
     }
+
+    public function testGetStatus()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getStatus())
+                    ->isIdenticalTo('500')
+        ;
+    }
 }

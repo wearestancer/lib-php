@@ -25,4 +25,14 @@ class ClientException extends atoum
                     ->isIdenticalTo('HTTP 4xx - Client error')
         ;
     }
+
+    public function testGetStatus()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getStatus())
+                    ->isIdenticalTo('4xx')
+        ;
+    }
 }

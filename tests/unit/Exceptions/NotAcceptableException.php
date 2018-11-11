@@ -25,4 +25,14 @@ class NotAcceptableException extends atoum
                     ->isIdenticalTo('HTTP 406 - Not Acceptable')
         ;
     }
+
+    public function testGetStatus()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getStatus())
+                    ->isIdenticalTo('406')
+        ;
+    }
 }

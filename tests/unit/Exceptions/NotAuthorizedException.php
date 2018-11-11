@@ -25,4 +25,14 @@ class NotAuthorizedException extends atoum
                     ->isIdenticalTo('You are not authorized to access that resource.')
         ;
     }
+
+    public function testGetStatus()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getStatus())
+                    ->isIdenticalTo('401')
+        ;
+    }
 }

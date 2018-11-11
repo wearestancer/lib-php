@@ -25,4 +25,14 @@ class TooManyRedirectsException extends atoum
                     ->isIdenticalTo('HTTP 310 - Too Many Redirection')
         ;
     }
+
+    public function testGetStatus()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getStatus())
+                    ->isIdenticalTo('310')
+        ;
+    }
 }

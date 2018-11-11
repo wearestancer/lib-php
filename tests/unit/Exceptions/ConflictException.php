@@ -25,4 +25,14 @@ class ConflictException extends atoum
                     ->isIdenticalTo('HTTP 409 - Conflict')
         ;
     }
+
+    public function testGetStatus()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getStatus())
+                    ->isIdenticalTo('409')
+        ;
+    }
 }

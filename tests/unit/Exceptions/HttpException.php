@@ -107,4 +107,14 @@ class HttpException extends atoum
                         ->isInstanceOf($response)
         ;
     }
+
+    public function testGetStatus()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->variable($class::getStatus())
+                    ->isNull
+        ;
+    }
 }

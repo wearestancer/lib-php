@@ -25,4 +25,14 @@ class ForbiddenException extends atoum
                     ->isIdenticalTo('HTTP 403 - Forbidden')
         ;
     }
+
+    public function testGetStatus()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getStatus())
+                    ->isIdenticalTo('403')
+        ;
+    }
 }

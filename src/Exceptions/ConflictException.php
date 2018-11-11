@@ -12,13 +12,9 @@ use ild78\Interfaces\ExceptionInterface;
  */
 class ConflictException extends ClientException implements ExceptionInterface
 {
-    /**
-     * Return default message for that kind of exception
-     *
-     * @return string
-     */
-    public static function getDefaultMessage() : string
-    {
-        return 'HTTP 409 - Conflict';
-    }
+    /** @var string */
+    protected static $defaultMessage = 'Conflict';
+
+    /** @var string */
+    protected static $status = '409';
 }

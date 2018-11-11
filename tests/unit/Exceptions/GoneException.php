@@ -25,4 +25,14 @@ class GoneException extends atoum
                     ->isIdenticalTo('HTTP 410 - Gone')
         ;
     }
+
+    public function testGetStatus()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getStatus())
+                    ->isIdenticalTo('410')
+        ;
+    }
 }

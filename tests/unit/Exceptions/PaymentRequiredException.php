@@ -25,4 +25,14 @@ class PaymentRequiredException extends atoum
                     ->isIdenticalTo('HTTP 402 - Payment Required')
         ;
     }
+
+    public function testGetStatus()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getStatus())
+                    ->isIdenticalTo('402')
+        ;
+    }
 }

@@ -12,13 +12,9 @@ use ild78\Interfaces\ExceptionInterface;
  */
 class NotAcceptableException extends ClientException implements ExceptionInterface
 {
-    /**
-     * Return default message for that kind of exception
-     *
-     * @return string
-     */
-    public static function getDefaultMessage() : string
-    {
-        return 'HTTP 406 - Not Acceptable';
-    }
+    /** @var string */
+    protected static $defaultMessage = 'Not Acceptable';
+
+    /** @var string */
+    protected static $status = '406';
 }

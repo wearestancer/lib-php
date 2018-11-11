@@ -12,13 +12,9 @@ use ild78\Interfaces\ExceptionInterface;
  */
 class BadRequestException extends ClientException implements ExceptionInterface
 {
-    /**
-     * Return default message for that kind of exception
-     *
-     * @return string
-     */
-    public static function getDefaultMessage() : string
-    {
-        return 'HTTP 400 - Bad Request';
-    }
+    /** @var string */
+    protected static $defaultMessage = 'Bad Request';
+
+    /** @var string */
+    protected static $status = '400';
 }

@@ -12,13 +12,9 @@ use ild78\Interfaces\ExceptionInterface;
  */
 class ProxyAuthenticationRequiredException extends ClientException implements ExceptionInterface
 {
-    /**
-     * Return default message for that kind of exception
-     *
-     * @return string
-     */
-    public static function getDefaultMessage() : string
-    {
-        return 'HTTP 407 - Proxy Authentication Required';
-    }
+    /** @var string */
+    protected static $defaultMessage = 'Proxy Authentication Required';
+
+    /** @var string */
+    protected static $status = '407';
 }

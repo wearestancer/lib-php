@@ -12,6 +12,12 @@ use ild78\Interfaces\ExceptionInterface;
  */
 class NotFoundException extends ClientException implements ExceptionInterface
 {
+    /** @var string */
+    protected static $defaultMessage = 'Not Found';
+
+    /** @var string */
+    protected static $status = '404';
+
     /**
      * Return default message for that kind of exception
      *

@@ -10,13 +10,9 @@ use ild78\Interfaces\ExceptionInterface;
  */
 class ServerException extends HttpException implements ExceptionInterface
 {
-    /**
-     * Return default message for that kind of exception
-     *
-     * @return string
-     */
-    public static function getDefaultMessage() : string
-    {
-        return 'HTTP 5xx - Server error';
-    }
+    /** @var string */
+    protected static $defaultMessage = 'Server error';
+
+    /** @var string */
+    protected static $status = '5xx';
 }

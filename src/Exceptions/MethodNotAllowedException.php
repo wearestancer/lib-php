@@ -12,13 +12,9 @@ use ild78\Interfaces\ExceptionInterface;
  */
 class MethodNotAllowedException extends ClientException implements ExceptionInterface
 {
-    /**
-     * Return default message for that kind of exception
-     *
-     * @return string
-     */
-    public static function getDefaultMessage() : string
-    {
-        return 'HTTP 405 - Method Not Allowed';
-    }
+    /** @var string */
+    protected static $defaultMessage = 'Method Not Allowed';
+
+    /** @var string */
+    protected static $status = '405';
 }

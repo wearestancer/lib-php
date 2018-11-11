@@ -10,13 +10,9 @@ use ild78\Interfaces\ExceptionInterface;
  */
 class RedirectionException extends HttpException implements ExceptionInterface
 {
-    /**
-     * Return default message for that kind of exception
-     *
-     * @return string
-     */
-    public static function getDefaultMessage() : string
-    {
-        return 'HTTP 3xx - Redirection';
-    }
+    /** @var string */
+    protected static $defaultMessage = 'Redirection';
+
+    /** @var string */
+    protected static $status = '3xx';
 }

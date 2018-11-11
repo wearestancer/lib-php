@@ -25,4 +25,14 @@ class MethodNotAllowedException extends atoum
                     ->isIdenticalTo('HTTP 405 - Method Not Allowed')
         ;
     }
+
+    public function testGetStatus()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getStatus())
+                    ->isIdenticalTo('405')
+        ;
+    }
 }

@@ -13,11 +13,17 @@ use Psr;
  */
 class HttpException extends Exception implements ExceptionInterface
 {
+    /** @var string */
+    protected static $defaultMessage = 'HTTP error';
+
     /** @var Psr\Http\Message\RequestInterface|null */
     protected $request;
 
     /** @var Psr\Http\Message\ResponseInterface|null */
     protected $response;
+
+    /** @var string */
+    protected static $status;
 
     /**
      * Construct the exception
@@ -67,7 +73,13 @@ class HttpException extends Exception implements ExceptionInterface
      */
     public static function getDefaultMessage() : string
     {
-        return 'HTTP error';
+        $message = '';
+
+        if (static::getStatus()) {
+            $message = 'HTTP ' . static::getStatus() . ' - ';
+        }
+
+        return $message . static::$defaultMessage;
     }
 
     /**
@@ -88,5 +100,15 @@ class HttpException extends Exception implements ExceptionInterface
     public function getResponse() : ?Psr\Http\Message\ResponseInterface
     {
         return $this->response;
+    }
+
+    /**
+     * Return HTTP status code for this kind of exception
+     *
+     * @return string|null
+     */
+    public static function getStatus() : ?string
+    {
+        return static::$status;
     }
 }

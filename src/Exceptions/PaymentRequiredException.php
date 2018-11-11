@@ -14,13 +14,9 @@ use ild78\Interfaces\ExceptionInterface;
  */
 class PaymentRequiredException extends ClientException implements ExceptionInterface
 {
-    /**
-     * Return default message for that kind of exception
-     *
-     * @return string
-     */
-    public static function getDefaultMessage() : string
-    {
-        return 'HTTP 402 - Payment Required';
-    }
+    /** @var string */
+    protected static $defaultMessage = 'Payment Required';
+
+    /** @var string */
+    protected static $status = '402';
 }

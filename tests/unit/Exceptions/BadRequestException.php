@@ -25,4 +25,14 @@ class BadRequestException extends atoum
                     ->isIdenticalTo('HTTP 400 - Bad Request')
         ;
     }
+
+    public function testGetStatus()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getStatus())
+                    ->isIdenticalTo('400')
+        ;
+    }
 }

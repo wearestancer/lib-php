@@ -25,4 +25,14 @@ class ProxyAuthenticationRequiredException extends atoum
                     ->isIdenticalTo('HTTP 407 - Proxy Authentication Required')
         ;
     }
+
+    public function testGetStatus()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getStatus())
+                    ->isIdenticalTo('407')
+        ;
+    }
 }

@@ -25,4 +25,14 @@ class RequestTimeoutException extends atoum
                     ->isIdenticalTo('HTTP 408 - Request Timeout')
         ;
     }
+
+    public function testGetStatus()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getStatus())
+                    ->isIdenticalTo('408')
+        ;
+    }
 }

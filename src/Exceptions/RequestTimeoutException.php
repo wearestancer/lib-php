@@ -12,13 +12,9 @@ use ild78\Interfaces\ExceptionInterface;
  */
 class RequestTimeoutException extends ClientException implements ExceptionInterface
 {
-    /**
-     * Return default message for that kind of exception
-     *
-     * @return string
-     */
-    public static function getDefaultMessage() : string
-    {
-        return 'HTTP 408 - Request Timeout';
-    }
+    /** @var string */
+    protected static $defaultMessage = 'Request Timeout';
+
+    /** @var string */
+    protected static $status = '408';
 }

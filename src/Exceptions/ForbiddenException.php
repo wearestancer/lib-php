@@ -12,13 +12,9 @@ use ild78\Interfaces\ExceptionInterface;
  */
 class ForbiddenException extends ClientException implements ExceptionInterface
 {
-    /**
-     * Return default message for that kind of exception
-     *
-     * @return string
-     */
-    public static function getDefaultMessage() : string
-    {
-        return 'HTTP 403 - Forbidden';
-    }
+    /** @var string */
+    protected static $defaultMessage = 'Forbidden';
+
+    /** @var string */
+    protected static $status = '403';
 }

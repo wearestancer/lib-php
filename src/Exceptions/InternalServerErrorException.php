@@ -12,6 +12,12 @@ use ild78\Interfaces\ExceptionInterface;
  */
 class InternalServerErrorException extends ServerException implements ExceptionInterface
 {
+    /** @var string */
+    protected static $defaultMessage = 'Internal Server Error';
+
+    /** @var string */
+    protected static $status = '500';
+
     /**
      * Return default message for that kind of exception
      *
