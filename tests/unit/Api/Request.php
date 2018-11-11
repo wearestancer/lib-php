@@ -52,6 +52,73 @@ class Request extends atoum
         ;
     }
 
+    public function testRequest_workingWithDefaultClient()
+    {
+        $this
+            ->if($config = ild78\Api\Config::init(uniqid()))
+
+            ->assert('No location defined')
+                ->given($client = new mock\ild78\Http\Client)
+                ->and($response = new mock\ild78\Http\Response(200))
+                ->and($body = uniqid())
+                ->and($this->calling($response)->getBody = $body)
+                ->and($this->calling($client)->request = $response)
+
+                ->and($config->setHttpClient($client))
+
+                ->if($this->newTestedInstance)
+                ->and($method = 'GET')
+                ->and($object = new mock\ild78\Api\Object)
+
+                ->if($logger = new mock\ild78\Api\Logger)
+                ->and($config->setLogger($logger))
+                ->and($debugMessage = 'API call : ' . $method . ' ' . $object->getUri())
+                ->then
+                    ->string($this->testedInstance->request($method, $object))
+                        ->isIdenticalTo($body)
+                    ->mock($client)
+                        ->call('request')
+                            ->withIdenticalArguments($method, $object->getUri())
+                                ->once
+                    ->mock($logger)
+                        ->call('debug')->withArguments($debugMessage, [])->once
+                        ->call('error')->never
+                        ->call('notice')->never
+
+            ->assert('Location defined')
+                ->given($client = new mock\ild78\Http\Client)
+                ->and($response = new mock\ild78\Http\Response(200))
+                ->and($body = uniqid())
+                ->and($this->calling($response)->getBody = $body)
+                ->and($this->calling($client)->request = $response)
+
+                ->and($config->setHttpClient($client))
+
+                ->if($this->newTestedInstance)
+                ->and($method = 'POST')
+                ->and($object = new mock\ild78\Api\Object)
+                ->and($location = uniqid())
+
+                ->if($logger = new mock\ild78\Api\Logger)
+                ->and($config->setLogger($logger))
+                ->and($debugMessage = vsprintf('API call : %s %s', [
+                    $method,
+                    $object->getUri() . '/' . $location,
+                ]))
+                ->then
+                    ->string($this->testedInstance->request($method, $object, $location))
+                        ->isIdenticalTo($body)
+                    ->mock($client)
+                        ->call('request')
+                            ->withIdenticalArguments($method, $object->getUri() . '/' . $location)
+                                ->once
+                    ->mock($logger)
+                        ->call('debug')->withArguments($debugMessage, [])->once
+                        ->call('error')->never
+                        ->call('notice')->never
+        ;
+    }
+
     public function testRequest_withGuzzle()
     {
         $this
@@ -115,29 +182,6 @@ class Request extends atoum
                     ->mock($logger)
                         ->call('debug')->withArguments($debugMessage, [])->once
                         ->call('error')->never
-                        ->call('notice')->never
-
-            ->assert('Unsupported method')
-                ->if($this->newTestedInstance)
-                ->and($object = new mock\ild78\Api\Object)
-                ->and($method = uniqid())
-
-                ->if($logger = new mock\ild78\Api\Logger)
-                ->and($config->setLogger($logger))
-                ->and($errorMessage = vsprintf('Unknown HTTP verb "%s"', [
-                    $method,
-                ]))
-                ->then
-                    ->exception(function () use ($method, $object) {
-                        $this->testedInstance->request($method, $object);
-                    })
-                        ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
-                        ->message
-                            ->contains($method)
-
-                    ->mock($logger)
-                        ->call('debug')->never
-                        ->call('error')->withArguments($errorMessage)->once
                         ->call('notice')->never
 
             ->assert('With bad credential')
