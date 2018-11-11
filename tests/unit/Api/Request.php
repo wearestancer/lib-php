@@ -119,6 +119,65 @@ class Request extends atoum
         ;
     }
 
+    public function testRequest_errorsWithDefaultClient()
+    {
+        $this
+            ->given($this->function->setDefaultNamespace('ild78\\Http'))
+            ->if($config = ild78\Api\Config::init(uniqid()))
+
+            ->assert('With bad credential')
+                ->given($content = file_get_contents(__DIR__ . '/../fixtures/auth/not-authorized.json'))
+                ->and($this->function->curl_exec = $content)
+                ->and($this->function->curl_getinfo = 401)
+                ->and($this->function->curl_errno = rand(100, 200))
+
+                ->if($client = new ild78\Http\Client)
+                ->and($config->setHttpClient($client))
+
+                ->if($object = new mock\ild78\Api\Object)
+                ->and($method = 'PUT')
+
+                ->if($this->newTestedInstance)
+                ->then
+                    ->exception(function () use ($object, $method) {
+                        $this->testedInstance->request($method, $object);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\NotAuthorizedException::class)
+                        ->message
+                            ->isIdenticalTo('You are not authorized to access that resource.')
+
+                        ->variable($this->exception->getPrevious())
+                            ->isNull
+
+            ->assert('Unsupported method')
+                ->if($this->newTestedInstance)
+                ->and($this->function->curl_exec = uniqid())
+                ->and($object = new mock\ild78\Api\Object)
+                ->and($method = uniqid())
+
+                ->if($logger = new mock\ild78\Api\Logger)
+                ->and($config->setLogger($logger))
+                ->and($errorMessage = vsprintf('Unknown HTTP verb "%s"', [
+                    $method,
+                ]))
+                ->then
+                    ->exception(function () use ($method, $object) {
+                        $this->testedInstance->request($method, $object);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->contains($method)
+
+                    ->mock($logger)
+                        ->call('debug')->never
+                        ->call('error')->withArguments($errorMessage)->once
+                        ->call('notice')->never
+
+                    ->function('curl_exec')
+                        ->wasCalled->never
+        ;
+    }
+
     public function testRequest_withGuzzle()
     {
         $this

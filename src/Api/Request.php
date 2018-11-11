@@ -117,6 +117,10 @@ class Request
             $logger->debug(sprintf('API call : %s %s', strtoupper($method), $endpoint));
             $response = $client->request(strtoupper($method), $endpoint, $options);
 
+        // Bypass for internal exceptions.
+        } catch (ild78\Exceptions\Exception $exception) {
+            throw $exception;
+
         // HTTP 5**.
         } catch (GuzzleHttp\Exception\ServerException $exception) {
             $logMethod = 'critical';
