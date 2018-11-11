@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ild78\Exceptions;
 
 use ild78\Interfaces\ExceptionInterface;
+use Psr;
 
 /**
  * An unexpected condition was encountered and no more specific message is suitable.
@@ -14,6 +15,9 @@ class InternalServerErrorException extends ServerException implements ExceptionI
 {
     /** @var string */
     protected static $defaultMessage = 'Internal Server Error';
+
+    /** @var string Default log level */
+    protected static $logLevel = Psr\Log\LogLevel::CRITICAL;
 
     /** @var string */
     protected static $status = '500';

@@ -5,8 +5,8 @@ namespace ild78\Exceptions;
 
 use GuzzleHttp\Exception\RequestException;
 use ild78\Interfaces\ExceptionInterface;
-use Throwable;
 use Psr;
+use Throwable;
 
 /**
  * Base exception class for all ild78 HTTP based exceptions.
@@ -15,6 +15,9 @@ class HttpException extends Exception implements ExceptionInterface
 {
     /** @var string */
     protected static $defaultMessage = 'HTTP error';
+
+    /** @var string Default log level */
+    protected static $logLevel = Psr\Log\LogLevel::WARNING;
 
     /** @var Psr\Http\Message\RequestInterface|null */
     protected $request;

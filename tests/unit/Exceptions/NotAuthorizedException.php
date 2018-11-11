@@ -4,6 +4,7 @@ namespace ild78\tests\unit\Exceptions;
 
 use atoum;
 use ild78;
+use Psr;
 
 class NotAuthorizedException extends atoum
 {
@@ -23,6 +24,16 @@ class NotAuthorizedException extends atoum
             ->then
                 ->string($class::getDefaultMessage())
                     ->isIdenticalTo('You are not authorized to access that resource.')
+        ;
+    }
+
+    public function testGetLogLevel()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getLogLevel())
+                    ->isIdenticalTo(Psr\Log\logLevel::NOTICE)
         ;
     }
 

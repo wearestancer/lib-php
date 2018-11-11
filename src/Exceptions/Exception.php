@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ild78\Exceptions;
 
 use ild78\Interfaces\ExceptionInterface;
+use Psr;
 use Throwable;
 
 /**
@@ -13,6 +14,9 @@ use Throwable;
  */
 class Exception extends \Exception implements ExceptionInterface
 {
+    /** @var string Default log level */
+    protected static $logLevel = Psr\Log\LogLevel::NOTICE;
+
     /**
      * Construct the exception
      *
@@ -58,5 +62,15 @@ class Exception extends \Exception implements ExceptionInterface
     public static function getDefaultMessage() : string
     {
         return 'Unexpected error';
+    }
+
+    /**
+     * Return default log level for that kind of exception
+     *
+     * @return string
+     */
+    public static function getLogLevel() : string
+    {
+        return static::$logLevel;
     }
 }
