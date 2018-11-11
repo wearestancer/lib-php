@@ -45,12 +45,6 @@ abstract class Object implements JsonSerializable
      *
      * @param string|null $id Object id.
      * @return self
-     * @throws ild78\Exceptions\TooManyRedirectsException On too many redirection case (HTTP 310).
-     * @throws ild78\Exceptions\NotAuthorizedException On credential problem (HTTP 401).
-     * @throws ild78\Exceptions\NotFoundException If an `id` is provided but it seems unknonw (HTTP 404).
-     * @throws ild78\Exceptions\ClientException On HTTP 4** errors.
-     * @throws ild78\Exceptions\ServerException On HTTP 5** errors.
-     * @throws ild78\Exceptions\Exception On every over exception send by GuzzleHttp.
      */
     public function __construct(string $id = null)
     {
@@ -77,6 +71,9 @@ abstract class Object implements JsonSerializable
     /**
      * Handle getter and setter for every properties.
      *
+     * @uses self::dataModelAdder() When method starts with `add`.
+     * @uses self::dataModelGetter() When method starts with `get`.
+     * @uses self::dataModelSetter() When method starts with `set`.
      * @param string $method Method called.
      * @param array $arguments Arguments used during the call.
      * @return mixed

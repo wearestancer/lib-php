@@ -212,7 +212,7 @@ class Request extends atoum
             310 => [
                 'expected' => ild78\Exceptions\TooManyRedirectsException::class,
                 'thrown' => GuzzleHttp\Exception\TooManyRedirectsException::class,
-                'message' => 'Too many redirection',
+                'message' => 'Too Many Redirection',
                 'logLevel' => 'critical',
             ],
             400 => [

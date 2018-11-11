@@ -55,7 +55,7 @@ class HttpException extends Exception implements ExceptionInterface
         foreach ($keys as $key => $default) {
             $$key = $default;
 
-            if (array_key_exists($key, $params)) {
+            if (array_key_exists($key, $params) && $params[$key]) {
                 $$key = $params[$key];
             }
         }

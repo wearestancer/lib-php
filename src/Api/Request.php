@@ -75,7 +75,7 @@ class Request
      * @throws ild78\Exceptions\NotFoundException If an `id` is provided but it seems unknonw (HTTP 404).
      * @throws ild78\Exceptions\ClientException On HTTP 4** errors.
      * @throws ild78\Exceptions\ServerException On HTTP 5** errors.
-     * @throws ild78\Exceptions\Exception On every over exception send by GuzzleHttp.
+     * @throws ild78\Exceptions\Exception On every over exception.
      */
     public function request(string $method, Object $object, string $location = null, array $options = []) : string
     {
@@ -110,83 +110,102 @@ class Request
             $endpoint .= '/' . $location;
         }
 
+        $logMethod = null;
+        $logMessage = null;
+        $excepClass = null;
+        $excepMessage = null;
+        $excepPrevious = null;
+
         try {
             $logger->debug(sprintf('API call : %s %s', strtoupper($method), $config->getUri() . $endpoint));
             $response = $client->request(strtoupper($method), $endpoint, $options);
 
         // HTTP 5**.
         } catch (GuzzleHttp\Exception\ServerException $exception) {
-            $logger->critical('HTTP 500 - Internal Server Error');
-
-            $message = 'Servor error, please leave a minute to repair it and try again';
-            throw new ild78\Exceptions\ServerException($message, 0, $exception);
+            $logMethod = 'critical';
+            $excepPrevious = $exception;
+            $excepClass = ild78\Exceptions\ServerException::class;
+            $logMessage = 'HTTP 500 - Internal Server Error';
 
         // Too many redirection.
         } catch (GuzzleHttp\Exception\TooManyRedirectsException $exception) {
-            $logger->critical('HTTP 310 - Too many redirection');
-
-            throw new ild78\Exceptions\TooManyRedirectsException('Too many redirection', 0, $exception);
+            $logMethod = 'critical';
+            $excepPrevious = $exception;
+            $excepClass = ild78\Exceptions\TooManyRedirectsException::class;
 
         // HTTP 4**.
         } catch (GuzzleHttp\Exception\ClientException $exception) {
+            $logMethod = 'error';
+            $excepPrevious = $exception;
+            $excepClass = ild78\Exceptions\ClientException::class;
+
             $response = $exception->getResponse();
             $class = ild78\Exceptions\ClientException::class;
 
-            $params = [
-                $response->getStatusCode(),
-                $response->getReasonPhrase(),
-            ];
-            $message = vsprintf('%d - %s', $params);
+            $excepMessage = sprintf('HTTP %d - %s', $response->getStatusCode(), $response->getReasonPhrase());
 
             switch ($response->getStatusCode()) {
                 case 400:
-                    $class = ild78\Exceptions\BadRequestException::class;
-
-                    $logger->critical('HTTP 400 - Bad Request');
+                    $excepClass = ild78\Exceptions\BadRequestException::class;
+                    $logMethod = 'critical';
                     break;
 
                 case 401:
-                    $body = json_decode((string) $response->getBody());
-                    $class = ild78\Exceptions\NotAuthorizedException::class;
-                    $message = $body->error->message;
+                    $excepClass = ild78\Exceptions\NotAuthorizedException::class;
 
-                    $logger->notice(sprintf('HTTP 401 - Invalid credential : %s', $config->getKey()));
+                    $body = json_decode((string) $response->getBody());
+                    $excepMessage = $body->error->message;
+
+                    $logMethod = 'notice';
+                    $logMessage = sprintf('HTTP 401 - Invalid credential : %s', $config->getKey());
                     break;
 
                 case 404:
-                    $class = ild78\Exceptions\NotFoundException::class;
+                    $excepClass = ild78\Exceptions\NotFoundException::class;
 
                     $tmp = get_class($object);
                     $parts = explode('\\', $tmp);
-                    $ressource = end($parts);
+                    $resource = end($parts);
 
-                    $message = sprintf('Ressource "%s" unknown for %s', $location, $ressource);
+                    $excepMessage = sprintf('Ressource "%s" unknown for %s', $location, $resource);
 
-                    $logger->error(sprintf('HTTP 404 - Not found : %s', $message));
+                    $logMethod = 'error';
+                    $logMessage = sprintf('HTTP 404 - Not found : %s', $excepMessage);
                     break;
 
                 case 405:
-                    $logger->critical('HTTP ' . $message);
+                    $logMethod = 'critical';
                     break;
 
                 case 409:
-                    $class = ild78\Exceptions\ConflictException::class;
-
-                    $logger->error('HTTP ' . $message);
+                    $excepClass = ild78\Exceptions\ConflictException::class;
                     break;
 
                 default:
-                    $logger->error('HTTP ' . $message);
+                    $logMethod = 'error';
                     break;
             }
 
-            throw new $class($message, 0, $exception);
-
         // Others exceptions ...
         } catch (Exception $exception) {
-            $logger->error(sprintf('Unknown error : %s', $exception->getMessage()));
+            $logMethod = 'error';
+            $logMessage = sprintf('Unknown error : %s', $exception->getMessage());
 
-            throw new ild78\Exceptions\Exception('Unknown error, may be a network error', 0, $exception);
+            $excepPrevious = $exception;
+            $excepClass = ild78\Exceptions\Exception::class;
+            $excepMessage = 'Unknown error, may be a network error';
+        }
+
+        if ($logMethod) {
+            if (!$logMessage) {
+                $logMessage = $excepMessage ?: $excepClass::getDefaultMessage();
+            }
+
+            $logger->$logMethod($logMessage);
+        }
+
+        if ($excepClass) {
+            throw $excepClass::create(['message' => $excepMessage, 'previous' => $excepPrevious]);
         }
 
         return (string) $response->getBody();
