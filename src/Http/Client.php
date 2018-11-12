@@ -100,7 +100,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
         // `curl_exec` will return the body.
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
 
-        // cURL will mark request as failed on 400/500 response.
+        // `cURL` will mark request as failed on 400/500 response.
         curl_setopt($this->curl, CURLOPT_FAILONERROR, true);
 
         // Get response headers.
