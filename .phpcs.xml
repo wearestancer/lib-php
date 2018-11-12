@@ -20,6 +20,7 @@
 
     <exclude name="Generic.PHP.LowerCaseType.ParamTypeFound" />
 
+    <exclude name="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned" />
     <exclude name="Squiz.Arrays.ArrayDeclaration.MultiLineNotAllowed" />
 
     <exclude name="Squiz.Commenting.ClassComment.TagNotAllowed" />
@@ -37,6 +38,7 @@
 
     <exclude name="Squiz.Formatting.OperatorBracket.MissingBrackets" />
 
+    <exclude name="Squiz.PHP.DisallowComparisonAssignment.AssignedComparison" />
     <exclude name="Squiz.PHP.DisallowInlineIf.Found" />
 
     <exclude name="Squiz.Operators.ComparisonOperatorUsage.ImplicitTrue" />
@@ -44,6 +46,17 @@
 
     <exclude name="Squiz.WhiteSpace.FunctionClosingBraceSpace.SpacingBeforeClose" />
     <exclude name="Squiz.WhiteSpace.MemberVarSpacing.FirstIncorrect" />
+  </rule>
+
+  <rule ref="Generic.PHP.ForbiddenFunctions">
+    <properties>
+      <property name="forbiddenFunctions" type="array">
+        <element key="sizeof" value="count" />
+        <element key="delete" value="unset" />
+        <element key="print" value="echo" />
+        <element key="create_function" value="null" />
+      </property>
+    </properties>
   </rule>
 
   <rule ref="Squiz.Strings.ConcatenationSpacing">
