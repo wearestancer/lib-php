@@ -3,11 +3,18 @@ declare(strict_types=1);
 
 namespace ild78\Exceptions;
 
+use ild78\Interfaces\ExceptionInterface;
+
 /**
  * The request could not be completed due to a conflict with the current state of the target resource.
  *
  * This represent an 409 HTTP return on the API.
  */
-class ConflictException extends ClientException
+class ConflictException extends ClientException implements ExceptionInterface
 {
+    /** @var string */
+    protected static $defaultMessage = 'Conflict';
+
+    /** @var string */
+    protected static $status = '409';
 }

@@ -3,7 +3,7 @@
 namespace ild78\tests\unit\Exceptions;
 
 use atoum;
-use ild78\Exceptions;
+use ild78;
 
 class InvalidExpirationYearException extends atoum
 {
@@ -11,7 +11,18 @@ class InvalidExpirationYearException extends atoum
     {
         $this
             ->testedClass
-                ->isSubclassOf(Exceptions\InvalidArgumentException::class)
+                ->extends(ild78\Exceptions\InvalidArgumentException::class)
+                ->implements(ild78\Interfaces\ExceptionInterface::class)
+        ;
+    }
+
+    public function testGetDefaultMessage()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getDefaultMessage())
+                    ->isIdenticalTo('Expiration year is invalid.')
         ;
     }
 }

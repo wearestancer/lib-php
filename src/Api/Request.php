@@ -75,7 +75,7 @@ class Request
      * @throws ild78\Exceptions\NotFoundException If an `id` is provided but it seems unknonw (HTTP 404).
      * @throws ild78\Exceptions\ClientException On HTTP 4** errors.
      * @throws ild78\Exceptions\ServerException On HTTP 5** errors.
-     * @throws ild78\Exceptions\Exception On every over exception send by GuzzleHttp.
+     * @throws ild78\Exceptions\Exception On every over exception.
      */
     public function request(string $method, Object $object, string $location = null, array $options = []) : string
     {
@@ -110,77 +110,97 @@ class Request
             $endpoint .= '/' . $location;
         }
 
+        $logMethod = null;
+        $logMessage = null;
+        $excepClass = null;
+        $excepParams = [];
+
         try {
             $logger->debug(sprintf('API call : %s %s', strtoupper($method), $config->getUri() . $endpoint));
             $response = $client->request(strtoupper($method), $endpoint, $options);
 
         // HTTP 5**.
         } catch (GuzzleHttp\Exception\ServerException $exception) {
-            $logger->critical('HTTP 500 - Internal Server Error');
-
-            $message = 'Servor error, please leave a minute to repair it and try again';
-            throw new ild78\Exceptions\ServerException($message, 0, $exception);
+            $logMethod = 'critical';
+            $logMessage = 'HTTP 500 - Internal Server Error';
+            $excepClass = ild78\Exceptions\InternalServerErrorException::class;
+            $excepParams['previous'] = $exception;
 
         // Too many redirection.
         } catch (GuzzleHttp\Exception\TooManyRedirectsException $exception) {
-            $logger->critical('HTTP 310 - Too many redirection');
-
-            throw new ild78\Exceptions\TooManyRedirectsException('Too many redirection', 0, $exception);
+            $logMethod = 'critical';
+            $excepClass = ild78\Exceptions\TooManyRedirectsException::class;
+            $excepParams['previous'] = $exception;
 
         // HTTP 4**.
         } catch (GuzzleHttp\Exception\ClientException $exception) {
+            $logMethod = 'error';
+
             $response = $exception->getResponse();
-            $class = ild78\Exceptions\ClientException::class;
+
+            $excepClass = ild78\Exceptions\ClientException::class;
+            $excepParams['previous'] = $exception;
+            $excepParams['status'] = $response->getStatusCode();
 
             $params = [
                 $response->getStatusCode(),
                 $response->getReasonPhrase(),
             ];
-            $message = vsprintf('%d - %s', $params);
+            $excepParams['message'] = vsprintf('HTTP %d - %s', $params);
 
             switch ($response->getStatusCode()) {
                 case 400:
-                    $class = ild78\Exceptions\BadRequestException::class;
-
-                    $logger->critical('HTTP 400 - Bad Request');
+                    $logMethod = 'critical';
                     break;
 
                 case 401:
                     $body = json_decode((string) $response->getBody());
-                    $class = ild78\Exceptions\NotAuthorizedException::class;
-                    $message = $body->error->message;
+                    $excepParams['message'] = $body->error->message;
 
-                    $logger->notice(sprintf('HTTP 401 - Invalid credential : %s', $config->getKey()));
+                    $logMethod = 'notice';
+                    $logMessage = sprintf('HTTP 401 - Invalid credential : %s', $config->getKey());
                     break;
 
                 case 404:
-                    $class = ild78\Exceptions\NotFoundException::class;
-
                     $tmp = get_class($object);
                     $parts = explode('\\', $tmp);
-                    $ressource = end($parts);
+                    $resource = end($parts);
 
-                    $message = sprintf('Ressource "%s" unknown for %s', $location, $ressource);
+                    $excepParams['message'] = sprintf('Ressource "%s" unknown for %s', $location, $resource);
 
-                    $logger->error(sprintf('HTTP 404 - Not found : %s', $message));
+                    $logMethod = 'error';
+                    $logMessage = sprintf('HTTP 404 - Not found : %s', $excepParams['message']);
                     break;
 
                 case 405:
-                    $logger->critical('HTTP ' . $message);
+                    $logMethod = 'critical';
                     break;
 
                 default:
-                    $logger->error('HTTP ' . $message);
+                    $logMethod = 'error';
                     break;
             }
 
-            throw new $class($message, 0, $exception);
-
         // Others exceptions ...
         } catch (Exception $exception) {
-            $logger->error(sprintf('Unknown error : %s', $exception->getMessage()));
+            $logMethod = 'error';
+            $logMessage = sprintf('Unknown error : %s', $exception->getMessage());
 
-            throw new ild78\Exceptions\Exception('Unknown error, may be a network error', 0, $exception);
+            $excepClass = ild78\Exceptions\Exception::class;
+            $excepParams['previous'] = $exception;
+            $excepParams['message'] = 'Unknown error, may be a network error';
+        }
+
+        if ($logMethod) {
+            if (!$logMessage) {
+                $logMessage = $excepParams['message'] ?? $excepClass::getDefaultMessage();
+            }
+
+            $logger->$logMethod($logMessage);
+        }
+
+        if ($excepClass) {
+            throw $excepClass::create($excepParams);
         }
 
         return (string) $response->getBody();
