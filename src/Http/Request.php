@@ -106,8 +106,10 @@ class Request implements Psr\Http\Message\RequestInterface
 
         preg_match('!https?://([^/]+)(.*)!', $uri, $matches);
 
-        $this->removeHeader($name)->addHeader($name, $matches[1]);
-        $this->uri = $matches[2] ?: '/';
+        if (count($matches)) {
+            $this->removeHeader($name)->addHeader($name, $matches[1]);
+            $this->uri = $matches[2] ?: '/';
+        }
 
         return $this;
     }
