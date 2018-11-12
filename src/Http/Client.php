@@ -86,11 +86,15 @@ class Client implements ild78\Interfaces\HttpClientInterface
         // Headers.
         if (array_key_exists('headers', $options)) {
             curl_setopt($this->curl, CURLOPT_HTTPHEADER, $options['headers']);
+        } else {
+            $options['headers'] = [];
         }
 
         // Data.
         if (array_key_exists('body', $options)) {
             curl_setopt($this->curl, CURLOPT_POSTFIELDS, $options['body']);
+        } else {
+            $options['body'] = null;
         }
 
         // `curl_exec` will return the body.
@@ -120,14 +124,6 @@ class Client implements ild78\Interfaces\HttpClientInterface
         if ($error || $code >= 400) {
             if ($error === CURLE_TOO_MANY_REDIRECTS) {
                 $code = 310;
-            }
-
-            if (!array_key_exists('headers', $options)) {
-                $options['headers'] = [];
-            }
-
-            if (!array_key_exists('body', $options)) {
-                $options['body'] = null;
             }
 
             $request = new Request($method, $uri, $options['headers'], $options['body']);
