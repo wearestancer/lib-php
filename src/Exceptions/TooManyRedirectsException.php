@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ild78\Exceptions;
 
 use ild78\Interfaces\ExceptionInterface;
+use Psr;
 
 /**
  * Exception thrown when too many redirects are followed.
@@ -14,6 +15,9 @@ class TooManyRedirectsException extends RedirectionException implements Exceptio
 {
     /** @var string */
     protected static $defaultMessage = 'Too Many Redirection';
+
+    /** @var string Default log level */
+    protected static $logLevel = Psr\Log\LogLevel::CRITICAL;
 
     /** @var string */
     protected static $status = '310';

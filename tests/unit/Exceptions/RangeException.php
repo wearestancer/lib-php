@@ -4,6 +4,7 @@ namespace ild78\tests\unit\Exceptions;
 
 use atoum;
 use ild78;
+use Psr;
 
 class RangeException extends atoum
 {
@@ -23,6 +24,16 @@ class RangeException extends atoum
             ->then
                 ->string($class::getDefaultMessage())
                     ->isIdenticalTo('Range error')
+        ;
+    }
+
+    public function testGetLogLevel()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getLogLevel())
+                    ->isIdenticalTo(Psr\Log\logLevel::NOTICE)
         ;
     }
 }

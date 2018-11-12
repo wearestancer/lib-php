@@ -726,7 +726,7 @@ class Object extends atoum
 
                     ->mock($client)
                         ->call('request')
-                            ->withArguments('POST', $this->testedInstance->getEndpoint(), $options)
+                            ->withArguments('POST', $this->testedInstance->getUri(), $options)
                                 ->once
         ;
     }

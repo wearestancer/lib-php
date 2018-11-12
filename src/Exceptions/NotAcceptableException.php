@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ild78\Exceptions;
 
 use ild78\Interfaces\ExceptionInterface;
+use Psr;
 
 /**
  * The requested resource is capable of generating only content not acceptable according to the Accept headers.
@@ -14,6 +15,9 @@ class NotAcceptableException extends ClientException implements ExceptionInterfa
 {
     /** @var string */
     protected static $defaultMessage = 'Not Acceptable';
+
+    /** @var string Default log level */
+    protected static $logLevel = Psr\Log\LogLevel::ERROR;
 
     /** @var string */
     protected static $status = '406';

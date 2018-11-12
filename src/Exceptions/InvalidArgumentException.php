@@ -4,12 +4,16 @@ declare(strict_types=1);
 namespace ild78\Exceptions;
 
 use ild78\Interfaces\ExceptionInterface;
+use Psr;
 
 /**
  * Exception thrown if an argument is not of the expected type.
  */
 class InvalidArgumentException extends Exception implements ExceptionInterface
 {
+    /** @var string Default log level */
+    protected static $logLevel = Psr\Log\LogLevel::NOTICE;
+
     /**
      * Return default message for that kind of exception
      *

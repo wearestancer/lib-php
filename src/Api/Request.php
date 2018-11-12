@@ -14,10 +14,6 @@ use ild78;
  */
 class Request
 {
-    const GET = 'GET';
-    const POST = 'POST';
-    const PUT = 'PUT';
-
     /**
      * Simple proxy for a GET request
      *
@@ -28,7 +24,7 @@ class Request
      */
     public function get(Object $object, string $location = null) : string
     {
-        return $this->request(static::GET, $object, $location);
+        return $this->request(ild78\Interfaces\HttpClientInterface::GET, $object, $location);
     }
 
     /**
@@ -41,7 +37,9 @@ class Request
      */
     public function post(Object $object, string $location = null) : string
     {
-        return $this->request(static::POST, $object, $location, ['body' => json_encode($object)]);
+        $options = ['body' => json_encode($object)];
+
+        return $this->request(ild78\Interfaces\HttpClientInterface::POST, $object, $location, $options);
     }
 
     /**
@@ -54,7 +52,7 @@ class Request
      */
     public function put(Object $object, string $location = null) : string
     {
-        return $this->request(static::PUT, $object, $location);
+        return $this->request(ild78\Interfaces\HttpClientInterface::PUT, $object, $location);
     }
 
     // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
@@ -84,9 +82,9 @@ class Request
         $logger = $config->getLogger();
 
         $allowedMethods = [
-            static::GET,
-            static::POST,
-            static::PUT,
+            ild78\Interfaces\HttpClientInterface::GET,
+            ild78\Interfaces\HttpClientInterface::POST,
+            ild78\Interfaces\HttpClientInterface::PUT,
         ];
 
         if (!in_array(strtoupper($method), $allowedMethods, true)) {
@@ -104,7 +102,7 @@ class Request
 
         $options['timeout'] = $config->getTimeout();
 
-        $endpoint = $object->getEndpoint();
+        $endpoint = $object->getUri();
 
         if ($location) {
             $endpoint .= '/' . $location;
@@ -116,8 +114,12 @@ class Request
         $excepParams = [];
 
         try {
-            $logger->debug(sprintf('API call : %s %s', strtoupper($method), $config->getUri() . $endpoint));
+            $logger->debug(sprintf('API call : %s %s', strtoupper($method), $endpoint));
             $response = $client->request(strtoupper($method), $endpoint, $options);
+
+        // Bypass for internal exceptions.
+        } catch (ild78\Exceptions\Exception $exception) {
+            throw $exception;
 
         // HTTP 5**.
         } catch (GuzzleHttp\Exception\ServerException $exception) {

@@ -4,6 +4,7 @@ namespace ild78\tests\unit\Exceptions;
 
 use atoum;
 use ild78;
+use Psr;
 
 class MissingPaymentMethodException extends atoum
 {
@@ -23,6 +24,16 @@ class MissingPaymentMethodException extends atoum
             ->then
                 ->string($class::getDefaultMessage())
                     ->isIdenticalTo('You must provide a valid credit card or SEPA account to make a payment.')
+        ;
+    }
+
+    public function testGetLogLevel()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getLogLevel())
+                    ->isIdenticalTo(Psr\Log\logLevel::ERROR)
         ;
     }
 }

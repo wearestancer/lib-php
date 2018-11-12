@@ -6,6 +6,7 @@ use atoum;
 use GuzzleHttp;
 use ild78;
 use mock;
+use Psr;
 
 class HttpException extends atoum
 {
@@ -112,6 +113,16 @@ class HttpException extends atoum
             ->then
                 ->string($class::getDefaultMessage())
                     ->isIdenticalTo('HTTP error')
+        ;
+    }
+
+    public function testGetLogLevel()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getLogLevel())
+                    ->isIdenticalTo(Psr\Log\logLevel::WARNING)
         ;
     }
 

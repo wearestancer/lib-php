@@ -4,6 +4,7 @@ namespace ild78\tests\unit\Exceptions;
 
 use atoum;
 use ild78;
+use Psr;
 
 class InvalidExpirationYearException extends atoum
 {
@@ -23,6 +24,16 @@ class InvalidExpirationYearException extends atoum
             ->then
                 ->string($class::getDefaultMessage())
                     ->isIdenticalTo('Expiration year is invalid.')
+        ;
+    }
+
+    public function testGetLogLevel()
+    {
+        $this
+            ->if($class = $this->testedClass->getClass())
+            ->then
+                ->string($class::getLogLevel())
+                    ->isIdenticalTo(Psr\Log\logLevel::DEBUG)
         ;
     }
 }

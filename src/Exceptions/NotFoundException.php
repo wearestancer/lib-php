@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ild78\Exceptions;
 
 use ild78\Interfaces\ExceptionInterface;
+use Psr;
 
 /**
  * The server did not find a current representation for the target resource.
@@ -14,6 +15,9 @@ class NotFoundException extends ClientException implements ExceptionInterface
 {
     /** @var string */
     protected static $defaultMessage = 'Not Found';
+
+    /** @var string Default log level */
+    protected static $logLevel = Psr\Log\LogLevel::ERROR;
 
     /** @var string */
     protected static $status = '404';

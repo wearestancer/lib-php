@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ild78\Exceptions;
 
 use ild78\Interfaces\ExceptionInterface;
+use Psr;
 
 /**
  * The server timed out waiting for the request.
@@ -14,6 +15,9 @@ class RequestTimeoutException extends ClientException implements ExceptionInterf
 {
     /** @var string */
     protected static $defaultMessage = 'Request Timeout';
+
+    /** @var string Default log level */
+    protected static $logLevel = Psr\Log\LogLevel::ERROR;
 
     /** @var string */
     protected static $status = '408';

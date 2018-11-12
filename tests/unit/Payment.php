@@ -30,16 +30,21 @@ class Payment extends atoum
 
     public function responseMessageDataProvider()
     {
-        $rand = substr(uniqid(), -2);
-
-        return [
-            [$rand, 'Unknown'],
-            ['00', 'OK'],
-            ['05', 'Do not honor'],
-            ['41', 'Lost card'],
-            ['42', 'Stolen card'],
-            ['51', 'Insufficient funds'],
+        $datas = [
+            '00' => ['00', 'OK'],
+            '05' => ['05', 'Do not honor'],
+            '41' => ['41', 'Lost card'],
+            '42' => ['42', 'Stolen card'],
+            '51' => ['51', 'Insufficient funds'],
         ];
+
+        do {
+            $key = substr(uniqid(), -2);
+        } while (array_key_exists($key, $datas));
+
+        $datas[$key] = [$key, 'Unknown'];
+
+        return $datas;
     }
 
     public function testCharge()
@@ -263,7 +268,7 @@ class Payment extends atoum
 
                 ->mock($client)
                     ->call('request')
-                        ->withArguments('POST', $this->testedInstance->getEndpoint(), $options)
+                        ->withArguments('POST', $this->testedInstance->getUri(), $options)
                             ->once
 
                 ->mock($logger)
@@ -365,7 +370,7 @@ class Payment extends atoum
 
                 ->mock($client)
                     ->call('request')
-                        ->withArguments('POST', $this->testedInstance->getEndpoint(), $options)
+                        ->withArguments('POST', $this->testedInstance->getUri(), $options)
                             ->once
 
                 ->mock($logger)

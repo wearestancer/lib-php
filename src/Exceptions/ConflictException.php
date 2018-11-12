@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ild78\Exceptions;
 
 use ild78\Interfaces\ExceptionInterface;
+use Psr;
 
 /**
  * The request could not be completed due to a conflict with the current state of the target resource.
@@ -14,6 +15,9 @@ class ConflictException extends ClientException implements ExceptionInterface
 {
     /** @var string */
     protected static $defaultMessage = 'Conflict';
+
+    /** @var string Default log level */
+    protected static $logLevel = Psr\Log\LogLevel::ERROR;
 
     /** @var string */
     protected static $status = '409';

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ild78\Exceptions;
 
 use ild78\Interfaces\ExceptionInterface;
+use Psr;
 
 /**
  * The request was valid, but the server is refusing action.
@@ -14,6 +15,9 @@ class ForbiddenException extends ClientException implements ExceptionInterface
 {
     /** @var string */
     protected static $defaultMessage = 'Forbidden';
+
+    /** @var string Default log level */
+    protected static $logLevel = Psr\Log\LogLevel::ERROR;
 
     /** @var string */
     protected static $status = '403';

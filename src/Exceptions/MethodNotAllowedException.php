@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ild78\Exceptions;
 
 use ild78\Interfaces\ExceptionInterface;
+use Psr;
 
 /**
  * A request method is not supported for the requested resource.
@@ -14,6 +15,9 @@ class MethodNotAllowedException extends ClientException implements ExceptionInte
 {
     /** @var string */
     protected static $defaultMessage = 'Method Not Allowed';
+
+    /** @var string Default log level */
+    protected static $logLevel = Psr\Log\LogLevel::CRITICAL;
 
     /** @var string */
     protected static $status = '405';

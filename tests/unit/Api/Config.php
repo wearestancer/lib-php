@@ -72,19 +72,25 @@ class Config extends atoum
 
     public function testGetHttpClient_SetHttpClient()
     {
-        $mock = new mock\GuzzleHttp\ClientInterface;
-
         $this
             ->given($this->newTestedInstance(uniqid()))
+            ->and($guzzle = new mock\GuzzleHttp\ClientInterface)
+            ->and($client = new ild78\Http\Client)
             ->then
                 ->object($this->testedInstance->getHttpClient())
-                    ->isInstanceOf('GuzzleHttp\Client') // Automagicaly created instance
+                    ->isInstanceOf('ild78\Http\Client') // Automagicaly created instance
 
-                ->object($this->testedInstance->setHttpClient($mock))
+                ->object($this->testedInstance->setHttpClient($guzzle))
                     ->isTestedInstance
 
                 ->object($this->testedInstance->getHttpClient())
-                    ->isIdenticalTo($mock)
+                    ->isIdenticalTo($guzzle)
+
+                ->object($this->testedInstance->setHttpClient($client))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getHttpClient())
+                    ->isIdenticalTo($client)
         ;
     }
 

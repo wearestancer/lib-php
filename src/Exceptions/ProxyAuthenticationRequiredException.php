@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ild78\Exceptions;
 
 use ild78\Interfaces\ExceptionInterface;
+use Psr;
 
 /**
  * The client must first authenticate itself with a proxy.
@@ -14,6 +15,9 @@ class ProxyAuthenticationRequiredException extends ClientException implements Ex
 {
     /** @var string */
     protected static $defaultMessage = 'Proxy Authentication Required';
+
+    /** @var string Default log level */
+    protected static $logLevel = Psr\Log\LogLevel::ERROR;
 
     /** @var string */
     protected static $status = '407';

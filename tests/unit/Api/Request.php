@@ -52,14 +52,14 @@ class Request extends atoum
         ;
     }
 
-    public function testRequest()
+    public function testRequest_workingWithDefaultClient()
     {
         $this
             ->if($config = ild78\Api\Config::init(uniqid()))
 
-            ->assert('Use test of GuzzleHttp\Client and no more location')
-                ->given($client = new mock\GuzzleHttp\Client)
-                ->and($response = new mock\GuzzleHttp\Psr7\Response)
+            ->assert('No location defined')
+                ->given($client = new mock\ild78\Http\Client)
+                ->and($response = new mock\ild78\Http\Response(200))
                 ->and($body = uniqid())
                 ->and($this->calling($response)->getBody = $body)
                 ->and($this->calling($client)->request = $response)
@@ -72,22 +72,22 @@ class Request extends atoum
 
                 ->if($logger = new mock\ild78\Api\Logger)
                 ->and($config->setLogger($logger))
-                ->and($debugMessage = 'API call : ' . $method . ' ' . $config->getUri() . $object->getEndpoint())
+                ->and($debugMessage = 'API call : ' . $method . ' ' . $object->getUri())
                 ->then
                     ->string($this->testedInstance->request($method, $object))
                         ->isIdenticalTo($body)
                     ->mock($client)
                         ->call('request')
-                            ->withIdenticalArguments($method, $object->getEndpoint())
+                            ->withIdenticalArguments($method, $object->getUri())
                                 ->once
                     ->mock($logger)
                         ->call('debug')->withArguments($debugMessage, [])->once
                         ->call('error')->never
                         ->call('notice')->never
 
-            ->assert('Use test of GuzzleHttp\Client and location')
-                ->given($client = new mock\GuzzleHttp\Client)
-                ->and($response = new mock\GuzzleHttp\Psr7\Response)
+            ->assert('Location defined')
+                ->given($client = new mock\ild78\Http\Client)
+                ->and($response = new mock\ild78\Http\Response(200))
                 ->and($body = uniqid())
                 ->and($this->calling($response)->getBody = $body)
                 ->and($this->calling($client)->request = $response)
@@ -103,22 +103,70 @@ class Request extends atoum
                 ->and($config->setLogger($logger))
                 ->and($debugMessage = vsprintf('API call : %s %s', [
                     $method,
-                    $config->getUri() . $object->getEndpoint() . '/' . $location,
+                    $object->getUri() . '/' . $location,
                 ]))
                 ->then
                     ->string($this->testedInstance->request($method, $object, $location))
                         ->isIdenticalTo($body)
                     ->mock($client)
                         ->call('request')
-                            ->withIdenticalArguments($method, $object->getEndpoint() . '/' . $location)
+                            ->withIdenticalArguments($method, $object->getUri() . '/' . $location)
                                 ->once
                     ->mock($logger)
                         ->call('debug')->withArguments($debugMessage, [])->once
                         ->call('error')->never
                         ->call('notice')->never
+        ;
+    }
+
+    public function testRequest_errorsWithDefaultClient()
+    {
+        $this
+            ->given($this->function->setDefaultNamespace('ild78\\Http'))
+            ->if($config = ild78\Api\Config::init(uniqid()))
+
+            ->assert('With bad credential')
+                ->given($content = file_get_contents(__DIR__ . '/../fixtures/auth/not-authorized.json'))
+                ->and($this->function->curl_exec = $content)
+                ->and($this->function->curl_getinfo = 401)
+                ->and($this->function->curl_errno = rand(100, 200))
+
+                ->if($client = new ild78\Http\Client)
+                ->and($config->setHttpClient($client))
+
+                ->if($object = new mock\ild78\Api\Object)
+                ->and($method = 'PUT')
+
+                ->if($logger = new mock\ild78\Api\Logger)
+                ->and($config->setLogger($logger))
+                ->and($debugMessage = vsprintf('API call : %s %s', [
+                    $method,
+                    $config->getUri() . $object->getEndpoint(),
+                ]))
+                ->and($noticeMessage = vsprintf('HTTP 401 - Invalid credential : %s', [
+                    $config->getKey(),
+                ]))
+
+                ->if($this->newTestedInstance)
+                ->then
+                    ->exception(function () use ($object, $method) {
+                        $this->testedInstance->request($method, $object);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\NotAuthorizedException::class)
+                        ->message
+                            ->isIdenticalTo('You are not authorized to access that resource.')
+
+                        ->variable($this->exception->getPrevious())
+                            ->isNull
+
+                    ->mock($logger)
+                        ->call('debug')->withArguments($debugMessage, [])->once
+                        ->call('error')->never
+                        ->call('notice')->withArguments($noticeMessage, [])->once
 
             ->assert('Unsupported method')
                 ->if($this->newTestedInstance)
+                ->and($this->function->curl_exec = uniqid())
                 ->and($object = new mock\ild78\Api\Object)
                 ->and($method = uniqid())
 
@@ -138,6 +186,76 @@ class Request extends atoum
                     ->mock($logger)
                         ->call('debug')->never
                         ->call('error')->withArguments($errorMessage)->once
+                        ->call('notice')->never
+
+                    ->function('curl_exec')
+                        ->wasCalled->never
+        ;
+    }
+
+    public function testRequest_withGuzzle()
+    {
+        $this
+            ->if($config = ild78\Api\Config::init(uniqid()))
+
+            ->assert('Use test of client and no more location')
+                ->given($client = new mock\GuzzleHttp\Client)
+                ->and($response = new mock\GuzzleHttp\Psr7\Response)
+                ->and($body = uniqid())
+                ->and($this->calling($response)->getBody = $body)
+                ->and($this->calling($client)->request = $response)
+
+                ->and($config->setHttpClient($client))
+
+                ->if($this->newTestedInstance)
+                ->and($method = 'GET')
+                ->and($object = new mock\ild78\Api\Object)
+
+                ->if($logger = new mock\ild78\Api\Logger)
+                ->and($config->setLogger($logger))
+                ->and($debugMessage = 'API call : ' . $method . ' ' . $object->getUri())
+                ->then
+                    ->string($this->testedInstance->request($method, $object))
+                        ->isIdenticalTo($body)
+                    ->mock($client)
+                        ->call('request')
+                            ->withIdenticalArguments($method, $object->getUri())
+                                ->once
+                    ->mock($logger)
+                        ->call('debug')->withArguments($debugMessage, [])->once
+                        ->call('error')->never
+                        ->call('notice')->never
+
+            ->assert('Use test of client and location')
+                ->given($client = new mock\GuzzleHttp\Client)
+                ->and($response = new mock\GuzzleHttp\Psr7\Response)
+                ->and($body = uniqid())
+                ->and($this->calling($response)->getBody = $body)
+                ->and($this->calling($client)->request = $response)
+
+                ->and($config->setHttpClient($client))
+
+                ->if($this->newTestedInstance)
+                ->and($method = 'POST')
+                ->and($object = new mock\ild78\Api\Object)
+                ->and($location = uniqid())
+
+                ->if($logger = new mock\ild78\Api\Logger)
+                ->and($config->setLogger($logger))
+                ->and($debugMessage = vsprintf('API call : %s %s', [
+                    $method,
+                    $object->getUri() . '/' . $location,
+                ]))
+                ->then
+                    ->string($this->testedInstance->request($method, $object, $location))
+                        ->isIdenticalTo($body)
+                    ->mock($client)
+                        ->call('request')
+                            ->withIdenticalArguments($method, $object->getUri() . '/' . $location)
+                                ->once
+                    ->mock($logger)
+                        ->call('debug')->withArguments($debugMessage, [])->once
+                        ->call('error')->never
                         ->call('notice')->never
 
             ->assert('With bad credential')
