@@ -122,7 +122,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
         $error = curl_errno($this->curl);
         $code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
 
-        $response = new Response($code, $body, $headers);
+        $response = new Response($code, $body ?: null, $headers);
 
         if ($error) {
             if ($error === CURLE_TOO_MANY_REDIRECTS) {
