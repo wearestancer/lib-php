@@ -316,13 +316,19 @@ class Client extends atoum
                     'timeout' => rand(1, 1000),
                     'headers' => [
                         uniqid() => uniqid(),
-                        uniqid() => uniqid(),
+                        uniqid() => [uniqid(), uniqid()],
                     ],
                     'body' => [
                         uniqid() => uniqid(),
                         uniqid() => uniqid(),
                     ],
                 ])
+                ->and($headers = [])
+                ->when(function () use (&$headers, $options) {
+                    foreach ($options['headers'] as $key => $value) {
+                        $headers[] = sprintf('%s: %s', $key, implode(', ', (array) $value));
+                    }
+                })
                 ->then
                     ->object($response = $this->testedInstance->request($method, $host, $options))
                         ->isInstanceOf(ild78\Http\Response::class)
@@ -343,7 +349,7 @@ class Client extends atoum
                         ->wasCalledWithIdenticalArguments($curl, CURLOPT_TIMEOUT, $options['timeout'])
                             ->once
 
-                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_HTTPHEADER, $options['headers'])
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_HTTPHEADER, $headers)
                             ->once
 
                         ->wasCalledWithIdenticalArguments($curl, CURLOPT_POSTFIELDS, $options['body'])

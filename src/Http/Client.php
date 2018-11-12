@@ -135,7 +135,19 @@ class Client implements ild78\Interfaces\HttpClientInterface
 
         // Headers.
         if (array_key_exists('headers', $options)) {
-            curl_setopt($this->curl, CURLOPT_HTTPHEADER, $options['headers']);
+            $headers = [];
+
+            foreach ($options['headers'] as $key => $val) {
+                $value = $val;
+
+                if (is_array($val)) {
+                    $value = implode(', ', $val);
+                }
+
+                $headers[] = $key . ': ' . $value;
+            }
+
+            curl_setopt($this->curl, CURLOPT_HTTPHEADER, $headers);
         } else {
             $options['headers'] = [];
         }
