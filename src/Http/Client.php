@@ -11,8 +11,11 @@ use Psr;
  */
 class Client implements ild78\Interfaces\HttpClientInterface
 {
-    /** @var ressource */
+    /** @var resource */
     protected $curl;
+
+    /** @var array */
+    protected $headers = [];
 
     /**
      * Creation of a new client instance
@@ -45,6 +48,53 @@ class Client implements ild78\Interfaces\HttpClientInterface
     public function getCurlResource()
     {
         return $this->curl;
+    }
+
+    /**
+     * Return parsed response header
+     *
+     * @return array
+     */
+    public function getResponseHeaders() : array
+    {
+        return $this->headers;
+    }
+
+    /**
+     * Parse response header line to pass it to `Response` object
+     *
+     * As written in documentation "Return the number of bytes written.".
+     *
+     * @param resource $curl Actual cURL resource (not used but mandatory).
+     * @param string $line One header line.
+     * @return integer
+     */
+    public function parseHeaderLine($curl, string $line) : int
+    {
+        if (!trim($line)) {
+            return strlen($line);
+        }
+
+        $name = 'Status-Line';
+        $value = $line;
+
+        if (strpos($line, ':') !== false) {
+            list($name, $value) = explode(':', $line, 2);
+        }
+
+        if (!array_key_exists($name, $this->headers)) {
+            $this->headers[$name] = [];
+        }
+
+        if ($name === 'Date') {
+            $values = [$value];
+        } else {
+            $values = explode(',', $value);
+        }
+
+        $this->headers[$name] = array_merge($this->headers[$name], array_map('trim', $values));
+
+        return strlen($line);
     }
 
     /**
@@ -101,25 +151,13 @@ class Client implements ild78\Interfaces\HttpClientInterface
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
 
         // Get response headers.
-        $headers = [];
-        $parse = function ($curl, $line) use (&$headers) {
-            list($name, $value) = explode(':', $line, 2);
-
-            if (!array_key_exists($name, $headers)) {
-                $headers[$name] = [];
-            }
-
-            $headers[$name][] = $value;
-
-            return strlen($line);
-        };
-        curl_setopt($this->curl, CURLOPT_HEADERFUNCTION, $parse);
+        curl_setopt($this->curl, CURLOPT_HEADERFUNCTION, [$this, 'parseHeaderLine']);
 
         $body = curl_exec($this->curl);
         $error = curl_errno($this->curl);
         $code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
 
-        $response = new Response($code, $body ?: null, $headers);
+        $response = new Response($code, $body ?: null, $this->getResponseHeaders());
 
         if ($error || $code >= 400) {
             if ($error === CURLE_TOO_MANY_REDIRECTS) {
