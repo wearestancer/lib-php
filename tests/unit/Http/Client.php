@@ -133,6 +133,69 @@ class Client extends atoum
         return $datas;
     }
 
+    public function headerLineDataProvider()
+    {
+        // ($line, $expectedReturn, $expectedName, $expectedValues)
+
+        $lines = [];
+
+        $lines[] = [
+            'HTTP/1.1 401 Unauthorized',
+            null,
+            'Status-Line',
+            ['HTTP/1.1 401 Unauthorized'],
+        ];
+
+        $lines[] = [
+            'Content-Type: application/json ',
+            null,
+            'Content-Type',
+            ['application/json'],
+        ];
+
+        $lines[] = [
+            'Content-Length: 105' . "\n",
+            null,
+            'Content-Length',
+            ['105'],
+        ];
+
+        $lines[] = [
+            'Connection: keep-alive',
+            null,
+            'Connection',
+            ['keep-alive'],
+        ];
+
+        $lines[] = [
+            'Date: Mon, 12 Nov 2018 15:42:16 GMT',
+            null,
+            'Date',
+            ['Mon, 12 Nov 2018 15:42:16 GMT'],
+        ];
+
+        $lines[] = [
+            'Allow: GET, HEAD, OPTIONS, POST',
+            null,
+            'Allow',
+            ['GET', 'HEAD', 'OPTIONS', 'POST'],
+        ];
+
+        $lines[] = [
+            "\r\n", // Will be triggered in curl callback
+            null,
+            null,
+            null,
+        ];
+
+        // Add return value
+        array_walk($lines, function (&$value) {
+            $value[1] = strlen($value[0]);
+        });
+
+        return $lines;
+    }
+
     public function testClass()
     {
         $this
@@ -167,6 +230,34 @@ class Client extends atoum
                 ->resource($this->testedInstance->getCurlResource())
                     ->isOfType('curl')
         ;
+    }
+
+    /**
+     * @dataProvider headerLineDataProvider
+     */
+    public function testParseHeaderLine($line, $expectedReturn, $expectedName, $expectedValues)
+    {
+        $this
+            ->assert($line)
+                ->given($this->newTestedInstance)
+                ->and($curl = $this->testedInstance->getCurlResource())
+                ->then
+                    ->integer($this->testedInstance->parseHeaderLine($curl, $line))
+                        ->isIdenticalTo($expectedReturn)
+        ;
+
+        if ($expectedName) {
+            $this
+                ->array($this->testedInstance->getResponseHeaders())
+                    ->hasKey($expectedName)
+                    ->contains($expectedValues)
+            ;
+        } else {
+            $this
+                ->array($this->testedInstance->getResponseHeaders())
+                    ->isEmpty
+            ;
+        }
     }
 
     public function testRequest()
@@ -225,13 +316,19 @@ class Client extends atoum
                     'timeout' => rand(1, 1000),
                     'headers' => [
                         uniqid() => uniqid(),
-                        uniqid() => uniqid(),
+                        uniqid() => [uniqid(), uniqid()],
                     ],
                     'body' => [
                         uniqid() => uniqid(),
                         uniqid() => uniqid(),
                     ],
                 ])
+                ->and($headers = [])
+                ->when(function () use (&$headers, $options) {
+                    foreach ($options['headers'] as $key => $value) {
+                        $headers[] = sprintf('%s: %s', $key, implode(', ', (array) $value));
+                    }
+                })
                 ->then
                     ->object($response = $this->testedInstance->request($method, $host, $options))
                         ->isInstanceOf(ild78\Http\Response::class)
@@ -252,7 +349,7 @@ class Client extends atoum
                         ->wasCalledWithIdenticalArguments($curl, CURLOPT_TIMEOUT, $options['timeout'])
                             ->once
 
-                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_HTTPHEADER, $options['headers'])
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_HTTPHEADER, $headers)
                             ->once
 
                         ->wasCalledWithIdenticalArguments($curl, CURLOPT_POSTFIELDS, $options['body'])
