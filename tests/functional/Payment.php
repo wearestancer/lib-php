@@ -22,6 +22,48 @@ class Payment extends TestCase
         ;
     }
 
+    public function testGetData()
+    {
+        $this
+            ->assert('Unknonw payment result a 404 exception')
+                ->if($this->newTestedInstance(md5(uniqid())))
+                ->then
+                    ->exception(function () {
+                        $this->testedInstance->getAmount();
+                    })
+                        ->isInstanceOf(ild78\Exceptions\NotFoundException::class)
+                        ->message
+                            ->isIdenticalTo('Resource not found')
+
+            ->assert('Get test payment')
+                ->if($this->newTestedInstance('paym_uyqKGrWvxC7AlsuJq1vlh5FF'))
+                ->then
+                    ->integer($this->testedInstance->getAmount())
+                        ->isIdenticalTo(7810)
+
+                    ->string($this->testedInstance->getCurrency())
+                        ->isIdenticalTo('usd')
+
+                    ->string($this->testedInstance->getDescription())
+                        ->isIdenticalTo('Automatic test, 78.10 USD')
+
+                    ->string($this->testedInstance->getMethod())
+                        ->isIdenticalTo('card')
+
+                    ->object($card = $this->testedInstance->getCard())
+                        ->isInstanceOf(ild78\Card::class)
+
+                    ->string($card->getId())
+                        ->isIdenticalTo('card_nc1Xikd2ihaz1n5OjRciHoZK')
+
+                    ->object($customer = $this->testedInstance->getCustomer())
+                        ->isInstanceOf(ild78\Customer::class)
+
+                    ->string($customer->getId())
+                        ->isIdenticalTo('cust_Ptlig1Zc0ln17OHqeANRdHHU')
+        ;
+    }
+
     /**
      * @dataProvider currencyDataProvider
      */
