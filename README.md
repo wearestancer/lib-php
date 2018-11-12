@@ -98,6 +98,7 @@ You can see other exceptions, not related to HTTP traffic :
 
 For these two exceptions, you need to check you code, they should never appear in real world.
 
+To see every available exceptions, simply take a look in `src/Exceptions` folder.
 
 ### Logger
 
