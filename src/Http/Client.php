@@ -68,6 +68,9 @@ class Client implements ild78\Interfaces\HttpClientInterface
      */
     public function request(string $method, string $uri, array $options = []) : Psr\Http\Message\ResponseInterface
     {
+        $config = ild78\Api\Config::getGlobal();
+        $logger = $config->getLogger();
+
         // Set URL.
         curl_setopt($this->curl, CURLOPT_URL, $uri);
 
@@ -141,6 +144,29 @@ class Client implements ild78\Interfaces\HttpClientInterface
             if ($class::getStatus() != $code) {
                 $params['message'] = curl_error($this->curl);
             }
+
+            $logMethod = $class::getLogLevel();
+            $logMessage = null;
+
+            switch ($code) {
+                case 401:
+                    $logMessage = 'HTTP 401 - Invalid credential : ' . $config->getKey();
+                    break;
+
+                case 404:
+                    $logMessage = 'HTTP 404 - Not Found';
+                    break;
+
+                case 500:
+                    $logMessage = 'HTTP 500 - Internal Server Error';
+                    break;
+
+                default:
+                    $logMessage = $params['message'] ?? $class::getDefaultMessage();
+                    break;
+            }
+
+            $logger->$logMethod($logMessage);
 
             throw $class::create($params);
         }

@@ -137,6 +137,16 @@ class Request extends atoum
                 ->if($object = new mock\ild78\Api\Object)
                 ->and($method = 'PUT')
 
+                ->if($logger = new mock\ild78\Api\Logger)
+                ->and($config->setLogger($logger))
+                ->and($debugMessage = vsprintf('API call : %s %s', [
+                    $method,
+                    $config->getUri() . $object->getEndpoint(),
+                ]))
+                ->and($noticeMessage = vsprintf('HTTP 401 - Invalid credential : %s', [
+                    $config->getKey(),
+                ]))
+
                 ->if($this->newTestedInstance)
                 ->then
                     ->exception(function () use ($object, $method) {
@@ -148,6 +158,11 @@ class Request extends atoum
 
                         ->variable($this->exception->getPrevious())
                             ->isNull
+
+                    ->mock($logger)
+                        ->call('debug')->withArguments($debugMessage, [])->once
+                        ->call('error')->never
+                        ->call('notice')->withArguments($noticeMessage, [])->once
 
             ->assert('Unsupported method')
                 ->if($this->newTestedInstance)
