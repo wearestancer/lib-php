@@ -9,6 +9,33 @@ use ild78;
  */
 class Customer extends TestCase
 {
+    public function testGetData()
+    {
+        $this
+            ->assert('Unknonw user result a 404 exception')
+                ->if($this->newTestedInstance(md5(uniqid())))
+                ->then
+                    ->exception(function () {
+                        $this->testedInstance->getName();
+                    })
+                        ->isInstanceOf(ild78\Exceptions\NotFoundException::class)
+                        ->message
+                            ->isIdenticalTo('Resource not found')
+
+            ->assert('Get test user')
+                ->if($this->newTestedInstance('cust_aEBF8w2szNdhreJ0uEmrplen'))
+                ->then
+                    ->string($this->testedInstance->getName())
+                        ->isIdenticalTo('John Doe')
+
+                    ->string($this->testedInstance->getEmail())
+                        ->isIdenticalTo('john.doe@example.com')
+
+                    ->string($this->testedInstance->getMobile())
+                        ->isIdenticalTo('+33666172730') // Random generated number
+        ;
+    }
+
     public function testSave()
     {
         $this
