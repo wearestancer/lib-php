@@ -14,8 +14,19 @@ You only need to run the following commmand :
 composer require ild78/lib-php
 ```
 
-The library uses [Guzzle](https://packagist.org/packages/guzzlehttp/guzzle) internaly to connect to the API.
-It will automaticaly be installed during `composer` process.
+The library uses [cURL](https://secure.php.net/manual/fr/book.curl.php) internaly to connect to the API.
+You need the php extension `phpX.Y-curl`, where `X.Y` correspond to your PHP version, to be installed on your server.
+
+You may also use [Guzzle](https://packagist.org/packages/guzzlehttp/guzzle)
+or every [PSR7 compatible client](https://www.php-fig.org/psr/psr-7/) to replace the internal cURL instance.
+You only need to provider the client instance to the API config.
+
+```php
+<?php
+
+$config = ild78\Api\Config::init($key);
+$config->setHttpClient($guzzle);
+```
 
 
 ## Usage
