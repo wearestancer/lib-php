@@ -105,7 +105,7 @@ To see every available exceptions, simply take a look in `src/Exceptions` folder
 You can add a [PSR3 compatible logger](https://www.php-fig.org/psr/psr-3/).
 
 We suggeset [monolog](https://seldaek.github.io/monolog/) but anything implementing
-(log interfaces)[https://github.com/php-fig/log] can be use.
+[log interfaces](https://github.com/php-fig/log) can be use.
 
 ```php
 <?php
