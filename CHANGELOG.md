@@ -8,3 +8,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - First implementation
+
+### Fixed
+- Prevent `Card` making `populate` call after successful payment
