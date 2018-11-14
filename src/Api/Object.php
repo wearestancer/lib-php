@@ -396,6 +396,10 @@ abstract class Object implements JsonSerializable
                 } else {
                     $this->dataModel[$property]['value'] = $value;
                 }
+
+                if (is_object($this->dataModel[$property]['value'])) {
+                    $this->dataModel[$property]['value']->updated = $this->updated;
+                }
             }
         }
 

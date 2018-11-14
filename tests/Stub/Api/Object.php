@@ -58,6 +58,9 @@ class Object extends ild78\Api\Object
         'object1' => [
             'type' => ild78\Card::class,
         ],
+        'object2' => [
+            'type' => self::class,
+        ],
         'restricted1' => [
             'restricted' => true,
             'type' => 'string',
@@ -79,10 +82,22 @@ class Object extends ild78\Api\Object
         ],
     ];
 
-    // Test only method
+    // Test only methods
     public function forceRestricted1(string $value) : self
     {
         $this->dataModel['restricted1']['value'] = $value;
+
+        return $this;
+    }
+
+    public function getUpdated() : bool
+    {
+        return $this->updated;
+    }
+
+    public function setUpdated(bool $updated) : self
+    {
+        $this->updated = $updated;
 
         return $this;
     }
