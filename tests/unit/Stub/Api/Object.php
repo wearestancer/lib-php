@@ -602,7 +602,11 @@ class Object extends atoum
 
                     ->mock($client)
                         ->call('request')
-                            ->once
+                            ->withArguments('POST')
+                                ->once
+
+                            ->withArguments('GET')
+                                ->never
 
             ->assert('Populate working normally')
                 ->given($config = ild78\Api\Config::init(uniqid()))
