@@ -2,7 +2,6 @@
 
 $runner->addTestsFromDirectory(__DIR__ . '/tests/unit');
 
-
 // Extensions
 
 // autoloop
@@ -25,4 +24,12 @@ if (extension_loaded('xdebug') === true) {
     ;
 
     $runner->addReport($coverage);
+
+    // xnit report
+    $xunit = new mageekguy\atoum\reports\asynchronous\xunit();
+    $xunit
+        ->addWriter(new atoum\writers\file(__DIR__ . '/reports/atoum.xunit.xml'))
+    ;
+
+    $runner->addReport($xunit);
 }

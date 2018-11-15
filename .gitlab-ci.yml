@@ -1,0 +1,18 @@
+
+before_script:
+  - php -v
+  - composer -v
+  - composer install
+
+atoum:
+  stage: test
+  script: ./vendor/bin/atoum
+  coverage: '/Code coverage value: \d+\.\d+%/'
+
+  artifacts:
+    reports:
+      junit: reports/atoum.xunit.xml
+
+  cache:
+    paths:
+      - vendor/
