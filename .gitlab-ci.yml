@@ -11,7 +11,7 @@ atoum:
 
   artifacts:
     reports:
-      junit: atoum.xunit.xml
+      junit: reports/atoum.xunit.xml
 
   cache:
     paths:
