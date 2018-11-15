@@ -39,7 +39,6 @@ class Client extends atoum
             'HTTP 401 - Invalid credential : %s',
         ];
 
-        $datas = [];
         $datas[] = [
             rand(1, 100) + CURLE_TOO_MANY_REDIRECTS, // Prevent from having a 310 error
             402,
