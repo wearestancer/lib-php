@@ -184,6 +184,17 @@ class Object extends atoum
         ;
     }
 
+    public function testGetId()
+    {
+        $this
+            ->if($id = uniqid())
+            ->and($this->newTestedInstance($id))
+            ->then
+                ->string($this->testedInstance->getId())
+                    ->isIdenticalTo($id)
+        ;
+    }
+
     public function testGetUri()
     {
         $this
