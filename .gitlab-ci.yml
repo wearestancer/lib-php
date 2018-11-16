@@ -21,6 +21,10 @@ lint:
   stage: test
   script: ./vendor/bin/phpcs
 
+  artifacts:
+    reports:
+      junit: reports/phpcs.junit.xml
+
   cache:
     paths:
       - vendor/
