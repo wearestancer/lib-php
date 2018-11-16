@@ -111,7 +111,7 @@ class Payment extends Api\Object
             $id = $source;
         }
 
-        if (strpos('sepa_', $id) === 0) {
+        if ($id && strpos($id, 'sepa_') === 0) {
             $class = Sepa::class;
             $method = 'setSepa';
         }
