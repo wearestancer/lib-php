@@ -286,7 +286,7 @@ abstract class Object implements JsonSerializable
      *
      * @return DateTime|null
      */
-    public function getCreationDate() : DateTime
+    public function getCreationDate() : ?DateTime
     {
         $date = $this->created;
 

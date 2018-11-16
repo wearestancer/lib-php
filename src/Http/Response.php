@@ -86,9 +86,6 @@ class Response implements Psr\Http\Message\ResponseInterface
         508 => 'Loop Detected',
         510 => 'Not Extended',
         511 => 'Network Authentication Required',
-
-        // Unknown status will result empty message.
-        999 => '',
     ];
 
     /**

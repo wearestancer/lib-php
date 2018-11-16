@@ -30,6 +30,8 @@ class HttpException extends atoum
             [399, ild78\Exceptions\RedirectionException::class],
             [499, ild78\Exceptions\ClientException::class],
             [599, ild78\Exceptions\ServerException::class],
+            // unknown
+            [999, ild78\Exceptions\HttpException::class],
         ];
     }
 

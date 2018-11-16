@@ -136,6 +136,23 @@ class Object extends atoum
         ;
     }
 
+    public function testDataModelAdder()
+    {
+        // More test in stubs
+        $this
+            ->given($this->newTestedInstance)
+            ->and($property = uniqid())
+            ->and($value = uniqid())
+            ->then
+                ->exception(function () use ($property, $value) {
+                    $this->testedInstance->dataModelAdder($property, $value);
+                })
+                    ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Unknown property "' . $property . '"')
+        ;
+    }
+
     public function testDataModelGetter()
     {
         // More test in stubs
@@ -181,6 +198,17 @@ class Object extends atoum
             ->then
                 ->dateTime($this->testedInstance->getCreationDate())
                     ->isEqualTo(new DateTime('@' . $timestamp))
+        ;
+    }
+
+    public function testGetId()
+    {
+        $this
+            ->if($id = uniqid())
+            ->and($this->newTestedInstance($id))
+            ->then
+                ->string($this->testedInstance->getId())
+                    ->isIdenticalTo($id)
         ;
     }
 

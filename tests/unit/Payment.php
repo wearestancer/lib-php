@@ -101,7 +101,7 @@ class Payment extends atoum
                     'description' => $options['description'],
                     'sepa' => [
                         'id' => 'sepa_' . uniqid(),
-                        'last' => '6789',
+                        'last4' => '6789',
                         'name' => $options['source']['account_holder_name'],
                     ],
                 ])
@@ -122,6 +122,44 @@ class Payment extends atoum
 
                     ->string($sepa->getName())
                         ->isIdenticalTo($options['source']['account_holder_name'])
+
+            ->assert('Test with a sepa token (in object)')
+                ->given($id = 'sepa_' . uniqid())
+                ->and($last = substr(uniqid(), 0, 4))
+                ->and($options = [
+                    'amount' => rand(50, 99999),
+                    'currency' => 'eur',
+                    'description' => 'Stripe compatible charge',
+                    'source' => [
+                        'id' => $id,
+                    ],
+                ])
+                ->and($json = [
+                    'amount' => $options['amount'],
+                    'currency' => $options['currency'],
+                    'description' => $options['description'],
+                    'sepa' => [
+                        'id' => $id,
+                        'last4' => $last,
+                    ],
+                ])
+
+                ->if($this->calling($response)->getBody = json_encode($json))
+                ->then
+                    ->object($obj = testedClass::charge($options))
+                        ->isInstanceOf(testedClass::class)
+
+                    ->integer($obj->getAmount())
+                        ->isIdenticalTo($options['amount'])
+
+                    ->object($sepa = $obj->getSepa())
+                        ->isInstanceOf(ild78\Sepa::class)
+
+                    ->string($sepa->getId())
+                        ->isIdenticalTo($id)
+
+                    ->string($sepa->getLast4())
+                        ->isIdenticalTo($last)
         ;
     }
 

@@ -445,6 +445,36 @@ class Object extends atoum
         ;
     }
 
+    public function testGetCreationDate()
+    {
+        $this
+            ->given($config = ild78\Api\Config::init(uniqid()))
+
+            ->if($client = new mock\ild78\Http\Client)
+            ->and($config->setHttpClient($client))
+
+            ->if($response = new mock\ild78\Http\Response(200))
+            ->and($this->calling($client)->request = $response)
+
+            ->assert('Can be null')
+                ->given($this->calling($response)->getBody = '{}')
+
+                ->if($this->newTestedInstance(uniqid()))
+                ->then
+                    ->variable($this->testedInstance->getCreationDate())
+                        ->isNull
+
+            ->assert('No date but an ID, it will populate data')
+                ->given($created = rand(946681200, 1893452400))
+                ->and($this->calling($response)->getBody = json_encode(compact('created')))
+
+                ->if($this->newTestedInstance(uniqid()))
+                ->then
+                    ->dateTime($this->testedInstance->getCreationDate())
+                        ->isEqualTo(new \DateTime('@' . $created))
+        ;
+    }
+
     /**
      * @dataProvider validDataProvider
      */
