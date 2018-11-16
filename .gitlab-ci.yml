@@ -19,7 +19,9 @@ atoum:
 
 lint:
   stage: test
-  script: ./vendor/bin/phpcs
+  script:
+    - mkdir -p reports
+    - ./vendor/bin/phpcs
 
   artifacts:
     reports:
