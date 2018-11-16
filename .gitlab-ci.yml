@@ -1,7 +1,7 @@
 
 before_script:
   - php -v
-  - composer -v
+  - composer --version
   - composer install
 
 atoum:
