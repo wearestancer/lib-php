@@ -6,9 +6,6 @@
   <arg name="colors" />
   <arg value="sp" />
 
-  <arg name="report" value="junit" />
-  <arg name="report-file" value="reports/phpcs.junit.xml" />
-
   <rule ref="PSR2" />
   <rule ref="PSR12" />
 

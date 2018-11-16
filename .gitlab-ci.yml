@@ -21,7 +21,7 @@ lint:
   stage: test
   script:
     - mkdir -p reports
-    - ./vendor/bin/phpcs
+    - ./vendor/bin/phpcs --report=junit --report-file=reports/phpcs.junit.xml
 
   artifacts:
     reports:
