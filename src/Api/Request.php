@@ -28,6 +28,21 @@ class Request
     }
 
     /**
+     * Simple proxy for a PATCH request
+     *
+     * @see self::request() For full documentation.
+     * @param ild78\Api\Object $object Object.
+     * @param string|null $location Optionnal ressource identifier.
+     * @return string
+     */
+    public function patch(Object $object, string $location = null) : string
+    {
+        $options = ['body' => json_encode($object)];
+
+        return $this->request(ild78\Interfaces\HttpClientInterface::PATCH, $object, $location, $options);
+    }
+
+    /**
      * Simple proxy for a POST request
      *
      * @see self::request() For full documentation.
@@ -53,6 +68,19 @@ class Request
     public function put(Object $object, string $location = null) : string
     {
         return $this->request(ild78\Interfaces\HttpClientInterface::PUT, $object, $location);
+    }
+
+    /**
+     * Alias for patch method
+     *
+     * @see self::patch() The patch method.
+     * @param ild78\Api\Object $object Object.
+     * @param string|null $location Optionnal ressource identifier.
+     * @return string
+     */
+    public function update(Object $object, string $location = null) : string
+    {
+        return $this->patch($object, $location);
     }
 
     // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
@@ -83,6 +111,7 @@ class Request
 
         $allowedMethods = [
             ild78\Interfaces\HttpClientInterface::GET,
+            ild78\Interfaces\HttpClientInterface::PATCH,
             ild78\Interfaces\HttpClientInterface::POST,
             ild78\Interfaces\HttpClientInterface::PUT,
         ];

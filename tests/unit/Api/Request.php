@@ -14,16 +14,18 @@ class Request extends atoum
     public function httpVerbDataProvider()
     {
         return [
-            'GET',
-            'POST',
-            'PUT',
+            ['GET', null],
+            ['POST', null],
+            ['PUT', null],
+            ['PATCH', null],
+            ['PATCH', 'update'],
         ];
     }
 
     /**
      * @dataProvider httpVerbDataProvider
      */
-    public function testGet_Post_Put($verb)
+    public function testGet_Post_Put($verb, $alias)
     {
         // testing a mock is not a good test but here we only want to test we call an other method
 
@@ -33,9 +35,10 @@ class Request extends atoum
             ->and($this->calling($request)->request = $result)
             ->if($object = new mock\ild78\Api\Object)
             ->and($location = uniqid())
+            ->and($method = $alias ?: $verb)
             ->then
                 ->assert('No location')
-                    ->string($request->$verb($object))
+                    ->string($request->$method($object))
                         ->isIdenticalTo($result)
                     ->mock($request)
                         ->call('request')
@@ -43,7 +46,7 @@ class Request extends atoum
                                 ->once
 
                 ->assert('with location')
-                    ->string($request->$verb($object, $location))
+                    ->string($request->$method($object, $location))
                         ->isIdenticalTo($result)
                     ->mock($request)
                         ->call('request')
