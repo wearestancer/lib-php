@@ -17,7 +17,7 @@ class Request
     /**
      * Simple proxy for a GET request
      *
-     * @see self::request For full documentation.
+     * @see self::request() For full documentation.
      * @param ild78\Api\Object $object Object.
      * @param string|null $location Optionnal ressource identifier.
      * @return string
@@ -30,7 +30,7 @@ class Request
     /**
      * Simple proxy for a POST request
      *
-     * @see self::request For full documentation.
+     * @see self::request() For full documentation.
      * @param ild78\Api\Object $object Object.
      * @param string|null $location Optionnal ressource identifier.
      * @return string
@@ -45,7 +45,7 @@ class Request
     /**
      * Simple proxy for a PUT request
      *
-     * @see self::request For full documentation.
+     * @see self::request() For full documentation.
      * @param ild78\Api\Object $object Object.
      * @param string|null $location Optionnal ressource identifier.
      * @return string
