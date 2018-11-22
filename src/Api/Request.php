@@ -19,12 +19,11 @@ class Request
      *
      * @see self::request() For full documentation.
      * @param ild78\Api\Object $object Object.
-     * @param string|null $location Optionnal ressource identifier.
      * @return string
      */
-    public function get(Object $object, string $location = null) : string
+    public function get(Object $object) : string
     {
-        return $this->request(ild78\Interfaces\HttpClientInterface::GET, $object, $location);
+        return $this->request(ild78\Interfaces\HttpClientInterface::GET, $object);
     }
 
     /**
@@ -32,14 +31,13 @@ class Request
      *
      * @see self::request() For full documentation.
      * @param ild78\Api\Object $object Object.
-     * @param string|null $location Optionnal ressource identifier.
      * @return string
      */
-    public function patch(Object $object, string $location = null) : string
+    public function patch(Object $object) : string
     {
         $options = ['body' => json_encode($object)];
 
-        return $this->request(ild78\Interfaces\HttpClientInterface::PATCH, $object, $location, $options);
+        return $this->request(ild78\Interfaces\HttpClientInterface::PATCH, $object, $options);
     }
 
     /**
@@ -47,14 +45,13 @@ class Request
      *
      * @see self::request() For full documentation.
      * @param ild78\Api\Object $object Object.
-     * @param string|null $location Optionnal ressource identifier.
      * @return string
      */
-    public function post(Object $object, string $location = null) : string
+    public function post(Object $object) : string
     {
         $options = ['body' => json_encode($object)];
 
-        return $this->request(ild78\Interfaces\HttpClientInterface::POST, $object, $location, $options);
+        return $this->request(ild78\Interfaces\HttpClientInterface::POST, $object, $options);
     }
 
     /**
@@ -62,12 +59,11 @@ class Request
      *
      * @see self::request() For full documentation.
      * @param ild78\Api\Object $object Object.
-     * @param string|null $location Optionnal ressource identifier.
      * @return string
      */
-    public function put(Object $object, string $location = null) : string
+    public function put(Object $object) : string
     {
-        return $this->request(ild78\Interfaces\HttpClientInterface::PUT, $object, $location);
+        return $this->request(ild78\Interfaces\HttpClientInterface::PUT, $object);
     }
 
     /**
@@ -75,12 +71,11 @@ class Request
      *
      * @see self::patch() The patch method.
      * @param ild78\Api\Object $object Object.
-     * @param string|null $location Optionnal ressource identifier.
      * @return string
      */
-    public function update(Object $object, string $location = null) : string
+    public function update(Object $object) : string
     {
-        return $this->patch($object, $location);
+        return $this->patch($object);
     }
 
     // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
@@ -92,7 +87,6 @@ class Request
      * @uses ild78\Api\Config
      * @param string $method HTTP verb for the call. Use one of class constant.
      * @param ild78\Api\Object $object Object.
-     * @param string|null $location Optionnal ressource identifier.
      * @param array $options Guzzle options.
      * @return string
      * @throws ild78\Exceptions\InvalidArgumentException When calling with unsupported method.
@@ -103,7 +97,7 @@ class Request
      * @throws ild78\Exceptions\ServerException On HTTP 5** errors.
      * @throws ild78\Exceptions\Exception On every over exception.
      */
-    public function request(string $method, Object $object, string $location = null, array $options = []) : string
+    public function request(string $method, Object $object, array $options = []) : string
     {
         $config = Config::getGlobal();
         $client = $config->getHttpClient();
@@ -131,20 +125,14 @@ class Request
 
         $options['timeout'] = $config->getTimeout();
 
-        $endpoint = $object->getUri();
-
-        if ($location) {
-            $endpoint .= '/' . $location;
-        }
-
         $logMethod = null;
         $logMessage = null;
         $excepClass = null;
         $excepParams = [];
 
         try {
-            $logger->debug(sprintf('API call : %s %s', strtoupper($method), $endpoint));
-            $response = $client->request(strtoupper($method), $endpoint, $options);
+            $logger->debug(sprintf('API call : %s %s', strtoupper($method), $object->getUri()));
+            $response = $client->request(strtoupper($method), $object->getUri(), $options);
 
         // Bypass for internal exceptions.
         } catch (ild78\Exceptions\Exception $exception) {
@@ -197,7 +185,7 @@ class Request
                     $parts = explode('\\', $tmp);
                     $resource = end($parts);
 
-                    $excepParams['message'] = sprintf('Ressource "%s" unknown for %s', $location, $resource);
+                    $excepParams['message'] = sprintf('Ressource "%s" unknown for %s', $object->getId(), $resource);
 
                     $logMethod = 'error';
                     $logMessage = sprintf('HTTP 404 - Not found : %s', $excepParams['message']);

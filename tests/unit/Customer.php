@@ -84,15 +84,17 @@ class Customer extends atoum
                 ],
                 'timeout' => $config->getTimeout(),
             ])
+            ->and($location = $this->testedInstance->getUri())
             ->then
                 ->variable($this->testedInstance->getId())
                     ->isNull
+
                 ->object($this->testedInstance->save())
                     ->isTestedInstance
 
                 ->mock($client)
                     ->call('request')
-                        ->withArguments('POST', $this->testedInstance->getUri(), $options)
+                        ->withArguments('POST', $location, $options)
                             ->once
 
                 ->string($this->testedInstance->getId())
@@ -117,7 +119,7 @@ class Customer extends atoum
 
                 ->mock($client)
                     ->call('request')
-                        ->withArguments('POST', $this->testedInstance->getUri(), $options)
+                        ->withArguments('POST', $location, $options)
                             ->once
 
                 ->assert('Update a property allow new request')
@@ -126,17 +128,21 @@ class Customer extends atoum
                     ->then
                         ->mock($client)
                             ->call('request')
-                                ->withAtLeastArguments(['POST'])
-                                    ->once
+                                ->once
 
                 ->assert('Populate block save')
-                    ->if($this->testedInstance->setName(uniqid()))
+                    ->if($this->newTestedInstance(uniqid()))
+                    ->and($this->testedInstance->setName(uniqid()))
                     ->and($this->testedInstance->populate())
                     ->and($this->testedInstance->save())
                     ->then
                         ->mock($client)
                             ->call('request')
                                 ->withAtLeastArguments(['POST'])
+                                    ->never
+
+                            ->call('request')
+                                ->withAtLeastArguments(['PATCH'])
                                     ->never
 
                 ->assert('An email or a phone number is required')

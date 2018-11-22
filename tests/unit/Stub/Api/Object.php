@@ -953,13 +953,14 @@ class Object extends atoum
                 ])
                 ->and($options['timeout'] = $config->getTimeout())
                 ->and($options['body'] = json_encode($this->testedInstance))
+                ->and($location = $this->testedInstance->getUri())
                 ->then
                     ->object($this->testedInstance->save())
                         ->isTestedInstance
 
                     ->mock($client)
                         ->call('request')
-                            ->withArguments('POST', $this->testedInstance->getUri(), $options)
+                            ->withArguments('POST', $location, $options)
                                 ->once
         ;
     }

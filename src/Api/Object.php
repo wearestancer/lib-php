@@ -512,7 +512,7 @@ abstract class Object implements JsonSerializable
     {
         if ($this->id && $this->getEndpoint() && (!$this->populated || $this->modified)) {
             $request = new Request();
-            $response = $request->get($this, $this->id);
+            $response = $request->get($this);
             $body = json_decode($response, true);
             $this->hydrate($body);
 
