@@ -789,9 +789,13 @@ class Object extends atoum
     public function testToArray()
     {
         $this
-            ->given($this->newTestedInstance)
+            ->given($object2 = $this->newTestedInstance)
+            ->and($object2->setString1($this->makeStringBetween(10, 20)))
+
+            ->if($this->newTestedInstance)
             ->and($this->testedInstance->setCamelCaseProperty($camelCase = uniqid()))
             ->and($this->testedInstance->forceRestricted1($restricted = uniqid()))
+            ->and($this->testedInstance->setObject2($object2))
             ->then
                 ->array($this->testedInstance->toArray())
                     ->notHasKey('restricted1')
@@ -800,6 +804,10 @@ class Object extends atoum
                     ->hasKey('camel_case_property')
                     ->string['camel_case_property']
                         ->isIdenticalTo($camelCase)
+
+                    ->hasKey('object2')
+                    ->object['object2']
+                        ->isIdenticalTo($object2)
         ;
     }
 
