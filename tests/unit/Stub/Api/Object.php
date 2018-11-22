@@ -938,28 +938,77 @@ class Object extends atoum
         ;
     }
 
-    public function testToString()
+    public function testToString_toJson_castToString()
     {
         $this
-            ->stop('Will be rewrite')
-            ->given($this->newTestedInstance)
-            ->and($card1 = new ild78\Card(uniqid()))
-            ->and($card2 = new ild78\Card())
-            ->and($card2->setNumber('4111 1111 1111 1111'))
-            ->and($this->testedInstance->setArray3([$card1, $card2]))
+            ->given($object1 = $this->newTestedInstance) // Unmodified / Got id and string1
+            ->and($object2 = $this->newTestedInstance)   // Modified   / Got id and string1
+            ->and($object3 = $this->newTestedInstance)   // Modified   / Got string1
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->addArray4($object1))
+            ->and($this->testedInstance->addArray4($object2))
+            ->and($this->testedInstance->addArray4($object3))
+
+            ->and($this->testedInstance->setCamelCaseProperty($camelCase = uniqid()))
+            ->and($this->testedInstance->forceRestricted1($restricted = uniqid()))
+            ->and($this->testedInstance->setString1($this->makeStringBetween(10, 20)))
+
+            ->and($object1->setString1($this->makeStringBetween(10, 20)))
+            ->and($object2->setString1($this->makeStringBetween(10, 20)))
+            ->and($object3->setString1($this->makeStringBetween(10, 20)))
+
+            ->and($this->testedInstance->testOnlySetId(uniqid()))
+            ->and($object1->testOnlySetId(uniqid()))
+            ->and($object2->testOnlySetId(uniqid()))
+
+            ->and($this->testedInstance->testOnlySetModified(true))
+            ->and($object1->testOnlySetModified(false))
+            ->and($object2->testOnlySetModified(true))
+            ->and($object3->testOnlySetModified(true))
+
             ->then
-                ->json($json = $this->testedInstance->toString())
+                ->json($json = $this->testedInstance->toJson())
+                    ->isIdenticalTo($this->testedInstance->toString())
+                    ->isIdenticalTo(json_encode($this->testedInstance))
+                    ->isIdenticalTo((string) $this->testedInstance)
 
                 ->array(json_decode($json, true))
-                    ->child['array3'](function ($child) use ($card1, $card2) {
-                        $child
-                            ->string[0]
-                                ->isIdenticalTo($card1->getId())
+                    ->notHasKeys(['id', 'camelCaseProperty', 'restricted1'])
 
-                            ->child[1](function ($crd) use ($card2) {
-                                $crd
-                                    ->string['number']
-                                        ->isIdenticalTo($card2->getNumber())
+                    ->hasKeys(['string1', 'camel_case_property', 'array4'])
+
+                    ->string['string1']
+                        ->isIdenticalTo($this->testedInstance->getString1())
+
+                    ->string['camel_case_property']
+                        ->isIdenticalTo($this->testedInstance->getCamelCaseProperty())
+
+                    ->child['array4'](function ($array4) use ($object1, $object2, $object3) {
+                        $array4
+                            ->hasSize(3)
+
+                            // $object1
+                            ->string[0]
+                                ->isIdenticalTo($object1->getId())
+
+                            // $object2
+                            ->child[1](function ($child) use ($object2) {
+                                $child
+                                    ->notHasKey('id')
+
+                                    ->string['string1']
+                                        ->isIdenticalTo($object2->getString1())
+                                ;
+                            })
+
+                            // $object3
+                            ->child[2](function ($child) use ($object3) {
+                                $child
+                                    ->notHasKey('id')
+
+                                    ->string['string1']
+                                        ->isIdenticalTo($object3->getString1())
                                 ;
                             })
                         ;
