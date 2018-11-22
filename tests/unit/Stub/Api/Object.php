@@ -530,8 +530,8 @@ class Object extends atoum
                 'array3' => [],
             ]))
             ->and($object = $this->newTestedInstance)
-            ->and($object->testOnlySetUpdated(false))
-            ->and($updatedPropagation = [
+            ->and($object->testOnlySetPopulated(false))
+            ->and($populatedPropagation = [
                 'object2' => $object,
             ])
 
@@ -567,20 +567,20 @@ class Object extends atoum
                     ->array($this->testedInstance->getArray3())
                         ->isEmpty
 
-                ->assert('Hydratation will pass updated flag')
-                    ->boolean($object->testOnlyGetUpdated())
-                        ->isIdenticalTo($this->testedInstance->testOnlyGetUpdated())
+                ->assert('Hydratation will pass populated flag')
+                    ->boolean($object->testOnlyGetPopulated())
+                        ->isIdenticalTo($this->testedInstance->testOnlyGetPopulated())
                         ->isFalse
 
-                    ->object($this->testedInstance->testOnlySetUpdated(true)->hydrate($updatedPropagation))
+                    ->object($this->testedInstance->testOnlySetPopulated(true)->hydrate($populatedPropagation))
                         ->isTestedInstance
 
                     ->object($this->testedInstance->getObject2())
                         ->isInstanceOfTestedClass
                         ->isIdenticalTo($object)
 
-                    ->boolean($object->testOnlyGetUpdated())
-                        ->isIdenticalTo($this->testedInstance->testOnlyGetUpdated())
+                    ->boolean($object->testOnlyGetPopulated())
+                        ->isIdenticalTo($this->testedInstance->testOnlyGetPopulated())
                         ->isTrue
         ;
     }

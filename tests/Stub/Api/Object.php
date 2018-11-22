@@ -90,14 +90,14 @@ class Object extends ild78\Api\Object
         return $this;
     }
 
-    public function testOnlyGetUpdated() : bool
+    public function testOnlyGetPopulated() : bool
     {
-        return $this->updated;
+        return $this->populated;
     }
 
-    public function testOnlySetUpdated(bool $updated) : self
+    public function testOnlySetPopulated(bool $populated) : self
     {
-        $this->updated = $updated;
+        $this->populated = $populated;
 
         return $this;
     }

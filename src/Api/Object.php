@@ -32,7 +32,7 @@ abstract class Object implements JsonSerializable
     protected $created;
 
     /** @var boolean */
-    protected $updated = false;
+    protected $populated = false;
 
     /** @var boolean */
     protected $modified = true;
@@ -223,7 +223,7 @@ abstract class Object implements JsonSerializable
 
         $value = $this->dataModel[$property]['value'];
 
-        if (is_null($value) && $this->id && !$this->updated) {
+        if (is_null($value) && $this->id && !$this->populated) {
             $value = $this->populate()->dataModel[$property]['value'];
         }
 
@@ -290,7 +290,7 @@ abstract class Object implements JsonSerializable
     {
         $date = $this->created;
 
-        if (is_null($date) && $this->id && !$this->updated) {
+        if (is_null($date) && $this->id && !$this->populated) {
             $date = $this->populate()->created;
         }
 
@@ -398,7 +398,7 @@ abstract class Object implements JsonSerializable
                 }
 
                 if (is_object($this->dataModel[$property]['value'])) {
-                    $this->dataModel[$property]['value']->updated = $this->updated;
+                    $this->dataModel[$property]['value']->populated = $this->populated;
                 }
             }
         }
@@ -445,13 +445,13 @@ abstract class Object implements JsonSerializable
      */
     public function populate() : self
     {
-        if ($this->id && $this->getEndpoint() && (!$this->updated || $this->modified)) {
+        if ($this->id && $this->getEndpoint() && (!$this->populated || $this->modified)) {
             $request = new Request();
             $response = $request->get($this, $this->id);
             $body = json_decode($response, true);
             $this->hydrate($body);
 
-            $this->updated = true;
+            $this->populated = true;
             $this->modified = false;
         }
 
@@ -502,7 +502,7 @@ abstract class Object implements JsonSerializable
             $body = json_decode($response, true);
             $this->hydrate($body);
 
-            $this->updated = true;
+            $this->populated = true;
             $this->modified = false;
         }
 
