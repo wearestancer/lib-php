@@ -585,6 +585,86 @@ class Object extends atoum
         ;
     }
 
+    public function testJsonSerialize()
+    {
+        $this
+            ->given($object2 = $this->newTestedInstance(uniqid()))
+            ->and($object2->setString1($this->makeStringBetween(10, 20)))
+
+            ->if($this->newTestedInstance($id = uniqid()))
+            ->and($this->testedInstance->setCamelCaseProperty($camelCase = uniqid()))
+            ->and($this->testedInstance->forceRestricted1($restricted = uniqid()))
+            ->and($this->testedInstance->setObject2($object2))
+            ->then
+                ->assert('An unmodified object with an ID should return only the ID')
+                    ->if($this->testedInstance->testOnlySetModified(false))
+                    ->and($object2->testOnlySetModified(false))
+                    ->then
+                        ->string($this->testedInstance->jsonSerialize())
+                            ->isIdenticalTo($id)
+
+                ->assert('A modified object with an ID return a body (without id)')
+                    ->if($this->testedInstance->testOnlySetModified(true))
+                    ->and($object2->testOnlySetModified(false))
+                    ->then
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->notHasKey('id')
+
+                            ->notHasKey('camelCaseProperty') // camelCase properties has converted to snake_case
+                            ->hasKey('camel_case_property')
+                            ->string['camel_case_property']
+                                ->isIdenticalTo($camelCase)
+
+                            ->hasKey('object2')
+                            ->string['object2']
+                                ->isIdenticalTo($object2->getId()) // object2 is not modified
+
+                ->assert('A modified object with another modified object in it should return both body (without ids)')
+                    ->if($this->testedInstance->testOnlySetModified(true))
+                    ->and($object2->testOnlySetModified(true))
+                    ->then
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->notHasKey('id')
+
+                            ->notHasKey('camelCaseProperty') // camelCase properties has converted to snake_case
+                            ->hasKey('camel_case_property')
+                            ->string['camel_case_property']
+                                ->isIdenticalTo($camelCase)
+
+                            ->hasKey('object2')
+                            ->child['object2'](function ($child) use ($object2) {
+                                $child
+                                    ->notHasKey('id')
+
+                                    ->string['string1']
+                                        ->isIdenticalTo($object2->getString1())
+                                ;
+                            })
+
+                ->assert('A unmodified object with another modified object in it should return both body too (without ids)')
+                    ->if($this->testedInstance->testOnlySetModified(false))
+                    ->and($object2->testOnlySetModified(true))
+                    ->then
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->notHasKey('id')
+
+                            ->notHasKey('camelCaseProperty') // camelCase properties has converted to snake_case
+                            ->hasKey('camel_case_property')
+                            ->string['camel_case_property']
+                                ->isIdenticalTo($camelCase)
+
+                            ->hasKey('object2')
+                            ->child['object2'](function ($child) use ($object2) {
+                                $child
+                                    ->notHasKey('id')
+
+                                    ->string['string1']
+                                        ->isIdenticalTo($object2->getString1())
+                                ;
+                            })
+        ;
+    }
+
     public function testPopulate()
     {
         $this
@@ -814,6 +894,7 @@ class Object extends atoum
     public function testToString()
     {
         $this
+            ->stop('Will be rewrite')
             ->given($this->newTestedInstance)
             ->and($card1 = new ild78\Card(uniqid()))
             ->and($card2 = new ild78\Card())

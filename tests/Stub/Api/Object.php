@@ -95,6 +95,13 @@ class Object extends ild78\Api\Object
         return $this->populated;
     }
 
+    public function testOnlySetModified(bool $modified) : self
+    {
+        $this->modified = $modified;
+
+        return $this;
+    }
+
     public function testOnlySetPopulated(bool $populated) : self
     {
         $this->populated = $populated;

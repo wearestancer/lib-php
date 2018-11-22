@@ -410,26 +410,37 @@ abstract class Object implements JsonSerializable
      * Return a array representation of the current object for a convertion as JSON.
      *
      * @uses self::toArray()
-     * @return string
+     * @return string|array
      */
-    public function jsonSerialize() : array
+    public function jsonSerialize()
     {
         $struct = $this->toArray();
+        $isModified = $this->modified;
 
         foreach ($struct as $prop => &$value) {
             $type = gettype($value);
 
-            if ($type === 'object' && $value->getId()) {
-                $value = $value->getId();
+            if ($type === 'object') {
+                $isModified |= $value->modified;
+                $value = $value->jsonSerialize();
             }
 
             if ($type === 'array') {
                 foreach ($value as &$val) {
-                    if (gettype($val) === 'object' && $val->getId()) {
-                        $val = $val->getId();
+                    if (gettype($val) === 'object') {
+                        $isModified |= $val->modified;
+                        $val = $val->jsonSerialize();
                     }
                 }
             }
+        }
+
+        if ($this->getId() && !$isModified) {
+            return $this->getId();
+        }
+
+        if (array_key_exists('id', $struct)) {
+            unset($struct['id']);
         }
 
         return $struct;
