@@ -90,6 +90,13 @@ class Object extends ild78\Api\Object
         return $this;
     }
 
+    public function testOnlySetId(string $value) : self
+    {
+        $this->id = $value;
+
+        return $this;
+    }
+
     public function testOnlyGetUpdated() : bool
     {
         return $this->updated;
