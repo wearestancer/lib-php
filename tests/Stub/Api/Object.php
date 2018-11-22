@@ -80,12 +80,23 @@ class Object extends ild78\Api\Object
             'list' => true,
             'type' => ild78\Card::class,
         ],
+        'array4' => [
+            'list' => true,
+            'type' => self::class,
+        ],
     ];
 
     // Test only methods
     public function forceRestricted1(string $value) : self
     {
         $this->dataModel['restricted1']['value'] = $value;
+
+        return $this;
+    }
+
+    public function testOnlySetId(string $id) : self
+    {
+        $this->id = $id;
 
         return $this;
     }

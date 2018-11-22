@@ -662,6 +662,53 @@ class Object extends atoum
                                         ->isIdenticalTo($object2->getString1())
                                 ;
                             })
+
+                ->assert('Same test (unmodified object with modified in it) but with a list of objects')
+                    ->if($object2 = $this->newTestedInstance)
+                    ->and($object3 = $this->newTestedInstance)
+
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->addArray4($object2))
+                    ->and($this->testedInstance->addArray4($object3))
+
+                    ->and($this->testedInstance->testOnlySetId(uniqid()))
+
+                    ->and($object2->testOnlySetId(uniqid()))
+                    ->and($object2->setString1($this->makeStringBetween(10, 20)))
+
+                    ->and($object3->testOnlySetId(uniqid()))
+                    ->and($object3->setString1($this->makeStringBetween(10, 20)))
+
+                    ->and($this->testedInstance->testOnlySetModified(false))
+                    ->and($object2->testOnlySetModified(false))
+                    ->and($object3->testOnlySetModified(true))
+                    ->then
+
+                        // Recap
+                        //  Tested instance is not modified and contains only data in array4
+                        //  Object 2 is not modified and will return only an id
+                        //  Object 3 is modified, so it will return a body
+                        //
+                        //  Object 2 and 3 have data on string1
+                        //
+                        //  All have ids
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->notHasKey('id')
+
+                            ->hasKey('array4')
+                            ->child['array4'](function ($array4) use ($object2, $object3) {
+                                $array4
+                                    ->string[0]
+                                        ->isIdenticalTo($object2->getId())
+
+                                    ->array[1]
+                                        ->notHasKey('id')
+
+                                        ->string['string1']
+                                            ->isIdenticalTo($object3->getString1())
+                                ;
+                            })
         ;
     }
 
