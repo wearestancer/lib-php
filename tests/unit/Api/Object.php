@@ -216,10 +216,26 @@ class Object extends atoum
     {
         $this
             ->given($config = Api\Config::init(uniqid()))
-            ->and($this->newTestedInstance)
-            ->then
-                ->string($this->testedInstance->getUri())
-                    ->isIdenticalTo($config->getUri() . $this->testedInstance->getEndpoint())
+            ->assert('No id')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->string($this->testedInstance->getUri())
+                        ->isIdenticalTo($config->getUri() . $this->testedInstance->getEndpoint())
+
+            ->assert('With an id')
+                ->if($id = uniqid())
+                ->and($this->newTestedInstance($id))
+                ->and($tmp = [
+                    $config->getUri(),
+                    $this->testedInstance->getEndpoint(),
+                    $this->testedInstance->getId(),
+                ])
+                ->and($uri = implode('/', array_map(function ($v) {
+                    return trim($v, '/');
+                }, $tmp)))
+                ->then
+                    ->string($this->testedInstance->getUri())
+                        ->isIdenticalTo($uri)
         ;
     }
 

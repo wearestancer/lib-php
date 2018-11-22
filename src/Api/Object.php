@@ -345,7 +345,20 @@ abstract class Object implements JsonSerializable
      */
     public function getUri() : string
     {
-        return Config::getGlobal()->getUri() . $this->getEndpoint();
+        $tmp = [
+            Config::getGlobal()->getUri(),
+            $this->getEndpoint(),
+        ];
+
+        if ($this->getId()) {
+            $tmp[] = $this->getId();
+        }
+
+        $trim = function ($value) {
+            return trim($value, '/');
+        };
+
+        return implode('/', array_map($trim, $tmp));
     }
 
     /**
