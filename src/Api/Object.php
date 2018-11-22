@@ -517,26 +517,30 @@ abstract class Object implements JsonSerializable
     public function toArray() : array
     {
         $json = [];
-        $id = $this->getId();
-
-        if ($id && !$this->updated) {
-            return ['id' => $id];
-        }
+        $data = [
+            'id' => [
+                'restricted' => false,
+                'value' => $this->id,
+            ],
+        ];
+        $data = array_merge($data, $this->dataModel);
 
         $replace = function ($matches) {
             return '_' . strtolower($matches[0]);
         };
 
-        foreach ($this->dataModel as $property => $infos) {
+        foreach ($data as $property => $infos) {
             $value = $infos['value'];
 
             if ($value !== null && !$infos['restricted']) {
                 $prop = preg_replace_callback('`[A-Z]`', $replace, $property);
 
-                $json[$prop] = $value;
+                if ($prop !== 'endpoint') {
+                    $json[$prop] = $value;
 
-                if ($value instanceof DateTime) {
-                    $json[$prop] = (int) $value->format('U');
+                    if ($value instanceof DateTime) {
+                        $json[$prop] = (int) $value->format('U');
+                    }
                 }
             }
         }

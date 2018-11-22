@@ -793,40 +793,13 @@ class Object extends atoum
             ->and($this->testedInstance->setCamelCaseProperty($camelCase = uniqid()))
             ->and($this->testedInstance->forceRestricted1($restricted = uniqid()))
             ->then
-                ->assert('Default return')
-                    ->array($this->testedInstance->toArray())
-                        ->notHasKey('restricted1')
+                ->array($this->testedInstance->toArray())
+                    ->notHasKey('restricted1')
 
-                        ->notHasKey('camelCaseProperty')
-                        ->hasKey('camel_case_property')
-                        ->string['camel_case_property']
-                            ->isIdenticalTo($camelCase)
-
-                ->assert('An unmodified object with an ID should return only the ID')
-                    ->object($this->testedInstance->testOnlySetId($id = uniqid())->testOnlySetUpdated(false))
-                        ->isTestedInstance
-
-                    ->array($this->testedInstance->toArray())
-                        ->notHasKey('restricted1')
-
-                        ->notHasKey('camel_case_property')
-
-                        ->hasKey('id')
-                        ->string['id']
-                            ->isIdenticalTo($id)
-
-                ->assert('A modified object with an ID should return the body (without id)')
-                    ->object($this->testedInstance->testOnlySetUpdated(true))
-                        ->isTestedInstance
-
-                    ->array($this->testedInstance->toArray())
-                        ->notHasKey('restricted1')
-
-                        ->notHasKey('id')
-
-                        ->hasKey('camel_case_property')
-                        ->string['camel_case_property']
-                            ->isIdenticalTo($camelCase)
+                    ->notHasKey('camelCaseProperty')
+                    ->hasKey('camel_case_property')
+                    ->string['camel_case_property']
+                        ->isIdenticalTo($camelCase)
         ;
     }
 
