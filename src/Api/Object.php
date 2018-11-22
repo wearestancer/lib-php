@@ -563,7 +563,13 @@ abstract class Object implements JsonSerializable
             }
 
             $request = new Request();
-            $response = $request->post($this);
+
+            if ($this->getId() && $this->isModified()) {
+                $response = $request->patch($this);
+            } else {
+                $response = $request->post($this);
+            }
+
             $body = json_decode($response, true);
             $this->hydrate($body);
 

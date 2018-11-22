@@ -831,7 +831,7 @@ class Object extends atoum
 
                     ->mock($client)
                         ->call('request')
-                            ->withArguments('POST')
+                            ->withArguments('PATCH')
                                 ->once
 
                             ->withArguments('GET')

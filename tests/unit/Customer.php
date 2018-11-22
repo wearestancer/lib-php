@@ -161,6 +161,88 @@ class Customer extends atoum
         ;
     }
 
+    public function testSave_forUpdate()
+    {
+        $this
+            ->given($config = Api\Config::init(uniqid()))
+            ->and($client = new mock\ild78\Http\Client)
+            ->and($config->setHttpClient($client))
+
+            ->then
+                ->assert('Modify a fresh and not populated instance, will send only known data')
+                    ->if($response = new mock\ild78\Http\Response(200))
+                    ->and($this->calling($response)->getBody = '{}')
+                    ->and($this->calling($client)->request = $response)
+
+                    ->if($this->newTestedInstance(uniqid()))
+                    ->and($name = uniqid())
+                    ->and($this->testedInstance->setName($name))
+
+                    ->and($options = [
+                        'body' => json_encode(['name' => $name]),
+                        'headers' => [
+                            'Authorization' => $config->getBasicAuthHeader(),
+                            'Content-Type' => 'application/json',
+                        ],
+                        'timeout' => $config->getTimeout(),
+                    ])
+
+                    ->then
+                        ->object($this->testedInstance->save())
+                            ->isTestedInstance
+
+                        ->mock($client)
+                            ->call('request')
+                                ->withArguments('PATCH', $this->testedInstance->getUri(), $options)
+                                    ->once
+
+                ->assert('Modify a populated instance will send everything known')
+                    ->if($response = new mock\ild78\Http\Response(200))
+                    ->and($body = file_get_contents(__DIR__ . '/fixtures/customers/read.json'))
+                    ->and($this->calling($response)->getBody[] = $body) // default response
+                    ->and($this->calling($response)->getBody[2] = '{}')
+                    ->and($this->calling($client)->request = $response)
+
+                    ->if($this->newTestedInstance(uniqid()))
+                    ->and($name = str_rot13($this->testedInstance->getName()))
+                    ->and($this->testedInstance->setName($name))
+
+                    ->and($body = json_decode($body, true))
+
+                    ->and($options = [
+                        'body' => json_encode([
+                            'email' => $body['email'],
+                            'mobile' => $body['mobile'],
+                            'name' => $name,
+                        ]),
+                        'headers' => [
+                            'Authorization' => $config->getBasicAuthHeader(),
+                            'Content-Type' => 'application/json',
+                        ],
+                        'timeout' => $config->getTimeout(),
+                    ])
+
+                    ->then
+                        ->object($this->testedInstance->save())
+                            ->isTestedInstance
+
+                        ->mock($client)
+                            ->call('request')
+                                ->withArguments('PATCH', $this->testedInstance->getUri(), $options)
+                                    ->once
+
+                ->assert('Unmodified instance will not trigger an update')
+                    ->if($this->newTestedInstance(uniqid()))
+                    ->then
+                        ->object($this->testedInstance->save())
+                            ->isTestedInstance
+
+                        ->mock($client)
+                            ->call('request')
+                                ->never
+        ;
+    }
+
     public function testSetEmail()
     {
         $this
