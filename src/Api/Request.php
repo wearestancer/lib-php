@@ -107,7 +107,6 @@ class Request
             ild78\Interfaces\HttpClientInterface::GET,
             ild78\Interfaces\HttpClientInterface::PATCH,
             ild78\Interfaces\HttpClientInterface::POST,
-            ild78\Interfaces\HttpClientInterface::PUT,
         ];
 
         if (!in_array(strtoupper($method), $allowedMethods, true)) {

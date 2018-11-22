@@ -61,7 +61,7 @@ class Request extends atoum
                 ->and($config->setHttpClient($client))
 
                 ->if($object = new mock\ild78\Api\Object)
-                ->and($method = 'PUT')
+                ->and($method = 'POST')
 
                 ->if($logger = new mock\ild78\Api\Logger)
                 ->and($config->setLogger($logger))
@@ -164,7 +164,7 @@ class Request extends atoum
                 ->and($config->setHttpClient($client))
 
                 ->if($object = new mock\ild78\Api\Object)
-                ->and($method = 'PUT')
+                ->and($method = 'POST')
 
                 ->if($logger = new mock\ild78\Api\Logger)
                 ->and($config->setLogger($logger))
