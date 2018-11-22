@@ -585,6 +585,57 @@ class Object extends atoum
         ;
     }
 
+    public function testIsModified_isNotModified()
+    {
+        $this
+            ->given($object1 = $this->newTestedInstance)
+            ->and($object2 = $this->newTestedInstance)
+            ->and($object3 = $this->newTestedInstance)
+            ->and($this->newTestedInstance)
+            ->then
+                ->assert('Should return internal state')
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
+
+                    ->boolean($this->testedInstance->isNotModified())
+                        ->isTrue
+
+                    ->boolean($this->testedInstance->testOnlySetModified(true)->isModified())
+                        ->isTrue
+
+                    ->boolean($this->testedInstance->isNotModified())
+                        ->isFalse
+
+                ->assert('Should false if an object in one property is modified')
+                    ->if($this->testedInstance->setObject2($object1))
+                    ->and($object1->testOnlySetModified(true))
+                    ->and($this->testedInstance->testOnlySetModified(false))
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
+                    ->boolean($this->testedInstance->isNotModified())
+                        ->isFalse
+
+                ->assert('Should false if an object in a list is modified')
+                    ->if($this->testedInstance->addArray4($object2))
+                    ->and($this->testedInstance->addArray4($object3))
+                    ->and($this->testedInstance->testOnlySetModified(false))
+
+                    ->and($object1->testOnlySetModified(false)) // Be sure last test won't interfere
+
+                    // randomise which one is modified
+                    ->and($object2->testOnlySetModified((bool) rand(1, 10) % 2))
+                    ->and($object3->testOnlySetModified(!$object2->isModified()))
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
+                    ->boolean($this->testedInstance->isNotModified())
+                        ->isFalse
+        ;
+    }
+
     public function testJsonSerialize()
     {
         $this

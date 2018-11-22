@@ -35,7 +35,7 @@ abstract class Object implements JsonSerializable
     protected $populated = false;
 
     /** @var boolean */
-    protected $modified = true;
+    protected $modified = false;
 
     /** @var array */
     protected $aliases = [];
@@ -407,6 +407,50 @@ abstract class Object implements JsonSerializable
     }
 
     /**
+     * Indicate if the current object is modified
+     *
+     * This exists only to perform a deeper search into the current object to find inner updated object.
+     *
+     * @return boolean
+     */
+    public function isModified() : bool
+    {
+        if ($this->modified) {
+            return true;
+        }
+
+        $struct = $this->toArray();
+
+        foreach ($struct as $prop => $value) {
+            $type = gettype($value);
+
+            if ($type === 'object' && $value->modified) {
+                return true;
+            }
+
+            if ($type === 'array') {
+                foreach ($value as $val) {
+                    if (gettype($val) === 'object' && $val->modified) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Indicate if the current object is not modified
+     *
+     * @return boolean
+     */
+    public function isNotModified() : bool
+    {
+        return !$this->isModified();
+    }
+
+    /**
      * Return a array representation of the current object for a convertion as JSON.
      *
      * @uses self::toArray()
@@ -414,29 +458,26 @@ abstract class Object implements JsonSerializable
      */
     public function jsonSerialize()
     {
+        if ($this->getId() && $this->isNotModified()) {
+            return $this->getId();
+        }
+
         $struct = $this->toArray();
-        $isModified = $this->modified;
 
         foreach ($struct as $prop => &$value) {
             $type = gettype($value);
 
             if ($type === 'object') {
-                $isModified |= $value->modified;
                 $value = $value->jsonSerialize();
             }
 
             if ($type === 'array') {
                 foreach ($value as &$val) {
                     if (gettype($val) === 'object') {
-                        $isModified |= $val->modified;
                         $val = $val->jsonSerialize();
                     }
                 }
             }
-        }
-
-        if ($this->getId() && !$isModified) {
-            return $this->getId();
         }
 
         if (array_key_exists('id', $struct)) {
