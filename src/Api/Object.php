@@ -536,10 +536,6 @@ abstract class Object implements JsonSerializable
                 $prop = preg_replace_callback('`[A-Z]`', $replace, $property);
 
                 $json[$prop] = $value;
-
-                if ($value instanceof DateTime) {
-                    $json[$prop] = (int) $value->format('U');
-                }
             }
         }
 
