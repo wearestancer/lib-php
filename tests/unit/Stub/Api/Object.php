@@ -836,7 +836,7 @@ class Object extends atoum
             ->given($this->newTestedInstance)
             ->and($card1 = new ild78\Card(uniqid()))
             ->and($card2 = new ild78\Card())
-            ->and($card2->setNumber($number = '4111 1111 1111 1111'))
+            ->and($card2->setNumber('4111 1111 1111 1111'))
             ->and($this->testedInstance->setArray3([$card1, $card2]))
             ->then
                 ->json($json = $this->testedInstance->toString())
