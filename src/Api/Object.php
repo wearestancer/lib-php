@@ -535,12 +535,10 @@ abstract class Object implements JsonSerializable
             if ($value !== null && !$infos['restricted']) {
                 $prop = preg_replace_callback('`[A-Z]`', $replace, $property);
 
-                if ($prop !== 'endpoint') {
-                    $json[$prop] = $value;
+                $json[$prop] = $value;
 
-                    if ($value instanceof DateTime) {
-                        $json[$prop] = (int) $value->format('U');
-                    }
+                if ($value instanceof DateTime) {
+                    $json[$prop] = (int) $value->format('U');
                 }
             }
         }
