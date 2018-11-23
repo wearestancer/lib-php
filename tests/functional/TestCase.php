@@ -42,9 +42,18 @@ class TestCase extends atoum
 
     public function getRandomNumber()
     {
-        $number = '+33' . (rand(0, 1) + 6); // Simulate a french mobile phone number
+        // Simulate a french mobile phone number
+        $first = rand(0, 1) + 6;
+        $loop = 4;
 
-        for ($idx = 0; $idx < 4; $idx++) {
+        $number = '+33' . $first;
+
+        if ($first === 7) {
+            $number .= str_pad(rand(30, 99), 2, '0');
+            $loop--;
+        }
+
+        for ($idx = 0; $idx < $loop; $idx++) {
             $number .= str_pad(rand(0, 99), 2, '0');
         }
 
