@@ -84,4 +84,41 @@ class Customer extends TestCase
                         ->isNotEmpty
         ;
     }
+
+    public function testUpdate()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($this->testedInstance->setMobile($this->getRandomNumber()))
+            ->and($this->testedInstance->save())
+
+            ->and($id = $this->testedInstance->getId())
+
+            ->and($rand = uniqid())
+            ->and($newName = 'John Doe (' . $rand . ')')
+            ->and($newEmail = 'john.doe+' . $rand . '@example.com')
+            ->and($newMobile = $this->getRandomNumber())
+            ->then
+                ->assert('Change name')
+                    ->object($this->testedInstance->setName($newName)->save())
+                        ->isTestedInstance
+
+                    ->string($this->newTestedInstance($id)->getName())
+                        ->isIdenticalTo($newName)
+
+                ->assert('Change email')
+                    ->object($this->testedInstance->setEmail($newEmail)->save())
+                        ->isTestedInstance
+
+                    ->string($this->newTestedInstance($id)->getEmail())
+                        ->isIdenticalTo($newEmail)
+
+                ->assert('Change mobile phone number')
+                    ->object($this->testedInstance->setMobile($newMobile)->save())
+                        ->isTestedInstance
+
+                    ->string($this->newTestedInstance($id)->getMobile())
+                        ->isIdenticalTo($newMobile)
+        ;
+    }
 }
