@@ -23,7 +23,9 @@ class Request
      */
     public function get(Object $object) : string
     {
-        return $this->request(ild78\Interfaces\HttpClientInterface::GET, $object);
+        $verb = new ild78\Http\Verb\Get();
+
+        return $this->request($verb, $object);
     }
 
     /**
@@ -36,8 +38,9 @@ class Request
     public function patch(Object $object) : string
     {
         $options = ['body' => json_encode($object)];
+        $verb = new ild78\Http\Verb\Patch();
 
-        return $this->request(ild78\Interfaces\HttpClientInterface::PATCH, $object, $options);
+        return $this->request($verb, $object, $options);
     }
 
     /**
@@ -50,8 +53,9 @@ class Request
     public function post(Object $object) : string
     {
         $options = ['body' => json_encode($object)];
+        $verb = new ild78\Http\Verb\Post();
 
-        return $this->request(ild78\Interfaces\HttpClientInterface::POST, $object, $options);
+        return $this->request($verb, $object, $options);
     }
 
     /**
@@ -64,8 +68,9 @@ class Request
     public function put(Object $object) : string
     {
         $options = ['body' => json_encode($object)];
+        $verb = new ild78\Http\Verb\Put();
 
-        return $this->request(ild78\Interfaces\HttpClientInterface::PUT, $object, $options);
+        return $this->request($verb, $object, $options);
     }
 
     /**
@@ -87,11 +92,11 @@ class Request
      * Make a call to API
      *
      * @uses ild78\Api\Config
-     * @param string $method HTTP verb for the call. Use one of class constant.
+     * @param ild78\Http\Verb\AbstractVerb $verb HTTP verb for the call.
      * @param ild78\Api\Object $object Object.
      * @param array $options Guzzle options.
      * @return string
-     * @throws ild78\Exceptions\InvalidArgumentException When calling with unsupported method.
+     * @throws ild78\Exceptions\InvalidArgumentException When calling with unsupported verb.
      * @throws ild78\Exceptions\TooManyRedirectsException On too many redirection case (HTTP 310).
      * @throws ild78\Exceptions\NotAuthorizedException On credential problem (HTTP 401).
      * @throws ild78\Exceptions\NotFoundException If an `id` is provided but it seems unknonw (HTTP 404).
@@ -99,22 +104,17 @@ class Request
      * @throws ild78\Exceptions\ServerException On HTTP 5** errors.
      * @throws ild78\Exceptions\Exception On every over exception.
      */
-    public function request(string $method, Object $object, array $options = []) : string
+    public function request(ild78\Http\Verb\AbstractVerb $verb, Object $object, array $options = []) : string
     {
         $config = Config::getGlobal();
         $client = $config->getHttpClient();
         $logger = $config->getLogger();
 
-        $allowedMethods = [
-            ild78\Interfaces\HttpClientInterface::GET,
-            ild78\Interfaces\HttpClientInterface::PATCH,
-            ild78\Interfaces\HttpClientInterface::POST,
-        ];
+        if ($verb->isNotAllowed()) {
+            $message = sprintf('HTTP verb "%s" unsupported', (string) $verb);
+            $logger->error($message);
 
-        if (!in_array(strtoupper($method), $allowedMethods, true)) {
-            $logger->error(sprintf('Unknown HTTP verb "%s"', $method));
-
-            throw new ild78\Exceptions\InvalidArgumentException(sprintf('Method "%s" unsupported', $method));
+            throw new ild78\Exceptions\InvalidArgumentException($message);
         }
 
         if (!array_key_exists('headers', $options)) {
@@ -132,8 +132,8 @@ class Request
         $excepParams = [];
 
         try {
-            $logger->debug(sprintf('API call : %s %s', strtoupper($method), $object->getUri()));
-            $response = $client->request(strtoupper($method), $object->getUri(), $options);
+            $logger->debug(sprintf('API call : %s %s', (string) $verb, $object->getUri()));
+            $response = $client->request((string) $verb, $object->getUri(), $options);
 
         // Bypass for internal exceptions.
         } catch (ild78\Exceptions\Exception $exception) {

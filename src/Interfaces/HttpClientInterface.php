@@ -9,11 +9,6 @@ use Psr;
  */
 interface HttpClientInterface
 {
-    const GET = 'GET';
-    const POST = 'POST';
-    const PATCH = 'PATCH';
-    const PUT = 'PUT';
-
     /**
      * Create and send an HTTP request.
      *

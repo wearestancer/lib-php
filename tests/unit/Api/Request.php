@@ -25,7 +25,7 @@ class Request extends atoum
             ->and($config->setHttpClient($client))
 
             ->if($this->newTestedInstance)
-            ->and($method = 'GET')
+            ->and($method = new ild78\Http\Verb\Get)
             ->and($object = new mock\ild78\Api\Object)
 
             ->if($logger = new mock\ild78\Api\Logger)
@@ -36,7 +36,7 @@ class Request extends atoum
                     ->isIdenticalTo($body)
                 ->mock($client)
                     ->call('request')
-                        ->withIdenticalArguments($method, $object->getUri())
+                        ->withIdenticalArguments((string) $method, $object->getUri())
                             ->once
                 ->mock($logger)
                     ->call('debug')->withArguments($debugMessage, [])->once
@@ -61,12 +61,12 @@ class Request extends atoum
                 ->and($config->setHttpClient($client))
 
                 ->if($object = new mock\ild78\Api\Object)
-                ->and($method = 'POST')
+                ->and($method = new ild78\Http\Verb\Post)
 
                 ->if($logger = new mock\ild78\Api\Logger)
                 ->and($config->setLogger($logger))
                 ->and($debugMessage = vsprintf('API call : %s %s', [
-                    $method,
+                    (string) $method,
                     $object->getUri(),
                 ]))
                 ->and($noticeMessage = vsprintf('HTTP 401 - Invalid credential : %s', [
@@ -94,20 +94,18 @@ class Request extends atoum
                 ->if($this->newTestedInstance)
                 ->and($this->function->curl_exec = uniqid())
                 ->and($object = new mock\ild78\Api\Object)
-                ->and($method = uniqid())
+                ->and($method = new mock\ild78\Http\Verb\AbstractVerb)
 
                 ->if($logger = new mock\ild78\Api\Logger)
                 ->and($config->setLogger($logger))
-                ->and($errorMessage = vsprintf('Unknown HTTP verb "%s"', [
-                    $method,
-                ]))
+                ->and($errorMessage = sprintf('HTTP verb "%s" unsupported', (string) $method))
                 ->then
                     ->exception(function () use ($method, $object) {
                         $this->testedInstance->request($method, $object);
                     })
                         ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
                         ->message
-                            ->contains($method)
+                            ->contains($errorMessage)
 
                     ->mock($logger)
                         ->call('debug')->never
@@ -134,7 +132,7 @@ class Request extends atoum
                 ->and($config->setHttpClient($client))
 
                 ->if($this->newTestedInstance)
-                ->and($method = 'GET')
+                ->and($method = new ild78\Http\Verb\Get)
                 ->and($object = new mock\ild78\Api\Object)
 
                 ->if($logger = new mock\ild78\Api\Logger)
@@ -146,7 +144,7 @@ class Request extends atoum
 
                     ->mock($client)
                         ->call('request')
-                            ->withIdenticalArguments($method, $object->getUri())
+                            ->withIdenticalArguments((string) $method, $object->getUri())
                                 ->once
 
                     ->mock($logger)
@@ -164,12 +162,12 @@ class Request extends atoum
                 ->and($config->setHttpClient($client))
 
                 ->if($object = new mock\ild78\Api\Object)
-                ->and($method = 'POST')
+                ->and($method = new ild78\Http\Verb\Post)
 
                 ->if($logger = new mock\ild78\Api\Logger)
                 ->and($config->setLogger($logger))
                 ->and($debugMessage = vsprintf('API call : %s %s', [
-                    $method,
+                    (string) $method,
                     $object->getUri(),
                 ]))
                 ->and($noticeMessage = vsprintf('HTTP 401 - Invalid credential : %s', [
@@ -199,12 +197,12 @@ class Request extends atoum
                 ->and($config->setHttpClient($client))
 
                 ->if($object = new mock\ild78\Api\Object)
-                ->and($method = 'GET')
+                ->and($method = new ild78\Http\Verb\Get)
 
                 ->if($logger = new mock\ild78\Api\Logger)
                 ->and($config->setLogger($logger))
                 ->and($debugMessage = vsprintf('API call : %s %s', [
-                    $method,
+                    (string) $method,
                     $config->getUri() . $object->getEndpoint(),
                 ]))
                 ->and($errorMessage = sprintf('Unknown error : %s', $exceptionMessage))
@@ -312,12 +310,12 @@ class Request extends atoum
                     ->and($config->setHttpClient($client))
 
                     ->if($object = new mock\ild78\Api\Object)
-                    ->and($method = 'GET')
+                    ->and($method = new ild78\Http\Verb\Get)
 
                     ->if($logger = new mock\ild78\Api\Logger)
                     ->and($config->setLogger($logger))
                     ->and($debugMessage = vsprintf('API call : %s %s', [
-                        $method,
+                        (string) $method,
                         $object->getUri(),
                     ]))
                     ->and($logMessage = sprintf('HTTP %d - %s', $code, $infos['message']))
@@ -370,13 +368,19 @@ class Request extends atoum
             ->and($this->calling($request)->request = true)
 
             ->if($object = new mock\ild78\Api\Object)
+
+            ->and($get = new ild78\Http\Verb\Get)
+            ->and($post = new ild78\Http\Verb\Post)
+            ->and($put = new ild78\Http\Verb\Put)
+            ->and($patch = new ild78\Http\Verb\Patch)
+
             ->then
                 ->assert('GET')
                     ->if($request->get($object))
                     ->then
                         ->mock($request)
                             ->call('request')
-                                ->withIdenticalArguments('GET', $object)
+                                ->withArguments($get, $object)
                                     ->once
 
                 ->assert('POST')
@@ -387,7 +391,7 @@ class Request extends atoum
                     ->then
                         ->mock($request)
                             ->call('request')
-                                ->withIdenticalArguments('POST', $object, $options)
+                                ->withArguments($post, $object, $options)
                                     ->once
 
                 ->assert('PUT')
@@ -398,7 +402,7 @@ class Request extends atoum
                     ->then
                         ->mock($request)
                             ->call('request')
-                                ->withIdenticalArguments('PUT', $object, $options)
+                                ->withArguments($put, $object, $options)
                                     ->once
 
                 ->assert('PATCH')
@@ -409,7 +413,7 @@ class Request extends atoum
                     ->then
                         ->mock($request)
                             ->call('request')
-                                ->withIdenticalArguments('PATCH', $object, $options)
+                                ->withArguments($patch, $object, $options)
                                     ->once
 
                 ->assert('update proxy for PATCH')
@@ -420,7 +424,7 @@ class Request extends atoum
                     ->then
                         ->mock($request)
                             ->call('request')
-                                ->withIdenticalArguments('PATCH', $object, $options)
+                                ->withArguments($patch, $object, $options)
                                     ->once
         ;
     }
