@@ -8,4 +8,6 @@ namespace ild78\Http\Verb;
  */
 class Post extends AbstractVerb
 {
+    /** @var boolean */
+    protected $isAllowed = true;
 }

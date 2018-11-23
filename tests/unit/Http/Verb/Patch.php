@@ -24,4 +24,12 @@ class Patch extends atoum
                     ->isIdenticalTo('PATCH')
         ;
     }
+
+    public function testIsAllowed()
+    {
+        $this
+            ->boolean($this->newTestedInstance->isAllowed())
+                ->isTrue
+        ;
+    }
 }

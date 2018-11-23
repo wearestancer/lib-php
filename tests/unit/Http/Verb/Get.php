@@ -24,4 +24,12 @@ class Get extends atoum
                     ->isIdenticalTo('GET')
         ;
     }
+
+    public function testIsAllowed()
+    {
+        $this
+            ->boolean($this->newTestedInstance->isAllowed())
+                ->isTrue
+        ;
+    }
 }

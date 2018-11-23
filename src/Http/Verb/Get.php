@@ -8,4 +8,6 @@ namespace ild78\Http\Verb;
  */
 class Get extends AbstractVerb
 {
+    /** @var boolean */
+    protected $isAllowed = true;
 }

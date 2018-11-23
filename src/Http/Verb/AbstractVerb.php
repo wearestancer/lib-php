@@ -8,6 +8,9 @@ namespace ild78\Http\Verb;
  */
 abstract class AbstractVerb
 {
+    /** @var boolean */
+    protected $isAllowed = false;
+
     /**
      * Return the HTTP verb
      *
@@ -19,5 +22,25 @@ abstract class AbstractVerb
         $namespace = __NAMESPACE__ . '\\';
 
         return strtoupper(str_replace($namespace, '', $class));
+    }
+
+    /**
+     * Indicate if the verb is allowed on the API
+     *
+     * @return boolean
+     */
+    public function isAllowed() : bool
+    {
+        return $this->isAllowed;
+    }
+
+    /**
+     * Indicate if the verb is not allowed on the API
+     *
+     * @return boolean
+     */
+    public function isNotAllowed() : bool
+    {
+        return !$this->isAllowed();
     }
 }

@@ -24,4 +24,12 @@ class Post extends atoum
                     ->isIdenticalTo('POST')
         ;
     }
+
+    public function testIsAllowed()
+    {
+        $this
+            ->boolean($this->newTestedInstance->isAllowed())
+                ->isTrue
+        ;
+    }
 }

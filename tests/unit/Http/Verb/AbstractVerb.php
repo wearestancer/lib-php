@@ -14,4 +14,15 @@ class AbstractVerb extends atoum
                 ->isAbstract
         ;
     }
+
+    public function testIsAllowed()
+    {
+        $this
+            ->boolean($this->newTestedInstance->isAllowed())
+                ->isFalse
+
+            ->boolean($this->newTestedInstance->isNotAllowed())
+                ->isTrue
+        ;
+    }
 }
