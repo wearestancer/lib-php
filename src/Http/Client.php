@@ -17,6 +17,12 @@ class Client implements ild78\Interfaces\HttpClientInterface
     /** @var array */
     protected $headers = [];
 
+    /** @var ild78\Http\Request|null */
+    protected $lastRequest;
+
+    /** @var ild78\Http\Response|null */
+    protected $lastResponse;
+
     /**
      * Creation of a new client instance
      *
@@ -48,6 +54,26 @@ class Client implements ild78\Interfaces\HttpClientInterface
     public function getCurlResource()
     {
         return $this->curl;
+    }
+
+    /**
+     * Return the last response
+     *
+     * @return ild78\Http\Response|null
+     */
+    public function getLastResponse() : ?ild78\Http\Response
+    {
+        return $this->lastResponse;
+    }
+
+    /**
+     * Return the last request
+     *
+     * @return ild78\Http\Request|null
+     */
+    public function getLastRequest() : ?ild78\Http\Request
+    {
+        return $this->lastRequest;
     }
 
     /**
@@ -169,19 +195,18 @@ class Client implements ild78\Interfaces\HttpClientInterface
         $error = curl_errno($this->curl);
         $code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
 
-        $response = new Response($code, $body ?: null, $this->getResponseHeaders());
+        $this->lastRequest = new Request($method, $uri, $options['headers'], $options['body']);
+        $this->lastResponse = new Response($code, $body ?: null, $this->getResponseHeaders());
 
         if ($error || $code >= 400) {
             if ($error === CURLE_TOO_MANY_REDIRECTS) {
                 $code = 310;
             }
 
-            $request = new Request($method, $uri, $options['headers'], $options['body']);
-
             $params = [
                 'code' => $code,
-                'request' => $request,
-                'response' => $response,
+                'request' => $this->lastRequest,
+                'response' => $this->lastResponse,
                 'status' => $code,
             ];
 
@@ -217,6 +242,6 @@ class Client implements ild78\Interfaces\HttpClientInterface
             throw $class::create($params);
         }
 
-        return $response;
+        return $this->lastResponse;
     }
 }
