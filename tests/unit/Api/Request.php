@@ -402,7 +402,7 @@ class Request extends atoum
                                     ->once
 
                 ->assert('update proxy for PATCH')
-                    ->if($request->patch($object))
+                    ->if($request->update($object))
                     ->and($options = [
                         'body' => json_encode($object),
                     ])
