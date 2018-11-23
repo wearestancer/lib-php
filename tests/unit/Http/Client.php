@@ -231,6 +231,69 @@ class Client extends atoum
         ;
     }
 
+    public function testGetLastRequest_LastResponse()
+    {
+        $this
+            ->given($config = ild78\Api\Config::init(uniqid()))
+
+            ->if($this->newTestedInstance)
+            ->and($curl = $this->testedInstance->getCurlResource())
+
+            ->if($this->function->curl_exec = $body = uniqid())
+            ->and($this->function->curl_getinfo = 200)
+            ->and($this->function->curl_errno = 0)
+            ->and($this->function->curl_error = '')
+            ->and($method = 'POST')
+            ->and($host = uniqid())
+            ->and($query = '/' . uniqid())
+            ->and($url = 'http://' . $host . $query)
+            ->and($options = [
+                'timeout' => rand(1, 1000),
+                'headers' => [
+                    uniqid() => uniqid(),
+                    uniqid() => [uniqid(), uniqid()],
+                ],
+                'body' => uniqid(),
+            ])
+            ->and($headers = [])
+            ->when(function () use (&$headers, $options, $host) {
+                foreach ($options['headers'] as $key => $value) {
+                    $headers[$key] = (array) $value;
+                }
+
+                $headers['Host'] = [$host];
+            })
+
+            ->then
+                ->variable($this->testedInstance->getLastRequest())
+                    ->isNull
+
+                ->variable($this->testedInstance->getLastResponse())
+                    ->isNull
+
+                ->object($response = $this->testedInstance->request($method, $url, $options))
+
+                ->object($this->testedInstance->getLastResponse())
+                    ->isInstanceOf(ild78\Http\Response::class)
+                    ->isIdenticalTo($response)
+
+                ->object($request = $this->testedInstance->getLastRequest())
+                    ->isInstanceOf(ild78\Http\Request::class)
+
+                ->string($request->getMethod())
+                    ->isIdenticalTo($method)
+
+                ->string($request->getUri())
+                    ->isIdenticalTo($query)
+
+                ->string($request->getBody())
+                    ->isIdenticalTo($options['body'])
+
+                ->array($request->getHeaders())
+                    ->isIdenticalTo($headers)
+        ;
+    }
+
     /**
      * @dataProvider headerLineDataProvider
      */

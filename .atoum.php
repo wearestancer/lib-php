@@ -1,6 +1,9 @@
 <?php
 
-$runner->addTestsFromDirectory(__DIR__ . '/tests/unit');
+$runner
+    ->addTestsFromDirectory(__DIR__ . '/tests/unit')
+    ->addTestsFromDirectory(__DIR__ . '/tests/functional')
+;
 
 // Extensions
 
