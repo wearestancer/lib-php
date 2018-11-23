@@ -32,10 +32,10 @@ abstract class Object implements JsonSerializable
     protected $created;
 
     /** @var boolean */
-    protected $updated = false;
+    protected $populated = false;
 
     /** @var boolean */
-    protected $modified = true;
+    protected $modified = false;
 
     /** @var array */
     protected $aliases = [];
@@ -223,7 +223,7 @@ abstract class Object implements JsonSerializable
 
         $value = $this->dataModel[$property]['value'];
 
-        if (is_null($value) && $this->id && !$this->updated) {
+        if (is_null($value) && $this->id && !$this->populated) {
             $value = $this->populate()->dataModel[$property]['value'];
         }
 
@@ -290,7 +290,7 @@ abstract class Object implements JsonSerializable
     {
         $date = $this->created;
 
-        if (is_null($date) && $this->id && !$this->updated) {
+        if (is_null($date) && $this->id && !$this->populated) {
             $date = $this->populate()->created;
         }
 
@@ -345,7 +345,20 @@ abstract class Object implements JsonSerializable
      */
     public function getUri() : string
     {
-        return Config::getGlobal()->getUri() . $this->getEndpoint();
+        $tmp = [
+            Config::getGlobal()->getUri(),
+            $this->getEndpoint(),
+        ];
+
+        if ($this->getId()) {
+            $tmp[] = $this->getId();
+        }
+
+        $trim = function ($value) {
+            return trim($value, '/');
+        };
+
+        return implode('/', array_map($trim, $tmp));
     }
 
     /**
@@ -398,7 +411,7 @@ abstract class Object implements JsonSerializable
                 }
 
                 if (is_object($this->dataModel[$property]['value'])) {
-                    $this->dataModel[$property]['value']->updated = $this->updated;
+                    $this->dataModel[$property]['value']->populated = $this->populated;
                 }
             }
         }
@@ -407,29 +420,81 @@ abstract class Object implements JsonSerializable
     }
 
     /**
+     * Indicate if the current object is modified
+     *
+     * This exists only to perform a deeper search into the current object to find inner updated object.
+     *
+     * @return boolean
+     */
+    public function isModified() : bool
+    {
+        if ($this->modified) {
+            return true;
+        }
+
+        $struct = $this->toArray();
+
+        foreach ($struct as $prop => $value) {
+            $type = gettype($value);
+
+            if ($type === 'object' && $value->modified) {
+                return true;
+            }
+
+            if ($type === 'array') {
+                foreach ($value as $val) {
+                    if (gettype($val) === 'object' && $val->modified) {
+                        return true;
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Indicate if the current object is not modified
+     *
+     * @return boolean
+     */
+    public function isNotModified() : bool
+    {
+        return !$this->isModified();
+    }
+
+    /**
      * Return a array representation of the current object for a convertion as JSON.
      *
      * @uses self::toArray()
-     * @return string
+     * @return string|array
      */
-    public function jsonSerialize() : array
+    public function jsonSerialize()
     {
+        if ($this->getId() && $this->isNotModified()) {
+            return $this->getId();
+        }
+
         $struct = $this->toArray();
 
         foreach ($struct as $prop => &$value) {
             $type = gettype($value);
 
-            if ($type === 'object' && $value->getId()) {
-                $value = $value->getId();
+            if ($type === 'object') {
+                $value = $value->jsonSerialize();
             }
 
             if ($type === 'array') {
                 foreach ($value as &$val) {
-                    if (gettype($val) === 'object' && $val->getId()) {
-                        $val = $val->getId();
+                    if (gettype($val) === 'object') {
+                        $val = $val->jsonSerialize();
                     }
                 }
             }
+        }
+
+        if (array_key_exists('id', $struct)) {
+            unset($struct['id']);
         }
 
         return $struct;
@@ -445,13 +510,13 @@ abstract class Object implements JsonSerializable
      */
     public function populate() : self
     {
-        if ($this->id && $this->getEndpoint() && (!$this->updated || $this->modified)) {
+        if ($this->id && $this->getEndpoint() && (!$this->populated || $this->modified)) {
             $request = new Request();
-            $response = $request->get($this, $this->id);
+            $response = $request->get($this);
             $body = json_decode($response, true);
             $this->hydrate($body);
 
-            $this->updated = true;
+            $this->populated = true;
             $this->modified = false;
         }
 
@@ -498,11 +563,17 @@ abstract class Object implements JsonSerializable
             }
 
             $request = new Request();
-            $response = $request->post($this);
+
+            if ($this->getId() && $this->isModified()) {
+                $response = $request->patch($this);
+            } else {
+                $response = $request->post($this);
+            }
+
             $body = json_decode($response, true);
             $this->hydrate($body);
 
-            $this->updated = true;
+            $this->populated = true;
             $this->modified = false;
         }
 
@@ -535,13 +606,7 @@ abstract class Object implements JsonSerializable
             if ($value !== null && !$infos['restricted']) {
                 $prop = preg_replace_callback('`[A-Z]`', $replace, $property);
 
-                if ($prop !== 'endpoint') {
-                    $json[$prop] = $value;
-
-                    if ($value instanceof DateTime) {
-                        $json[$prop] = (int) $value->format('U');
-                    }
-                }
+                $json[$prop] = $value;
             }
         }
 

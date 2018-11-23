@@ -298,6 +298,7 @@ class Payment extends atoum
                 ],
                 'timeout' => $config->getTimeout(),
             ])
+            ->and($location = $this->testedInstance->getUri())
             ->then
                 ->variable($this->testedInstance->getId())
                     ->isNull
@@ -306,7 +307,7 @@ class Payment extends atoum
 
                 ->mock($client)
                     ->call('request')
-                        ->withArguments('POST', $this->testedInstance->getUri(), $options)
+                        ->withArguments('POST', $location, $options)
                             ->once
 
                 ->mock($logger)
@@ -400,6 +401,7 @@ class Payment extends atoum
                 ],
                 'timeout' => $config->getTimeout(),
             ])
+            ->and($location = $this->testedInstance->getUri())
             ->then
                 ->variable($this->testedInstance->getId())
                     ->isNull
@@ -408,7 +410,7 @@ class Payment extends atoum
 
                 ->mock($client)
                     ->call('request')
-                        ->withArguments('POST', $this->testedInstance->getUri(), $options)
+                        ->withArguments('POST', $location, $options)
                             ->once
 
                 ->mock($logger)

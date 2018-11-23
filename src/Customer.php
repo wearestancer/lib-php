@@ -52,7 +52,7 @@ class Customer extends Api\Object
      */
     public function save() : Api\Object
     {
-        if (!$this->getEmail() && !$this->getMobile()) {
+        if (!$this->getId() && !$this->getEmail() && !$this->getMobile()) {
             $message = 'You must provide an email or a phone number to create a customer.';
 
             throw new ild78\Exceptions\BadMethodCallException($message);

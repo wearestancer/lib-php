@@ -84,15 +84,17 @@ class Customer extends atoum
                 ],
                 'timeout' => $config->getTimeout(),
             ])
+            ->and($location = $this->testedInstance->getUri())
             ->then
                 ->variable($this->testedInstance->getId())
                     ->isNull
+
                 ->object($this->testedInstance->save())
                     ->isTestedInstance
 
                 ->mock($client)
                     ->call('request')
-                        ->withArguments('POST', $this->testedInstance->getUri(), $options)
+                        ->withArguments('POST', $location, $options)
                             ->once
 
                 ->string($this->testedInstance->getId())
@@ -117,7 +119,7 @@ class Customer extends atoum
 
                 ->mock($client)
                     ->call('request')
-                        ->withArguments('POST', $this->testedInstance->getUri(), $options)
+                        ->withArguments('POST', $location, $options)
                             ->once
 
                 ->assert('Update a property allow new request')
@@ -126,17 +128,21 @@ class Customer extends atoum
                     ->then
                         ->mock($client)
                             ->call('request')
-                                ->withAtLeastArguments(['POST'])
-                                    ->once
+                                ->once
 
                 ->assert('Populate block save')
-                    ->if($this->testedInstance->setName(uniqid()))
+                    ->if($this->newTestedInstance(uniqid()))
+                    ->and($this->testedInstance->setName(uniqid()))
                     ->and($this->testedInstance->populate())
                     ->and($this->testedInstance->save())
                     ->then
                         ->mock($client)
                             ->call('request')
                                 ->withAtLeastArguments(['POST'])
+                                    ->never
+
+                            ->call('request')
+                                ->withAtLeastArguments(['PATCH'])
                                     ->never
 
                 ->assert('An email or a phone number is required')
@@ -148,6 +154,88 @@ class Customer extends atoum
                             ->isInstanceOf(Exceptions\BadMethodCallException::class)
                             ->message
                                 ->isIdenticalTo('You must provide an email or a phone number to create a customer.')
+
+                        ->mock($client)
+                            ->call('request')
+                                ->never
+        ;
+    }
+
+    public function testSave_forUpdate()
+    {
+        $this
+            ->given($config = Api\Config::init(uniqid()))
+            ->and($client = new mock\ild78\Http\Client)
+            ->and($config->setHttpClient($client))
+
+            ->then
+                ->assert('Modify a fresh and not populated instance, will send only known data')
+                    ->if($response = new mock\ild78\Http\Response(200))
+                    ->and($this->calling($response)->getBody = '{}')
+                    ->and($this->calling($client)->request = $response)
+
+                    ->if($this->newTestedInstance(uniqid()))
+                    ->and($name = uniqid())
+                    ->and($this->testedInstance->setName($name))
+
+                    ->and($options = [
+                        'body' => json_encode(['name' => $name]),
+                        'headers' => [
+                            'Authorization' => $config->getBasicAuthHeader(),
+                            'Content-Type' => 'application/json',
+                        ],
+                        'timeout' => $config->getTimeout(),
+                    ])
+
+                    ->then
+                        ->object($this->testedInstance->save())
+                            ->isTestedInstance
+
+                        ->mock($client)
+                            ->call('request')
+                                ->withArguments('PATCH', $this->testedInstance->getUri(), $options)
+                                    ->once
+
+                ->assert('Modify a populated instance will send everything known')
+                    ->if($response = new mock\ild78\Http\Response(200))
+                    ->and($body = file_get_contents(__DIR__ . '/fixtures/customers/read.json'))
+                    ->and($this->calling($response)->getBody[] = $body) // default response
+                    ->and($this->calling($response)->getBody[2] = '{}')
+                    ->and($this->calling($client)->request = $response)
+
+                    ->if($this->newTestedInstance(uniqid()))
+                    ->and($name = str_rot13($this->testedInstance->getName()))
+                    ->and($this->testedInstance->setName($name))
+
+                    ->and($body = json_decode($body, true))
+
+                    ->and($options = [
+                        'body' => json_encode([
+                            'email' => $body['email'],
+                            'mobile' => $body['mobile'],
+                            'name' => $name,
+                        ]),
+                        'headers' => [
+                            'Authorization' => $config->getBasicAuthHeader(),
+                            'Content-Type' => 'application/json',
+                        ],
+                        'timeout' => $config->getTimeout(),
+                    ])
+
+                    ->then
+                        ->object($this->testedInstance->save())
+                            ->isTestedInstance
+
+                        ->mock($client)
+                            ->call('request')
+                                ->withArguments('PATCH', $this->testedInstance->getUri(), $options)
+                                    ->once
+
+                ->assert('Unmodified instance will not trigger an update')
+                    ->if($this->newTestedInstance(uniqid()))
+                    ->then
+                        ->object($this->testedInstance->save())
+                            ->isTestedInstance
 
                         ->mock($client)
                             ->call('request')

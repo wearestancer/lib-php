@@ -11,111 +11,37 @@ use mock;
 
 class Request extends atoum
 {
-    public function httpVerbDataProvider()
-    {
-        return [
-            'GET',
-            'POST',
-            'PUT',
-        ];
-    }
-
-    /**
-     * @dataProvider httpVerbDataProvider
-     */
-    public function testGet_Post_Put($verb)
-    {
-        // testing a mock is not a good test but here we only want to test we call an other method
-
-        $this
-            ->given($request = new mock\ild78\Api\Request)
-            ->and($result = uniqid())
-            ->and($this->calling($request)->request = $result)
-            ->if($object = new mock\ild78\Api\Object)
-            ->and($location = uniqid())
-            ->then
-                ->assert('No location')
-                    ->string($request->$verb($object))
-                        ->isIdenticalTo($result)
-                    ->mock($request)
-                        ->call('request')
-                            ->withIdenticalArguments($verb, $object)
-                                ->once
-
-                ->assert('with location')
-                    ->string($request->$verb($object, $location))
-                        ->isIdenticalTo($result)
-                    ->mock($request)
-                        ->call('request')
-                            ->withIdenticalArguments($verb, $object, $location)
-                                ->once
-        ;
-    }
-
     public function testRequest_workingWithDefaultClient()
     {
         $this
-            ->if($config = ild78\Api\Config::init(uniqid()))
+            ->given($config = ild78\Api\Config::init(uniqid()))
 
-            ->assert('No location defined')
-                ->given($client = new mock\ild78\Http\Client)
-                ->and($response = new mock\ild78\Http\Response(200))
-                ->and($body = uniqid())
-                ->and($this->calling($response)->getBody = $body)
-                ->and($this->calling($client)->request = $response)
+            ->if($client = new mock\ild78\Http\Client)
+            ->and($response = new mock\ild78\Http\Response(200))
+            ->and($body = uniqid())
+            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($client)->request = $response)
 
-                ->and($config->setHttpClient($client))
+            ->and($config->setHttpClient($client))
 
-                ->if($this->newTestedInstance)
-                ->and($method = 'GET')
-                ->and($object = new mock\ild78\Api\Object)
+            ->if($this->newTestedInstance)
+            ->and($method = 'GET')
+            ->and($object = new mock\ild78\Api\Object)
 
-                ->if($logger = new mock\ild78\Api\Logger)
-                ->and($config->setLogger($logger))
-                ->and($debugMessage = 'API call : ' . $method . ' ' . $object->getUri())
-                ->then
-                    ->string($this->testedInstance->request($method, $object))
-                        ->isIdenticalTo($body)
-                    ->mock($client)
-                        ->call('request')
-                            ->withIdenticalArguments($method, $object->getUri())
-                                ->once
-                    ->mock($logger)
-                        ->call('debug')->withArguments($debugMessage, [])->once
-                        ->call('error')->never
-                        ->call('notice')->never
-
-            ->assert('Location defined')
-                ->given($client = new mock\ild78\Http\Client)
-                ->and($response = new mock\ild78\Http\Response(200))
-                ->and($body = uniqid())
-                ->and($this->calling($response)->getBody = $body)
-                ->and($this->calling($client)->request = $response)
-
-                ->and($config->setHttpClient($client))
-
-                ->if($this->newTestedInstance)
-                ->and($method = 'POST')
-                ->and($object = new mock\ild78\Api\Object)
-                ->and($location = uniqid())
-
-                ->if($logger = new mock\ild78\Api\Logger)
-                ->and($config->setLogger($logger))
-                ->and($debugMessage = vsprintf('API call : %s %s', [
-                    $method,
-                    $object->getUri() . '/' . $location,
-                ]))
-                ->then
-                    ->string($this->testedInstance->request($method, $object, $location))
-                        ->isIdenticalTo($body)
-                    ->mock($client)
-                        ->call('request')
-                            ->withIdenticalArguments($method, $object->getUri() . '/' . $location)
-                                ->once
-                    ->mock($logger)
-                        ->call('debug')->withArguments($debugMessage, [])->once
-                        ->call('error')->never
-                        ->call('notice')->never
+            ->if($logger = new mock\ild78\Api\Logger)
+            ->and($config->setLogger($logger))
+            ->and($debugMessage = 'API call : ' . $method . ' ' . $object->getUri())
+            ->then
+                ->string($this->testedInstance->request($method, $object))
+                    ->isIdenticalTo($body)
+                ->mock($client)
+                    ->call('request')
+                        ->withIdenticalArguments($method, $object->getUri())
+                            ->once
+                ->mock($logger)
+                    ->call('debug')->withArguments($debugMessage, [])->once
+                    ->call('error')->never
+                    ->call('notice')->never
         ;
     }
 
@@ -135,13 +61,13 @@ class Request extends atoum
                 ->and($config->setHttpClient($client))
 
                 ->if($object = new mock\ild78\Api\Object)
-                ->and($method = 'PUT')
+                ->and($method = 'POST')
 
                 ->if($logger = new mock\ild78\Api\Logger)
                 ->and($config->setLogger($logger))
                 ->and($debugMessage = vsprintf('API call : %s %s', [
                     $method,
-                    $config->getUri() . $object->getEndpoint(),
+                    $object->getUri(),
                 ]))
                 ->and($noticeMessage = vsprintf('HTTP 401 - Invalid credential : %s', [
                     $config->getKey(),
@@ -198,7 +124,7 @@ class Request extends atoum
         $this
             ->if($config = ild78\Api\Config::init(uniqid()))
 
-            ->assert('Use test of client and no more location')
+            ->assert('Use test of client')
                 ->given($client = new mock\GuzzleHttp\Client)
                 ->and($response = new mock\GuzzleHttp\Psr7\Response)
                 ->and($body = uniqid())
@@ -217,46 +143,17 @@ class Request extends atoum
                 ->then
                     ->string($this->testedInstance->request($method, $object))
                         ->isIdenticalTo($body)
+
                     ->mock($client)
                         ->call('request')
                             ->withIdenticalArguments($method, $object->getUri())
                                 ->once
+
                     ->mock($logger)
                         ->call('debug')->withArguments($debugMessage, [])->once
                         ->call('error')->never
                         ->call('notice')->never
 
-            ->assert('Use test of client and location')
-                ->given($client = new mock\GuzzleHttp\Client)
-                ->and($response = new mock\GuzzleHttp\Psr7\Response)
-                ->and($body = uniqid())
-                ->and($this->calling($response)->getBody = $body)
-                ->and($this->calling($client)->request = $response)
-
-                ->and($config->setHttpClient($client))
-
-                ->if($this->newTestedInstance)
-                ->and($method = 'POST')
-                ->and($object = new mock\ild78\Api\Object)
-                ->and($location = uniqid())
-
-                ->if($logger = new mock\ild78\Api\Logger)
-                ->and($config->setLogger($logger))
-                ->and($debugMessage = vsprintf('API call : %s %s', [
-                    $method,
-                    $object->getUri() . '/' . $location,
-                ]))
-                ->then
-                    ->string($this->testedInstance->request($method, $object, $location))
-                        ->isIdenticalTo($body)
-                    ->mock($client)
-                        ->call('request')
-                            ->withIdenticalArguments($method, $object->getUri() . '/' . $location)
-                                ->once
-                    ->mock($logger)
-                        ->call('debug')->withArguments($debugMessage, [])->once
-                        ->call('error')->never
-                        ->call('notice')->never
 
             ->assert('With bad credential')
                 ->given($content = file_get_contents(__DIR__ . '/../fixtures/auth/not-authorized.json'))
@@ -267,13 +164,13 @@ class Request extends atoum
                 ->and($config->setHttpClient($client))
 
                 ->if($object = new mock\ild78\Api\Object)
-                ->and($method = 'PUT')
+                ->and($method = 'POST')
 
                 ->if($logger = new mock\ild78\Api\Logger)
                 ->and($config->setLogger($logger))
                 ->and($debugMessage = vsprintf('API call : %s %s', [
                     $method,
-                    $config->getUri() . $object->getEndpoint(),
+                    $object->getUri(),
                 ]))
                 ->and($noticeMessage = vsprintf('HTTP 401 - Invalid credential : %s', [
                     $config->getKey(),
@@ -416,23 +313,22 @@ class Request extends atoum
 
                     ->if($object = new mock\ild78\Api\Object)
                     ->and($method = 'GET')
-                    ->and($location = uniqid())
 
                     ->if($logger = new mock\ild78\Api\Logger)
                     ->and($config->setLogger($logger))
                     ->and($debugMessage = vsprintf('API call : %s %s', [
                         $method,
-                        $config->getUri() . $object->getEndpoint() . '/' . $location,
+                        $object->getUri(),
                     ]))
                     ->and($logMessage = sprintf('HTTP %d - %s', $code, $infos['message']))
-                    ->when(function () use ($object, $code, $location, &$logMessage, &$infos) {
+                    ->when(function () use ($object, $code, &$logMessage, &$infos) {
                         if ($code === 404) {
                             $tmp = get_class($object);
                             $parts = explode('\\', $tmp);
                             $class = end($parts);
 
                             $infos['message'] = vsprintf('Ressource "%s" unknown for %s', [
-                                $location,
+                                $object->getId(),
                                 $class,
                             ]);
 
@@ -444,8 +340,8 @@ class Request extends atoum
                         }
                     })
                     ->then
-                        ->exception(function () use ($object, $method, $location) {
-                            $this->testedInstance->request($method, $object, $location);
+                        ->exception(function () use ($object, $method) {
+                            $this->testedInstance->request($method, $object);
                         })
                             ->isInstanceOf($infos['expected'])
                             ->hasNestedException
@@ -463,5 +359,69 @@ class Request extends atoum
                             ->call($infos['logLevel'])->withArguments($logMessage)->once
             ;
         }
+    }
+
+    public function testVerbProxy()
+    {
+        // testing a mock is not a good test but here we only want to test we call an other method
+
+        $this
+            ->given($request = new mock\ild78\Api\Request)
+            ->and($this->calling($request)->request = true)
+
+            ->if($object = new mock\ild78\Api\Object)
+            ->then
+                ->assert('GET')
+                    ->if($request->get($object))
+                    ->then
+                        ->mock($request)
+                            ->call('request')
+                                ->withIdenticalArguments('GET', $object)
+                                    ->once
+
+                ->assert('POST')
+                    ->if($request->post($object))
+                    ->and($options = [
+                        'body' => json_encode($object),
+                    ])
+                    ->then
+                        ->mock($request)
+                            ->call('request')
+                                ->withIdenticalArguments('POST', $object, $options)
+                                    ->once
+
+                ->assert('PUT')
+                    ->if($request->put($object))
+                    ->and($options = [
+                        'body' => json_encode($object),
+                    ])
+                    ->then
+                        ->mock($request)
+                            ->call('request')
+                                ->withIdenticalArguments('PUT', $object, $options)
+                                    ->once
+
+                ->assert('PATCH')
+                    ->if($request->patch($object))
+                    ->and($options = [
+                        'body' => json_encode($object),
+                    ])
+                    ->then
+                        ->mock($request)
+                            ->call('request')
+                                ->withIdenticalArguments('PATCH', $object, $options)
+                                    ->once
+
+                ->assert('update proxy for PATCH')
+                    ->if($request->update($object))
+                    ->and($options = [
+                        'body' => json_encode($object),
+                    ])
+                    ->then
+                        ->mock($request)
+                            ->call('request')
+                                ->withIdenticalArguments('PATCH', $object, $options)
+                                    ->once
+        ;
     }
 }

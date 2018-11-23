@@ -530,8 +530,8 @@ class Object extends atoum
                 'array3' => [],
             ]))
             ->and($object = $this->newTestedInstance)
-            ->and($object->setUpdated(false))
-            ->and($updatedPropagation = [
+            ->and($object->testOnlySetPopulated(false))
+            ->and($populatedPropagation = [
                 'object2' => $object,
             ])
 
@@ -567,21 +567,199 @@ class Object extends atoum
                     ->array($this->testedInstance->getArray3())
                         ->isEmpty
 
-                ->assert('Hydratation will pass updated flag')
-                    ->boolean($object->getUpdated())
-                        ->isIdenticalTo($this->testedInstance->getUpdated())
+                ->assert('Hydratation will pass populated flag')
+                    ->boolean($object->testOnlyGetPopulated())
+                        ->isIdenticalTo($this->testedInstance->testOnlyGetPopulated())
                         ->isFalse
 
-                    ->object($this->testedInstance->setUpdated(true)->hydrate($updatedPropagation))
+                    ->object($this->testedInstance->testOnlySetPopulated(true)->hydrate($populatedPropagation))
                         ->isTestedInstance
 
                     ->object($this->testedInstance->getObject2())
                         ->isInstanceOfTestedClass
                         ->isIdenticalTo($object)
 
-                    ->boolean($object->getUpdated())
-                        ->isIdenticalTo($this->testedInstance->getUpdated())
+                    ->boolean($object->testOnlyGetPopulated())
+                        ->isIdenticalTo($this->testedInstance->testOnlyGetPopulated())
                         ->isTrue
+        ;
+    }
+
+    public function testIsModified_isNotModified()
+    {
+        $this
+            ->given($object1 = $this->newTestedInstance)
+            ->and($object2 = $this->newTestedInstance)
+            ->and($object3 = $this->newTestedInstance)
+            ->and($this->newTestedInstance)
+            ->then
+                ->assert('Should return internal state')
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
+
+                    ->boolean($this->testedInstance->isNotModified())
+                        ->isTrue
+
+                    ->boolean($this->testedInstance->testOnlySetModified(true)->isModified())
+                        ->isTrue
+
+                    ->boolean($this->testedInstance->isNotModified())
+                        ->isFalse
+
+                ->assert('Should false if an object in one property is modified')
+                    ->if($this->testedInstance->setObject2($object1))
+                    ->and($object1->testOnlySetModified(true))
+                    ->and($this->testedInstance->testOnlySetModified(false))
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
+                    ->boolean($this->testedInstance->isNotModified())
+                        ->isFalse
+
+                ->assert('Should false if an object in a list is modified')
+                    ->if($this->testedInstance->addArray4($object2))
+                    ->and($this->testedInstance->addArray4($object3))
+                    ->and($this->testedInstance->testOnlySetModified(false))
+
+                    ->and($object1->testOnlySetModified(false)) // Be sure last test won't interfere
+
+                    // randomise which one is modified
+                    ->and($object2->testOnlySetModified((bool) rand(1, 10) % 2))
+                    ->and($object3->testOnlySetModified(!$object2->isModified()))
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
+                    ->boolean($this->testedInstance->isNotModified())
+                        ->isFalse
+        ;
+    }
+
+    public function testJsonSerialize()
+    {
+        $this
+            ->given($object2 = $this->newTestedInstance(uniqid()))
+            ->and($object2->setString1($this->makeStringBetween(10, 20)))
+
+            ->if($this->newTestedInstance($id = uniqid()))
+            ->and($this->testedInstance->setCamelCaseProperty($camelCase = uniqid()))
+            ->and($this->testedInstance->forceRestricted1($restricted = uniqid()))
+            ->and($this->testedInstance->setObject2($object2))
+            ->then
+                ->assert('An unmodified object with an ID should return only the ID')
+                    ->if($this->testedInstance->testOnlySetModified(false))
+                    ->and($object2->testOnlySetModified(false))
+                    ->then
+                        ->string($this->testedInstance->jsonSerialize())
+                            ->isIdenticalTo($id)
+
+                ->assert('A modified object with an ID return a body (without id)')
+                    ->if($this->testedInstance->testOnlySetModified(true))
+                    ->and($object2->testOnlySetModified(false))
+                    ->then
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->notHasKey('id')
+
+                            ->notHasKey('camelCaseProperty') // camelCase properties has converted to snake_case
+                            ->hasKey('camel_case_property')
+                            ->string['camel_case_property']
+                                ->isIdenticalTo($camelCase)
+
+                            ->hasKey('object2')
+                            ->string['object2']
+                                ->isIdenticalTo($object2->getId()) // object2 is not modified
+
+                ->assert('A modified object with another modified object in it should return both body (without ids)')
+                    ->if($this->testedInstance->testOnlySetModified(true))
+                    ->and($object2->testOnlySetModified(true))
+                    ->then
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->notHasKey('id')
+
+                            ->notHasKey('camelCaseProperty') // camelCase properties has converted to snake_case
+                            ->hasKey('camel_case_property')
+                            ->string['camel_case_property']
+                                ->isIdenticalTo($camelCase)
+
+                            ->hasKey('object2')
+                            ->child['object2'](function ($child) use ($object2) {
+                                $child
+                                    ->notHasKey('id')
+
+                                    ->string['string1']
+                                        ->isIdenticalTo($object2->getString1())
+                                ;
+                            })
+
+                ->assert('A unmodified object with another modified object in it should return both body too (without ids)')
+                    ->if($this->testedInstance->testOnlySetModified(false))
+                    ->and($object2->testOnlySetModified(true))
+                    ->then
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->notHasKey('id')
+
+                            ->notHasKey('camelCaseProperty') // camelCase properties has converted to snake_case
+                            ->hasKey('camel_case_property')
+                            ->string['camel_case_property']
+                                ->isIdenticalTo($camelCase)
+
+                            ->hasKey('object2')
+                            ->child['object2'](function ($child) use ($object2) {
+                                $child
+                                    ->notHasKey('id')
+
+                                    ->string['string1']
+                                        ->isIdenticalTo($object2->getString1())
+                                ;
+                            })
+
+                ->assert('Same test (unmodified object with modified in it) but with a list of objects')
+                    ->if($object2 = $this->newTestedInstance)
+                    ->and($object3 = $this->newTestedInstance)
+
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->addArray4($object2))
+                    ->and($this->testedInstance->addArray4($object3))
+
+                    ->and($this->testedInstance->testOnlySetId(uniqid()))
+
+                    ->and($object2->testOnlySetId(uniqid()))
+                    ->and($object2->setString1($this->makeStringBetween(10, 20)))
+
+                    ->and($object3->testOnlySetId(uniqid()))
+                    ->and($object3->setString1($this->makeStringBetween(10, 20)))
+
+                    ->and($this->testedInstance->testOnlySetModified(false))
+                    ->and($object2->testOnlySetModified(false))
+                    ->and($object3->testOnlySetModified(true))
+                    ->then
+
+                        // Recap
+                        //  Tested instance is not modified and contains only data in array4
+                        //  Object 2 is not modified and will return only an id
+                        //  Object 3 is modified, so it will return a body
+                        //
+                        //  Object 2 and 3 have data on string1
+                        //
+                        //  All have ids
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->notHasKey('id')
+
+                            ->hasKey('array4')
+                            ->child['array4'](function ($array4) use ($object2, $object3) {
+                                $array4
+                                    ->string[0]
+                                        ->isIdenticalTo($object2->getId())
+
+                                    ->array[1]
+                                        ->notHasKey('id')
+
+                                        ->string['string1']
+                                            ->isIdenticalTo($object3->getString1())
+                                ;
+                            })
         ;
     }
 
@@ -653,7 +831,7 @@ class Object extends atoum
 
                     ->mock($client)
                         ->call('request')
-                            ->withArguments('POST')
+                            ->withArguments('PATCH')
                                 ->once
 
                             ->withArguments('GET')
@@ -775,13 +953,14 @@ class Object extends atoum
                 ])
                 ->and($options['timeout'] = $config->getTimeout())
                 ->and($options['body'] = json_encode($this->testedInstance))
+                ->and($location = $this->testedInstance->getUri())
                 ->then
                     ->object($this->testedInstance->save())
                         ->isTestedInstance
 
                     ->mock($client)
                         ->call('request')
-                            ->withArguments('POST', $this->testedInstance->getUri(), $options)
+                            ->withArguments('POST', $location, $options)
                                 ->once
         ;
     }
@@ -789,9 +968,13 @@ class Object extends atoum
     public function testToArray()
     {
         $this
-            ->given($this->newTestedInstance)
+            ->given($object2 = $this->newTestedInstance)
+            ->and($object2->setString1($this->makeStringBetween(10, 20)))
+
+            ->if($this->newTestedInstance)
             ->and($this->testedInstance->setCamelCaseProperty($camelCase = uniqid()))
             ->and($this->testedInstance->forceRestricted1($restricted = uniqid()))
+            ->and($this->testedInstance->setObject2($object2))
             ->then
                 ->array($this->testedInstance->toArray())
                     ->notHasKey('restricted1')
@@ -800,30 +983,84 @@ class Object extends atoum
                     ->hasKey('camel_case_property')
                     ->string['camel_case_property']
                         ->isIdenticalTo($camelCase)
+
+                    ->hasKey('object2')
+                    ->object['object2']
+                        ->isIdenticalTo($object2)
         ;
     }
 
-    public function testToString()
+    public function testToString_toJson_castToString()
     {
         $this
-            ->given($this->newTestedInstance)
-            ->and($card1 = new ild78\Card(uniqid()))
-            ->and($card2 = new ild78\Card())
-            ->and($card2->setNumber($number = '4111 1111 1111 1111'))
-            ->and($this->testedInstance->setArray3([$card1, $card2]))
+            ->given($object1 = $this->newTestedInstance) // Unmodified / Got id and string1
+            ->and($object2 = $this->newTestedInstance)   // Modified   / Got id and string1
+            ->and($object3 = $this->newTestedInstance)   // Modified   / Got string1
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->addArray4($object1))
+            ->and($this->testedInstance->addArray4($object2))
+            ->and($this->testedInstance->addArray4($object3))
+
+            ->and($this->testedInstance->setCamelCaseProperty($camelCase = uniqid()))
+            ->and($this->testedInstance->forceRestricted1($restricted = uniqid()))
+            ->and($this->testedInstance->setString1($this->makeStringBetween(10, 20)))
+
+            ->and($object1->setString1($this->makeStringBetween(10, 20)))
+            ->and($object2->setString1($this->makeStringBetween(10, 20)))
+            ->and($object3->setString1($this->makeStringBetween(10, 20)))
+
+            ->and($this->testedInstance->testOnlySetId(uniqid()))
+            ->and($object1->testOnlySetId(uniqid()))
+            ->and($object2->testOnlySetId(uniqid()))
+
+            ->and($this->testedInstance->testOnlySetModified(true))
+            ->and($object1->testOnlySetModified(false))
+            ->and($object2->testOnlySetModified(true))
+            ->and($object3->testOnlySetModified(true))
+
             ->then
-                ->json($json = $this->testedInstance->toString())
+                ->json($json = $this->testedInstance->toJson())
+                    ->isIdenticalTo($this->testedInstance->toString())
+                    ->isIdenticalTo(json_encode($this->testedInstance))
+                    ->isIdenticalTo((string) $this->testedInstance)
 
                 ->array(json_decode($json, true))
-                    ->child['array3'](function ($child) use ($card1, $card2) {
-                        $child
-                            ->string[0]
-                                ->isIdenticalTo($card1->getId())
+                    ->notHasKeys(['id', 'camelCaseProperty', 'restricted1'])
 
-                            ->child[1](function ($crd) use ($card2) {
-                                $crd
-                                    ->string['number']
-                                        ->isIdenticalTo($card2->getNumber())
+                    ->hasKeys(['string1', 'camel_case_property', 'array4'])
+
+                    ->string['string1']
+                        ->isIdenticalTo($this->testedInstance->getString1())
+
+                    ->string['camel_case_property']
+                        ->isIdenticalTo($this->testedInstance->getCamelCaseProperty())
+
+                    ->child['array4'](function ($array4) use ($object1, $object2, $object3) {
+                        $array4
+                            ->hasSize(3)
+
+                            // $object1
+                            ->string[0]
+                                ->isIdenticalTo($object1->getId())
+
+                            // $object2
+                            ->child[1](function ($child) use ($object2) {
+                                $child
+                                    ->notHasKey('id')
+
+                                    ->string['string1']
+                                        ->isIdenticalTo($object2->getString1())
+                                ;
+                            })
+
+                            // $object3
+                            ->child[2](function ($child) use ($object3) {
+                                $child
+                                    ->notHasKey('id')
+
+                                    ->string['string1']
+                                        ->isIdenticalTo($object3->getString1())
                                 ;
                             })
                         ;

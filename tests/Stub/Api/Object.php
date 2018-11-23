@@ -80,6 +80,10 @@ class Object extends ild78\Api\Object
             'list' => true,
             'type' => ild78\Card::class,
         ],
+        'array4' => [
+            'list' => true,
+            'type' => self::class,
+        ],
     ];
 
     // Test only methods
@@ -90,14 +94,28 @@ class Object extends ild78\Api\Object
         return $this;
     }
 
-    public function getUpdated() : bool
+    public function testOnlySetId(string $id) : self
     {
-        return $this->updated;
+        $this->id = $id;
+
+        return $this;
     }
 
-    public function setUpdated(bool $updated) : self
+    public function testOnlyGetPopulated() : bool
     {
-        $this->updated = $updated;
+        return $this->populated;
+    }
+
+    public function testOnlySetModified(bool $modified) : self
+    {
+        $this->modified = $modified;
+
+        return $this;
+    }
+
+    public function testOnlySetPopulated(bool $populated) : self
+    {
+        $this->populated = $populated;
 
         return $this;
     }
