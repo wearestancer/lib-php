@@ -14,4 +14,14 @@ class Get extends atoum
                 ->extends(ild78\Http\Verb\AbstractVerb::class)
         ;
     }
+
+    public function testCastToString()
+    {
+        $this
+            ->if($this->newTestedInstance)
+            ->then
+                ->castToString($this->testedInstance)
+                    ->isIdenticalTo('GET')
+        ;
+    }
 }
