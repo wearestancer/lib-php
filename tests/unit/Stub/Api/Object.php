@@ -962,6 +962,42 @@ class Object extends atoum
                         ->call('request')
                             ->withArguments('POST', $location, $options)
                                 ->once
+
+            ->assert('No error if returned body is null (saw with PATCH implementation)')
+                ->given($config = ild78\Api\Config::init(uniqid()))
+                ->and($client = new mock\ild78\Http\Client)
+                ->and($config->setHttpClient($client))
+
+                ->if($response = new mock\ild78\Http\Response(200))
+                ->and($this->calling($client)->request = $response)
+                ->and($this->calling($response)->getBody = null)
+
+                ->if($string1 = $this->makeStringBetween(10, 20))
+                ->and($integer1 = $this->makeIntegerBetween(10, 20))
+
+                ->if($this->newTestedInstance)
+                ->and($this->testedInstance->setString1($string1))
+                ->and($this->testedInstance->setInteger1($integer1))
+
+                ->if($options = [])
+                ->and($options['headers'] = [
+                    'Authorization' => $config->getBasicAuthHeader(),
+                    'Content-Type' => 'application/json',
+                ])
+                ->and($options['timeout'] = $config->getTimeout())
+                ->and($options['body'] = json_encode($this->testedInstance))
+                ->and($location = $this->testedInstance->getUri())
+                ->then
+                    ->object($this->testedInstance->save())
+                        ->isTestedInstance
+
+                    ->variable($this->testedInstance->getId())
+                        ->isNull // no body, no id :/
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('POST', $location, $options)
+                                ->once
         ;
     }
 
