@@ -63,7 +63,9 @@ class Request
      */
     public function put(Object $object) : string
     {
-        return $this->request(ild78\Interfaces\HttpClientInterface::PUT, $object);
+        $options = ['body' => json_encode($object)];
+
+        return $this->request(ild78\Interfaces\HttpClientInterface::PUT, $object, $options);
     }
 
     /**

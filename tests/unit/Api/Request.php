@@ -390,6 +390,17 @@ class Request extends atoum
                                 ->withIdenticalArguments('POST', $object, $options)
                                     ->once
 
+                ->assert('PUT')
+                    ->if($request->put($object))
+                    ->and($options = [
+                        'body' => json_encode($object),
+                    ])
+                    ->then
+                        ->mock($request)
+                            ->call('request')
+                                ->withIdenticalArguments('PUT', $object, $options)
+                                    ->once
+
                 ->assert('PATCH')
                     ->if($request->patch($object))
                     ->and($options = [
