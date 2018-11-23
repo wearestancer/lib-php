@@ -571,7 +571,10 @@ abstract class Object implements JsonSerializable
             }
 
             $body = json_decode($response, true);
-            $this->hydrate($body);
+
+            if ($body) {
+                $this->hydrate($body);
+            }
 
             $this->populated = true;
             $this->modified = false;

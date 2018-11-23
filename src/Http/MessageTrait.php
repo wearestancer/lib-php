@@ -49,9 +49,9 @@ trait MessageTrait
     /**
      * Gets the body of the message.
      *
-     * @return string
+     * @return string|null
      */
-    public function getBody() : string
+    public function getBody() : ?string
     {
         return $this->body;
     }
