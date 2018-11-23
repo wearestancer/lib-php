@@ -67,7 +67,7 @@ class Request extends atoum
                 ->and($config->setLogger($logger))
                 ->and($debugMessage = vsprintf('API call : %s %s', [
                     $method,
-                    $config->getUri() . $object->getEndpoint(),
+                    $object->getUri(),
                 ]))
                 ->and($noticeMessage = vsprintf('HTTP 401 - Invalid credential : %s', [
                     $config->getKey(),
@@ -170,7 +170,7 @@ class Request extends atoum
                 ->and($config->setLogger($logger))
                 ->and($debugMessage = vsprintf('API call : %s %s', [
                     $method,
-                    $config->getUri() . $object->getEndpoint(),
+                    $object->getUri(),
                 ]))
                 ->and($noticeMessage = vsprintf('HTTP 401 - Invalid credential : %s', [
                     $config->getKey(),
