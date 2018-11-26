@@ -194,6 +194,43 @@ class Payment extends atoum
         ;
     }
 
+    public function testGetRefundableAmount()
+    {
+        $this
+            ->given($config = Api\Config::init(uniqid()))
+            ->and($client = new mock\ild78\Http\Client)
+            ->and($config->setHttpClient($client))
+
+            ->if($body = file_get_contents(__DIR__ . '/fixtures/payment/read.json'))
+            ->and($responsePayment = new ild78\Http\Response(200, $body))
+            ->and($this->calling($client)->request = $responsePayment)
+
+            ->and($paymentData = json_decode($body, true))
+            ->and($paid = $paymentData['amount'])
+            ->and($id = $paymentData['id'])
+
+            ->if($completeRefund = new ild78\Refund())
+            ->and($completeRefund->setAmount($paid))
+
+            ->if($amount = rand(50, $paid))
+            ->and($partialRefund = new ild78\Refund())
+            ->and($partialRefund->setAmount($amount))
+
+            ->then
+                ->assert('All paid amount is refundable if not refund was made')
+                    ->integer($this->newTestedInstance($id)->getRefundableAmount())
+                        ->isIdenticalTo($paid)
+
+                ->assert('When all was refunded, no more refund is possible')
+                    ->integer($this->newTestedInstance($id)->addRefunds($completeRefund)->getRefundableAmount())
+                        ->isZero
+
+                ->assert('When one refund was done (' . $amount . ' / ' . $paid . ')')
+                    ->integer($this->newTestedInstance($id)->addRefunds($partialRefund)->getRefundableAmount())
+                        ->isIdenticalTo($paid - $amount)
+        ;
+    }
+
     /**
      * @dataProvider responseMessageDataProvider
      */

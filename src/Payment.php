@@ -154,6 +154,23 @@ class Payment extends Api\AbstractObject
     }
 
     /**
+     * Refund the refundable amount
+     *
+     * @return integer
+     */
+    public function getRefundableAmount() : int
+    {
+        $getAmounts = function ($refund) {
+            return $refund->getAmount();
+        };
+
+        $refunds = $this->getRefunds();
+        $refunded = array_map($getAmounts, $refunds);
+
+        return $this->getAmount() - array_sum($refunded);
+    }
+
+    /**
      * Get a readable message of response code
      *
      * @return string
