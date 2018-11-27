@@ -171,6 +171,18 @@ class Payment extends atoum
         ;
     }
 
+    public function testDelete()
+    {
+        $this
+            ->exception(function () {
+                $this->newTestedInstance(uniqid())->delete();
+            })
+                ->isInstanceOf(Exceptions\BadMethodCallException::class)
+                ->message
+                    ->isIdenticalTo('You are not allowed to delete a payment, you need to refund it instead.')
+        ;
+    }
+
     public function testGetEndpoint()
     {
         $this

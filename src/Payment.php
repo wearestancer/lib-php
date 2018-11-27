@@ -132,6 +132,20 @@ class Payment extends Api\Object
     }
 
     /**
+     * Delete the current object in the API
+     *
+     * @see self::refund()
+     * @return void No return possible
+     * @throws ild78\Exceptions\BadMethodCallException On every call, this method is not allowed in this context.
+     */
+    public function delete() : ild78\Api\Object
+    {
+        $message = 'You are not allowed to delete a payment, you need to refund it instead.';
+
+        throw new ild78\Exceptions\BadMethodCallException($message);
+    }
+
+    /**
      * Get a readable message of response code
      *
      * @return string
