@@ -282,6 +282,21 @@ abstract class Object implements JsonSerializable
     }
 
     /**
+     * Delete the current object in the API
+     *
+     * @return self
+     */
+    public function delete() : self
+    {
+        $request = new Request();
+        $request->delete($this);
+
+        $this->id = null;
+
+        return $this;
+    }
+
+    /**
      * Return creation date
      *
      * @return DateTime|null
