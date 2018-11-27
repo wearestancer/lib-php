@@ -9,6 +9,31 @@ use ild78;
  */
 class Customer extends TestCase
 {
+    public function testDelete()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($key = uniqid())
+            ->and($this->testedInstance->setName('John Doe (' . $key . ')'))
+            ->and($this->testedInstance->setEmail('john.doe+' . $key . '@example.com'))
+            ->and($this->testedInstance->setMobile($this->getRandomNumber()))
+            ->and($id = $this->testedInstance->save()->getId())
+            ->then
+                ->object($this->testedInstance->delete())
+                    ->isTestedInstance
+
+                ->variable($this->testedInstance->getId())
+                    ->isNull
+
+                ->exception(function () use ($id) {
+                    $this->newTestedInstance($id)->getName();
+                })
+                    ->isInstanceOf(ild78\Exceptions\NotFoundException::class)
+                    ->message
+                        ->isIdenticalTo('Resource not found')
+        ;
+    }
+
     public function testGetData()
     {
         $this
