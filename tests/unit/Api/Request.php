@@ -367,14 +367,26 @@ class Request extends atoum
             ->given($request = new mock\ild78\Api\Request)
             ->and($this->calling($request)->request = true)
 
-            ->if($object = new mock\ild78\Api\Object)
+            ->if($object = new mock\ild78\Api\Object(uniqid()))
 
+            ->and($delete = new ild78\Http\Verb\Delete)
             ->and($get = new ild78\Http\Verb\Get)
             ->and($post = new ild78\Http\Verb\Post)
             ->and($put = new ild78\Http\Verb\Put)
             ->and($patch = new ild78\Http\Verb\Patch)
 
             ->then
+                ->assert('DELETE')
+                    ->if($request->delete($object))
+                    ->and($options = [
+                        'body' => json_encode($object),
+                    ])
+                    ->then
+                        ->mock($request)
+                            ->call('request')
+                                ->withArguments($delete, $object, $options)
+                                    ->once
+
                 ->assert('GET')
                     ->if($request->get($object))
                     ->then
