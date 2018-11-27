@@ -8,4 +8,6 @@ namespace ild78\Http\Verb;
  */
 class Delete extends AbstractVerb
 {
+    /** @var boolean */
+    protected $isAllowed = true;
 }

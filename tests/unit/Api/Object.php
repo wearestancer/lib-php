@@ -186,6 +186,44 @@ class Object extends atoum
         ;
     }
 
+    public function testDelete()
+    {
+        $this
+            ->given($config = Api\Config::init(uniqid()))
+            ->and($client = new mock\ild78\Http\Client)
+            ->and($config->setHttpClient($client))
+
+            ->if($response = new mock\ild78\Http\Response(204))
+            ->and($this->calling($client)->request = $response)
+            ->and($this->calling($response)->getBody = null)
+
+            ->if($id = uniqid())
+
+            ->if($this->newTestedInstance($id))
+
+            ->if($options = [])
+            ->and($options['headers'] = [
+                'Authorization' => $config->getBasicAuthHeader(),
+                'Content-Type' => 'application/json',
+            ])
+            ->and($options['timeout'] = $config->getTimeout())
+            ->and($options['body'] = json_encode($id))
+            ->and($location = $this->testedInstance->getUri())
+            ->then
+                ->object($this->testedInstance->delete())
+                    ->isTestedInstance
+
+                ->variable($this->testedInstance->getId())
+                    ->isNotEqualTo($id)
+                    ->isNull
+
+                ->mock($client)
+                    ->call('request')
+                        ->withArguments('DELETE', $location, $options)
+                            ->once
+        ;
+    }
+
     public function testGetCreationDate()
     {
         $this

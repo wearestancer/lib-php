@@ -15,6 +15,21 @@ use ild78;
 class Request
 {
     /**
+     * Simple proxy for a DELETE request
+     *
+     * @see self::request() For full documentation.
+     * @param ild78\Api\Object $object Object.
+     * @return string
+     */
+    public function delete(Object $object) : string
+    {
+        $options = ['body' => json_encode($object->getId())];
+        $verb = new ild78\Http\Verb\Delete();
+
+        return $this->request($verb, $object, $options);
+    }
+
+    /**
      * Simple proxy for a GET request
      *
      * @see self::request() For full documentation.
