@@ -24,4 +24,12 @@ class Delete extends atoum
                     ->isIdenticalTo('DELETE')
         ;
     }
+
+    public function testIsAllowed()
+    {
+        $this
+            ->boolean($this->newTestedInstance->isAllowed())
+                ->isTrue
+        ;
+    }
 }
