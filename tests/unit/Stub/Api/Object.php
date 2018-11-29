@@ -535,6 +535,12 @@ class Object extends atoum
                 'object2' => $object,
             ])
 
+            ->and($id = uniqid())
+            ->and($objectWithId = $this->newTestedInstance)
+            ->and($withIds = [
+                'object2' => $id,
+            ])
+
             ->if($this->newTestedInstance)
             ->then
                 ->assert('Normal hydratation')
@@ -582,6 +588,16 @@ class Object extends atoum
                     ->boolean($object->testOnlyGetPopulated())
                         ->isIdenticalTo($this->testedInstance->testOnlyGetPopulated())
                         ->isTrue
+
+                ->assert('Hydratation will keep instances')
+                    ->object($this->testedInstance->setObject2($objectWithId)->hydrate($withIds))
+                        ->isTestedInstance
+
+                    ->object($this->testedInstance->getObject2())
+                        ->isIdenticalTo($objectWithId)
+
+                    ->string($objectWithId->getId())
+                        ->isIdenticalTo($id)
         ;
     }
 
