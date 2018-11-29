@@ -290,10 +290,16 @@ class Payment extends atoum
             ->and($card->setNumber($number = '4111111111111111'))
             ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
 
+            ->if($customer = new Customer)
+            ->and($customer->setName(uniqid()))
+            ->and($customer->setEmail(uniqid() . '@example.org'))
+            ->and($customer->setMobile(uniqid()))
+
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setAmount(rand(100, 999999)))
             ->and($this->testedInstance->setCard($card))
             ->and($this->testedInstance->setCurrency('EUR'))
+            ->and($this->testedInstance->setCustomer($customer))
             ->and($this->testedInstance->setDescription(uniqid()))
             ->and($this->testedInstance->setOrderId(uniqid()))
 
@@ -336,10 +342,13 @@ class Payment extends atoum
                     ->isIdenticalTo(100)
 
                 ->object($this->testedInstance->getCard())
-                    ->isInstanceOf($card)
+                    ->isIdenticalTo($card)
 
                 ->string($this->testedInstance->getCurrency())
                     ->isIdenticalTo('eur')
+
+                ->object($this->testedInstance->getCustomer())
+                    ->isIdenticalTo($customer)
 
                 ->string($this->testedInstance->getDescription())
                     ->isIdenticalTo('le test restfull v1')

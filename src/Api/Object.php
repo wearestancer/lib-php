@@ -411,9 +411,12 @@ abstract class Object implements JsonSerializable
 
                     if (is_string($value)) {
                         $id = $value;
+                        $value = [
+                            'id' => $id,
+                        ];
                     }
 
-                    if (!$this->dataModel[$property]['value'] || $id) {
+                    if (!$this->dataModel[$property]['value']) {
                         $class = $this->dataModel[$property]['type'];
                         $this->dataModel[$property]['value'] = new $class($id);
                     }
