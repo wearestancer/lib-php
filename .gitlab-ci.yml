@@ -51,6 +51,12 @@ atoum:PHP7.3:
     PHP_VERSION: 7.3.1
   extends: .atoum
 
+atoum:PHP:nightly:
+  variables:
+    PHP_VERSION: master
+  extends: .atoum
+  allow_failure: true
+
 
 lint:PHP7.1:
   variables:
@@ -66,3 +72,9 @@ lint:PHP7.3:
   variables:
     PHP_VERSION: 7.3.1
   extends: .lint
+
+lint:PHP:nightly:
+  variables:
+    PHP_VERSION: master
+  extends: .lint
+  allow_failure: true
