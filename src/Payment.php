@@ -20,7 +20,7 @@ use ild78;
  * @method ild78\\Sepa getSepa()
  * @method string getStatus()
  */
-class Payment extends Api\Object
+class Payment extends Api\AbstractObject
 {
     /** @var string */
     protected $endpoint = 'checkout';
@@ -138,7 +138,7 @@ class Payment extends Api\Object
      * @return void No return possible
      * @throws ild78\Exceptions\BadMethodCallException On every call, this method is not allowed in this context.
      */
-    public function delete() : ild78\Api\Object
+    public function delete() : ild78\Api\AbstractObject
     {
         $message = 'You are not allowed to delete a payment, you need to refund it instead.';
 
@@ -218,7 +218,7 @@ class Payment extends Api\Object
      * @throws ild78\Exceptions\MissingPaymentMethodException When trying to pay something without any
      *   credit card or SEPA account.
      */
-    public function save() : Api\Object
+    public function save() : ild78\Api\AbstractObject
     {
         $card = $this->getCard();
         $sepa = $this->getSepa();

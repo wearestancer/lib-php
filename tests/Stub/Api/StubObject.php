@@ -4,7 +4,7 @@ namespace ild78\Stub\Api;
 
 use ild78;
 
-class Object extends ild78\Api\Object
+class StubObject extends ild78\Api\AbstractObject
 {
     protected $endpoint = 'objects'; // invalid but must be not empty
 

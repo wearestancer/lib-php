@@ -26,7 +26,7 @@ class Request extends atoum
 
             ->if($this->newTestedInstance)
             ->and($method = new ild78\Http\Verb\Get)
-            ->and($object = new mock\ild78\Api\Object)
+            ->and($object = new mock\ild78\Api\AbstractObject)
 
             ->if($logger = new mock\ild78\Api\Logger)
             ->and($config->setLogger($logger))
@@ -60,7 +60,7 @@ class Request extends atoum
                 ->if($client = new ild78\Http\Client)
                 ->and($config->setHttpClient($client))
 
-                ->if($object = new mock\ild78\Api\Object)
+                ->if($object = new mock\ild78\Api\AbstractObject)
                 ->and($method = new ild78\Http\Verb\Post)
 
                 ->if($logger = new mock\ild78\Api\Logger)
@@ -93,7 +93,7 @@ class Request extends atoum
             ->assert('Unsupported method')
                 ->if($this->newTestedInstance)
                 ->and($this->function->curl_exec = uniqid())
-                ->and($object = new mock\ild78\Api\Object)
+                ->and($object = new mock\ild78\Api\AbstractObject)
                 ->and($method = new mock\ild78\Http\Verb\AbstractVerb)
 
                 ->if($logger = new mock\ild78\Api\Logger)
@@ -133,7 +133,7 @@ class Request extends atoum
 
                 ->if($this->newTestedInstance)
                 ->and($method = new ild78\Http\Verb\Get)
-                ->and($object = new mock\ild78\Api\Object)
+                ->and($object = new mock\ild78\Api\AbstractObject)
 
                 ->if($logger = new mock\ild78\Api\Logger)
                 ->and($config->setLogger($logger))
@@ -161,7 +161,7 @@ class Request extends atoum
                 ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
                 ->and($config->setHttpClient($client))
 
-                ->if($object = new mock\ild78\Api\Object)
+                ->if($object = new mock\ild78\Api\AbstractObject)
                 ->and($method = new ild78\Http\Verb\Post)
 
                 ->if($logger = new mock\ild78\Api\Logger)
@@ -196,7 +196,7 @@ class Request extends atoum
                 ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
                 ->and($config->setHttpClient($client))
 
-                ->if($object = new mock\ild78\Api\Object)
+                ->if($object = new mock\ild78\Api\AbstractObject)
                 ->and($method = new ild78\Http\Verb\Get)
 
                 ->if($logger = new mock\ild78\Api\Logger)
@@ -309,7 +309,7 @@ class Request extends atoum
                     ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
                     ->and($config->setHttpClient($client))
 
-                    ->if($object = new mock\ild78\Api\Object)
+                    ->if($object = new mock\ild78\Api\AbstractObject)
                     ->and($method = new ild78\Http\Verb\Get)
 
                     ->if($logger = new mock\ild78\Api\Logger)
@@ -367,7 +367,7 @@ class Request extends atoum
             ->given($request = new mock\ild78\Api\Request)
             ->and($this->calling($request)->request = true)
 
-            ->if($object = new mock\ild78\Api\Object(uniqid()))
+            ->if($object = new mock\ild78\Api\AbstractObject(uniqid()))
 
             ->and($delete = new ild78\Http\Verb\Delete)
             ->and($get = new ild78\Http\Verb\Get)

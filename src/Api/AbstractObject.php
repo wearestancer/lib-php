@@ -13,7 +13,7 @@ use JsonSerializable;
  *
  * @throws ild78\Exceptions\BadMethodCallException when calling unknonw method
  */
-abstract class Object implements JsonSerializable
+abstract class AbstractObject implements JsonSerializable
 {
     const BOOLEAN = 'boolean';
     const INTEGER = 'integer';

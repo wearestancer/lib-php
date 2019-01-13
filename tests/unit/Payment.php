@@ -167,7 +167,7 @@ class Payment extends atoum
     {
         $this
             ->class(testedClass::class)
-                ->isSubclassOf(Api\Object::class)
+                ->isSubclassOf(Api\AbstractObject::class)
         ;
     }
 

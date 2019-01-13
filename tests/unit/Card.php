@@ -97,7 +97,7 @@ class Card extends atoum
     {
         $this
             ->testedClass
-                ->extends(ild78\Api\Object::class)
+                ->extends(ild78\Api\AbstractObject::class)
                 ->implements(ild78\Interfaces\PaymentMeansInterface::class)
         ;
     }

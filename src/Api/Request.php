@@ -18,10 +18,10 @@ class Request
      * Simple proxy for a DELETE request
      *
      * @see self::request() For full documentation.
-     * @param ild78\Api\Object $object Object.
+     * @param ild78\Api\AbstractObject $object Object.
      * @return string
      */
-    public function delete(Object $object) : string
+    public function delete(AbstractObject $object) : string
     {
         $options = ['body' => json_encode($object->getId())];
         $verb = new ild78\Http\Verb\Delete();
@@ -33,10 +33,10 @@ class Request
      * Simple proxy for a GET request
      *
      * @see self::request() For full documentation.
-     * @param ild78\Api\Object $object Object.
+     * @param ild78\Api\AbstractObject $object Object.
      * @return string
      */
-    public function get(Object $object) : string
+    public function get(AbstractObject $object) : string
     {
         $verb = new ild78\Http\Verb\Get();
 
@@ -47,10 +47,10 @@ class Request
      * Simple proxy for a PATCH request
      *
      * @see self::request() For full documentation.
-     * @param ild78\Api\Object $object Object.
+     * @param ild78\Api\AbstractObject $object Object.
      * @return string
      */
-    public function patch(Object $object) : string
+    public function patch(AbstractObject $object) : string
     {
         $options = ['body' => json_encode($object)];
         $verb = new ild78\Http\Verb\Patch();
@@ -62,10 +62,10 @@ class Request
      * Simple proxy for a POST request
      *
      * @see self::request() For full documentation.
-     * @param ild78\Api\Object $object Object.
+     * @param ild78\Api\AbstractObject $object Object.
      * @return string
      */
-    public function post(Object $object) : string
+    public function post(AbstractObject $object) : string
     {
         $options = ['body' => json_encode($object)];
         $verb = new ild78\Http\Verb\Post();
@@ -77,10 +77,10 @@ class Request
      * Simple proxy for a PUT request
      *
      * @see self::request() For full documentation.
-     * @param ild78\Api\Object $object Object.
+     * @param ild78\Api\AbstractObject $object Object.
      * @return string
      */
-    public function put(Object $object) : string
+    public function put(AbstractObject $object) : string
     {
         $options = ['body' => json_encode($object)];
         $verb = new ild78\Http\Verb\Put();
@@ -92,10 +92,10 @@ class Request
      * Alias for patch method
      *
      * @see self::patch() The patch method.
-     * @param ild78\Api\Object $object Object.
+     * @param ild78\Api\AbstractObject $object Object.
      * @return string
      */
-    public function update(Object $object) : string
+    public function update(AbstractObject $object) : string
     {
         return $this->patch($object);
     }
@@ -108,7 +108,7 @@ class Request
      *
      * @uses ild78\Api\Config
      * @param ild78\Http\Verb\AbstractVerb $verb HTTP verb for the call.
-     * @param ild78\Api\Object $object Object.
+     * @param ild78\Api\AbstractObject $object Object.
      * @param array $options Guzzle options.
      * @return string
      * @throws ild78\Exceptions\InvalidArgumentException When calling with unsupported verb.
@@ -119,7 +119,7 @@ class Request
      * @throws ild78\Exceptions\ServerException On HTTP 5** errors.
      * @throws ild78\Exceptions\Exception On every over exception.
      */
-    public function request(ild78\Http\Verb\AbstractVerb $verb, Object $object, array $options = []) : string
+    public function request(ild78\Http\Verb\AbstractVerb $verb, AbstractObject $object, array $options = []) : string
     {
         $config = Config::getGlobal();
         $client = $config->getHttpClient();
