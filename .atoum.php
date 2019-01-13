@@ -29,9 +29,10 @@ if (extension_loaded('xdebug') === true) {
     $runner->addReport($coverage);
 
     // xnit report
+    $xunitPath = __DIR__ . '/reports/atoum-' . PHP_VERSION . '.xunit.xml';
     $xunit = new mageekguy\atoum\reports\asynchronous\xunit();
     $xunit
-        ->addWriter(new atoum\writers\file(__DIR__ . '/reports/atoum.xunit.xml'))
+        ->addWriter(new atoum\writers\file($xunitPath))
     ;
 
     $runner->addReport($xunit);

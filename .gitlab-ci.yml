@@ -1,32 +1,68 @@
 
-before_script:
-  - php -v
-  - composer --version
-  - composer install
+stages:
+  - lint
+  - test
 
-atoum:
+.bases:
+  before_script:
+    - phpenv local $PHP_VERSION
+    - php -v
+    - composer --version
+    - composer install
+  cache:
+    key: "$CI_COMMIT_REF_SLUG-$PHP_VERSION"
+    paths:
+      - vendor/
+  tags:
+    - php
+
+.atoum:
+  extends: .bases
   stage: test
   script: ./vendor/bin/atoum
   coverage: '/Code coverage value: \d+\.\d+%/'
-
   artifacts:
     reports:
-      junit: reports/atoum.xunit.xml
+      junit: reports/atoum-$PHP_VERSION.xunit.xml
 
-  cache:
-    paths:
-      - vendor/
-
-lint:
-  stage: test
+.lint:
+  extends: .bases
+  stage: lint
   script:
     - mkdir -p reports
-    - ./vendor/bin/phpcs --report=junit --report-file=reports/phpcs.junit.xml
-
+    - ./vendor/bin/phpcs --report=junit --report-file=reports/phpcs-$PHP_VERSION.junit.xml
   artifacts:
     reports:
-      junit: reports/phpcs.junit.xml
+      junit: reports/phpcs-$PHP_VERSION.junit.xml
 
-  cache:
-    paths:
-      - vendor/
+
+atoum:PHP7.1:
+  variables:
+    PHP_VERSION: 7.1.26
+  extends: .atoum
+
+atoum:PHP7.2:
+  variables:
+    PHP_VERSION: 7.2.14
+  extends: .atoum
+
+atoum:PHP7.3:
+  variables:
+    PHP_VERSION: 7.3.1
+  extends: .atoum
+
+
+lint:PHP7.1:
+  variables:
+    PHP_VERSION: 7.1.26
+  extends: .lint
+
+lint:PHP7.2:
+  variables:
+    PHP_VERSION: 7.2.14
+  extends: .lint
+
+lint:PHP7.3:
+  variables:
+    PHP_VERSION: 7.3.1
+  extends: .lint
