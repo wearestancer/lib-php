@@ -5,12 +5,11 @@ stages:
 
 .bases:
   before_script:
-    - phpenv local $PHP_VERSION
     - php -v
     - composer --version
     - composer install
   cache:
-    key: "$CI_COMMIT_REF_SLUG-$PHP_VERSION"
+    key: "$CI_COMMIT_REF_SLUG--$PHPENV_VERSION"
     paths:
       - vendor/
   tags:
@@ -23,58 +22,58 @@ stages:
   coverage: '/Code coverage value: \d+\.\d+%/'
   artifacts:
     reports:
-      junit: reports/atoum-$PHP_VERSION.xunit.xml
+      junit: reports/atoum-$PHPENV_VERSION.xunit.xml
 
 .lint:
   extends: .bases
   stage: lint
   script:
     - mkdir -p reports
-    - ./vendor/bin/phpcs --report=junit --report-file=reports/phpcs-$PHP_VERSION.junit.xml
+    - ./vendor/bin/phpcs --report=junit --report-file=reports/phpcs-$PHPENV_VERSION.junit.xml
   artifacts:
     reports:
-      junit: reports/phpcs-$PHP_VERSION.junit.xml
+      junit: reports/phpcs-$PHPENV_VERSION.junit.xml
 
 
 atoum:PHP7.1:
   variables:
-    PHP_VERSION: 7.1.26
+    PHPENV_VERSION: '7.1.26'
   extends: .atoum
 
 atoum:PHP7.2:
   variables:
-    PHP_VERSION: 7.2.14
+    PHPENV_VERSION: '7.2.14'
   extends: .atoum
 
 atoum:PHP7.3:
   variables:
-    PHP_VERSION: 7.3.1
+    PHPENV_VERSION: '7.3.1'
   extends: .atoum
 
 atoum:PHP:nightly:
   variables:
-    PHP_VERSION: master
+    PHPENV_VERSION: master
   extends: .atoum
   allow_failure: true
 
 
 lint:PHP7.1:
   variables:
-    PHP_VERSION: 7.1.26
+    PHPENV_VERSION: '7.1.26'
   extends: .lint
 
 lint:PHP7.2:
   variables:
-    PHP_VERSION: 7.2.14
+    PHPENV_VERSION: '7.2.14'
   extends: .lint
 
 lint:PHP7.3:
   variables:
-    PHP_VERSION: 7.3.1
+    PHPENV_VERSION: '7.3.1'
   extends: .lint
 
 lint:PHP:nightly:
   variables:
-    PHP_VERSION: master
+    PHPENV_VERSION: master
   extends: .lint
   allow_failure: true
