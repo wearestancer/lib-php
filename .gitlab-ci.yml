@@ -8,10 +8,6 @@ stages:
     - php -v
     - composer --version
     - composer install
-  cache:
-    key: "$CI_COMMIT_REF_SLUG--$PHPENV_VERSION"
-    paths:
-      - vendor/
   tags:
     - php
 
