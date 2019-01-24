@@ -18,58 +18,58 @@ stages:
   coverage: '/Code coverage value: \d+\.\d+%/'
   artifacts:
     reports:
-      junit: reports/atoum-$PHPENV_VERSION.xunit.xml
+      junit: reports/atoum-$PHP_VERSIONS.xunit.xml
 
 .lint:
   extends: .bases
   stage: lint
   script:
     - mkdir -p reports
-    - ./vendor/bin/phpcs --report=junit --report-file=reports/phpcs-$PHPENV_VERSION.junit.xml
+    - ./vendor/bin/phpcs --report=junit --report-file=reports/phpcs-$PHP_VERSIONS.junit.xml
   artifacts:
     reports:
-      junit: reports/phpcs-$PHPENV_VERSION.junit.xml
+      junit: reports/phpcs-$PHP_VERSIONS.junit.xml
 
 
 atoum:PHP7.1:
   variables:
-    PHPENV_VERSION: '7.1.26'
+    PHP_VERSIONS: '7.1'
   extends: .atoum
 
 atoum:PHP7.2:
   variables:
-    PHPENV_VERSION: '7.2.14'
+    PHP_VERSIONS: '7.2'
   extends: .atoum
 
 atoum:PHP7.3:
   variables:
-    PHPENV_VERSION: '7.3.1'
+    PHP_VERSIONS: '7.3'
   extends: .atoum
 
-atoum:PHP:nightly:
+atoum:PHP:7.4:
   variables:
-    PHPENV_VERSION: master
+    PHP_VERSIONS: '7.4'
   extends: .atoum
   allow_failure: true
 
 
 lint:PHP7.1:
   variables:
-    PHPENV_VERSION: '7.1.26'
+    PHP_VERSIONS: '7.1'
   extends: .lint
 
 lint:PHP7.2:
   variables:
-    PHPENV_VERSION: '7.2.14'
+    PHP_VERSIONS: '7.2'
   extends: .lint
 
 lint:PHP7.3:
   variables:
-    PHPENV_VERSION: '7.3.1'
+    PHP_VERSIONS: '7.3'
   extends: .lint
 
-lint:PHP:nightly:
+lint:PHP:7.4:
   variables:
-    PHPENV_VERSION: master
+    PHP_VERSIONS: '7.4'
   extends: .lint
   allow_failure: true
