@@ -549,7 +549,7 @@ abstract class AbstractObject implements JsonSerializable
      * @param string $id Identifier of the object.
      * @return self
      */
-    public function retrieve(string $id) : self
+    static public function retrieve(string $id) : self
     {
         return new static($id);
     }
