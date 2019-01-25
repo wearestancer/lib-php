@@ -5,6 +5,7 @@ stages:
 
 .bases:
   before_script:
+    - php-version $PHP_VERSIONS
     - php -v
     - composer --version
     - composer install
