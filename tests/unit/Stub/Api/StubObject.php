@@ -7,7 +7,7 @@ use GuzzleHttp;
 use ild78;
 use mock;
 
-class Object extends atoum
+class StubObject extends atoum
 {
     public function invalidDataProvider()
     {

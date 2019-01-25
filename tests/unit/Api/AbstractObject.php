@@ -6,11 +6,11 @@ use atoum;
 use DateTime;
 use GuzzleHttp;
 use ild78\Api;
-use ild78\Api\Object as testedClass;
+use ild78\Api\AbstractObject as testedClass;
 use ild78\Exceptions;
 use mock;
 
-class Object extends atoum
+class AbstractObject extends atoum
 {
     public function test__construct()
     {

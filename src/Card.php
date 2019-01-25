@@ -10,7 +10,7 @@ use ild78;
 /**
  * Representation of a card
  */
-class Card extends Api\Object implements Interfaces\PaymentMeansInterface
+class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterface
 {
     /** @var array */
     protected $dataModel = [

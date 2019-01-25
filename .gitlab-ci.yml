@@ -1,32 +1,76 @@
 
-before_script:
-  - php -v
-  - composer --version
-  - composer install
+stages:
+  - lint
+  - test
 
-atoum:
+.bases:
+  before_script:
+    - php-version $PHP_VERSIONS
+    - php -v
+    - composer --version
+    - composer install
+  tags:
+    - php
+
+.atoum:
+  extends: .bases
   stage: test
   script: ./vendor/bin/atoum
   coverage: '/Code coverage value: \d+\.\d+%/'
-
   artifacts:
     reports:
-      junit: reports/atoum.xunit.xml
+      junit: reports/atoum-$PHP_VERSIONS.xunit.xml
 
-  cache:
-    paths:
-      - vendor/
-
-lint:
-  stage: test
+.lint:
+  extends: .bases
+  stage: lint
   script:
     - mkdir -p reports
-    - ./vendor/bin/phpcs --report=junit --report-file=reports/phpcs.junit.xml
-
+    - ./vendor/bin/phpcs --report=junit --report-file=reports/phpcs-$PHP_VERSIONS.junit.xml
   artifacts:
     reports:
-      junit: reports/phpcs.junit.xml
+      junit: reports/phpcs-$PHP_VERSIONS.junit.xml
 
-  cache:
-    paths:
-      - vendor/
+
+atoum:PHP7.1:
+  variables:
+    PHP_VERSIONS: '7.1'
+  extends: .atoum
+
+atoum:PHP7.2:
+  variables:
+    PHP_VERSIONS: '7.2'
+  extends: .atoum
+
+atoum:PHP7.3:
+  variables:
+    PHP_VERSIONS: '7.3'
+  extends: .atoum
+
+atoum:PHP:7.4:
+  variables:
+    PHP_VERSIONS: '7.4'
+  extends: .atoum
+  allow_failure: true
+
+
+lint:PHP7.1:
+  variables:
+    PHP_VERSIONS: '7.1'
+  extends: .lint
+
+lint:PHP7.2:
+  variables:
+    PHP_VERSIONS: '7.2'
+  extends: .lint
+
+lint:PHP7.3:
+  variables:
+    PHP_VERSIONS: '7.3'
+  extends: .lint
+
+lint:PHP:7.4:
+  variables:
+    PHP_VERSIONS: '7.4'
+  extends: .lint
+  allow_failure: true
