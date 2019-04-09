@@ -4,6 +4,7 @@ namespace ild78\tests\unit;
 
 use atoum;
 use DateTime;
+use DateInterval;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
@@ -221,6 +222,110 @@ class Payment extends atoum
                     ->boolean($this->testedInstance->isSuccess())
                         ->isIdenticalTo($code === '00')
                         ->isIdenticalTo(!$this->testedInstance->isNotSuccess())
+        ;
+    }
+
+    public function testList()
+    {
+        $this
+            ->assert('Invalid limit')
+                ->exception(function () {
+                    testedClass::list(['limit' => 0]);
+                })
+                    ->isInstanceOf(Exceptions\InvalidSearchLimit::class)
+                    ->message
+                        ->isIdenticalTo('Limit must be between 1 and 100.')
+
+                ->exception(function () {
+                    testedClass::list(['limit' => 101]);
+                })
+                    ->isInstanceOf(Exceptions\InvalidSearchLimit::class)
+                    ->message
+                        ->isIdenticalTo('Limit must be between 1 and 100.')
+
+                ->exception(function () {
+                    testedClass::list(['limit' => uniqid()]);
+                })
+                    ->isInstanceOf(Exceptions\InvalidSearchLimit::class)
+                    ->message
+                        ->isIdenticalTo('Limit must be between 1 and 100.')
+
+            ->assert('Invalid start')
+                ->exception(function () {
+                    testedClass::list(['start' => -1]);
+                })
+                    ->isInstanceOf(Exceptions\InvalidSearchStart::class)
+                    ->message
+                        ->isIdenticalTo('Start must be a positive integer.')
+
+                ->exception(function () {
+                    testedClass::list(['start' => uniqid()]);
+                })
+                    ->isInstanceOf(Exceptions\InvalidSearchStart::class)
+                    ->message
+                        ->isIdenticalTo('Start must be a positive integer.')
+
+            ->assert('No terms')
+                ->exception(function () {
+                    testedClass::list([]);
+                })
+                    ->isInstanceOf(Exceptions\InvalidSearchFilter::class)
+                    ->message
+                        ->isIdenticalTo('Invalid search filters.')
+
+                ->exception(function () {
+                    testedClass::list(['foo' => 'bar']);
+                })
+                    ->isInstanceOf(Exceptions\InvalidSearchFilter::class)
+                    ->message
+                        ->isIdenticalTo('Invalid search filters.')
+
+            ->assert('Invalid created filter')
+                ->exception(function () {
+                    testedClass::list(['created' => time() + 100]);
+                })
+                    ->isInstanceOf(Exceptions\InvalidSearchCreationFilter::class)
+                    ->message
+                        ->isIdenticalTo('Created must be in the past.')
+
+                ->exception(function () {
+                    $date = new DateTime();
+                    $date->add(new DateInterval('P1D'));
+
+                    testedClass::list(['created' => $date]);
+                })
+                    ->isInstanceOf(Exceptions\InvalidSearchCreationFilter::class)
+                    ->message
+                        ->isIdenticalTo('Created must be in the past.')
+
+                ->exception(function () {
+                    testedClass::list(['created' => 0]);
+                })
+                    ->isInstanceOf(Exceptions\InvalidSearchCreationFilter::class)
+                    ->message
+                        ->isIdenticalTo('Created must be a position integer or a DateTime object.')
+
+                ->exception(function () {
+                    testedClass::list(['created' => uniqid()]);
+                })
+                    ->isInstanceOf(Exceptions\InvalidSearchCreationFilter::class)
+                    ->message
+                        ->isIdenticalTo('Created must be a position integer or a DateTime object.')
+
+            ->assert('Invalid order id filter')
+                ->exception(function () {
+                    testedClass::list(['order_id' => '']);
+                })
+                    ->isInstanceOf(Exceptions\InvalidSearchOrderIdFilter::class)
+                    ->message
+                        ->isIdenticalTo('Invalid order ID.')
+
+                ->exception(function () {
+                    testedClass::list(['order_id' => rand(0, PHP_INT_MAX)]);
+                })
+                    ->isInstanceOf(Exceptions\InvalidSearchOrderIdFilter::class)
+                    ->message
+                        ->isIdenticalTo('Invalid order ID.')
         ;
     }
 
