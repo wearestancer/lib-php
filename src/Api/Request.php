@@ -34,13 +34,20 @@ class Request
      *
      * @see self::request() For full documentation.
      * @param ild78\Api\AbstractObject $object Object.
+     * @param array $params Query parameters.
      * @return string
      */
-    public function get(AbstractObject $object) : string
+    public function get(AbstractObject $object, array $params = []) : string
     {
+        $options = [];
+
+        if ($params) {
+            $options['query'] = $params;
+        }
+
         $verb = new ild78\Http\Verb\Get();
 
-        return $this->request($verb, $object);
+        return $this->request($verb, $object, $options);
     }
 
     /**
@@ -147,8 +154,14 @@ class Request
         $excepParams = [];
 
         try {
-            $logger->debug(sprintf('API call : %s %s', (string) $verb, $object->getUri()));
-            $response = $client->request((string) $verb, $object->getUri(), $options);
+            $location = $object->getUri();
+
+            if (array_key_exists('query', $options)) {
+                $location .= '?' . http_build_query($options['query']);
+            }
+
+            $logger->debug(sprintf('API call : %s %s', (string) $verb, $location));
+            $response = $client->request((string) $verb, $location, array_diff_key($options, ['query' => 1]));
 
         // Bypass for internal exceptions.
         } catch (ild78\Exceptions\Exception $exception) {
