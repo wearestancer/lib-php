@@ -228,6 +228,22 @@ class Payment extends atoum
     public function testList()
     {
         $this
+            ->given($client = new mock\ild78\Http\Client)
+            ->and($response = new mock\ild78\Http\Response(200))
+            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/list.json'))
+            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($client)->request = $response)
+            ->and($config = Api\Config::init(uniqid()))
+            ->and($config->setHttpClient($client))
+
+            ->and($options = [
+                'headers' => [
+                    'Authorization' => $config->getBasicAuthHeader(),
+                    'Content-Type' => 'application/json',
+                ],
+                'timeout' => $config->getTimeout(),
+            ])
+
             ->assert('Invalid limit')
                 ->exception(function () {
                     testedClass::list(['limit' => 0]);
@@ -326,6 +342,89 @@ class Payment extends atoum
                     ->isInstanceOf(Exceptions\InvalidSearchOrderIdFilter::class)
                     ->message
                         ->isIdenticalTo('Invalid order ID.')
+
+            ->assert('Make request')
+                ->if($limit = rand(1, 100))
+                ->and($start = rand(0, PHP_INT_MAX))
+                ->and($orderId = uniqid())
+                ->and($created = time() - rand(10, 1000000))
+
+                ->and($location = $this->newTestedInstance->getUri())
+                ->and($terms1 = [
+                    'created' => $created,
+                    'limit' => $limit,
+                    'order_id' => $orderId,
+                    'start' => $start,
+                ])
+                ->and($location1 = $location . '?' . http_build_query($terms1))
+
+                ->and($terms2 = [
+                    'created' => $created,
+                    'limit' => $limit,
+                    'order_id' => $orderId,
+                    'start' => $start + 2, // Forced in json sample
+                ])
+                ->and($location2 = $location . '?' . http_build_query($terms2))
+                ->then
+                    ->generator($gen = testedClass::list($terms1))
+                        ->yields
+                            ->object
+                                ->isInstanceOf(testedClass::class)
+                                ->toString
+                                    ->isIdenticalTo('"paym_JnU7xyTGJvxRWZuxvj78qz7e"') // From json sample
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location1, $options)
+                                ->once
+                            ->withArguments('GET', $location2, $options)
+                                ->never
+
+                    ->generator($gen)
+                        ->yields
+                            ->object
+                                ->isInstanceOf(testedClass::class)
+                                ->toString
+                                    ->isIdenticalTo('"paym_p5tjCrXHy93xtVtVqvEJoC1c"') // From json sample
+                        ->yields
+                            ->object
+                                ->isInstanceOf(testedClass::class)
+                                ->toString
+                                    ->isIdenticalTo('"paym_JnU7xyTGJvxRWZuxvj78qz7e"') // From json sample
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location1, $options)
+                                ->once // Called the first time
+                            ->withArguments('GET', $location2, $options)
+                                ->once
+
+            ->assert('Empty response')
+                ->given($body = [
+                    'payments' => [],
+                    'range' => [
+                        'has_more' => false,
+                        'limit' => 10,
+                    ],
+                ])
+                ->and($this->calling($response)->getBody = json_encode($body))
+
+                ->if($limit = rand(1, 100))
+                ->and($terms = [
+                    'limit' => $limit,
+                ])
+                ->and($query = http_build_query(['limit' => $limit, 'start' => 0]))
+                ->and($location = $this->newTestedInstance->getUri() . '?' . $query)
+                ->then
+                    ->generator($gen = testedClass::list($terms))
+                        ->yields
+                            ->variable
+                                ->isNull
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location, $options)
+                                ->once
         ;
     }
 

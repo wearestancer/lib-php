@@ -29,6 +29,7 @@
     <exclude name="Squiz.Commenting.FunctionComment.SpacingAfterParamName" />
     <exclude name="Squiz.Commenting.FunctionComment.SpacingAfterParamType" />
     <exclude name="Squiz.Commenting.LongConditionClosingComment.Missing" />
+    <exclude name="Squiz.Commenting.PostStatementComment.Found" />
 
     <exclude name="Squiz.ControlStructures.ElseIfDeclaration.NotAllowed" />
     <exclude name="Squiz.ControlStructures.InlineIfDeclaration.NoBrackets" />

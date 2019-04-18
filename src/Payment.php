@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ild78;
 
 use DateTime;
+use Generator;
 use ild78;
 
 /**
@@ -206,17 +207,18 @@ class Payment extends Api\AbstractObject
      * `start` must be an integer, will be used as a pagination cursor, starts at 0.
      *
      * @param array $terms Search terms. May have `created`, `limit`, `order_id` or `start` key.
-     * @return void
+     * @return Generator
      * @throws ild78\Exceptions\InvalidSearchFilter When `$terms` is invalid.
      * @throws ild78\Exceptions\InvalidSearchCreationFilter When `created` is invalid.
      * @throws ild78\Exceptions\InvalidSearchOrderIdFilter When `order_id` is invalid.
      * @throws ild78\Exceptions\InvalidSearchLimit When `limit` is invalid.
      * @throws ild78\Exceptions\InvalidSearchStart When `start` is invalid.
      */
-    public static function list(array $terms)
+    public static function list(array $terms) : Generator
     {
         $allowed = array_flip(['created', 'limit', 'order_id', 'start']);
         $diff = array_intersect_key($terms, $allowed);
+        $params = [];
 
         if (!$diff) {
             throw new ild78\Exceptions\InvalidSearchFilter();
@@ -228,6 +230,8 @@ class Payment extends Api\AbstractObject
             if ($terms['created'] instanceof DateTime) {
                 $created = (int) $terms['created']->format('U');
             }
+
+            $params['created'] = $created;
 
             $type = gettype($created);
 
@@ -245,6 +249,7 @@ class Payment extends Api\AbstractObject
         }
 
         if (array_key_exists('limit', $terms)) {
+            $params['limit'] = $terms['limit'];
             $type = gettype($terms['limit']);
 
             if ($type !== 'integer' || $terms['limit'] < 1 || $terms['limit'] > 100) {
@@ -253,6 +258,7 @@ class Payment extends Api\AbstractObject
         }
 
         if (array_key_exists('order_id', $terms)) {
+            $params['order_id'] = $terms['order_id'];
             $type = gettype($terms['order_id']);
 
             if (!$terms['order_id'] || $type !== 'string') {
@@ -260,13 +266,46 @@ class Payment extends Api\AbstractObject
             }
         }
 
+        $params['start'] = 0;
+
         if (array_key_exists('start', $terms)) {
+            $params['start'] = $terms['start'];
             $type = gettype($terms['start']);
 
             if ($type !== 'integer' || $terms['start'] < 0) {
                 throw new ild78\Exceptions\InvalidSearchStart();
             }
         }
+
+        $obj = new static(); // Mandatory for requests.
+        $request = new Api\Request();
+
+        $gen = function () use ($obj, $request, $params) {
+            $more = true;
+            $start = 0;
+
+            do {
+                $params['start'] += $start;
+
+                $tmp = $request->get($obj, $params);
+
+                if (!$tmp) {
+                    $more = false;
+                } else {
+                    $results = json_decode($tmp, true);
+                    $more = $results['range']['has_more'];
+                    $start += $results['range']['limit'];
+
+                    foreach ($results['payments'] as $data) {
+                        $payment = new static($data['id']);
+
+                        yield $payment->hydrate($data);
+                    }
+                }
+            } while ($more);
+        };
+
+        return $gen();
     }
 
     /**
