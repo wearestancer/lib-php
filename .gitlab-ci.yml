@@ -76,7 +76,7 @@ lint:PHP:7.4:
   allow_failure: true
 
 
-coverage:
+coverage check:
   extends: .bases
   stage: test
   script:
