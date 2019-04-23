@@ -3,6 +3,11 @@ stages:
   - lint
   - test
 
+cache:
+  key: $CI_COMMIT_REF_SLUG
+  paths:
+    - coverage
+
 .bases:
   before_script:
     - php-version $PHP_VERSIONS
@@ -74,3 +79,16 @@ lint:PHP:7.4:
     PHP_VERSIONS: '7.4'
   extends: .lint
   allow_failure: true
+
+
+coverage:
+  extends: .bases
+  stage: test
+  script:
+    - echo '0' >> coverage
+    - export saved=`head -n 1 coverage`
+    - export coverage=`./vendor/bin/atoum | grep '> Code coverage value:' | sed -E -e 's/\%$//' | awk -F': ' '{ print $2 * 100 }'`
+    - (( $coverage < $saved )) && exit 1
+    - echo $coverage > coverage
+  variables:
+    PHP_VERSIONS: '7.3'
