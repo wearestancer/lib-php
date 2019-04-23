@@ -47,7 +47,7 @@ atoum:PHP7.3:
     PHP_VERSIONS: '7.3'
   extends: .atoum
 
-atoum:PHP:7.4:
+atoum:PHP7.4:
   variables:
     PHP_VERSIONS: '7.4'
   extends: .atoum
@@ -69,7 +69,7 @@ lint:PHP7.3:
     PHP_VERSIONS: '7.3'
   extends: .lint
 
-lint:PHP:7.4:
+lint:PHP7.4:
   variables:
     PHP_VERSIONS: '7.4'
   extends: .lint
