@@ -87,7 +87,7 @@ coverage:
   script:
     - echo '0' >> coverage
     - export saved=`head -n 1 coverage`
-    - export coverage=`./vendor/bin/atoum | grep '> Code coverage value:' | sed -E -e 's/\%$//' | awk -F': ' '{ print $2 * 100 }'`
+    - export coverage=`./vendor/bin/atoum | grep '> Code coverage value:' | sed -E -e 's/\%$//' | awk -F':' '{ print $2 * 100 }'`
     - (( $coverage < $saved )) && exit 1
     - echo $coverage > coverage
   variables:
