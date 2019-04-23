@@ -425,6 +425,26 @@ class Payment extends atoum
                         ->call('request')
                             ->withArguments('GET', $location, $options)
                                 ->once
+
+            ->assert('Invalid response')
+                ->given($this->calling($response)->getBody = null)
+
+                ->if($limit = rand(1, 100))
+                ->and($terms = [
+                    'limit' => $limit,
+                ])
+                ->and($query = http_build_query(['limit' => $limit, 'start' => 0]))
+                ->and($location = $this->newTestedInstance->getUri() . '?' . $query)
+                ->then
+                    ->generator($gen = testedClass::list($terms))
+                        ->yields
+                            ->variable
+                                ->isNull
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location, $options)
+                                ->once
         ;
     }
 
