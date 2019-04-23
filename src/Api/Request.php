@@ -121,7 +121,7 @@ class Request
      * @throws ild78\Exceptions\InvalidArgumentException When calling with unsupported verb.
      * @throws ild78\Exceptions\TooManyRedirectsException On too many redirection case (HTTP 310).
      * @throws ild78\Exceptions\NotAuthorizedException On credential problem (HTTP 401).
-     * @throws ild78\Exceptions\NotFoundException If an `id` is provided but it seems unknonw (HTTP 404).
+     * @throws ild78\Exceptions\NotFoundException If an `id` is provided but it seems unknown (HTTP 404).
      * @throws ild78\Exceptions\ClientException On HTTP 4** errors.
      * @throws ild78\Exceptions\ServerException On HTTP 5** errors.
      * @throws ild78\Exceptions\Exception On every over exception.

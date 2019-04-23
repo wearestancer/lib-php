@@ -37,7 +37,7 @@ class Customer extends TestCase
     public function testGetData()
     {
         $this
-            ->assert('Unknonw user result a 404 exception')
+            ->assert('Unknown user result a 404 exception')
                 ->if($this->newTestedInstance(md5(uniqid())))
                 ->then
                     ->exception(function () {

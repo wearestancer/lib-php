@@ -25,7 +25,7 @@ class Payment extends TestCase
     public function testGetData()
     {
         $this
-            ->assert('Unknonw payment result a 404 exception')
+            ->assert('Unknown payment result a 404 exception')
                 ->if($this->newTestedInstance(md5(uniqid())))
                 ->then
                     ->exception(function () {
