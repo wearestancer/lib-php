@@ -31,6 +31,20 @@ stages:
     reports:
       junit: reports/phpcs-$PHP_VERSIONS.junit.xml
 
+.coverage-check:
+  extends: .bases
+  stage: test
+  script:
+    - echo '0' >> coverage
+    - export saved=`head -n 1 coverage`
+    - export coverage=`./vendor/bin/atoum | grep '> Code coverage value:' | sed -E -e 's/\%$//' | awk -F':' '{ print $2 * 100 }'`
+    - (( $coverage < $saved )) && exit 1
+    - echo $coverage > coverage
+  cache:
+    key: "$CI_COMMIT_REF_SLUG-$PHP_VERSIONS"
+    paths:
+      - coverage
+
 
 atoum:PHP7.1:
   variables:
@@ -47,7 +61,7 @@ atoum:PHP7.3:
     PHP_VERSIONS: '7.3'
   extends: .atoum
 
-atoum:PHP:7.4:
+atoum:PHP7.4:
   variables:
     PHP_VERSIONS: '7.4'
   extends: .atoum
@@ -69,8 +83,30 @@ lint:PHP7.3:
     PHP_VERSIONS: '7.3'
   extends: .lint
 
-lint:PHP:7.4:
+lint:PHP7.4:
   variables:
     PHP_VERSIONS: '7.4'
   extends: .lint
+  allow_failure: true
+
+
+coverage-check PHP 7.1:
+  variables:
+    PHP_VERSIONS: '7.1'
+  extends: .coverage-check
+
+coverage-check PHP 7.2:
+  variables:
+    PHP_VERSIONS: '7.2'
+  extends: .coverage-check
+
+coverage-check PHP 7.3:
+  variables:
+    PHP_VERSIONS: '7.3'
+  extends: .coverage-check
+
+coverage-check PHP 7.4:
+  variables:
+    PHP_VERSIONS: '7.4'
+  extends: .coverage-check
   allow_failure: true
