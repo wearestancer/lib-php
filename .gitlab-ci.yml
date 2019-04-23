@@ -3,11 +3,6 @@ stages:
   - lint
   - test
 
-cache:
-  key: $CI_COMMIT_REF_SLUG
-  paths:
-    - coverage
-
 .bases:
   before_script:
     - php-version $PHP_VERSIONS
@@ -92,3 +87,7 @@ coverage:
     - echo $coverage > coverage
   variables:
     PHP_VERSIONS: '7.3'
+  cache:
+    key: $CI_COMMIT_REF_SLUG
+    paths:
+      - coverage
