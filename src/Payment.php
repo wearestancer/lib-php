@@ -66,6 +66,7 @@ class Payment extends Api\AbstractObject
             'type' => self::STRING,
         ],
         'refunds' => [
+            'exportable' => false,
             'list' => true,
             'type' => ild78\Refund::class,
         ],
