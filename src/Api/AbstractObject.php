@@ -49,6 +49,7 @@ abstract class AbstractObject implements JsonSerializable
     public function __construct(string $id = null)
     {
         $defaults = [
+            'exportable' => null,
             'list' => false,
             'size' => [
                 'fixed' => null,
@@ -63,6 +64,10 @@ abstract class AbstractObject implements JsonSerializable
         foreach ($this->dataModel as &$data) {
             $data = array_merge($defaults, $data);
             $data['size'] = array_merge($defaults['size'], $data['size']);
+
+            if (is_null($data['exportable'])) {
+                $data['exportable'] = !$data['restricted'];
+            }
         }
 
         $this->id = $id;
@@ -692,7 +697,7 @@ abstract class AbstractObject implements JsonSerializable
         $json = [];
         $data = [
             'id' => [
-                'restricted' => false,
+                'exportable' => true,
                 'value' => $this->id,
             ],
         ];
@@ -705,7 +710,7 @@ abstract class AbstractObject implements JsonSerializable
         foreach ($data as $property => $infos) {
             $value = $infos['value'];
 
-            if ($value !== null && !$infos['restricted']) {
+            if ($value !== null && $infos['exportable']) {
                 $prop = preg_replace_callback('`[A-Z]`', $replace, $property);
 
                 $json[$prop] = $value;

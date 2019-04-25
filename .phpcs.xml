@@ -39,6 +39,7 @@
 
     <exclude name="Squiz.Formatting.OperatorBracket.MissingBrackets" />
 
+    <exclude name="Squiz.PHP.DisallowComparisonAssignment.AssignedBool" />
     <exclude name="Squiz.PHP.DisallowComparisonAssignment.AssignedComparison" />
     <exclude name="Squiz.PHP.DisallowInlineIf.Found" />
 
