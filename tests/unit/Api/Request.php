@@ -30,18 +30,41 @@ class Request extends atoum
 
             ->if($logger = new mock\ild78\Api\Logger)
             ->and($config->setLogger($logger))
-            ->and($debugMessage = 'API call : ' . $method . ' ' . $object->getUri())
+
             ->then
-                ->string($this->testedInstance->request($method, $object))
-                    ->isIdenticalTo($body)
-                ->mock($client)
-                    ->call('request')
-                        ->withIdenticalArguments((string) $method, $object->getUri())
-                            ->once
-                ->mock($logger)
-                    ->call('debug')->withArguments($debugMessage, [])->once
-                    ->call('error')->never
-                    ->call('notice')->never
+                ->assert('No query params')
+                    ->if($debugMessage = 'API call : ' . $method . ' ' . $object->getUri())
+                    ->then
+                        ->string($this->testedInstance->request($method, $object))
+                            ->isIdenticalTo($body)
+                        ->mock($client)
+                            ->call('request')
+                                ->withIdenticalArguments((string) $method, $object->getUri())
+                                    ->once
+                        ->mock($logger)
+                            ->call('debug')->withArguments($debugMessage, [])->once
+                            ->call('error')->never
+                            ->call('notice')->never
+
+                ->assert('With query params')
+                    ->if($key1 = uniqid())
+                    ->and($value1 = uniqid())
+                    ->and($key2 = uniqid())
+                    ->and($value2 = uniqid())
+                    ->and($query = [$key1 => $value1, $key2 => $value2])
+                    ->and($location = $object->getUri() . '?' . $key1 . '=' . $value1 . '&'. $key2 . '=' . $value2)
+                    ->and($debugMessage = 'API call : ' . $method . ' ' . $location)
+                    ->then
+                        ->string($this->testedInstance->request($method, $object, ['query' => $query]))
+                            ->isIdenticalTo($body)
+                        ->mock($client)
+                            ->call('request')
+                                ->withIdenticalArguments((string) $method, $location)
+                                    ->once
+                        ->mock($logger)
+                            ->call('debug')->withArguments($debugMessage, [])->once
+                            ->call('error')->never
+                            ->call('notice')->never
         ;
     }
 
@@ -152,6 +175,42 @@ class Request extends atoum
                         ->call('error')->never
                         ->call('notice')->never
 
+            ->assert('With query parameters')
+                ->given($client = new mock\GuzzleHttp\Client)
+                ->and($response = new mock\GuzzleHttp\Psr7\Response)
+                ->and($body = uniqid())
+                ->and($this->calling($response)->getBody = $body)
+                ->and($this->calling($client)->request = $response)
+
+                ->and($config->setHttpClient($client))
+
+                ->if($this->newTestedInstance)
+                ->and($method = new ild78\Http\Verb\Get)
+                ->and($object = new mock\ild78\Api\AbstractObject)
+
+                ->if($logger = new mock\ild78\Api\Logger)
+                ->and($config->setLogger($logger))
+
+                ->if($key1 = uniqid())
+                ->and($value1 = uniqid())
+                ->and($key2 = uniqid())
+                ->and($value2 = uniqid())
+                ->and($query = [$key1 => $value1, $key2 => $value2])
+                ->and($location = $object->getUri() . '?' . $key1 . '=' . $value1 . '&'. $key2 . '=' . $value2)
+                ->and($debugMessage = 'API call : ' . $method . ' ' . $location)
+                ->then
+                    ->string($this->testedInstance->request($method, $object, ['query' => $query]))
+                        ->isIdenticalTo($body)
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withIdenticalArguments((string) $method, $location)
+                                ->once
+
+                    ->mock($logger)
+                        ->call('debug')->withArguments($debugMessage, [])->once
+                        ->call('error')->never
+                        ->call('notice')->never
 
             ->assert('With bad credential')
                 ->given($content = file_get_contents(__DIR__ . '/../fixtures/auth/not-authorized.json'))
@@ -393,6 +452,15 @@ class Request extends atoum
                         ->mock($request)
                             ->call('request')
                                 ->withArguments($get, $object)
+                                    ->once
+
+                ->assert('GET with query parameters')
+                    ->if($query = [uniqid() => uniqid()])
+                    ->and($request->get($object, $query))
+                    ->then
+                        ->mock($request)
+                            ->call('request')
+                                ->withArguments($get, $object, ['query' => $query])
                                     ->once
 
                 ->assert('POST')

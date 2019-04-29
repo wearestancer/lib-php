@@ -3,12 +3,25 @@
 namespace ild78\tests\functional;
 
 use ild78;
+use ild78\Payment as testedClass;
 
 /**
  * @namespace \tests\functional
  */
 class Payment extends TestCase
 {
+    protected $order;
+    protected $paymentList = [];
+
+    public function beforeTestMethod($testMethod)
+    {
+        if ($testMethod === 'testList' && !$this->order) {
+            $this->order = uniqid();
+        }
+
+        return parent::beforeTestMethod($testMethod);
+    }
+
     public function testBadCredential()
     {
         $this
@@ -25,7 +38,7 @@ class Payment extends TestCase
     public function testGetData()
     {
         $this
-            ->assert('Unknonw payment result a 404 exception')
+            ->assert('Unknown payment result a 404 exception')
                 ->if($this->newTestedInstance(md5(uniqid())))
                 ->then
                     ->exception(function () {
@@ -62,6 +75,69 @@ class Payment extends TestCase
                     ->string($customer->getId())
                         ->isIdenticalTo('cust_Ptlig1Zc0ln17OHqeANRdHHU')
         ;
+    }
+
+    /**
+     * @dataProvider currencyDataProvider
+     */
+    public function testList($currency)
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount($amount = rand(50, 10000)))
+            ->and($this->testedInstance->setDescription(sprintf('Automatic test for list, %.02f %s', $amount / 100, $currency)))
+            ->and($this->testedInstance->setCurrency($currency))
+            ->and($this->testedInstance->setCard($card = new ild78\Card))
+            ->and($this->testedInstance->setOrderId($this->order))
+            ->and($card->setNumber($this->getValidCardNumber()))
+            ->and($card->setExpirationMonth(rand(1, 12)))
+            ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
+            ->and($card->setCvc((string) rand(100, 999)))
+            ->and($this->testedInstance->setCustomer($customer = new ild78\Customer))
+            ->and($customer->setName('John Doe'))
+            ->and($customer->setEMail('john.doe@example.com'))
+            ->and($this->testedInstance->save())
+            ->and(array_push($this->paymentList, $this->testedInstance))
+            ->then
+                ->generator($gen = testedClass::list(['order_id' => $this->order]))
+        ;
+
+        $methods = [
+            'getId',
+            'getAmount',
+            'getDescription',
+            'getCurrency',
+            'getOrderId',
+        ];
+        $cust = [
+            'getId',
+            'getEmail',
+            'getMobile',
+            'getName',
+        ];
+
+        foreach ($gen as $idx => $object) {
+            $this
+                ->object($object)
+                    ->isInstanceOfTestedClass
+                ->string($object->getCard()->getId())
+                    ->isEqualTo($this->paymentList[$idx]->getCard()->getId())
+            ;
+
+            foreach ($methods as $method) {
+                $this
+                    ->variable($object->{$method}())
+                        ->isIdenticalTo($this->paymentList[$idx]->{$method}())
+                ;
+            }
+
+            foreach ($cust as $method) {
+                $this
+                    ->variable($object->getCustomer()->{$method}())
+                        ->isIdenticalTo($this->paymentList[$idx]->getCustomer()->{$method}())
+                ;
+            }
+        }
     }
 
     /**

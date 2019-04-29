@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.2] - 2019-04-29
+
+### Added
+- `Payment::list()` method
+- Coverage regression test (inner way to do it, Coveralls will be a better way but for later)
+
+
+## [0.0.1] - 2019-04-10
+
 ### Added
 - First implementation
 - Tests on 7.1, 7.2 and 7.3

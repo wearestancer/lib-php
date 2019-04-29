@@ -34,13 +34,20 @@ class Request
      *
      * @see self::request() For full documentation.
      * @param ild78\Api\AbstractObject $object Object.
+     * @param array $params Query parameters.
      * @return string
      */
-    public function get(AbstractObject $object) : string
+    public function get(AbstractObject $object, array $params = []) : string
     {
+        $options = [];
+
+        if ($params) {
+            $options['query'] = $params;
+        }
+
         $verb = new ild78\Http\Verb\Get();
 
-        return $this->request($verb, $object);
+        return $this->request($verb, $object, $options);
     }
 
     /**
@@ -114,7 +121,7 @@ class Request
      * @throws ild78\Exceptions\InvalidArgumentException When calling with unsupported verb.
      * @throws ild78\Exceptions\TooManyRedirectsException On too many redirection case (HTTP 310).
      * @throws ild78\Exceptions\NotAuthorizedException On credential problem (HTTP 401).
-     * @throws ild78\Exceptions\NotFoundException If an `id` is provided but it seems unknonw (HTTP 404).
+     * @throws ild78\Exceptions\NotFoundException If an `id` is provided but it seems unknown (HTTP 404).
      * @throws ild78\Exceptions\ClientException On HTTP 4** errors.
      * @throws ild78\Exceptions\ServerException On HTTP 5** errors.
      * @throws ild78\Exceptions\Exception On every over exception.
@@ -147,8 +154,14 @@ class Request
         $excepParams = [];
 
         try {
-            $logger->debug(sprintf('API call : %s %s', (string) $verb, $object->getUri()));
-            $response = $client->request((string) $verb, $object->getUri(), $options);
+            $location = $object->getUri();
+
+            if (array_key_exists('query', $options)) {
+                $location .= '?' . http_build_query($options['query']);
+            }
+
+            $logger->debug(sprintf('API call : %s %s', (string) $verb, $location));
+            $response = $client->request((string) $verb, $location, array_diff_key($options, ['query' => 1]));
 
         // Bypass for internal exceptions.
         } catch (ild78\Exceptions\Exception $exception) {

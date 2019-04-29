@@ -11,7 +11,7 @@ use JsonSerializable;
 /**
  * Manage common code between API object
  *
- * @throws ild78\Exceptions\BadMethodCallException when calling unknonw method
+ * @throws ild78\Exceptions\BadMethodCallException when calling unknown method
  */
 abstract class AbstractObject implements JsonSerializable
 {

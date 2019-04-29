@@ -356,7 +356,7 @@ class Config
         ];
 
         if (!in_array($mode, $validMode, true)) {
-            $message = 'Unknonw mode "%s". Please use class constant "LIVE_MODE" or "TEST_MODE".';
+            $message = 'Unknown mode "%s". Please use class constant "LIVE_MODE" or "TEST_MODE".';
 
             throw new ild78\Exceptions\InvalidArgumentException(sprintf($message, $mode));
         }
