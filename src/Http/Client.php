@@ -216,6 +216,18 @@ class Client implements ild78\Interfaces\HttpClientInterface
                 $params['message'] = curl_error($this->curl);
             }
 
+            if ($this->lastResponse instanceof Response) {
+                $json = json_decode((string) $this->lastResponse->getBody(), true);
+
+                if (json_last_error() === JSON_ERROR_NONE
+                    && array_key_exists('error', $json)
+                    && array_key_exists('message', $json['error'])
+                    && $json['error']['message']
+                ) {
+                    $params['message'] = $json['error']['message'];
+                }
+            }
+
             $logMethod = $class::getLogLevel();
             $logMessage = null;
 
