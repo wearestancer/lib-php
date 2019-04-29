@@ -30,7 +30,7 @@ class Customer extends TestCase
                 })
                     ->isInstanceOf(ild78\Exceptions\NotFoundException::class)
                     ->message
-                        ->isIdenticalTo('Resource not found')
+                        ->isIdenticalTo('No such customer ' . $id)
         ;
     }
 
@@ -38,14 +38,14 @@ class Customer extends TestCase
     {
         $this
             ->assert('Unknown user result a 404 exception')
-                ->if($this->newTestedInstance(md5(uniqid())))
+                ->if($this->newTestedInstance($id = md5(uniqid())))
                 ->then
                     ->exception(function () {
                         $this->testedInstance->getName();
                     })
                         ->isInstanceOf(ild78\Exceptions\NotFoundException::class)
                         ->message
-                            ->isIdenticalTo('Resource not found')
+                            ->isIdenticalTo('No such customer ' . $id)
 
             ->assert('Get test user')
                 ->if($this->newTestedInstance('cust_aEBF8w2szNdhreJ0uEmrplen'))

@@ -225,6 +225,10 @@ class Client implements ild78\Interfaces\HttpClientInterface
                     && $json['error']['message']
                 ) {
                     $params['message'] = $json['error']['message'];
+
+                    if (is_array($json['error']['message'])) {
+                        $params['message'] = current($json['error']['message']);
+                    }
                 }
             }
 
