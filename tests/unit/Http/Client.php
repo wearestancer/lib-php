@@ -459,6 +459,88 @@ class Client extends atoum
                     ->function('curl_exec')
                         ->wasCalled
                             ->once
+
+            ->assert('Error in response')
+                ->given($this->newTestedInstance)
+                ->and($curl = $this->testedInstance->getCurlResource())
+                ->if($message = uniqid())
+                ->and($body = json_encode(['error' => ['message' => $message]]))
+                ->if($this->function->curl_setopt = true)
+                ->and($this->function->curl_exec = $body)
+                ->and($this->function->curl_getinfo = $code = rand(400, 599))
+                ->and($this->function->curl_errno = 0)
+                ->and($this->function->curl_error = '')
+                ->and($method = 'GET')
+                ->and($host = uniqid())
+                ->then
+                    ->exception(function () use ($method, $host) {
+                        $this->testedInstance->request($method, $host);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\HttpException::class)
+                        ->hasCode($code)
+                        ->message
+                            ->isIdenticalTo($message)
+
+                    ->object($this->exception->getRequest())
+                        ->isInstanceOf(ild78\Http\Request::class)
+
+                    ->object($response = $this->exception->getResponse())
+                        ->isInstanceOf(ild78\Http\Response::class)
+
+                    ->string($response->getBody())
+                        ->isIdenticalTo($body)
+
+                    ->function('curl_setopt')
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_URL, $host)
+                            ->once
+
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_CUSTOMREQUEST, $method)
+                            ->once
+
+                    ->function('curl_exec')
+                        ->wasCalled
+                            ->once
+
+            ->assert('Error as an array in response')
+                ->given($this->newTestedInstance)
+                ->and($curl = $this->testedInstance->getCurlResource())
+                ->if($message = uniqid())
+                ->and($body = json_encode(['error' => ['message' => [uniqid() => $message]]]))
+                ->if($this->function->curl_setopt = true)
+                ->and($this->function->curl_exec = $body)
+                ->and($this->function->curl_getinfo = $code = rand(400, 599))
+                ->and($this->function->curl_errno = 0)
+                ->and($this->function->curl_error = '')
+                ->and($method = 'GET')
+                ->and($host = uniqid())
+                ->then
+                    ->exception(function () use ($method, $host) {
+                        $this->testedInstance->request($method, $host);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\HttpException::class)
+                        ->hasCode($code)
+                        ->message
+                            ->isIdenticalTo($message)
+
+                    ->object($this->exception->getRequest())
+                        ->isInstanceOf(ild78\Http\Request::class)
+
+                    ->object($response = $this->exception->getResponse())
+                        ->isInstanceOf(ild78\Http\Response::class)
+
+                    ->string($response->getBody())
+                        ->isIdenticalTo($body)
+
+                    ->function('curl_setopt')
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_URL, $host)
+                            ->once
+
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_CUSTOMREQUEST, $method)
+                            ->once
+
+                    ->function('curl_exec')
+                        ->wasCalled
+                            ->once
         ;
     }
 
