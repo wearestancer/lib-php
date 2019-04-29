@@ -103,7 +103,7 @@ class Request extends atoum
                     })
                         ->isInstanceOf(ild78\Exceptions\NotAuthorizedException::class)
                         ->message
-                            ->isIdenticalTo('You are not authorized to access that resource.')
+                            ->isIdenticalTo('You are not authorized to access that resource')
 
                         ->variable($this->exception->getPrevious())
                             ->isNull
