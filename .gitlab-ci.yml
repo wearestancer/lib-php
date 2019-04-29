@@ -2,6 +2,7 @@
 stages:
   - lint
   - test
+  - coverage
 
 .bases:
   before_script:
@@ -33,7 +34,7 @@ stages:
 
 .coverage-check:
   extends: .bases
-  stage: test
+  stage: coverage
   script:
     - echo '0' >> coverage
     - export saved=`head -n 1 coverage`
