@@ -7,9 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- `Payment::list()` method
+
+
+## [0.0.1] - 2019-04-10
+
+### Added
 - First implementation
 - Tests on 7.1, 7.2 and 7.3
-- `Payment::list()` method
 
 ### Changes
 - `Object` renamed in `AbstractObject`
