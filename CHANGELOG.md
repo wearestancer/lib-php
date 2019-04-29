@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - First issue/MR templates
 
+### Changes
+- Exception message will return API error message when possible
+
 
 ## [0.0.2] - 2019-04-29
 

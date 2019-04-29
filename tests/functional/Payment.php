@@ -39,14 +39,14 @@ class Payment extends TestCase
     {
         $this
             ->assert('Unknown payment result a 404 exception')
-                ->if($this->newTestedInstance(md5(uniqid())))
+                ->if($this->newTestedInstance($id = md5(uniqid())))
                 ->then
                     ->exception(function () {
                         $this->testedInstance->getAmount();
                     })
                         ->isInstanceOf(ild78\Exceptions\NotFoundException::class)
                         ->message
-                            ->isIdenticalTo('Resource not found')
+                            ->isIdenticalTo('No such payment id ' . $id)
 
             ->assert('Get test payment')
                 ->if($this->newTestedInstance('paym_uyqKGrWvxC7AlsuJq1vlh5FF'))
