@@ -705,7 +705,7 @@ class StubObject extends atoum
                     ->boolean($this->testedInstance->isNotModified())
                         ->isFalse
 
-                ->assert('Should false if an object in one property is modified')
+                ->assert('Should return false if an object in one property is modified')
                     ->if($this->testedInstance->setObject2($object1))
                     ->and($object1->testOnlySetModified(true))
                     ->and($this->testedInstance->testOnlySetModified(false))
@@ -716,7 +716,7 @@ class StubObject extends atoum
                     ->boolean($this->testedInstance->isNotModified())
                         ->isFalse
 
-                ->assert('Should false if an object in a list is modified')
+                ->assert('Should return false if an object in a list is modified')
                     ->if($this->testedInstance->addArray4($object2))
                     ->and($this->testedInstance->addArray4($object3))
                     ->and($this->testedInstance->testOnlySetModified(false))
@@ -732,6 +732,20 @@ class StubObject extends atoum
 
                     ->boolean($this->testedInstance->isNotModified())
                         ->isFalse
+
+                ->assert('Should not use not exported object state')
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->setObject3($object3))
+
+                    ->and($object3->testOnlySetModified(true))
+                    ->and($this->testedInstance->testOnlySetModified(false))
+
+                    ->then
+                        ->boolean($this->testedInstance->isModified())
+                            ->isFalse
+
+                        ->boolean($this->testedInstance->isNotModified())
+                            ->isTrue
         ;
     }
 

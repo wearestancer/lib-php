@@ -61,6 +61,10 @@ class StubObject extends ild78\Api\AbstractObject
         'object2' => [
             'type' => self::class,
         ],
+        'object3' => [
+            'exportable' => false,
+            'type' => self::class,
+        ],
         'restricted1' => [
             'restricted' => true,
             'type' => 'string',
