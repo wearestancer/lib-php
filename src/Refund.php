@@ -38,6 +38,18 @@ class Refund extends Api\AbstractObject
     ];
 
     /**
+     * Indicate if the current object is modified.
+     *
+     * Overrided to prevent to return payment state.
+     *
+     * @return boolean
+     */
+    public function isModified() : bool
+    {
+        return $this->modified;
+    }
+
+    /**
      * Save the current object.
      *
      * Overrided to make sure that the payment instance and the modified flag will not change.

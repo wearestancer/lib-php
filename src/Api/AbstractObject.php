@@ -771,11 +771,13 @@ abstract class AbstractObject implements JsonSerializable
         $type = gettype($value);
         $length = $value;
 
+        $mismatchType = $type !== $model['type'];
+
         if ($type === 'object') {
-            $type = get_class($value);
+            $mismatchType = !($value instanceof $model['type']);
         }
 
-        if ($type !== $model['type']) {
+        if ($mismatchType) {
             $params = [
                 $type,
                 $model['type'],
