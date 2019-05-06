@@ -66,7 +66,7 @@ class Refund extends Api\AbstractObject
         parent::save();
 
         // Force same payment instance.
-        $this->setPayment($payment);
+        $this->setPayment($payment)->modified = false;
 
         return $this;
     }

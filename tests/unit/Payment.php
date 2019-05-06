@@ -600,6 +600,12 @@ class Payment extends atoum
                         ->integer($refunds[0]->getAmount())
                             ->isIdenticalTo($amount)
 
+                        ->boolean($this->testedInstance->isModified())
+                            ->isFalse
+
+                        ->boolean($refunds[0]->isModified())
+                            ->isFalse
+
                 ->assert('Without amount we will refund all')
                     ->if($this->calling($response)->getBody = json_encode($refund2Data))
                     ->then
@@ -624,6 +630,15 @@ class Payment extends atoum
 
                         ->integer($refunds[1]->getAmount())
                             ->isIdenticalTo($lastPart)
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isFalse
+
+                        ->boolean($refunds[0]->isModified())
+                            ->isFalse
+
+                        ->boolean($refunds[1]->isModified())
+                            ->isFalse
         ;
     }
 
