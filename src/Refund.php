@@ -60,6 +60,8 @@ class Refund extends Api\AbstractObject
     public function save() : Api\AbstractObject
     {
         $payment = $this->getPayment();
+        $modified = $payment->isModified();
+        $payment->modified = false;
 
         $this->modified = true; // Mandatory to force `parent::save()` to work when no amount setted.
 
@@ -67,6 +69,7 @@ class Refund extends Api\AbstractObject
 
         // Force same payment instance.
         $this->setPayment($payment)->modified = false;
+        $payment->modified = $modified;
 
         return $this;
     }
