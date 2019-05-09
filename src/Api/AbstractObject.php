@@ -348,7 +348,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return string|null
      */
-    public function getId()
+    public function getId() : ?string
     {
         return $this->id;
     }
