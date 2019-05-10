@@ -446,7 +446,11 @@ abstract class AbstractObject implements JsonSerializable
                         $this->dataModel[$property]['value']->hydrate($value);
                     }
                 } else {
-                    $this->dataModel[$property]['value'] = $value;
+                    if ($this->dataModel[$property]['restricted'] || is_null($value)) {
+                        $this->dataModel[$property]['value'] = $value;
+                    } else {
+                        $this->$property = $value;
+                    }
                 }
 
                 if (is_object($this->dataModel[$property]['value'])) {
