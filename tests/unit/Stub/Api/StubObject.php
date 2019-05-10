@@ -902,8 +902,9 @@ class StubObject extends atoum
                 ->and($integer3 = $this->makeIntegerLessThan(10))
 
                 ->and($restricted1 = $this->makeStringAtLeast(10))
+                ->and($object2 = uniqid())
 
-                ->and($body = json_encode(compact('id', 'created', 'string1', 'string2', 'string3', 'string4', 'integer1', 'integer2', 'integer3', 'restricted1')))
+                ->and($body = json_encode(compact('id', 'created', 'string1', 'string2', 'string3', 'string4', 'integer1', 'integer2', 'integer3', 'restricted1', 'object2')))
 
                 ->and($mock = new GuzzleHttp\Handler\MockHandler([
                     new GuzzleHttp\Psr7\Response(200, [], $body),
@@ -947,6 +948,16 @@ class StubObject extends atoum
 
                         ->string($this->testedInstance->getRestricted1())
                             ->isIdenticalTo($restricted1)
+
+                        ->object($this->testedInstance->getObject2())
+                            ->isInstanceOfTestedClass
+                        ->string($this->testedInstance->getObject2()->getId())
+                            ->isIdenticalTo($object2)
+                        ->boolean($this->testedInstance->getObject2()->testOnlyGetPopulated())
+                            ->isTrue
+
+                        ->boolean($this->testedInstance->testOnlyGetPopulated())
+                            ->isTrue
         ;
     }
 

@@ -573,10 +573,11 @@ abstract class AbstractObject implements JsonSerializable
         $request = new Request();
         $response = $request->get($this);
         $body = json_decode($response, true);
-        $this->hydrate($body, false);
 
         $this->modified = false;
         $this->populated = true;
+
+        $this->hydrate($body, false);
 
         return $this;
     }
@@ -631,14 +632,14 @@ abstract class AbstractObject implements JsonSerializable
             $response = $request->post($this);
         }
 
+        $this->modified = false;
+        $this->populated = true;
+
         $body = json_decode($response, true);
 
         if ($body) {
             $this->hydrate($body, false);
         }
-
-        $this->modified = false;
-        $this->populated = true;
 
         return $this;
     }
