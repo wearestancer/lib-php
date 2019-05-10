@@ -286,6 +286,7 @@ abstract class AbstractObject implements JsonSerializable
         }
 
         $type = gettype($value);
+        $changeModified = false;
 
         if ($this->dataModel[$property]['list']) {
             if ($type !== 'array') {
@@ -296,13 +297,24 @@ abstract class AbstractObject implements JsonSerializable
 
             foreach ($value as $val) {
                 $this->validateDataModel($property, $val);
+
+                if (!$changeModified && !($val instanceof self)) {
+                    $changeModified = true;
+                }
             }
         } else {
             $this->validateDataModel($property, $value);
+
+            if (!($value instanceof self)) {
+                $changeModified = true;
+            }
         }
 
         $this->dataModel[$property]['value'] = $value;
-        $this->modified = true;
+
+        if ($changeModified) { // We will use inner object state.
+            $this->modified = true;
+        }
 
         return $this;
     }
