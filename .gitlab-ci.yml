@@ -45,6 +45,9 @@ stages:
     key: "$PHP_VERSIONS"
     paths:
       - coverage
+  except:
+    - tags
+    - master
 
 
 atoum:PHP7.1:
