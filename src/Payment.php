@@ -299,7 +299,7 @@ class Payment extends Api\AbstractObject
                     foreach ($results['payments'] as $data) {
                         $payment = new static($data['id']);
 
-                        yield $payment->hydrate($data);
+                        yield $payment->hydrate($data, false);
                     }
                 }
             } while ($more);
