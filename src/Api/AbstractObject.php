@@ -154,6 +154,27 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
+     * Setter alias
+     *
+     * @param string $property Property to modify.
+     * @param mixed $value New value.
+     * @return void
+     */
+    public function __set(string $property, $value) : void
+    {
+        $prop = strtolower($property);
+        $method = 'set' . $prop;
+
+        if (method_exists($this, $method)) {
+            $this->{$method}($value);
+        }
+
+        if (array_key_exists($prop, $this->dataModel)) {
+            $this->{$method}($value);
+        }
+    }
+
+    /**
      * Return a string representation (as a JSON) of the current object.
      *
      * @uses self::toString()
