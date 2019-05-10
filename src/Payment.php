@@ -382,8 +382,7 @@ class Payment extends Api\AbstractObject
             $refund->setAmount($amount);
         }
 
-        // `setPayment` is called again to force current instance
-        return $this->addRefunds($refund->save()->setPayment($this));
+        return $this->addRefunds($refund->save());
     }
 
     /**

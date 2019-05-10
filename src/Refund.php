@@ -36,4 +36,26 @@ class Refund extends Api\AbstractObject
             'type' => ild78\Payment::class,
         ],
     ];
+
+    /**
+     * Save the current object.
+     *
+     * Overrided to make sure that the payment instance and the modified flag will not change.
+     *
+     * @return Api\AbstractObject
+     * @throws ild78\Exceptions\InvalidArgumentException When all requirement are not provided.
+     */
+    public function save() : Api\AbstractObject
+    {
+        $payment = $this->getPayment();
+
+        $this->modified = true; // Mandatory to force `parent::save()` to work when no amount setted.
+
+        parent::save();
+
+        // Force same payment instance.
+        $this->setPayment($payment);
+
+        return $this;
+    }
 }
