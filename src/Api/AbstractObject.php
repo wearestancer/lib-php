@@ -401,9 +401,10 @@ abstract class AbstractObject implements JsonSerializable
      * Hydrate the current object.
      *
      * @param array $data Data for hydratation.
+     * @param boolean $modified Do we need to modify the flag.
      * @return self
      */
-    public function hydrate(array $data) : self
+    public function hydrate(array $data, bool $modified = true) : self
     {
         foreach ($data as $key => $value) {
             $property = $key;
@@ -445,16 +446,28 @@ abstract class AbstractObject implements JsonSerializable
                     if (is_array($value)) {
                         $this->dataModel[$property]['value']->hydrate($value);
                     }
+
+                    $this->dataModel[$property]['value']->modified = $modified;
                 } else {
-                    if ($this->dataModel[$property]['restricted'] || is_null($value)) {
+                    if ($this->dataModel[$property]['restricted'] || is_null($value) || !$modified) {
                         $this->dataModel[$property]['value'] = $value;
                     } else {
                         $this->$property = $value;
                     }
                 }
 
-                if (is_object($this->dataModel[$property]['value'])) {
-                    $this->dataModel[$property]['value']->populated = $this->populated;
+                if ($this->populated) {
+                    if ($this->dataModel[$property]['value'] instanceof self) {
+                        $this->dataModel[$property]['value']->populated = $this->populated;
+                    }
+
+                    if (is_array($this->dataModel[$property]['value'])) {
+                        foreach ($this->dataModel[$property]['value'] as $obj) {
+                            if ($obj instanceof self) {
+                                $obj->populated = $this->populated;
+                            }
+                        }
+                    }
                 }
             }
         }
