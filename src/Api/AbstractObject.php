@@ -244,7 +244,7 @@ abstract class AbstractObject implements JsonSerializable
 
         $value = $this->dataModel[$property]['value'];
 
-        if (is_null($value) && $this->id && $this->isNotModified()) {
+        if (is_null($value) && $this->isNotModified()) {
             $value = $this->populate()->dataModel[$property]['value'];
         }
 
@@ -560,21 +560,23 @@ abstract class AbstractObject implements JsonSerializable
      * Populate object with API data.
      *
      * This method is not supposed to be used directly, it will be used automaticaly when ask for some data.
-     * The purpose of this method is to limitate API call (and  avoid reaching the rate limit).
+     * The purpose of this method is to limitate API call (and avoid reaching the rate limit).
      *
      * @return self
      */
     public function populate() : self
     {
-        if ($this->id && $this->getEndpoint() && (!$this->populated || $this->modified)) {
-            $request = new Request();
-            $response = $request->get($this);
-            $body = json_decode($response, true);
-            $this->hydrate($body);
-
-            $this->populated = true;
-            $this->modified = false;
+        if ($this->populated || !$this->getId() || !$this->getEndpoint()) {
+            return $this;
         }
+
+        $request = new Request();
+        $response = $request->get($this);
+        $body = json_decode($response, true);
+        $this->hydrate($body, false);
+
+        $this->modified = false;
+        $this->populated = true;
 
         return $this;
     }
@@ -601,40 +603,42 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function save() : self
     {
-        if ($this->modified) {
-            // phpcs:disable Squiz.PHP.DisallowBooleanStatement.Found
-            $filter = function ($model) {
-                return $model['required'] && is_null($model['value']);
-            };
-            // phpcs:enable
-            $required = array_filter($this->dataModel, $filter);
-
-            if ($required) {
-                $keys = array_keys($required);
-                sort($keys);
-                $properties = implode(', ', $keys);
-                $message = sprintf('You need to provide a value for : %s', $properties);
-
-                throw new ild78\Exceptions\InvalidArgumentException($message);
-            }
-
-            $request = new Request();
-
-            if ($this->getId() && $this->isModified()) {
-                $response = $request->patch($this);
-            } else {
-                $response = $request->post($this);
-            }
-
-            $body = json_decode($response, true);
-
-            if ($body) {
-                $this->hydrate($body);
-            }
-
-            $this->populated = true;
-            $this->modified = false;
+        if ($this->isNotModified()) {
+            return $this;
         }
+
+        // phpcs:disable Squiz.PHP.DisallowBooleanStatement.Found
+        $filter = function ($model) {
+            return $model['required'] && is_null($model['value']);
+        };
+        // phpcs:enable
+        $required = array_filter($this->dataModel, $filter);
+
+        if ($required) {
+            $keys = array_keys($required);
+            sort($keys);
+            $properties = implode(', ', $keys);
+            $message = sprintf('You need to provide a value for : %s', $properties);
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
+        $request = new Request();
+
+        if ($this->getId()) {
+            $response = $request->patch($this);
+        } else {
+            $response = $request->post($this);
+        }
+
+        $body = json_decode($response, true);
+
+        if ($body) {
+            $this->hydrate($body, false);
+        }
+
+        $this->modified = false;
+        $this->populated = true;
 
         return $this;
     }
@@ -735,8 +739,7 @@ abstract class AbstractObject implements JsonSerializable
         $isLower = false;
         $isUpper = false;
 
-        if (array_key_exists('fixed', $model['size'])
-            && !is_null($model['size']['fixed'])
+        if (!is_null($model['size']['fixed'])
             && $model['size']['fixed'] !== $length
         ) {
             $message = sprintf('A valid %s must have %d characters.', $property, $model['size']['fixed']);
