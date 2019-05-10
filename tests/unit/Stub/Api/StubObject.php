@@ -243,6 +243,40 @@ class StubObject extends atoum
         ;
     }
 
+    public function test__get__set()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($string1 = $this->makeStringBetween(10, 20))
+            ->and($one = uniqid())
+            ->and($two = uniqid())
+            ->then
+                ->assert('get / set with a string')
+                    ->variable($this->testedInstance->string1)
+                        ->isNull
+
+                    ->variable($this->testedInstance->string1 = $string1)
+
+                    ->string($this->testedInstance->string1)
+                        ->isIdenticalTo($string1)
+
+                ->assert('get / set with an array')
+                    ->array($this->testedInstance->array1)
+                        ->isEmpty
+
+                    ->variable($this->testedInstance->array1 = [$one, $two])
+
+                    ->array($this->testedInstance->array1)
+                        ->string[0]
+                            ->isIdenticalTo($one)
+                        ->string[1]
+                            ->isIdenticalTo($two)
+                        ->size->isEqualTo(2)
+
+                    // Be careful, no array access, you must modify all the array.
+        ;
+    }
+
     /**
      * @dataProvider validDataProvider
      */
