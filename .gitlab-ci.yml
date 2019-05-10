@@ -42,7 +42,7 @@ stages:
     - (( $coverage < $saved )) && exit 1
     - echo $coverage > coverage
   cache:
-    key: "$CI_COMMIT_REF_SLUG-$PHP_VERSIONS"
+    key: "$PHP_VERSIONS"
     paths:
       - coverage
 
