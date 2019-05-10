@@ -244,7 +244,7 @@ abstract class AbstractObject implements JsonSerializable
 
         $value = $this->dataModel[$property]['value'];
 
-        if (is_null($value) && $this->id && !$this->populated) {
+        if (is_null($value) && $this->id && $this->isNotModified()) {
             $value = $this->populate()->dataModel[$property]['value'];
         }
 
