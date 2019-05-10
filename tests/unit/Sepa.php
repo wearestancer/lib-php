@@ -44,7 +44,7 @@ class Sepa extends atoum
         $this
             ->given($this->newTestedInstance)
             ->and($withoutSpaces = str_replace(' ', '', $iban))
-            ->and($withSpaces = chunk_split($withoutSpaces, 4, ' '))
+            ->and($withSpaces = trim(chunk_split($withoutSpaces, 4, ' ')))
             ->and($this->testedInstance->setIban($iban))
             ->then
                 ->string($this->testedInstance->getIban())
