@@ -118,7 +118,7 @@ class Payment extends atoum
                     ->object($sepa = $obj->getSepa())
                         ->isInstanceOf(ild78\Sepa::class)
 
-                    ->string($sepa->getIban())
+                    ->string($sepa->getFormattedIban())
                         ->isIdenticalTo($options['source']['account_number'])
 
                     ->string($sepa->getName())

@@ -44,7 +44,7 @@ class Sepa extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      */
     public function getFormattedIban() : string
     {
-        return chunk_split($this->getIban(), 4, ' ');
+        return trim(chunk_split($this->getIban(), 4, ' '));
     }
 
     /**

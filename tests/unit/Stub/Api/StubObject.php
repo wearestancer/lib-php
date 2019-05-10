@@ -243,6 +243,40 @@ class StubObject extends atoum
         ;
     }
 
+    public function test__get__set()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($string1 = $this->makeStringBetween(10, 20))
+            ->and($one = uniqid())
+            ->and($two = uniqid())
+            ->then
+                ->assert('get / set with a string')
+                    ->variable($this->testedInstance->string1)
+                        ->isNull
+
+                    ->variable($this->testedInstance->string1 = $string1)
+
+                    ->string($this->testedInstance->string1)
+                        ->isIdenticalTo($string1)
+
+                ->assert('get / set with an array')
+                    ->array($this->testedInstance->array1)
+                        ->isEmpty
+
+                    ->variable($this->testedInstance->array1 = [$one, $two])
+
+                    ->array($this->testedInstance->array1)
+                        ->string[0]
+                            ->isIdenticalTo($one)
+                        ->string[1]
+                            ->isIdenticalTo($two)
+                        ->size->isEqualTo(2)
+
+                    // Be careful, no array access, you must modify all the array.
+        ;
+    }
+
     /**
      * @dataProvider validDataProvider
      */
@@ -868,8 +902,9 @@ class StubObject extends atoum
                 ->and($integer3 = $this->makeIntegerLessThan(10))
 
                 ->and($restricted1 = $this->makeStringAtLeast(10))
+                ->and($object2 = uniqid())
 
-                ->and($body = json_encode(compact('id', 'created', 'string1', 'string2', 'string3', 'string4', 'integer1', 'integer2', 'integer3', 'restricted1')))
+                ->and($body = json_encode(compact('id', 'created', 'string1', 'string2', 'string3', 'string4', 'integer1', 'integer2', 'integer3', 'restricted1', 'object2')))
 
                 ->and($mock = new GuzzleHttp\Handler\MockHandler([
                     new GuzzleHttp\Psr7\Response(200, [], $body),
@@ -913,6 +948,16 @@ class StubObject extends atoum
 
                         ->string($this->testedInstance->getRestricted1())
                             ->isIdenticalTo($restricted1)
+
+                        ->object($this->testedInstance->getObject2())
+                            ->isInstanceOfTestedClass
+                        ->string($this->testedInstance->getObject2()->getId())
+                            ->isIdenticalTo($object2)
+                        ->boolean($this->testedInstance->getObject2()->testOnlyGetPopulated())
+                            ->isTrue
+
+                        ->boolean($this->testedInstance->testOnlyGetPopulated())
+                            ->isTrue
         ;
     }
 

@@ -154,6 +154,27 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
+     * Setter alias
+     *
+     * @param string $property Property to modify.
+     * @param mixed $value New value.
+     * @return void
+     */
+    public function __set(string $property, $value) : void
+    {
+        $prop = strtolower($property);
+        $method = 'set' . $prop;
+
+        if (method_exists($this, $method)) {
+            $this->{$method}($value);
+        }
+
+        if (array_key_exists($prop, $this->dataModel)) {
+            $this->{$method}($value);
+        }
+    }
+
+    /**
      * Return a string representation (as a JSON) of the current object.
      *
      * @uses self::toString()
@@ -223,7 +244,7 @@ abstract class AbstractObject implements JsonSerializable
 
         $value = $this->dataModel[$property]['value'];
 
-        if (is_null($value) && $this->id && !$this->populated) {
+        if (is_null($value) && $this->isNotModified()) {
             $value = $this->populate()->dataModel[$property]['value'];
         }
 
@@ -327,7 +348,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return string|null
      */
-    public function getId()
+    public function getId() : ?string
     {
         return $this->id;
     }
@@ -380,9 +401,10 @@ abstract class AbstractObject implements JsonSerializable
      * Hydrate the current object.
      *
      * @param array $data Data for hydratation.
+     * @param boolean $modified Do we need to modify the flag.
      * @return self
      */
-    public function hydrate(array $data) : self
+    public function hydrate(array $data, bool $modified = true) : self
     {
         foreach ($data as $key => $value) {
             $property = $key;
@@ -424,12 +446,28 @@ abstract class AbstractObject implements JsonSerializable
                     if (is_array($value)) {
                         $this->dataModel[$property]['value']->hydrate($value);
                     }
+
+                    $this->dataModel[$property]['value']->modified = $modified;
                 } else {
-                    $this->dataModel[$property]['value'] = $value;
+                    if ($this->dataModel[$property]['restricted'] || is_null($value) || !$modified) {
+                        $this->dataModel[$property]['value'] = $value;
+                    } else {
+                        $this->$property = $value;
+                    }
                 }
 
-                if (is_object($this->dataModel[$property]['value'])) {
-                    $this->dataModel[$property]['value']->populated = $this->populated;
+                if ($this->populated) {
+                    if ($this->dataModel[$property]['value'] instanceof self) {
+                        $this->dataModel[$property]['value']->populated = $this->populated;
+                    }
+
+                    if (is_array($this->dataModel[$property]['value'])) {
+                        foreach ($this->dataModel[$property]['value'] as $obj) {
+                            if ($obj instanceof self) {
+                                $obj->populated = $this->populated;
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -522,21 +560,24 @@ abstract class AbstractObject implements JsonSerializable
      * Populate object with API data.
      *
      * This method is not supposed to be used directly, it will be used automaticaly when ask for some data.
-     * The purpose of this method is to limitate API call (and  avoid reaching the rate limit).
+     * The purpose of this method is to limitate API call (and avoid reaching the rate limit).
      *
      * @return self
      */
     public function populate() : self
     {
-        if ($this->id && $this->getEndpoint() && (!$this->populated || $this->modified)) {
-            $request = new Request();
-            $response = $request->get($this);
-            $body = json_decode($response, true);
-            $this->hydrate($body);
-
-            $this->populated = true;
-            $this->modified = false;
+        if ($this->populated || !$this->getId() || !$this->getEndpoint()) {
+            return $this;
         }
+
+        $request = new Request();
+        $response = $request->get($this);
+        $body = json_decode($response, true);
+
+        $this->modified = false;
+        $this->populated = true;
+
+        $this->hydrate($body, false);
 
         return $this;
     }
@@ -563,39 +604,41 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function save() : self
     {
-        if ($this->modified) {
-            // phpcs:disable Squiz.PHP.DisallowBooleanStatement.Found
-            $filter = function ($model) {
-                return $model['required'] && is_null($model['value']);
-            };
-            // phpcs:enable
-            $required = array_filter($this->dataModel, $filter);
+        if ($this->isNotModified()) {
+            return $this;
+        }
 
-            if ($required) {
-                $keys = array_keys($required);
-                sort($keys);
-                $properties = implode(', ', $keys);
-                $message = sprintf('You need to provide a value for : %s', $properties);
+        // phpcs:disable Squiz.PHP.DisallowBooleanStatement.Found
+        $filter = function ($model) {
+            return $model['required'] && is_null($model['value']);
+        };
+        // phpcs:enable
+        $required = array_filter($this->dataModel, $filter);
 
-                throw new ild78\Exceptions\InvalidArgumentException($message);
-            }
+        if ($required) {
+            $keys = array_keys($required);
+            sort($keys);
+            $properties = implode(', ', $keys);
+            $message = sprintf('You need to provide a value for : %s', $properties);
 
-            $request = new Request();
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
 
-            if ($this->getId() && $this->isModified()) {
-                $response = $request->patch($this);
-            } else {
-                $response = $request->post($this);
-            }
+        $request = new Request();
 
-            $body = json_decode($response, true);
+        if ($this->getId()) {
+            $response = $request->patch($this);
+        } else {
+            $response = $request->post($this);
+        }
 
-            if ($body) {
-                $this->hydrate($body);
-            }
+        $this->modified = false;
+        $this->populated = true;
 
-            $this->populated = true;
-            $this->modified = false;
+        $body = json_decode($response, true);
+
+        if ($body) {
+            $this->hydrate($body, false);
         }
 
         return $this;
@@ -697,8 +740,7 @@ abstract class AbstractObject implements JsonSerializable
         $isLower = false;
         $isUpper = false;
 
-        if (array_key_exists('fixed', $model['size'])
-            && !is_null($model['size']['fixed'])
+        if (!is_null($model['size']['fixed'])
             && $model['size']['fixed'] !== $length
         ) {
             $message = sprintf('A valid %s must have %d characters.', $property, $model['size']['fixed']);
