@@ -575,6 +575,15 @@ class StubObject extends atoum
                 'object2' => $id,
             ])
 
+            ->and($id1 = uniqid())
+            ->and($id2 = uniqid())
+            ->and($withArray = [
+                'array4' => [
+                    $id1,
+                    $id2,
+                ],
+            ])
+
             ->if($this->newTestedInstance)
             ->then
                 ->assert('Normal hydratation')
@@ -632,6 +641,46 @@ class StubObject extends atoum
 
                     ->string($objectWithId->getId())
                         ->isIdenticalTo($id)
+
+                ->assert('Work with lists')
+                    ->object($this->newTestedInstance->hydrate($withArray))
+                        ->isTestedInstance
+
+                    ->array($array = $this->testedInstance->getArray4())
+                        ->hasSize(2)
+
+                    ->object($array[0])
+                        ->isInstanceOfTestedClass
+
+                    ->string($array[0]->getId())
+                        ->isIdenticalTo($id1)
+
+                    ->object($array[1])
+                        ->isInstanceOfTestedClass
+
+                    ->string($array[1]->getId())
+                        ->isIdenticalTo($id2)
+
+                ->assert('Work with lists, and keep previous instance too')
+                    ->object($object = $this->newTestedInstance($id2))
+                    ->object($this->newTestedInstance->setArray4([$object])->hydrate($withArray))
+                        ->isTestedInstance
+
+                    ->array($array = $this->testedInstance->getArray4())
+                        ->hasSize(2)
+
+                    ->object($array[0])
+                        ->isInstanceOfTestedClass
+
+                    ->string($array[0]->getId())
+                        ->isIdenticalTo($id1)
+
+                    ->object($array[1])
+                        ->isInstanceOfTestedClass
+                        ->isIdenticalTo($object)
+
+                    ->string($array[1]->getId())
+                        ->isIdenticalTo($id2)
         ;
     }
 
