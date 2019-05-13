@@ -481,7 +481,7 @@ abstract class AbstractObject implements JsonSerializable
                             }
                         }
 
-                        $this->dataModel[$property]['value'] = $list;
+                        $this->$property = $list;
                     } else {
                         $id = null;
 
