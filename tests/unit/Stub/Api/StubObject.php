@@ -575,6 +575,15 @@ class StubObject extends atoum
                 'object2' => $id,
             ])
 
+            ->and($id1 = uniqid())
+            ->and($id2 = uniqid())
+            ->and($withArray = [
+                'array4' => [
+                    $id1,
+                    $id2,
+                ],
+            ])
+
             ->if($this->newTestedInstance)
             ->then
                 ->assert('Normal hydratation')
@@ -632,6 +641,46 @@ class StubObject extends atoum
 
                     ->string($objectWithId->getId())
                         ->isIdenticalTo($id)
+
+                ->assert('Work with lists')
+                    ->object($this->newTestedInstance->hydrate($withArray))
+                        ->isTestedInstance
+
+                    ->array($array = $this->testedInstance->getArray4())
+                        ->hasSize(2)
+
+                    ->object($array[0])
+                        ->isInstanceOfTestedClass
+
+                    ->string($array[0]->getId())
+                        ->isIdenticalTo($id1)
+
+                    ->object($array[1])
+                        ->isInstanceOfTestedClass
+
+                    ->string($array[1]->getId())
+                        ->isIdenticalTo($id2)
+
+                ->assert('Work with lists, and keep previous instance too')
+                    ->object($object = $this->newTestedInstance($id2))
+                    ->object($this->newTestedInstance->setArray4([$object])->hydrate($withArray))
+                        ->isTestedInstance
+
+                    ->array($array = $this->testedInstance->getArray4())
+                        ->hasSize(2)
+
+                    ->object($array[0])
+                        ->isInstanceOfTestedClass
+
+                    ->string($array[0]->getId())
+                        ->isIdenticalTo($id1)
+
+                    ->object($array[1])
+                        ->isInstanceOfTestedClass
+                        ->isIdenticalTo($object)
+
+                    ->string($array[1]->getId())
+                        ->isIdenticalTo($id2)
         ;
     }
 
@@ -886,6 +935,62 @@ class StubObject extends atoum
 
                             ->withArguments('GET')
                                 ->never
+
+            ->assert('Populate blocks save')
+                ->given($config = ild78\Api\Config::init(uniqid()))
+                ->and($id = uniqid())
+                ->and($created = time())
+                ->and($string1 = $this->makeStringBetween(10, 20))
+                ->and($integer1 = $this->makeIntegerBetween(10, 20))
+
+                ->if($client = new mock\GuzzleHttp\Client)
+                ->and($body = json_encode(compact('id', 'created', 'string1', 'integer1')))
+                ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
+                ->and($this->calling($client)->request = $response)
+                ->and($config->setHttpClient($client))
+
+                ->and($this->newTestedInstance($id))
+                ->and($this->testedInstance->setString1($string1))
+                ->and($this->testedInstance->setInteger1($integer1))
+                ->then
+                    ->object($this->testedInstance->populate())
+                    ->object($this->testedInstance->save())
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('PATCH')
+                                ->never
+
+                            ->withArguments('GET')
+                                ->once
+
+            ->assert('Inner object are marked as populated too')
+                ->given($config = ild78\Api\Config::init(uniqid()))
+
+                ->if($client = new mock\GuzzleHttp\Client)
+                ->and($id = uniqid())
+                ->and($timestamp = time())
+                ->and($body = '{"id":"' . $id . '","created":' . $timestamp . ',"object2":"' . uniqid() . '","array4":["' . uniqid() . '"]}')
+                ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
+                ->and($this->calling($client)->request = $response)
+                ->and($config->setHttpClient($client))
+
+                ->and($this->newTestedInstance($id))
+                ->then
+                    ->object($this->testedInstance->populate())
+
+                    ->mock($client)
+                        ->call('request')
+                            ->once
+
+                    ->boolean($this->testedInstance->getObject2()->testOnlyGetPopulated())
+                        ->isTrue
+
+                    ->array($array4 = $this->testedInstance->getArray4())
+                        ->hasSize(1)
+
+                    ->boolean($array4[0]->testOnlyGetPopulated())
+                        ->isTrue
 
             ->assert('Populate working normally')
                 ->given($config = ild78\Api\Config::init(uniqid()))

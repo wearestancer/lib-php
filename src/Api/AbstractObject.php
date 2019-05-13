@@ -429,25 +429,63 @@ abstract class AbstractObject implements JsonSerializable
                 ];
 
                 if ($value && !in_array($this->dataModel[$property]['type'], $types, true) && !is_object($value)) {
-                    $id = null;
+                    if ($this->dataModel[$property]['list']) {
+                        $list = [];
 
-                    if (is_string($value)) {
-                        $id = $value;
-                        $value = [
-                            'id' => $id,
-                        ];
+                        foreach ($value as $val) {
+                            $id = null;
+
+                            if (is_string($val)) {
+                                $id = $val;
+                                $val = [];
+                            }
+
+                            $missing = true;
+
+                            if (!is_array($this->dataModel[$property]['value'])) {
+                                $this->dataModel[$property]['value'] = [];
+                            }
+
+                            foreach ($this->dataModel[$property]['value'] as $obj) {
+                                if ($obj->getId() === $id) {
+                                    $obj->hydrate($val);
+
+                                    $missing = false;
+                                    $list[] = $obj;
+                                }
+                            }
+
+                            if ($missing) {
+                                $class = $this->dataModel[$property]['type'];
+                                $obj = new $class($id);
+                                $obj->hydrate($val);
+
+                                $list[] = $obj;
+                            }
+                        }
+
+                        $this->dataModel[$property]['value'] = $list;
+                    } else {
+                        $id = null;
+
+                        if (is_string($value)) {
+                            $id = $value;
+                            $value = [
+                                'id' => $id,
+                            ];
+                        }
+
+                        if (!$this->dataModel[$property]['value']) {
+                            $class = $this->dataModel[$property]['type'];
+                            $this->dataModel[$property]['value'] = new $class($id);
+                        }
+
+                        if (is_array($value)) {
+                            $this->dataModel[$property]['value']->hydrate($value);
+                        }
+
+                        $this->dataModel[$property]['value']->modified = $modified;
                     }
-
-                    if (!$this->dataModel[$property]['value']) {
-                        $class = $this->dataModel[$property]['type'];
-                        $this->dataModel[$property]['value'] = new $class($id);
-                    }
-
-                    if (is_array($value)) {
-                        $this->dataModel[$property]['value']->hydrate($value);
-                    }
-
-                    $this->dataModel[$property]['value']->modified = $modified;
                 } else {
                     if ($this->dataModel[$property]['restricted'] || is_null($value) || !$modified) {
                         $this->dataModel[$property]['value'] = $value;
