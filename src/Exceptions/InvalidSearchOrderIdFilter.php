@@ -6,7 +6,7 @@ namespace ild78\Exceptions;
 use Psr;
 
 /**
- * Exception thrown on invalid search limit.
+ * Exception thrown on invalid search order id.
  */
 class InvalidSearchOrderIdFilter extends InvalidSearchFilter
 {
