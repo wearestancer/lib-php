@@ -24,6 +24,8 @@ use ild78;
  */
 class Payment extends Api\AbstractObject
 {
+    use ild78\Traits\AmountTrait;
+
     /** @var string */
     protected $endpoint = 'checkout';
 
@@ -62,6 +64,11 @@ class Payment extends Api\AbstractObject
         'method' => [
             'restricted' => true,
             'type' => self::STRING,
+        ],
+        'refunds' => [
+            'exportable' => false,
+            'list' => true,
+            'type' => ild78\Refund::class,
         ],
         'orderId' => [
             'size' => [
@@ -145,6 +152,23 @@ class Payment extends Api\AbstractObject
         $message = 'You are not allowed to delete a payment, you need to refund it instead.';
 
         throw new ild78\Exceptions\BadMethodCallException($message);
+    }
+
+    /**
+     * Refund the refundable amount
+     *
+     * @return integer
+     */
+    public function getRefundableAmount() : int
+    {
+        $getAmounts = function ($refund) {
+            return $refund->getAmount();
+        };
+
+        $refunds = $this->getRefunds();
+        $refunded = array_map($getAmounts, $refunds);
+
+        return $this->getAmount() - array_sum($refunded);
     }
 
     /**
@@ -330,6 +354,38 @@ class Payment extends Api\AbstractObject
     }
 
     /**
+     * Refund a payment, or part of it.
+     *
+     * @param integet|null $amount Amount to refund, if not present all paid amount will be refund.
+     * @return self
+     * @throws ild78\Exceptions\InvalidAmountException When trying to refund more than paid.
+     * @throws ild78\Exceptions\InvalidAmountException When the amount is invalid.
+     */
+    public function refund(int $amount = null) : self
+    {
+        $refund = new Refund();
+        $refund->setPayment($this);
+
+        if ($amount) {
+            if ($amount > $this->getAmount()) {
+                $params = [
+                    $amount / 100,
+                    strtoupper($this->getCurrency()),
+                    $this->getAmount() / 100,
+                    strtoupper($this->getCurrency()),
+                ];
+                $message = vsprintf('You are trying to refund (%.02f %s) more than paid (%.02f %s).', $params);
+
+                throw new ild78\Exceptions\InvalidAmountException($message);
+            }
+
+            $refund->setAmount($amount);
+        }
+
+        return $this->addRefunds($refund->save());
+    }
+
+    /**
      * Save the current object.
      *
      * @uses Request::post()
@@ -370,22 +426,6 @@ class Payment extends Api\AbstractObject
         Api\Config::getGlobal()->getLogger()->info($message);
 
         return $this;
-    }
-
-    /**
-     * Update amount
-     *
-     * @param integer $amount New amount.
-     * @return self
-     * @throws ild78\Exceptions\InvalidAmountException When the amount is invalid.
-     */
-    public function setAmount(int $amount) : self
-    {
-        try {
-            return parent::setAmount($amount);
-        } catch (ild78\Exceptions\InvalidArgumentException $excep) {
-            throw new ild78\Exceptions\InvalidAmountException($excep->getMessage(), $excep->getCode(), $excep);
-        }
     }
 
     /**

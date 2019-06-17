@@ -10,7 +10,7 @@ $runner
 // autoloop
 $runner
     ->getExtension(mageekguy\atoum\autoloop\extension::class)
-        ->setWatchedFiles(array(__DIR__ . '/src'))
+        ->setWatchedFiles(array(__DIR__ . '/src', __DIR__ . '/tests/Stub'))
 ;
 
 // JSON schema

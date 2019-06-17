@@ -86,6 +86,25 @@ $payment->save();
 ```
 
 
+### Refund a payment
+
+The easiest way to do it, use `Payment::refund()` method.
+There is a simple example :
+
+```php
+<?php
+
+$payment = new ild78\Payment('paym_KIVaaHi7G8QAYMQpQOYBrUQE');
+
+$payment->refund(); // To refund the all payment
+// or
+$payment->refund($amount); // To refund a particular amount
+
+
+$payment->getRefunds(); // Will return all refunds made on a payment
+```
+
+
 ### Exceptions
 
 Every exceptions thrown by this project extend from `ild78\Exceptions\Exception`.

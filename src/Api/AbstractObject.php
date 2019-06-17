@@ -49,6 +49,7 @@ abstract class AbstractObject implements JsonSerializable
     public function __construct(string $id = null)
     {
         $defaults = [
+            'exportable' => null,
             'list' => false,
             'size' => [
                 'fixed' => null,
@@ -63,6 +64,10 @@ abstract class AbstractObject implements JsonSerializable
         foreach ($this->dataModel as &$data) {
             $data = array_merge($defaults, $data);
             $data['size'] = array_merge($defaults['size'], $data['size']);
+
+            if (is_null($data['exportable'])) {
+                $data['exportable'] = !$data['restricted'];
+            }
         }
 
         $this->id = $id;
@@ -281,6 +286,7 @@ abstract class AbstractObject implements JsonSerializable
         }
 
         $type = gettype($value);
+        $changeModified = false;
 
         if ($this->dataModel[$property]['list']) {
             if ($type !== 'array') {
@@ -291,13 +297,24 @@ abstract class AbstractObject implements JsonSerializable
 
             foreach ($value as $val) {
                 $this->validateDataModel($property, $val);
+
+                if (!$changeModified && !($val instanceof self)) {
+                    $changeModified = true;
+                }
             }
         } else {
             $this->validateDataModel($property, $value);
+
+            if (!($value instanceof self)) {
+                $changeModified = true;
+            }
         }
 
         $this->dataModel[$property]['value'] = $value;
-        $this->modified = true;
+
+        if ($changeModified) { // We will use inner object state.
+            $this->modified = true;
+        }
 
         return $this;
     }
@@ -464,7 +481,7 @@ abstract class AbstractObject implements JsonSerializable
                             }
                         }
 
-                        $this->dataModel[$property]['value'] = $list;
+                        $this->$property = $list;
                     } else {
                         $id = null;
 
@@ -692,7 +709,7 @@ abstract class AbstractObject implements JsonSerializable
         $json = [];
         $data = [
             'id' => [
-                'restricted' => false,
+                'exportable' => true,
                 'value' => $this->id,
             ],
         ];
@@ -705,7 +722,7 @@ abstract class AbstractObject implements JsonSerializable
         foreach ($data as $property => $infos) {
             $value = $infos['value'];
 
-            if ($value !== null && !$infos['restricted']) {
+            if ($value !== null && $infos['exportable']) {
                 $prop = preg_replace_callback('`[A-Z]`', $replace, $property);
 
                 $json[$prop] = $value;
@@ -754,11 +771,13 @@ abstract class AbstractObject implements JsonSerializable
         $type = gettype($value);
         $length = $value;
 
+        $mismatchType = $type !== $model['type'];
+
         if ($type === 'object') {
-            $type = get_class($value);
+            $mismatchType = !($value instanceof $model['type']);
         }
 
-        if ($type !== $model['type']) {
+        if ($mismatchType) {
             $params = [
                 $type,
                 $model['type'],

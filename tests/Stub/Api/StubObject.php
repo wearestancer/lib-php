@@ -6,6 +6,8 @@ use ild78;
 
 class StubObject extends ild78\Api\AbstractObject
 {
+    use ild78\Stub\TestMethodTrait;
+
     protected $endpoint = 'objects'; // invalid but must be not empty
 
     protected $dataModel = [
@@ -61,6 +63,10 @@ class StubObject extends ild78\Api\AbstractObject
         'object2' => [
             'type' => self::class,
         ],
+        'object3' => [
+            'exportable' => false,
+            'type' => self::class,
+        ],
         'restricted1' => [
             'restricted' => true,
             'type' => 'string',
@@ -90,32 +96,6 @@ class StubObject extends ild78\Api\AbstractObject
     public function forceRestricted1(string $value) : self
     {
         $this->dataModel['restricted1']['value'] = $value;
-
-        return $this;
-    }
-
-    public function testOnlySetId(string $id) : self
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    public function testOnlyGetPopulated() : bool
-    {
-        return $this->populated;
-    }
-
-    public function testOnlySetModified(bool $modified) : self
-    {
-        $this->modified = $modified;
-
-        return $this;
-    }
-
-    public function testOnlySetPopulated(bool $populated) : self
-    {
-        $this->populated = $populated;
 
         return $this;
     }
