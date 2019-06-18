@@ -206,7 +206,7 @@ class Request
                     $excepParams['message'] = $body->error->message;
 
                     $logMethod = 'notice';
-                    $logMessage = sprintf('HTTP 401 - Invalid credential : %s', $config->getKey());
+                    $logMessage = sprintf('HTTP 401 - Invalid credential : %s', $config->getSecretKey());
                     break;
 
                 case 404:

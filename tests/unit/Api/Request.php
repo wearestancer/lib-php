@@ -14,7 +14,7 @@ class Request extends atoum
     public function testRequest_workingWithDefaultClient()
     {
         $this
-            ->given($config = ild78\Api\Config::init(uniqid()))
+            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -72,7 +72,7 @@ class Request extends atoum
     {
         $this
             ->given($this->function->setDefaultNamespace('ild78\\Http'))
-            ->if($config = ild78\Api\Config::init(uniqid()))
+            ->if($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
             ->assert('With bad credential')
                 ->given($content = file_get_contents(__DIR__ . '/../fixtures/auth/not-authorized.json'))
@@ -93,7 +93,7 @@ class Request extends atoum
                     $object->getUri(),
                 ]))
                 ->and($noticeMessage = vsprintf('HTTP 401 - Invalid credential : %s', [
-                    $config->getKey(),
+                    $config->getSecretKey(),
                 ]))
 
                 ->if($this->newTestedInstance)
@@ -143,7 +143,7 @@ class Request extends atoum
     public function testRequest_withGuzzle()
     {
         $this
-            ->if($config = ild78\Api\Config::init(uniqid()))
+            ->if($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
             ->assert('Use test of client')
                 ->given($client = new mock\GuzzleHttp\Client)
@@ -230,7 +230,7 @@ class Request extends atoum
                     $object->getUri(),
                 ]))
                 ->and($noticeMessage = vsprintf('HTTP 401 - Invalid credential : %s', [
-                    $config->getKey(),
+                    $config->getSecretKey(),
                 ]))
                 ->then
                     ->exception(function () use ($object, $method) {

@@ -237,7 +237,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
 
             switch ($code) {
                 case 401:
-                    $logMessage = 'HTTP 401 - Invalid credential : ' . $config->getKey();
+                    $logMessage = 'HTTP 401 - Invalid credential : ' . $config->getSecretKey();
                     break;
 
                 case 404:

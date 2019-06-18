@@ -234,7 +234,7 @@ class Client extends atoum
     public function testGetLastRequest_LastResponse()
     {
         $this
-            ->given($config = ild78\Api\Config::init(uniqid()))
+            ->given($config = ild78\Api\Config::init([]))
 
             ->if($this->newTestedInstance)
             ->and($curl = $this->testedInstance->getCurlResource())
@@ -325,7 +325,7 @@ class Client extends atoum
     public function testRequest()
     {
         $this
-            ->given($config = ild78\Api\Config::init(uniqid()))
+            ->given($config = ild78\Api\Config::init([]))
 
             ->assert('Basic request')
                 ->given($this->newTestedInstance)
@@ -550,7 +550,7 @@ class Client extends atoum
     public function testRequest_exceptions($error, $code, $class, $message, $logLevel, $logMessage)
     {
         $this
-            ->given($config = ild78\Api\Config::init(uniqid()))
+            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
             ->assert($code . ' should throw ' . $class)
                 ->given($this->newTestedInstance)
@@ -562,7 +562,7 @@ class Client extends atoum
 
                 ->when(function () use ($code, &$logMessage, $config) {
                     if ($code === 401) {
-                        $logMessage = sprintf($logMessage, $config->getKey());
+                        $logMessage = sprintf($logMessage, $config->getSecretKey());
                     }
                 })
 

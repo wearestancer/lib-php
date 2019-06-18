@@ -16,7 +16,7 @@ class AbstractObject extends atoum
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client)
-            ->and($api = Api\Config::init(uniqid()))
+            ->and($api = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($api->setHttpClient($client))
 
             ->assert('Without id')
@@ -189,7 +189,7 @@ class AbstractObject extends atoum
     public function testDelete()
     {
         $this
-            ->given($config = Api\Config::init(uniqid()))
+            ->given($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($client = new mock\ild78\Http\Client)
             ->and($config->setHttpClient($client))
 
@@ -253,7 +253,7 @@ class AbstractObject extends atoum
     public function testGetUri()
     {
         $this
-            ->given($config = Api\Config::init(uniqid()))
+            ->given($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->assert('No id')
                 ->if($this->newTestedInstance)
                 ->then
@@ -303,7 +303,7 @@ class AbstractObject extends atoum
         // More tests available in stubs
 
         $this
-            ->given($config = Api\Config::init(uniqid()))
+            ->given($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
             ->assert('No request if no id')
                 ->if($client = new mock\GuzzleHttp\Client)

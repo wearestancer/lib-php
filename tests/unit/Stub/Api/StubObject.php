@@ -397,7 +397,7 @@ class StubObject extends atoum
             ->and($body = '{"id":"' . $id . '","created":' . $timestamp . ',"string1":"' . $string1 . '"}')
             ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
             ->and($this->calling($client)->request = $response)
-            ->and(ild78\Api\Config::init(uniqid())->setHttpClient($client))
+            ->and(ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))])->setHttpClient($client))
 
             ->assert('No call without id')
                 ->if($this->newTestedInstance)
@@ -482,7 +482,7 @@ class StubObject extends atoum
     public function testGetCreationDate()
     {
         $this
-            ->given($config = ild78\Api\Config::init(uniqid()))
+            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($config->setHttpClient($client))
@@ -880,7 +880,7 @@ class StubObject extends atoum
     {
         $this
             ->assert('Work with an id')
-                ->given($config = ild78\Api\Config::init(uniqid()))
+                ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($id = uniqid())
                 ->and($timestamp = time())
                 ->and($mock = new GuzzleHttp\Handler\MockHandler([
@@ -903,7 +903,7 @@ class StubObject extends atoum
                             ->isEqualTo($timestamp)
 
             ->assert('Only one request with two consecutive call')
-                ->given($config = ild78\Api\Config::init(uniqid()))
+                ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
                 ->if($client = new mock\GuzzleHttp\Client)
                 ->and($id = uniqid())
@@ -923,7 +923,7 @@ class StubObject extends atoum
                             ->once
 
             ->assert('Save blocks populate')
-                ->given($config = ild78\Api\Config::init(uniqid()))
+                ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($id = uniqid())
                 ->and($created = time())
                 ->and($string1 = $this->makeStringBetween(10, 20))
@@ -951,7 +951,7 @@ class StubObject extends atoum
                                 ->never
 
             ->assert('Populate blocks save')
-                ->given($config = ild78\Api\Config::init(uniqid()))
+                ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($id = uniqid())
                 ->and($created = time())
                 ->and($string1 = $this->makeStringBetween(10, 20))
@@ -979,7 +979,7 @@ class StubObject extends atoum
                                 ->once
 
             ->assert('Inner object are marked as populated too')
-                ->given($config = ild78\Api\Config::init(uniqid()))
+                ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
                 ->if($client = new mock\GuzzleHttp\Client)
                 ->and($id = uniqid())
@@ -1007,7 +1007,7 @@ class StubObject extends atoum
                         ->isTrue
 
             ->assert('Populate working normally')
-                ->given($config = ild78\Api\Config::init(uniqid()))
+                ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($id = uniqid())
                 ->and($created = time())
 
@@ -1115,7 +1115,7 @@ class StubObject extends atoum
                 ->and($id = uniqid())
                 ->and($created = time())
 
-                ->given($config = ild78\Api\Config::init(uniqid()))
+                ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($body = json_encode(compact('id', 'created', 'string1', 'integer1')))
                 ->and($client = new mock\GuzzleHttp\Client)
                 ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
@@ -1144,7 +1144,7 @@ class StubObject extends atoum
                                 ->once
 
             ->assert('No error if returned body is null (saw with PATCH implementation)')
-                ->given($config = ild78\Api\Config::init(uniqid()))
+                ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($client = new mock\ild78\Http\Client)
                 ->and($config->setHttpClient($client))
 

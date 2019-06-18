@@ -25,7 +25,7 @@ class TestCase extends atoum
         }
 
         if (!$this->config) {
-            $this->config = ild78\Api\Config::init($env['ILD_API_KEY']);
+            $this->config = ild78\Api\Config::init([$env['ILD_API_KEY']]);
         }
 
         $this->config->setHost($env['ILD_API_HOST']);

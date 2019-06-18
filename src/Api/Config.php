@@ -76,7 +76,7 @@ class Config
      */
     public function getBasicAuthHeader() : string
     {
-        return 'Basic ' . base64_encode($this->getKey() . ':');
+        return 'Basic ' . base64_encode($this->getSecretKey() . ':');
     }
 
     /**
