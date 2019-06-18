@@ -23,8 +23,8 @@ class Config
     /** @var self */
     protected static $instance;
 
-    /** @var string */
-    protected $key;
+    /** @var string[] */
+    protected $keys = [];
 
     /** @var Psr\\Log\\LoggerInterface */
     protected $logger;
@@ -48,12 +48,25 @@ class Config
      * You needed to set a configuration as global to be used on every API call.
      *
      * @see self::init() for a quick config setup
-     * @param string $key Authentication key.
+     * @param string[] $keys Authentication keys.
      * @return self
      */
-    public function __construct(string $key)
+    public function __construct(array $keys)
     {
-        $this->setKey($key);
+        $prefixes = [
+            'pprod',
+            'ptest',
+            'sprod',
+            'stest',
+        ];
+
+        foreach ($keys as $key) {
+            foreach ($prefixes as $prefix) {
+                if (preg_match('`^' . $prefix . '_\w{24}$`', $key)) {
+                    $this->keys[$prefix] = $key;
+                }
+            }
+        }
     }
 
     /**
@@ -119,18 +132,6 @@ class Config
     }
 
     /**
-     * Return API key
-     *
-     * Default : ''
-     *
-     * @return string
-     */
-    public function getKey() : string
-    {
-        return $this->key;
-    }
-
-    /**
      * Return a valid and PSR3 compatible logger instance
      *
      * @return Psr\\Log\\LoggerInterface
@@ -166,6 +167,56 @@ class Config
     public function getPort() : int
     {
         return $this->port ?: 443;
+    }
+
+    /**
+     * Return public API key
+     *
+     * @return string
+     * @throws ild78\Exceptions\MissingApiKeyException When no key is found.
+     */
+    public function getPublicKey() : string
+    {
+        $key = array_key_exists('ptest', $this->keys) ? $this->keys['ptest'] : '';
+        $type = 'development';
+
+        if ($this->isLiveMode()) {
+            $key = array_key_exists('pprod', $this->keys) ? $this->keys['pprod'] : '';
+            $type = 'production';
+        }
+
+        if (!$key) {
+            $message = sprintf('You did not provide valid public API key for %s.', $type);
+
+            throw new ild78\Exceptions\MissingApiKeyException($message);
+        }
+
+        return $key;
+    }
+
+    /**
+     * Return secret API key
+     *
+     * @return string
+     * @throws ild78\Exceptions\MissingApiKeyException When no key is found.
+     */
+    public function getSecretKey() : string
+    {
+        $key = array_key_exists('stest', $this->keys) ? $this->keys['stest'] : '';
+        $type = 'development';
+
+        if ($this->isLiveMode()) {
+            $key = array_key_exists('sprod', $this->keys) ? $this->keys['sprod'] : '';
+            $type = 'production';
+        }
+
+        if (!$key) {
+            $message = sprintf('You did not provide valid secret API key for %s.', $type);
+
+            throw new ild78\Exceptions\MissingApiKeyException($message);
+        }
+
+        return $key;
     }
 
     /**
@@ -221,12 +272,12 @@ class Config
      * Proxy that create a new instance of configuration and register it as global.
      *
      * @see self::setGlobal()
-     * @param string $key Authentication key.
+     * @param string[] $keys Authentication keys.
      * @return self
      */
-    public static function init(string $key) : self
+    public static function init(array $keys) : self
     {
-        $obj = new static($key);
+        $obj = new static($keys);
 
         return static::setGlobal($obj);
     }
@@ -309,19 +360,6 @@ class Config
     public function setHttpClient($client) : self
     {
         $this->httpClient = $client;
-
-        return $this;
-    }
-
-    /**
-     * Update API key
-     *
-     * @param string $key New key.
-     * @return self
-     */
-    public function setKey(string $key) : self
-    {
-        $this->key = $key;
 
         return $this;
     }

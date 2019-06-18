@@ -5,6 +5,7 @@ namespace ild78\tests\unit\Api;
 use atoum;
 use ild78;
 use ild78\Api\Config as testedClass;
+use ild78\Exceptions;
 use ild78\Exceptions\InvalidArgumentException;
 use ild78\Exceptions\NotAuthorizedException;
 use mock;
@@ -12,17 +13,6 @@ use Psr;
 
 class Config extends atoum
 {
-    public function test__construct()
-    {
-        $this
-            ->given($key = uniqid())
-            ->and($this->newTestedInstance($key))
-            ->then
-                ->string($this->testedInstance->getKey())
-                    ->isIdenticalTo($key)
-        ;
-    }
-
     public function testGetBasicAuthHeader()
     {
         $this
@@ -94,24 +84,6 @@ class Config extends atoum
         ;
     }
 
-    public function testGetKey_SetKey()
-    {
-        $this
-            ->given($key1 = uniqid())
-            ->and($key2 = uniqid())
-            ->and($this->newTestedInstance($key1))
-            ->then
-                ->string($this->testedInstance->getKey())
-                    ->isIdenticalTo($key1)
-
-                ->object($this->testedInstance->setKey($key2))
-                    ->isTestedInstance
-
-                ->string($this->testedInstance->getKey())
-                    ->isIdenticalTo($key2)
-        ;
-    }
-
     public function testGetLogger_SetLogger()
     {
         $this
@@ -172,6 +144,84 @@ class Config extends atoum
                     ->isTestedInstance
                 ->integer($this->testedInstance->getPort())
                     ->isIdenticalTo($randomPort)
+        ;
+    }
+
+    public function testGetPublicKey()
+    {
+        $this
+            ->given($pprod = 'pprod_' . bin2hex(random_bytes(12)))
+            ->and($ptest = 'ptest_' . bin2hex(random_bytes(12)))
+            ->and($sprod = 'sprod_' . bin2hex(random_bytes(12)))
+            ->and($stest = 'stest_' . bin2hex(random_bytes(12)))
+
+            ->if($this->newTestedInstance([$pprod, $ptest, $sprod, $stest]))
+            ->then
+                ->string($this->testedInstance->getPublicKey())
+                    ->isIdenticalTo($ptest)
+
+                ->string($this->testedInstance->setMode(testedClass::LIVE_MODE)->getPublicKey())
+                    ->isIdenticalTo($pprod)
+
+                ->string($this->testedInstance->setMode(testedClass::TEST_MODE)->getPublicKey())
+                    ->isIdenticalTo($ptest)
+
+            ->if($this->newTestedInstance([$ptest]))
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->setMode(testedClass::LIVE_MODE)->getPublicKey();
+                })
+                    ->isInstanceOf(Exceptions\MissingApiKeyException::class)
+                    ->message
+                        ->isIdenticalTo('You did not provide valid public API key for production.')
+
+            ->if($this->newTestedInstance([$pprod]))
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->setMode(testedClass::TEST_MODE)->getPublicKey();
+                })
+                    ->isInstanceOf(Exceptions\MissingApiKeyException::class)
+                    ->message
+                        ->isIdenticalTo('You did not provide valid public API key for development.')
+        ;
+    }
+
+    public function testGetSecretKey()
+    {
+        $this
+            ->given($pprod = 'pprod_' . bin2hex(random_bytes(12)))
+            ->and($ptest = 'ptest_' . bin2hex(random_bytes(12)))
+            ->and($sprod = 'sprod_' . bin2hex(random_bytes(12)))
+            ->and($stest = 'stest_' . bin2hex(random_bytes(12)))
+
+            ->if($this->newTestedInstance([$pprod, $ptest, $sprod, $stest]))
+            ->then
+                ->string($this->testedInstance->getSecretKey())
+                    ->isIdenticalTo($stest)
+
+                ->string($this->testedInstance->setMode(testedClass::LIVE_MODE)->getSecretKey())
+                    ->isIdenticalTo($sprod)
+
+                ->string($this->testedInstance->setMode(testedClass::TEST_MODE)->getSecretKey())
+                    ->isIdenticalTo($stest)
+
+            ->if($this->newTestedInstance([$stest]))
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->setMode(testedClass::LIVE_MODE)->getSecretKey();
+                })
+                    ->isInstanceOf(Exceptions\MissingApiKeyException::class)
+                    ->message
+                        ->isIdenticalTo('You did not provide valid secret API key for production.')
+
+            ->if($this->newTestedInstance([$sprod]))
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->setMode(testedClass::TEST_MODE)->getSecretKey();
+                })
+                    ->isInstanceOf(Exceptions\MissingApiKeyException::class)
+                    ->message
+                        ->isIdenticalTo('You did not provide valid secret API key for development.')
         ;
     }
 
@@ -244,12 +294,18 @@ class Config extends atoum
     public function testInit()
     {
         $this
-            ->given($key = uniqid())
+            ->given($pprod = 'pprod_' . bin2hex(random_bytes(12)))
+            ->and($ptest = 'ptest_' . bin2hex(random_bytes(12)))
+            ->and($sprod = 'sprod_' . bin2hex(random_bytes(12)))
+            ->and($stest = 'stest_' . bin2hex(random_bytes(12)))
+
             ->then
-                ->object($obj = testedClass::init($key))
+                ->object($obj = testedClass::init([$pprod, $ptest, $sprod, $stest]))
                     ->isInstanceOf(testedClass::class)
-                ->string($obj->getKey())
-                    ->isIdenticalTo($key)
+                ->string($obj->getPublicKey())
+                    ->isIdenticalTo($ptest)
+                ->string($obj->getSecretKey())
+                    ->isIdenticalTo($stest)
                 ->object(testedClass::getGlobal())
                     ->isIdenticalTo($obj)
         ;
