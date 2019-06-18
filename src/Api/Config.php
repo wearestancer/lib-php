@@ -143,7 +143,7 @@ class Config
     /**
      * Return API mode (test or live)
      *
-     * Default : live
+     * Default : test
      *
      * You should use class constant `LIVE_MODE` and `TEST_MODE`.
      *
@@ -151,7 +151,7 @@ class Config
      */
     public function getMode() : string
     {
-        return $this->mode ?: static::LIVE_MODE;
+        return $this->mode ?: static::TEST_MODE;
     }
 
     /**

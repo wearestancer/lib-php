@@ -136,11 +136,18 @@ class Config extends atoum
             ->and($invalidMode = uniqid())
             ->then
                 ->string($this->testedInstance->getMode())
+                    ->isIdenticalTo(testedClass::TEST_MODE)
+
+                ->object($this->testedInstance->setMode(testedClass::LIVE_MODE))
+                    ->isTestedInstance
+                ->string($this->testedInstance->getMode())
                     ->isIdenticalTo(testedClass::LIVE_MODE)
+
                 ->object($this->testedInstance->setMode(testedClass::TEST_MODE))
                     ->isTestedInstance
                 ->string($this->testedInstance->getMode())
                     ->isIdenticalTo(testedClass::TEST_MODE)
+
                 ->exception(function () use ($invalidMode) {
                     $this->testedInstance->setMode($invalidMode);
                 })
@@ -254,10 +261,10 @@ class Config extends atoum
             ->given($this->newTestedInstance(uniqid()))
             ->then
                 ->assert('Defaults values')
-                    ->boolean($this->testedInstance->isLiveMode())->isTrue
-                    ->boolean($this->testedInstance->isNotLiveMode())->isFalse
-                    ->boolean($this->testedInstance->isTestMode())->isFalse
-                    ->boolean($this->testedInstance->isNotTestMode())->isTrue
+                    ->boolean($this->testedInstance->isLiveMode())->isFalse
+                    ->boolean($this->testedInstance->isNotLiveMode())->isTrue
+                    ->boolean($this->testedInstance->isTestMode())->isTrue
+                    ->boolean($this->testedInstance->isNotTestMode())->isFalse
 
                 ->assert('Force test mode')
                     ->if($this->testedInstance->setMode(testedClass::TEST_MODE))
