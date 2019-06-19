@@ -13,6 +13,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changes
 - Exception message will return API error message when possible
+- `Config` handle multiple keys
+- Test mode is set a default now
 
 ### Fixed
 - Formatted IBAN may have one space at end

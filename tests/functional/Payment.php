@@ -25,7 +25,7 @@ class Payment extends TestCase
     public function testBadCredential()
     {
         $this
-            ->given($this->config->setKey(uniqid()))
+            ->given(ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))])->setHost(getenv('ILD_API_HOST')))
             ->and($this->newTestedInstance(uniqid()))
             ->then
                 ->exception(function () {

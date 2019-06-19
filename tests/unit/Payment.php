@@ -54,7 +54,7 @@ class Payment extends atoum
             ->if($client = new mock\GuzzleHttp\Client)
             ->and($response = new mock\GuzzleHttp\Psr7\Response)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(uniqid()))
+            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
 
             ->assert('Test with a card token')
@@ -197,7 +197,7 @@ class Payment extends atoum
     public function testGetRefundableAmount()
     {
         $this
-            ->given($config = Api\Config::init(uniqid()))
+            ->given($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($client = new mock\ild78\Http\Client)
             ->and($config->setHttpClient($client))
 
@@ -270,7 +270,7 @@ class Payment extends atoum
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/list.json'))
             ->and($this->calling($response)->getBody = $body)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(uniqid()))
+            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
 
             ->and($options = [
@@ -491,7 +491,7 @@ class Payment extends atoum
             ->given($client = new mock\GuzzleHttp\Client)
             ->and($response = new mock\GuzzleHttp\Psr7\Response)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(uniqid()))
+            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
 
             ->then
@@ -538,7 +538,7 @@ class Payment extends atoum
             ->given($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(uniqid()))
+            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
             // Behavior modification are done in assert part to prevent confusion on multiple calls mocking
 
@@ -650,7 +650,7 @@ class Payment extends atoum
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-card.json'))
             ->and($this->calling($response)->getBody = $body)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(uniqid()))
+            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
 
             ->if($card = new Card)
@@ -765,7 +765,7 @@ class Payment extends atoum
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-sepa.json'))
             ->and($this->calling($response)->getBody = $body)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(uniqid()))
+            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
 
             ->if($sepa = new Sepa)
@@ -849,7 +849,7 @@ class Payment extends atoum
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client)
-            ->and($config = Api\Config::init(uniqid()))
+            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
 
             ->if($this->newTestedInstance)

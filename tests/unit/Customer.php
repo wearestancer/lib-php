@@ -67,7 +67,7 @@ class Customer extends atoum
             ->and($body = file_get_contents(__DIR__ . '/fixtures/customers/create.json'))
             ->and($this->calling($response)->getBody = $body)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(uniqid()))
+            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
 
             ->if($this->newTestedInstance)
@@ -164,7 +164,7 @@ class Customer extends atoum
     public function testSave_forUpdate()
     {
         $this
-            ->given($config = Api\Config::init(uniqid()))
+            ->given($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($client = new mock\ild78\Http\Client)
             ->and($config->setHttpClient($client))
 
