@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace ild78;
 
-use DateTime;
 use Generator;
 use ild78;
 
@@ -25,6 +24,12 @@ use ild78;
 class Payment extends Api\AbstractObject
 {
     use ild78\Traits\AmountTrait;
+    use ild78\Traits\SearchTrait;
+
+    /** @var string[] */
+    protected $allowedSearchFilter = [
+        'order_id',
+    ];
 
     /** @var string */
     protected $endpoint = 'checkout';
@@ -215,6 +220,8 @@ class Payment extends Api\AbstractObject
         return $this->getResponseCode() === '00';
     }
 
+    // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
+
     /**
      * List payment
      *
@@ -240,47 +247,6 @@ class Payment extends Api\AbstractObject
      */
     public static function list(array $terms) : Generator
     {
-        $allowed = array_flip(['created', 'limit', 'order_id', 'start']);
-        $diff = array_intersect_key($terms, $allowed);
-        $params = [];
-
-        if (!$diff) {
-            throw new ild78\Exceptions\InvalidSearchFilter();
-        }
-
-        if (array_key_exists('created', $terms)) {
-            $created = $terms['created'];
-
-            if ($terms['created'] instanceof DateTime) {
-                $created = (int) $terms['created']->format('U');
-            }
-
-            $params['created'] = $created;
-
-            $type = gettype($created);
-
-            if (!$created || $type !== 'integer') {
-                $message = 'Created must be a position integer or a DateTime object.';
-
-                throw new ild78\Exceptions\InvalidSearchCreationFilter($message);
-            }
-
-            if ($created > time()) {
-                $message = 'Created must be in the past.';
-
-                throw new ild78\Exceptions\InvalidSearchCreationFilter($message);
-            }
-        }
-
-        if (array_key_exists('limit', $terms)) {
-            $params['limit'] = $terms['limit'];
-            $type = gettype($terms['limit']);
-
-            if ($type !== 'integer' || $terms['limit'] < 1 || $terms['limit'] > 100) {
-                throw new ild78\Exceptions\InvalidSearchLimit();
-            }
-        }
-
         if (array_key_exists('order_id', $terms)) {
             $params['order_id'] = $terms['order_id'];
             $type = gettype($terms['order_id']);
@@ -290,47 +256,12 @@ class Payment extends Api\AbstractObject
             }
         }
 
-        $params['start'] = 0;
+        $payment = new static();
 
-        if (array_key_exists('start', $terms)) {
-            $params['start'] = $terms['start'];
-            $type = gettype($terms['start']);
-
-            if ($type !== 'integer' || $terms['start'] < 0) {
-                throw new ild78\Exceptions\InvalidSearchStart();
-            }
-        }
-
-        $obj = new static(); // Mandatory for requests.
-        $request = new Api\Request();
-
-        $gen = function () use ($obj, $request, $params) {
-            $more = true;
-            $start = 0;
-
-            do {
-                $params['start'] += $start;
-
-                $tmp = $request->get($obj, $params);
-
-                if (!$tmp) {
-                    $more = false;
-                } else {
-                    $results = json_decode($tmp, true);
-                    $more = $results['range']['has_more'];
-                    $start += $results['range']['limit'];
-
-                    foreach ($results['payments'] as $data) {
-                        $payment = new static($data['id']);
-
-                        yield $payment->hydrate($data, false);
-                    }
-                }
-            } while ($more);
-        };
-
-        return $gen();
+        return $payment->search($terms);
     }
+
+    // phpcs:enable
 
     /**
      * Quick way to make a simple payment
