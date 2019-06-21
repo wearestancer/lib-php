@@ -25,4 +25,52 @@ class Dispute extends ild78\Tests\atoum
                     ->isIdenticalTo('disputes')
         ;
     }
+
+    public function testGetOrderId()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($orderId = uniqid())
+            ->then
+                ->variable($this->testedInstance->getOrderId())
+                    ->isNull
+
+            ->if($this->testedInstance->hydrate(['order_id' => $orderId]))
+            ->then
+                ->string($this->testedInstance->getOrderId())
+                    ->isIdenticalTo($orderId)
+        ;
+    }
+
+    public function testGetPayment()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($payment = new ild78\Payment)
+            ->then
+                ->variable($this->testedInstance->getPayment())
+                    ->isNull
+
+            ->if($this->testedInstance->hydrate(['payment' => $payment]))
+            ->then
+                ->object($this->testedInstance->getPayment())
+                    ->isIdenticalTo($payment)
+        ;
+    }
+
+    public function testGetResponseCode()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($response = uniqid())
+            ->then
+                ->variable($this->testedInstance->getResponseCode())
+                    ->isNull
+
+            ->if($this->testedInstance->hydrate(['response_code' => $response]))
+            ->then
+                ->string($this->testedInstance->getResponseCode())
+                    ->isIdenticalTo($response)
+        ;
+    }
 }

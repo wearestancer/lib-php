@@ -7,6 +7,12 @@ use ild78;
 
 /**
  * Representation of a dispute
+ *
+ * @method integer getAmount()
+ * @method string getCurrency()
+ * @method integer getOrderId()
+ * @method string getPayment()
+ * @method string getResponseCode()
  */
 class Dispute extends Api\AbstractObject
 {
@@ -14,4 +20,27 @@ class Dispute extends Api\AbstractObject
 
     /** @var string */
     protected $endpoint = 'disputes';
+
+    /** @var array */
+    protected $dataModel = [
+        'orderId' => [
+            'restricted' => true,
+            'size' => [
+                'min' => 1,
+                'max' => 24,
+            ],
+            'type' => self::STRING,
+        ],
+        'payment' => [
+            'restricted' => true,
+            'type' => ild78\Payment::class,
+        ],
+        'responseCode' => [
+            'restricted' => true,
+            'size' => [
+                'fixed' => 2,
+            ],
+            'type' => self::STRING,
+        ],
+    ];
 }
