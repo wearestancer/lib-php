@@ -2,7 +2,6 @@
 
 namespace ild78\tests\unit;
 
-use atoum;
 use DateTime;
 use DateInterval;
 use GuzzleHttp\Client;
@@ -18,7 +17,7 @@ use ild78\Payment as testedClass;
 use ild78\Sepa;
 use mock;
 
-class Payment extends atoum
+class Payment extends ild78\Tests\atoum
 {
     public function currencyDataProvider()
     {
@@ -167,8 +166,9 @@ class Payment extends atoum
     public function testClass()
     {
         $this
-            ->class(testedClass::class)
+            ->currentlyTestedClass()
                 ->isSubclassOf(Api\AbstractObject::class)
+                ->hasTrait(ild78\Traits\AmountTrait::class)
         ;
     }
 

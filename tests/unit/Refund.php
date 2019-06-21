@@ -2,16 +2,17 @@
 
 namespace ild78\tests\unit;
 
-use atoum;
 use ild78;
+use ild78\Refund as testedClass;
 
-class Refund extends atoum
+class Refund extends ild78\Tests\atoum
 {
     public function testClass()
     {
         $this
-            ->testedClass
+            ->currentlyTestedClass()
                 ->isSubclassOf(ild78\Api\AbstractObject::class)
+                ->hasTrait(ild78\Traits\AmountTrait::class)
         ;
     }
 
