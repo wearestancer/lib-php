@@ -13,6 +13,7 @@ class Dispute extends ild78\Tests\atoum
             ->currentlyTestedClass()
                 ->isSubclassOf(ild78\Api\AbstractObject::class)
                 ->hasTrait(ild78\Traits\AmountTrait::class)
+                ->hasTrait(ild78\Traits\SearchTrait::class)
         ;
     }
 

@@ -13,10 +13,12 @@ use ild78;
  * @method integer getOrderId()
  * @method string getPayment()
  * @method string getResponseCode()
+ * @method Generator list(array $terms)
  */
 class Dispute extends Api\AbstractObject
 {
     use ild78\Traits\AmountTrait;
+    use ild78\Traits\SearchTrait;
 
     /** @var string */
     protected $endpoint = 'disputes';
