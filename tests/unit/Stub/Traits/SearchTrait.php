@@ -10,7 +10,7 @@ use mock;
 
 class SearchTrait extends ild78\Tests\atoum
 {
-    public function testSearch()
+    public function testList()
     {
         $this
             ->given($client = new mock\ild78\Http\Client)
@@ -34,21 +34,21 @@ class SearchTrait extends ild78\Tests\atoum
 
             ->assert('Invalid limit')
                 ->exception(function () {
-                    $this->invoke($this->testedInstance)->search(['limit' => 0]);
+                    testedClass::list(['limit' => 0]);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchLimit::class)
                     ->message
                         ->isIdenticalTo('Limit must be between 1 and 100.')
 
                 ->exception(function () {
-                    $this->invoke($this->testedInstance)->search(['limit' => 101]);
+                    testedClass::list(['limit' => 101]);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchLimit::class)
                     ->message
                         ->isIdenticalTo('Limit must be between 1 and 100.')
 
                 ->exception(function () {
-                    $this->invoke($this->testedInstance)->search(['limit' => uniqid()]);
+                    testedClass::list(['limit' => uniqid()]);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchLimit::class)
                     ->message
@@ -56,14 +56,14 @@ class SearchTrait extends ild78\Tests\atoum
 
             ->assert('Invalid start')
                 ->exception(function () {
-                    $this->invoke($this->testedInstance)->search(['start' => -1]);
+                    testedClass::list(['start' => -1]);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchStart::class)
                     ->message
                         ->isIdenticalTo('Start must be a positive integer.')
 
                 ->exception(function () {
-                    $this->invoke($this->testedInstance)->search(['start' => uniqid()]);
+                    testedClass::list(['start' => uniqid()]);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchStart::class)
                     ->message
@@ -71,14 +71,14 @@ class SearchTrait extends ild78\Tests\atoum
 
             ->assert('No terms')
                 ->exception(function () {
-                    $this->invoke($this->testedInstance)->search([]);
+                    testedClass::list([]);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchFilter::class)
                     ->message
                         ->isIdenticalTo('Invalid search filters.')
 
                 ->exception(function () {
-                    $this->invoke($this->testedInstance)->search(['foo' => 'bar']);
+                    testedClass::list(['foo' => 'bar']);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchFilter::class)
                     ->message
@@ -86,7 +86,7 @@ class SearchTrait extends ild78\Tests\atoum
 
             ->assert('Invalid created filter')
                 ->exception(function () {
-                    $this->invoke($this->testedInstance)->search(['created' => time() + 100]);
+                    testedClass::list(['created' => time() + 100]);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilter::class)
                     ->message
@@ -96,21 +96,21 @@ class SearchTrait extends ild78\Tests\atoum
                     $date = new DateTime();
                     $date->add(new DateInterval('P1D'));
 
-                    $this->invoke($this->testedInstance)->search(['created' => $date]);
+                    testedClass::list(['created' => $date]);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilter::class)
                     ->message
                         ->isIdenticalTo('Created must be in the past.')
 
                 ->exception(function () {
-                    $this->invoke($this->testedInstance)->search(['created' => 0]);
+                    testedClass::list(['created' => 0]);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilter::class)
                     ->message
                         ->isIdenticalTo('Created must be a position integer or a DateTime object.')
 
                 ->exception(function () {
-                    $this->invoke($this->testedInstance)->search(['created' => uniqid()]);
+                    testedClass::list(['created' => uniqid()]);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilter::class)
                     ->message
@@ -137,7 +137,7 @@ class SearchTrait extends ild78\Tests\atoum
                 ])
                 ->and($location2 = $location . '?' . http_build_query($terms2))
                 ->then
-                    ->generator($gen = $this->invoke($this->testedInstance)->search($terms1))
+                    ->generator($gen = testedClass::list($terms1))
                         ->yields
                             ->object
                                 ->isInstanceOf(testedClass::class)
@@ -187,7 +187,7 @@ class SearchTrait extends ild78\Tests\atoum
                 ->and($query = http_build_query(['limit' => $limit, 'start' => 0]))
                 ->and($location = $this->testedInstance->getUri() . '?' . $query)
                 ->then
-                    ->generator($gen = $this->invoke($this->testedInstance)->search($terms))
+                    ->generator($gen = testedClass::list($terms))
                         ->yields
                             ->variable
                                 ->isNull
@@ -207,7 +207,7 @@ class SearchTrait extends ild78\Tests\atoum
                 ->and($query = http_build_query(['limit' => $limit, 'start' => 0]))
                 ->and($location = $this->newTestedInstance->getUri() . '?' . $query)
                 ->then
-                    ->generator($gen = $this->invoke($this->testedInstance)->search($terms))
+                    ->generator($gen = testedClass::list($terms))
                         ->yields
                             ->variable
                                 ->isNull

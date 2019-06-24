@@ -20,16 +20,12 @@ use ild78;
  * @method string getResponse()
  * @method ild78\\Sepa getSepa()
  * @method string getStatus()
+ * @method Generator list(array $terms)
  */
 class Payment extends Api\AbstractObject
 {
     use ild78\Traits\AmountTrait;
     use ild78\Traits\SearchTrait;
-
-    /** @var string[] */
-    protected $allowedSearchFilter = [
-        'order_id',
-    ];
 
     /** @var string */
     protected $endpoint = 'checkout';
@@ -220,33 +216,22 @@ class Payment extends Api\AbstractObject
         return $this->getResponseCode() === '00';
     }
 
-    // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
-
     /**
-     * List payment
+     * Filter for list method
      *
-     * `$terms` must be an associative array with one of the following key : `created`, `limit`, `order_id` or `start`.
-     *
-     * `created` must be an unix timestamp or a DateTime object which will filter payments equal
-     * to or greater than this value.
-     *
-     * `limit` must be an integer between 1 and 100 and will limit the number of objects to be returned.
+     * `$terms` must be an associative array with one of the following key : `order_id`.
      *
      * `order_id` will be treated as a string, will filter payments corresponding to the `order_id` you specified
      * in your initial payment request.
      *
-     * `start` must be an integer, will be used as a pagination cursor, starts at 0.
-     *
-     * @param array $terms Search terms. May have `created`, `limit`, `order_id` or `start` key.
-     * @return Generator
-     * @throws ild78\Exceptions\InvalidSearchFilter When `$terms` is invalid.
-     * @throws ild78\Exceptions\InvalidSearchCreationFilter When `created` is invalid.
+     * @param array $terms Search terms. May have `order_id` key.
+     * @return array
      * @throws ild78\Exceptions\InvalidSearchOrderIdFilter When `order_id` is invalid.
-     * @throws ild78\Exceptions\InvalidSearchLimit When `limit` is invalid.
-     * @throws ild78\Exceptions\InvalidSearchStart When `start` is invalid.
      */
-    public static function list(array $terms) : Generator
+    public static function filterListFilter(array $terms) : array
     {
+        $params = [];
+
         if (array_key_exists('order_id', $terms)) {
             $params['order_id'] = $terms['order_id'];
             $type = gettype($terms['order_id']);
@@ -256,12 +241,8 @@ class Payment extends Api\AbstractObject
             }
         }
 
-        $payment = new static();
-
-        return $payment->search($terms);
+        return $params;
     }
-
-    // phpcs:enable
 
     /**
      * Quick way to make a simple payment

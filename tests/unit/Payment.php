@@ -392,16 +392,16 @@ class Payment extends ild78\Tests\atoum
                 ->and($terms1 = [
                     'created' => $created,
                     'limit' => $limit,
-                    'order_id' => $orderId,
                     'start' => $start,
+                    'order_id' => $orderId,
                 ])
                 ->and($location1 = $location . '?' . http_build_query($terms1))
 
                 ->and($terms2 = [
                     'created' => $created,
                     'limit' => $limit,
-                    'order_id' => $orderId,
                     'start' => $start + 2, // Forced in json sample
+                    'order_id' => $orderId,
                 ])
                 ->and($location2 = $location . '?' . http_build_query($terms2))
                 ->then

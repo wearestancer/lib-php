@@ -12,7 +12,7 @@ use ild78;
 trait SearchTrait
 {
     /**
-     * Search elements
+     * List elements
      *
      * `$terms` must be an associative array with one of the following key : `created`, `limit` or `start`.
      *
@@ -30,10 +30,16 @@ trait SearchTrait
      * @throws ild78\Exceptions\InvalidSearchLimit When `limit` is invalid.
      * @throws ild78\Exceptions\InvalidSearchStart When `start` is invalid.
      */
-    protected function search(array $terms) : Generator
+    public static function list(array $terms) : Generator
     {
-        $allowed = array_flip(array_merge($this->allowedSearchFilter, ['created', 'limit', 'start']));
-        $params = array_intersect_key($terms, $allowed);
+        $allowed = array_flip(['created', 'limit', 'start']);
+        $others = [];
+
+        if (method_exists(static::class, 'filterListFilter')) {
+            $others = static::filterListFilter($terms);
+        }
+
+        $params = array_merge(array_intersect_key($terms, $allowed), $others);
 
         if (!$params) {
             throw new ild78\Exceptions\InvalidSearchFilter();
@@ -84,15 +90,16 @@ trait SearchTrait
         }
 
         $request = new ild78\Api\Request();
+        $element = new static(); // Mandatory for requests.
 
-        $gen = function () use ($request, $params) {
+        $gen = function () use ($request, $element, $params) {
             $more = true;
             $start = 0;
 
             do {
                 $params['start'] += $start;
 
-                $tmp = $request->get($this, $params);
+                $tmp = $request->get($element, $params);
 
                 if (!$tmp) {
                     $more = false;
