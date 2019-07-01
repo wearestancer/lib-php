@@ -60,6 +60,17 @@ class TestCase extends atoum
         return $number;
     }
 
+    public function getRandomString($min, $max = null)
+    {
+        if (!$max) {
+            $max = $min;
+        }
+
+        $len = random_int($min, $max);
+
+        return bin2hex(random_bytes($len / 2));
+    }
+
     public function getValidCardNumber()
     {
         $cards = [

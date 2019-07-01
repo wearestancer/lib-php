@@ -38,7 +38,7 @@ class Customer extends TestCase
     {
         $this
             ->assert('Unknown user result a 404 exception')
-                ->if($this->newTestedInstance($id = md5(uniqid())))
+                ->if($this->newTestedInstance($id = 'cust_' . $this->getRandomString(24)))
                 ->then
                     ->exception(function () {
                         $this->testedInstance->getName();
