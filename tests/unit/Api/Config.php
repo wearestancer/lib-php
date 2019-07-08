@@ -13,6 +13,25 @@ use Psr;
 
 class Config extends atoum
 {
+    public function testClass()
+    {
+        $this
+            ->given($package = json_decode(file_get_contents(__DIR__ . '/../../../composer.json'), true))
+            ->then
+                ->testedClass
+                    ->hasConstant('LIVE_MODE')
+
+                ->testedClass
+                    ->hasConstant('TEST_MODE')
+
+                ->testedClass
+                    ->hasConstant('VERSION')
+
+                ->string(testedClass::VERSION)
+                        ->isIdenticalTo($package['version'])
+        ;
+    }
+
     public function testGetBasicAuthHeader()
     {
         $this
