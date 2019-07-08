@@ -337,6 +337,14 @@ class Client extends atoum
                 ->and($this->function->curl_error = '')
                 ->and($method = 'GET')
                 ->and($host = uniqid())
+
+                ->if($curlData = curl_version())
+                ->and($ua = vsprintf('curl/%s libiliad-php/%s (%s; php %s)', [
+                    $curlData['version'],
+                    ild78\Api\Config::VERSION,
+                    PHP_OS,
+                    PHP_VERSION,
+                ]))
                 ->then
                     ->object($response = $this->testedInstance->request($method, $host))
                         ->isInstanceOf(ild78\Http\Response::class)
@@ -349,6 +357,9 @@ class Client extends atoum
                             ->once
 
                         ->wasCalledWithIdenticalArguments($curl, CURLOPT_CUSTOMREQUEST, $method)
+                            ->once
+
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_USERAGENT, $ua)
                             ->once
 
                         ->wasCalledWithArguments($curl, CURLOPT_CONNECTTIMEOUT)
