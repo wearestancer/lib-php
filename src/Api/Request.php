@@ -146,6 +146,17 @@ class Request
         $options['headers']['Authorization'] = $config->getBasicAuthHeader();
         $options['headers']['Content-Type'] = 'application/json';
 
+        if ($client instanceof GuzzleHttp\ClientInterface) {
+            $params = [
+                GuzzleHttp\Client::VERSION,
+                Config::VERSION,
+                PHP_OS,
+                PHP_VERSION,
+            ];
+
+            $options['headers']['User-Agent'] = vsprintf('GuzzleHttp/%s libiliad-php/%s (%s; php %s)', $params);
+        }
+
         $options['timeout'] = $config->getTimeout();
 
         $logMethod = null;

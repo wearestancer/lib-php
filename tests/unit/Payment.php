@@ -679,11 +679,18 @@ class Payment extends atoum
             ->and($logMessage = 'Payment of 1.00 eur with mastercard "4444"')
 
             ->and($json = json_encode($this->testedInstance))
+            ->and($agent = vsprintf('GuzzleHttp/%s libiliad-php/%s (%s; php %s)', [
+                Client::VERSION,
+                Api\Config::VERSION,
+                PHP_OS,
+                PHP_VERSION,
+            ]))
             ->and($options = [
                 'body' => $json,
                 'headers' => [
                     'Authorization' => $config->getBasicAuthHeader(),
                     'Content-Type' => 'application/json',
+                    'User-Agent' => $agent,
                 ],
                 'timeout' => $config->getTimeout(),
             ])
@@ -785,11 +792,18 @@ class Payment extends atoum
             ->and($logMessage = 'Payment of 1.00 eur with IBAN "2606" / BIC "ILADFRPP"')
 
             ->and($json = json_encode($this->testedInstance))
+            ->and($agent = vsprintf('GuzzleHttp/%s libiliad-php/%s (%s; php %s)', [
+                Client::VERSION,
+                Api\Config::VERSION,
+                PHP_OS,
+                PHP_VERSION,
+            ]))
             ->and($options = [
                 'body' => $json,
                 'headers' => [
                     'Authorization' => $config->getBasicAuthHeader(),
                     'Content-Type' => 'application/json',
+                    'User-Agent' => $agent,
                 ],
                 'timeout' => $config->getTimeout(),
             ])
