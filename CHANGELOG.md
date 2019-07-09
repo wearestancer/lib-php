@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - First issue/MR templates
 - Setter aliases
 - Refunds
+- Custom user agent
 
 ### Changes
 - Exception message will return API error message when possible
