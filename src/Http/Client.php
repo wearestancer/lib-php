@@ -192,15 +192,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
         curl_setopt($this->curl, CURLOPT_HEADERFUNCTION, [$this, 'parseHeaderLine']);
 
         // Add user agent.
-        $params = [
-            curl_version()['version'],
-            ild78\Api\Config::VERSION,
-            PHP_OS,
-            PHP_VERSION,
-        ];
-        $agent = vsprintf('curl/%s libiliad-php/%s (%s; php %s)', $params);
-
-        curl_setopt($this->curl, CURLOPT_USERAGENT, $agent);
+        curl_setopt($this->curl, CURLOPT_USERAGENT, $config->getDefaultUserAgent());
 
         $body = curl_exec($this->curl);
         $error = curl_errno($this->curl);

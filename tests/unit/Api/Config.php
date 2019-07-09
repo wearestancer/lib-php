@@ -3,6 +3,7 @@
 namespace ild78\tests\unit\Api;
 
 use atoum;
+use GuzzleHttp;
 use ild78;
 use ild78\Api\Config as testedClass;
 use ild78\Exceptions;
@@ -44,6 +45,34 @@ class Config extends atoum
             ->then
                 ->string($this->testedInstance->getBasicAuthHeader())
                     ->isIdenticalTo('Basic ' . base64_encode($stest . ':'))
+        ;
+    }
+
+    public function testGetDefaultUserAgent()
+    {
+        $this
+            ->given($this->newTestedInstance([]))
+            ->and($guzzle = new mock\GuzzleHttp\ClientInterface)
+            ->and($client = new ild78\Http\Client)
+            ->and($agent = vsprintf(' libiliad-php/%s (%s %s %s; php %s)', [
+                testedClass::VERSION,
+                PHP_OS,
+                php_uname('m'),
+                php_uname('r'),
+                PHP_VERSION,
+            ]))
+            ->and($guzzlePrefix = 'GuzzleHttp/' . GuzzleHttp\Client::VERSION)
+            ->and($curlPrefix = 'curl/' . curl_version()['version'])
+
+            ->if($this->testedInstance->setHttpClient($client))
+            ->then
+                ->string($this->testedInstance->getDefaultUserAgent())
+                    ->isIdenticalTo($curlPrefix . $agent)
+
+            ->if($this->testedInstance->setHttpClient($guzzle))
+            ->then
+                ->string($this->testedInstance->getDefaultUserAgent())
+                    ->isIdenticalTo($guzzlePrefix . $agent)
         ;
     }
 

@@ -1127,16 +1127,10 @@ class StubObject extends atoum
                 ->and($this->testedInstance->setInteger1($integer1))
 
                 ->if($options = [])
-                ->and($agent = vsprintf('GuzzleHttp/%s libiliad-php/%s (%s; php %s)', [
-                    GuzzleHttp\Client::VERSION,
-                    ild78\Api\Config::VERSION,
-                    PHP_OS,
-                    PHP_VERSION,
-                ]))
                 ->and($options['headers'] = [
                     'Authorization' => $config->getBasicAuthHeader(),
                     'Content-Type' => 'application/json',
-                    'User-Agent' => $agent,
+                    'User-Agent' => $config->getDefaultUserAgent(),
                 ])
                 ->and($options['timeout'] = $config->getTimeout())
                 ->and($options['body'] = json_encode($this->testedInstance))

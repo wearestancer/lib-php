@@ -147,14 +147,7 @@ class Request
         $options['headers']['Content-Type'] = 'application/json';
 
         if ($client instanceof GuzzleHttp\ClientInterface) {
-            $params = [
-                GuzzleHttp\Client::VERSION,
-                Config::VERSION,
-                PHP_OS,
-                PHP_VERSION,
-            ];
-
-            $options['headers']['User-Agent'] = vsprintf('GuzzleHttp/%s libiliad-php/%s (%s; php %s)', $params);
+            $options['headers']['User-Agent'] = $config->getDefaultUserAgent();
         }
 
         $options['timeout'] = $config->getTimeout();

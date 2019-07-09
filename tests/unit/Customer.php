@@ -76,18 +76,12 @@ class Customer extends atoum
             ->and($this->testedInstance->setName(uniqid()))
 
             ->and($json = json_encode($this->testedInstance))
-            ->and($agent = vsprintf('GuzzleHttp/%s libiliad-php/%s (%s; php %s)', [
-                Client::VERSION,
-                Api\Config::VERSION,
-                PHP_OS,
-                PHP_VERSION,
-            ]))
             ->and($options = [
                 'body' => $json,
                 'headers' => [
                     'Authorization' => $config->getBasicAuthHeader(),
                     'Content-Type' => 'application/json',
-                    'User-Agent' => $agent,
+                    'User-Agent' => $config->getDefaultUserAgent(),
                 ],
                 'timeout' => $config->getTimeout(),
             ])
