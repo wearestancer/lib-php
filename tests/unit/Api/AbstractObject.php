@@ -205,6 +205,7 @@ class AbstractObject extends atoum
             ->and($options['headers'] = [
                 'Authorization' => $config->getBasicAuthHeader(),
                 'Content-Type' => 'application/json',
+                'User-Agent' => $config->getDefaultUserAgent(),
             ])
             ->and($options['timeout'] = $config->getTimeout())
             ->and($options['body'] = json_encode($id))

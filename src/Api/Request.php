@@ -145,10 +145,7 @@ class Request
 
         $options['headers']['Authorization'] = $config->getBasicAuthHeader();
         $options['headers']['Content-Type'] = 'application/json';
-
-        if ($client instanceof GuzzleHttp\ClientInterface) {
-            $options['headers']['User-Agent'] = $config->getDefaultUserAgent();
-        }
+        $options['headers']['User-Agent'] = $config->getDefaultUserAgent();
 
         $options['timeout'] = $config->getTimeout();
 
