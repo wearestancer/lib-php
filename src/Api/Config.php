@@ -380,7 +380,7 @@ class Config
     }
 
     /**
-     * Update GuzzleHttp\Client instance
+     * Update HTTP client instance
      *
      * Be carefull, no limitation is done on this method to allow you to use your own
      * implementation of an HTTP client.
