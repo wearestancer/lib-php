@@ -48,7 +48,7 @@ class Customer extends TestCase
                             ->isIdenticalTo('No such customer ' . $id)
 
             ->assert('Get test user')
-                ->if($this->newTestedInstance('cust_aEBF8w2szNdhreJ0uEmrplen'))
+                ->if($this->newTestedInstance('cust_9y1U3mHPd1yPvbx07VBRqd9C'))
                 ->then
                     ->string($this->testedInstance->getName())
                         ->isIdenticalTo('John Doe')

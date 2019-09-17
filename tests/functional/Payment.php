@@ -39,17 +39,17 @@ class Payment extends TestCase
     {
         $this
             ->assert('Unknown payment result a 404 exception')
-                ->if($this->newTestedInstance($id = md5(uniqid())))
+                ->if($this->newTestedInstance($id = 'paym_' . bin2hex(random_bytes(12))))
                 ->then
                     ->exception(function () {
                         $this->testedInstance->getAmount();
                     })
                         ->isInstanceOf(ild78\Exceptions\NotFoundException::class)
                         ->message
-                            ->isIdenticalTo('No such payment id ' . $id)
+                            ->isIdenticalTo('No such payment ' . $id)
 
             ->assert('Get test payment')
-                ->if($this->newTestedInstance('paym_uyqKGrWvxC7AlsuJq1vlh5FF'))
+                ->if($this->newTestedInstance('paym_FQgpGVJpyGPVJVIuQtO3zy6i'))
                 ->then
                     ->integer($this->testedInstance->getAmount())
                         ->isIdenticalTo(7810)
@@ -67,13 +67,13 @@ class Payment extends TestCase
                         ->isInstanceOf(ild78\Card::class)
 
                     ->string($card->getId())
-                        ->isIdenticalTo('card_nc1Xikd2ihaz1n5OjRciHoZK')
+                        ->isIdenticalTo('card_nsA0eap90E6HRod6j54pnVWg')
 
                     ->object($customer = $this->testedInstance->getCustomer())
                         ->isInstanceOf(ild78\Customer::class)
 
                     ->string($customer->getId())
-                        ->isIdenticalTo('cust_Ptlig1Zc0ln17OHqeANRdHHU')
+                        ->isIdenticalTo('cust_6FbQaYtxjADzerqdO5gs79as')
         ;
     }
 
