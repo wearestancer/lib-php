@@ -319,18 +319,13 @@ class Payment extends Api\AbstractObject
         $card = $this->getCard();
         $sepa = $this->getSepa();
 
-        if (!$card && !$sepa) {
-            $message = 'You must provide a valid credit card or SEPA account to make a payment.';
-
-            throw new ild78\Exceptions\MissingPaymentMethodException($message);
-        }
-
         parent::save();
 
         $params = [
             $this->getAmount() / 100,
             $this->getCurrency(),
         ];
+        $message = vsprintf('Payment of %.02f %s without payment method', $params);
 
         if ($card) {
             $params[] = $card->getBrand();
