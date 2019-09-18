@@ -18,8 +18,7 @@
     "autoload-dev": {
         "psr-4": {
             "ild78\\Stub\\": "tests/Stub",
-            "ild78\\Tests\\": "tests/",
-            "ild78\\tests\\functional\\": "tests/functional/"
+            "ild78\\Tests\\": "tests/"
         }
     },
     "require": {

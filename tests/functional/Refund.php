@@ -3,7 +3,6 @@
 namespace ild78\tests\functional;
 
 use ild78;
-use ild78\Refund as testedClass;
 
 /**
  * @namespace \tests\functional
