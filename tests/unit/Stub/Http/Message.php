@@ -2,11 +2,10 @@
 
 namespace ild78\tests\unit\Stub\Http;
 
-use atoum;
 use ild78;
 use mock;
 
-class Message extends atoum
+class Message extends ild78\Tests\atoum
 {
     public function testAddHeader()
     {

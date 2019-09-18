@@ -2,19 +2,19 @@
 
 namespace ild78\tests\unit;
 
-use atoum;
 use DateTime;
 use GuzzleHttp\Client;
 use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
+use ild78;
 use ild78\Api;
 use ild78\Exceptions;
 use ild78\Customer as testedClass;
 use ild78\Exceptions\NotFoundException;
 use mock;
 
-class Customer extends atoum
+class Customer extends ild78\Tests\atoum
 {
     public function testClass()
     {

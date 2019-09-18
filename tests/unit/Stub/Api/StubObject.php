@@ -2,12 +2,11 @@
 
 namespace ild78\tests\unit\Stub\Api;
 
-use atoum;
 use GuzzleHttp;
 use ild78;
 use mock;
 
-class StubObject extends atoum
+class StubObject extends ild78\Tests\atoum
 {
     public function invalidDataProvider()
     {

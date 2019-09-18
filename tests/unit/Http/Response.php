@@ -2,10 +2,10 @@
 
 namespace ild78\Http\tests\unit;
 
-use atoum;
+use ild78;
 use Psr;
 
-class Response extends atoum
+class Response extends ild78\Tests\atoum
 {
     public function httpStatusDataProvider()
     {
@@ -81,7 +81,7 @@ class Response extends atoum
     public function testClass()
     {
         $this
-            ->testedClass
+            ->currentlyTestedClass
                 ->implements(Psr\Http\Message\ResponseInterface::class)
         ;
     }

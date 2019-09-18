@@ -2,17 +2,16 @@
 
 namespace ild78\tests\unit\Exceptions;
 
-use atoum;
 use ild78;
 use mock;
 use Psr;
 
-class Exception extends atoum
+class Exception extends ild78\Tests\atoum
 {
     public function testClass()
     {
         $this
-            ->testedClass
+            ->currentlyTestedClass
                 ->extends(\Exception::class)
                 ->implements(ild78\Interfaces\ExceptionInterface::class)
         ;

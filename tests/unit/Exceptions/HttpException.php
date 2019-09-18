@@ -2,13 +2,12 @@
 
 namespace ild78\tests\unit\Exceptions;
 
-use atoum;
 use GuzzleHttp;
 use ild78;
 use mock;
 use Psr;
 
-class HttpException extends atoum
+class HttpException extends ild78\Tests\atoum
 {
     public function statusDataProvider()
     {
@@ -38,7 +37,7 @@ class HttpException extends atoum
     public function testClass()
     {
         $this
-            ->testedClass
+            ->currentlyTestedClass
                 ->extends(ild78\Exceptions\Exception::class)
                 ->implements(ild78\Interfaces\ExceptionInterface::class)
         ;

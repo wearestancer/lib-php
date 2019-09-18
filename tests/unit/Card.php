@@ -2,14 +2,13 @@
 
 namespace ild78\tests\unit;
 
-use atoum;
 use DateTime;
 use ild78;
 use ild78\Api;
 use ild78\Card as testedClass;
 use ild78\Exceptions;
 
-class Card extends atoum
+class Card extends ild78\Tests\atoum
 {
     public function brandDataProvider()
     {
@@ -96,7 +95,7 @@ class Card extends atoum
     public function testClass()
     {
         $this
-            ->testedClass
+            ->currentlyTestedClass
                 ->extends(ild78\Api\AbstractObject::class)
                 ->implements(ild78\Interfaces\PaymentMeansInterface::class)
         ;

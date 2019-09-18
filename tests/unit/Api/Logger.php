@@ -2,17 +2,16 @@
 
 namespace ild78\tests\unit\Api;
 
-use atoum;
 use ild78;
 use ild78\Api\Logger as testedClass;
 use Psr;
 
-class Logger extends atoum
+class Logger extends ild78\Tests\atoum
 {
     public function testClass()
     {
         $this
-            ->class(testedClass::class)
+            ->currentlyTestedClass
                 ->isSubclassOf(Psr\Log\LoggerInterface::class)
         ;
     }

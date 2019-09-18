@@ -2,15 +2,15 @@
 
 namespace ild78\tests\unit\Api;
 
-use atoum;
 use DateTime;
 use GuzzleHttp;
+use ild78;
 use ild78\Api;
 use ild78\Api\AbstractObject as testedClass;
 use ild78\Exceptions;
 use mock;
 
-class AbstractObject extends atoum
+class AbstractObject extends ild78\Tests\atoum
 {
     public function test__construct()
     {

@@ -2,10 +2,9 @@
 
 namespace ild78\tests\functional;
 
-use atoum;
 use ild78;
 
-class TestCase extends atoum
+class TestCase extends ild78\Tests\atoum
 {
     protected $config;
 

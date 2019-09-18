@@ -2,14 +2,13 @@
 
 namespace ild78\tests\unit\Api;
 
-use atoum;
 use Exception;
 use GuzzleHttp;
 use ild78;
 use ild78\Api\Request as testedClass;
 use mock;
 
-class Request extends atoum
+class Request extends ild78\Tests\atoum
 {
     public function testRequest_workingWithDefaultClient()
     {
