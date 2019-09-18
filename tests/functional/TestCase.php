@@ -30,15 +30,6 @@ class TestCase extends ild78\Tests\atoum
         $this->config->setHost($env['API_HOST']);
     }
 
-    public function currencyDataProvider()
-    {
-        return [
-            'EUR',
-            'USD',
-            'GBP',
-        ];
-    }
-
     public function getRandomNumber()
     {
         // Simulate a french mobile phone number

@@ -10,6 +10,8 @@ use ild78\Refund as testedClass;
  */
 class Refund extends TestCase
 {
+    use ild78\Tests\Provider\Currencies;
+
     /**
      * @dataProvider currencyDataProvider
      */

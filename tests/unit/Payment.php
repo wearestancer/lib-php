@@ -19,14 +19,7 @@ use mock;
 
 class Payment extends ild78\Tests\atoum
 {
-    public function currencyDataProvider()
-    {
-        return [
-            'EUR',
-            'USD',
-            'GBP',
-        ];
-    }
+    use ild78\Tests\Provider\Currencies;
 
     public function responseMessageDataProvider()
     {

@@ -10,6 +10,8 @@ use ild78\Payment as testedClass;
  */
 class Payment extends TestCase
 {
+    use ild78\Tests\Provider\Currencies;
+
     protected $order;
     protected $paymentList = [];
 
