@@ -145,6 +145,7 @@ class Request
 
         $options['headers']['Authorization'] = $config->getBasicAuthHeader();
         $options['headers']['Content-Type'] = 'application/json';
+        $options['headers']['User-Agent'] = $config->getDefaultUserAgent();
 
         $options['timeout'] = $config->getTimeout();
 

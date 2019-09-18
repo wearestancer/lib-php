@@ -191,6 +191,9 @@ class Client implements ild78\Interfaces\HttpClientInterface
         // Get response headers.
         curl_setopt($this->curl, CURLOPT_HEADERFUNCTION, [$this, 'parseHeaderLine']);
 
+        // Add user agent.
+        curl_setopt($this->curl, CURLOPT_USERAGENT, $config->getDefaultUserAgent());
+
         $body = curl_exec($this->curl);
         $error = curl_errno($this->curl);
         $code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);

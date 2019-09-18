@@ -351,6 +351,9 @@ class Client extends atoum
                         ->wasCalledWithIdenticalArguments($curl, CURLOPT_CUSTOMREQUEST, $method)
                             ->once
 
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_USERAGENT, $config->getDefaultUserAgent())
+                            ->once
+
                         ->wasCalledWithArguments($curl, CURLOPT_CONNECTTIMEOUT)
                             ->never
 

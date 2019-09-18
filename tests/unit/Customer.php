@@ -81,6 +81,7 @@ class Customer extends atoum
                 'headers' => [
                     'Authorization' => $config->getBasicAuthHeader(),
                     'Content-Type' => 'application/json',
+                    'User-Agent' => $config->getDefaultUserAgent(),
                 ],
                 'timeout' => $config->getTimeout(),
             ])
@@ -183,6 +184,7 @@ class Customer extends atoum
                         'headers' => [
                             'Authorization' => $config->getBasicAuthHeader(),
                             'Content-Type' => 'application/json',
+                            'User-Agent' => $config->getDefaultUserAgent(),
                         ],
                         'timeout' => $config->getTimeout(),
                     ])
@@ -218,6 +220,7 @@ class Customer extends atoum
                         'headers' => [
                             'Authorization' => $config->getBasicAuthHeader(),
                             'Content-Type' => 'application/json',
+                            'User-Agent' => $config->getDefaultUserAgent(),
                         ],
                         'timeout' => $config->getTimeout(),
                     ])

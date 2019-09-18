@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace ild78\Api;
 
+use GuzzleHttp;
 use ild78;
 use Psr\Log\LoggerInterface;
 
@@ -13,6 +14,7 @@ class Config
 {
     const LIVE_MODE = 'live';
     const TEST_MODE = 'test';
+    const VERSION = '0.0.2';
 
     /** @var string */
     protected $host = 'api.iliad78.net';
@@ -77,6 +79,35 @@ class Config
     public function getBasicAuthHeader() : string
     {
         return 'Basic ' . base64_encode($this->getSecretKey() . ':');
+    }
+
+    /**
+     * Return default user agent
+     *
+     * @return string
+     */
+    public function getDefaultUserAgent() : string
+    {
+        $params = [
+            static::VERSION,
+            PHP_OS,
+            php_uname('m'),
+            php_uname('r'),
+            PHP_VERSION,
+        ];
+        $client = $this->getHttpClient();
+
+        if ($client instanceof ild78\Http\Client) {
+            $curl = curl_version();
+
+            array_unshift($params, 'curl/' . $curl['version']);
+        }
+
+        if ($client instanceof GuzzleHttp\ClientInterface) {
+            array_unshift($params, 'GuzzleHttp/' . GuzzleHttp\Client::VERSION);
+        }
+
+        return vsprintf('%s libiliad-php/%s (%s %s %s; php %s)', $params);
     }
 
     /**
@@ -349,7 +380,7 @@ class Config
     }
 
     /**
-     * Update GuzzleHttp\Client instance
+     * Update HTTP client instance
      *
      * Be carefull, no limitation is done on this method to allow you to use your own
      * implementation of an HTTP client.

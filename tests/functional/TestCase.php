@@ -12,8 +12,8 @@ class TestCase extends atoum
     public function beforeTestMethod($testMethod)
     {
         $env = [
-            'ILD_API_HOST' => '',
-            'ILD_API_KEY' => '',
+            'API_HOST' => '',
+            'API_KEY' => '',
         ];
 
         foreach ($env as $key => &$value) {
@@ -25,10 +25,10 @@ class TestCase extends atoum
         }
 
         if (!$this->config) {
-            $this->config = ild78\Api\Config::setGlobal(new ild78\Api\Config([$env['ILD_API_KEY']]));
+            $this->config = ild78\Api\Config::setGlobal(new ild78\Api\Config([$env['API_KEY']]));
         }
 
-        $this->config->setHost($env['ILD_API_HOST']);
+        $this->config->setHost($env['API_HOST']);
     }
 
     public function currencyDataProvider()
