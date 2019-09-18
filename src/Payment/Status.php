@@ -1,0 +1,20 @@
+<?php
+declare(strict_types=1);
+
+namespace ild78\Payment;
+
+/**
+ * List of a payment status
+ */
+class Status
+{
+    public const AUTHORIZE = 'authorize';
+    public const AUTHORIZED = 'authorized';
+    public const CAPTURE = 'capture';
+    public const CAPTURED = 'captured';
+    public const DISPUTED = 'disputed';
+    public const EXPIRED = 'expired';
+    public const FAILED = 'failed';
+    public const REFUSED = 'refused';
+    public const TO_CAPTURE = 'to_capture';
+}
