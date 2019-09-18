@@ -2,35 +2,19 @@
 
 namespace ild78\tests\unit;
 
-use atoum;
 use ild78;
 use ild78\Api;
 use ild78\Exceptions;
 use ild78\Sepa as testedClass;
 
-class Sepa extends atoum
+class Sepa extends ild78\Tests\atoum
 {
-    public function ibanDataProvider()
-    {
-        // Thanks Wikipedia
-        return [
-            'BE71 0961 2345 6769',
-            'FR76 3000 6000 0112 3456 7890 189',
-            'DE91 1000 0000 0123 4567 89',
-            'GR9608100010000001234567890',
-            'RO09 BCYP 0000 0012 3456 7890',
-            'SA4420000001234567891234',
-            'ES79 2100 0813 6101 2345 6789',
-            'CH56 0483 5012 3456 7800 9 ',
-            'GB98 MIDL 0700 9312 3456 78',
-            'GB82WEST12345698765432',
-        ];
-    }
+    use ild78\Tests\Provider\Banks;
 
     public function testClass()
     {
         $this
-            ->testedClass
+            ->currentlyTestedClass
                 ->extends(ild78\Api\AbstractObject::class)
                 ->implements(ild78\Interfaces\PaymentMeansInterface::class)
         ;

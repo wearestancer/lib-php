@@ -1,15 +1,16 @@
 <?php
 
-namespace ild78\tests\functional;
+namespace ild78\Tests\functional;
 
 use ild78;
-use ild78\Refund as testedClass;
 
 /**
- * @namespace \tests\functional
+ * @namespace \Tests\functional
  */
 class Refund extends TestCase
 {
+    use ild78\Tests\Provider\Currencies;
+
     /**
      * @dataProvider currencyDataProvider
      */

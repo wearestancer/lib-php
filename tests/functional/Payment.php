@@ -1,15 +1,17 @@
 <?php
 
-namespace ild78\tests\functional;
+namespace ild78\Tests\functional;
 
 use ild78;
 use ild78\Payment as testedClass;
 
 /**
- * @namespace \tests\functional
+ * @namespace \Tests\functional
  */
 class Payment extends TestCase
 {
+    use ild78\Tests\Provider\Currencies;
+
     protected $order;
     protected $paymentList = [];
 

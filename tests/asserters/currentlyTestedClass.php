@@ -6,6 +6,18 @@ use atoum;
 
 class currentlyTestedClass extends atoum\asserters\testedClass
 {
+    public function constant($constant, $failMessage = null)
+    {
+        return parent::hasConstant($constant, $failMessage);
+    }
+
+    public function hasConstant($constant, $failMessage = null)
+    {
+        parent::hasConstant($constant, $failMessage);
+
+        return $this;
+    }
+
     public function hasTrait($trait, $failMessage = null)
     {
         try {

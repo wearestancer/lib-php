@@ -2,17 +2,16 @@
 
 namespace ild78\Http\tests\unit;
 
-use atoum;
 use ild78;
 use mock;
 use Psr;
 
-class Request extends atoum
+class Request extends ild78\Tests\atoum
 {
     public function testClass()
     {
         $this
-            ->testedClass
+            ->currentlyTestedClass
                 ->implements(Psr\Http\Message\RequestInterface::class)
         ;
     }

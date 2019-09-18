@@ -2,15 +2,14 @@
 
 namespace ild78\Http\Verb\tests\unit;
 
-use atoum;
 use ild78;
 
-class Options extends atoum
+class Options extends ild78\Tests\atoum
 {
     public function testClass()
     {
         $this
-            ->testedClass
+            ->currentlyTestedClass
                 ->extends(ild78\Http\Verb\AbstractVerb::class)
         ;
     }

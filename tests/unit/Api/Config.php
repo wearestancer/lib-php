@@ -2,7 +2,6 @@
 
 namespace ild78\tests\unit\Api;
 
-use atoum;
 use GuzzleHttp;
 use ild78;
 use ild78\Api\Config as testedClass;
@@ -12,24 +11,20 @@ use ild78\Exceptions\NotAuthorizedException;
 use mock;
 use Psr;
 
-class Config extends atoum
+class Config extends ild78\Tests\atoum
 {
     public function testClass()
     {
         $this
             ->given($package = json_decode(file_get_contents(__DIR__ . '/../../../composer.json'), true))
             ->then
-                ->testedClass
+                ->currentlyTestedClass
                     ->hasConstant('LIVE_MODE')
-
-                ->testedClass
                     ->hasConstant('TEST_MODE')
-
-                ->testedClass
                     ->hasConstant('VERSION')
 
-                ->string(testedClass::VERSION)
-                        ->isIdenticalTo($package['version'])
+                    ->constant('VERSION')
+                        ->isEqualTo($package['version'])
         ;
     }
 

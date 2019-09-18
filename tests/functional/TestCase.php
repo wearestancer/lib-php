@@ -1,11 +1,10 @@
 <?php
 
-namespace ild78\tests\functional;
+namespace ild78\Tests\functional;
 
-use atoum;
 use ild78;
 
-class TestCase extends atoum
+class TestCase extends ild78\Tests\atoum
 {
     protected $config;
 
@@ -29,15 +28,6 @@ class TestCase extends atoum
         }
 
         $this->config->setHost($env['API_HOST']);
-    }
-
-    public function currencyDataProvider()
-    {
-        return [
-            'EUR',
-            'USD',
-            'GBP',
-        ];
     }
 
     public function getRandomNumber()

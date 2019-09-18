@@ -2,11 +2,10 @@
 
 namespace ild78\Http\tests\unit;
 
-use atoum;
 use ild78;
 use mock;
 
-class Client extends atoum
+class Client extends ild78\Tests\atoum
 {
     public function errorDataProvider()
     {
@@ -198,7 +197,7 @@ class Client extends atoum
     public function testClass()
     {
         $this
-            ->testedClass
+            ->currentlyTestedClass
                 ->implements(ild78\Interfaces\HttpClientInterface::class)
         ;
     }
