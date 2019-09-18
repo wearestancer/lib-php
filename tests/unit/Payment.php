@@ -240,6 +240,32 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
+    public function testGetReturnUrl_SetReturnUrl()
+    {
+        $this
+            ->given($https = 'https://www.example.org/?' . uniqid())
+            ->and($http = 'http://www.example.org/?' . uniqid())
+
+            ->if($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getReturnUrl())
+                    ->isNull
+
+                ->object($this->testedInstance->setReturnUrl($https))
+                    ->isTestedInstance
+
+                ->string($this->testedInstance->getReturnUrl())
+                    ->isIdenticalTo($https)
+
+                ->exception(function () use ($http) {
+                    $this->testedInstance->setReturnUrl($http);
+                })
+                    ->isInstanceOf(Exceptions\InvalidUrlException::class)
+                    ->message
+                        ->isIdenticalTo('You must provide an HTTPS URL.')
+        ;
+    }
+
     /**
      * @dataProvider responseMessageDataProvider
      */

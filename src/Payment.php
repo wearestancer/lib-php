@@ -18,9 +18,11 @@ use ild78;
  * @method string getMethod()
  * @method integer getOrder_id()
  * @method string getResponse()
+ * @method string|null getReturnUrl()
  * @method ild78\\Sepa getSepa()
  * @method string getStatus()
  * @method Generator list(array $terms)
+ * @method self setReturnUrl(string $https)
  */
 class Payment extends Api\AbstractObject
 {
@@ -82,6 +84,13 @@ class Payment extends Api\AbstractObject
             'restricted' => true,
             'size' => [
                 'fixed' => 2,
+            ],
+            'type' => self::STRING,
+        ],
+        'returnUrl' => [
+            'size' => [
+                'min' => 1,
+                'max' => 2048,
             ],
             'type' => self::STRING,
         ],
@@ -402,5 +411,21 @@ class Payment extends Api\AbstractObject
         } catch (ild78\Exceptions\InvalidArgumentException $excep) {
             throw new ild78\Exceptions\InvalidOrderIdException($excep->getMessage(), $excep->getCode(), $excep);
         }
+    }
+
+    /**
+     * Update return URL
+     *
+     * @param string $url New HTTPS URL.
+     * @return self
+     * @throws ild78\Exceptions\InvalidUrlException When URL is not an HTTPS URL.
+     */
+    public function setReturnUrl(string $url) : self
+    {
+        if (strpos($url, 'https://') !== 0) {
+            throw new ild78\Exceptions\InvalidUrlException('You must provide an HTTPS URL.');
+        }
+
+        return parent::setReturnUrl($url);
     }
 }
