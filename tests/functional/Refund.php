@@ -1,11 +1,11 @@
 <?php
 
-namespace ild78\tests\functional;
+namespace ild78\Tests\functional;
 
 use ild78;
 
 /**
- * @namespace \tests\functional
+ * @namespace \Tests\functional
  */
 class Refund extends TestCase
 {
