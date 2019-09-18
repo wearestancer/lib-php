@@ -9,30 +9,7 @@ use Psr;
 
 class HttpException extends ild78\Tests\atoum
 {
-    public function statusDataProvider()
-    {
-        return [
-            [310, ild78\Exceptions\TooManyRedirectsException::class],
-            [400, ild78\Exceptions\BadRequestException::class],
-            [401, ild78\Exceptions\NotAuthorizedException::class],
-            [402, ild78\Exceptions\PaymentRequiredException::class],
-            [403, ild78\Exceptions\ForbiddenException::class],
-            [404, ild78\Exceptions\NotFoundException::class],
-            [405, ild78\Exceptions\MethodNotAllowedException::class],
-            [406, ild78\Exceptions\NotAcceptableException::class],
-            [407, ild78\Exceptions\ProxyAuthenticationRequiredException::class],
-            [408, ild78\Exceptions\RequestTimeoutException::class],
-            [409, ild78\Exceptions\ConflictException::class],
-            [410, ild78\Exceptions\GoneException::class],
-            [500, ild78\Exceptions\InternalServerErrorException::class],
-            // Levels
-            [399, ild78\Exceptions\RedirectionException::class],
-            [499, ild78\Exceptions\ClientException::class],
-            [599, ild78\Exceptions\ServerException::class],
-            // unknown
-            [999, ild78\Exceptions\HttpException::class],
-        ];
-    }
+    use ild78\Tests\Provider\Http;
 
     public function testClass()
     {
