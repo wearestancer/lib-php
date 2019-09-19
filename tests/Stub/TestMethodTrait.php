@@ -5,6 +5,13 @@ namespace ild78\Stub;
 use ild78;
 
 trait TestMethodTrait {
+    public function testOnlyAddModified(string $modified) : ild78\Api\AbstractObject
+    {
+        $this->modified[] = $modified;
+
+        return $this;
+    }
+
     public function testOnlySetId(string $id) : ild78\Api\AbstractObject
     {
         $this->id = $id;

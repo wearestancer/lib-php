@@ -219,6 +219,9 @@ class StubObject extends ild78\Tests\atoum
             ->given($this->newTestedInstance)
             ->then
                 ->assert('get / set / add with array1 (array of string)')
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->isEmpty
+
                     ->array($this->testedInstance->getArray1())
                         ->isEmpty
 
@@ -229,6 +232,9 @@ class StubObject extends ild78\Tests\atoum
                         ->string[0]
                             ->isIdenticalTo($one)
                         ->size->isEqualTo(1)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains('array1')
 
                     ->object($this->testedInstance->addArray1($two = uniqid()))
                         ->isTestedInstance
@@ -259,6 +265,9 @@ class StubObject extends ild78\Tests\atoum
                     ->string($this->testedInstance->string1)
                         ->isIdenticalTo($string1)
 
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains('string1')
+
                 ->assert('get / set with an array')
                     ->array($this->testedInstance->array1)
                         ->isEmpty
@@ -271,6 +280,9 @@ class StubObject extends ild78\Tests\atoum
                         ->string[1]
                             ->isIdenticalTo($two)
                         ->size->isEqualTo(2)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains('array1')
 
                     // Be careful, no array access, you must modify all the array.
         ;
@@ -307,6 +319,9 @@ class StubObject extends ild78\Tests\atoum
 
                 ->variable($obj->dataModelGetter($property))
                     ->isIdenticalTo($value)
+
+                ->array($this->testedInstance->testOnlyGetModified())
+                    ->contains($property)
         ;
     }
 
@@ -333,6 +348,9 @@ class StubObject extends ild78\Tests\atoum
 
                     ->variable($this->testedInstance->dataModelGetter($property))
                         ->isIdenticalTo($value)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains($property)
         ;
     }
 
@@ -353,6 +371,9 @@ class StubObject extends ild78\Tests\atoum
                     ->array($this->testedInstance->dataModelGetter($property))
                         ->isEmpty
 
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->isEmpty
+
                 ->assert($assertMessage . '"set" will insert value like other')
                     ->object($this->testedInstance->dataModelSetter($property, $value))
                         ->isTestedInstance
@@ -362,6 +383,9 @@ class StubObject extends ild78\Tests\atoum
                         ->size
                             ->isEqualTo(count($value))
 
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains($property)
+
                 ->assert($assertMessage . '"add" will add value without touching previous ones')
                     ->object($this->testedInstance->dataModelAdder($property, $extra))
                         ->isTestedInstance
@@ -370,6 +394,9 @@ class StubObject extends ild78\Tests\atoum
                         ->containsValues($value)
                         ->size
                             ->isEqualTo(count($value) + 1)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains($property)
 
                 ->assert($assertMessage . '"set" will truncate previous')
                     ->array($this->testedInstance->dataModelGetter($property))
@@ -383,6 +410,9 @@ class StubObject extends ild78\Tests\atoum
                         ->isIdenticalTo($value)
                         ->size
                             ->isEqualTo(count($value))
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains($property)
         ;
     }
 
@@ -441,6 +471,9 @@ class StubObject extends ild78\Tests\atoum
                         ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
                         ->message
                             ->isIdenticalTo('Unknown property "' . $property . '"')
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->isEmpty
         ;
     }
 
@@ -475,6 +508,9 @@ class StubObject extends ild78\Tests\atoum
                         ->isInstanceOf($class)
                         ->message
                             ->isIdenticalTo($message)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->isEmpty
         ;
     }
 
@@ -602,6 +638,9 @@ class StubObject extends ild78\Tests\atoum
                     ->array($this->testedInstance->getArray3())
                         ->isEmpty
 
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->isEmpty
+
                 ->assert('Hydratation with empty value')
                     ->object($this->testedInstance->hydrate($withEmpty))
                         ->isTestedInstance
@@ -613,6 +652,9 @@ class StubObject extends ild78\Tests\atoum
                         ->isEmpty
 
                     ->array($this->testedInstance->getArray3())
+                        ->isEmpty
+
+                    ->array($this->testedInstance->testOnlyGetModified())
                         ->isEmpty
 
                 ->assert('Hydratation will pass populated flag')
@@ -631,6 +673,9 @@ class StubObject extends ild78\Tests\atoum
                         ->isIdenticalTo($this->testedInstance->testOnlyGetPopulated())
                         ->isTrue
 
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains('object2')
+
                 ->assert('Hydratation will keep instances')
                     ->object($this->testedInstance->setObject2($objectWithId)->hydrate($withIds))
                         ->isTestedInstance
@@ -640,6 +685,9 @@ class StubObject extends ild78\Tests\atoum
 
                     ->string($objectWithId->getId())
                         ->isIdenticalTo($id)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains('object2')
 
                 ->assert('Work with lists')
                     ->object($this->newTestedInstance->hydrate($withArray))
@@ -659,6 +707,9 @@ class StubObject extends ild78\Tests\atoum
 
                     ->string($array[1]->getId())
                         ->isIdenticalTo($id2)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains('array4')
 
                 ->assert('Work with lists, and keep previous instance too')
                     ->object($object = $this->newTestedInstance($id2))
@@ -680,6 +731,9 @@ class StubObject extends ild78\Tests\atoum
 
                     ->string($array[1]->getId())
                         ->isIdenticalTo($id2)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains('array4')
         ;
     }
 
@@ -909,6 +963,9 @@ class StubObject extends ild78\Tests\atoum
                         ->variable($date->format('U'))
                             ->isEqualTo($timestamp)
 
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->isEmpty
+
             ->assert('Only one request with two consecutive call')
                 ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
@@ -1084,6 +1141,49 @@ class StubObject extends ild78\Tests\atoum
 
                         ->boolean($this->testedInstance->testOnlyGetPopulated())
                             ->isTrue
+
+            ->assert('Inner object are not marked as modified')
+                ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+
+                ->if($client = new mock\GuzzleHttp\Client)
+                ->and($id = uniqid())
+                ->and($timestamp = time())
+                ->and($data = [
+                    'id' => $id,
+                    'created' => $timestamp,
+                    'object2' => [
+                        'integer1' => rand(10, 20),
+                    ],
+                    'array4' => [
+                        [
+                            'integer1' => rand(10, 20),
+                        ],
+                    ],
+                ])
+                ->and($body = json_encode($data))
+                ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
+                ->and($this->calling($client)->request = $response)
+                ->and($config->setHttpClient($client))
+
+                ->and($this->newTestedInstance($id))
+                ->then
+                    ->object($this->testedInstance->populate())
+
+                    ->mock($client)
+                        ->call('request')
+                            ->once
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
+
+                    ->boolean($this->testedInstance->getObject2()->isModified())
+                        ->isFalse
+
+                    ->array($array4 = $this->testedInstance->getArray4())
+                        ->hasSize(1)
+
+                    ->boolean($array4[0]->isModified())
+                        ->isFalse
         ;
     }
 
@@ -1143,6 +1243,9 @@ class StubObject extends ild78\Tests\atoum
                 ->and($options['body'] = json_encode($this->testedInstance))
                 ->and($location = $this->testedInstance->getUri())
                 ->then
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
                     ->object($this->testedInstance->save())
                         ->isTestedInstance
 
@@ -1150,6 +1253,9 @@ class StubObject extends ild78\Tests\atoum
                         ->call('request')
                             ->withArguments('POST', $location, $options)
                                 ->once
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
 
             ->assert('No error if returned body is null (saw with PATCH implementation)')
                 ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
@@ -1177,6 +1283,9 @@ class StubObject extends ild78\Tests\atoum
                 ->and($options['body'] = json_encode($this->testedInstance))
                 ->and($location = $this->testedInstance->getUri())
                 ->then
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
                     ->object($this->testedInstance->save())
                         ->isTestedInstance
 
@@ -1187,6 +1296,9 @@ class StubObject extends ild78\Tests\atoum
                         ->call('request')
                             ->withArguments('POST', $location, $options)
                                 ->once
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
         ;
     }
 

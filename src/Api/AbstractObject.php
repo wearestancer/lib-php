@@ -34,8 +34,11 @@ abstract class AbstractObject implements JsonSerializable
     /** @var boolean */
     protected $populated = false;
 
+    /** @var string[] */
+    protected $modified = [];
+
     /** @var boolean */
-    protected $modified = false;
+    protected $cleanModified = false;
 
     /** @var array */
     protected $aliases = [];
@@ -286,7 +289,6 @@ abstract class AbstractObject implements JsonSerializable
         }
 
         $type = gettype($value);
-        $changeModified = false;
 
         if ($this->dataModel[$property]['list']) {
             if ($type !== 'array') {
@@ -297,24 +299,13 @@ abstract class AbstractObject implements JsonSerializable
 
             foreach ($value as $val) {
                 $this->validateDataModel($property, $val);
-
-                if (!$changeModified && !($val instanceof self)) {
-                    $changeModified = true;
-                }
             }
         } else {
             $this->validateDataModel($property, $value);
-
-            if (!($value instanceof self)) {
-                $changeModified = true;
-            }
         }
 
         $this->dataModel[$property]['value'] = $value;
-
-        if ($changeModified) { // We will use inner object state.
-            $this->modified = true;
-        }
+        $this->modified[] = $property;
 
         return $this;
     }
@@ -418,10 +409,9 @@ abstract class AbstractObject implements JsonSerializable
      * Hydrate the current object.
      *
      * @param array $data Data for hydratation.
-     * @param boolean $modified Do we need to modify the flag.
      * @return self
      */
-    public function hydrate(array $data, bool $modified = true) : self
+    public function hydrate(array $data) : self
     {
         foreach ($data as $key => $value) {
             $property = $key;
@@ -475,6 +465,8 @@ abstract class AbstractObject implements JsonSerializable
                             if ($missing) {
                                 $class = $this->dataModel[$property]['type'];
                                 $obj = new $class($id);
+
+                                $obj->cleanModified = $this->cleanModified;
                                 $obj->hydrate($val);
 
                                 $list[] = $obj;
@@ -498,13 +490,12 @@ abstract class AbstractObject implements JsonSerializable
                         }
 
                         if (is_array($value)) {
+                            $this->dataModel[$property]['value']->cleanModified = $this->cleanModified;
                             $this->dataModel[$property]['value']->hydrate($value);
                         }
-
-                        $this->dataModel[$property]['value']->modified = $modified;
                     }
                 } else {
-                    if ($this->dataModel[$property]['restricted'] || is_null($value) || !$modified) {
+                    if ($this->dataModel[$property]['restricted'] || is_null($value) || is_array($value)) {
                         $this->dataModel[$property]['value'] = $value;
                     } else {
                         $this->$property = $value;
@@ -527,6 +518,11 @@ abstract class AbstractObject implements JsonSerializable
             }
         }
 
+        if ($this->cleanModified) {
+            $this->modified = [];
+            $this->cleanModified = false;
+        }
+
         return $this;
     }
 
@@ -539,7 +535,7 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function isModified() : bool
     {
-        if ($this->modified) {
+        if (!empty($this->modified)) {
             return true;
         }
 
@@ -548,13 +544,13 @@ abstract class AbstractObject implements JsonSerializable
         foreach ($struct as $prop => $value) {
             $type = gettype($value);
 
-            if ($type === 'object' && $value->modified) {
+            if ($type === 'object' && !empty($value->modified)) {
                 return true;
             }
 
             if ($type === 'array') {
                 foreach ($value as $val) {
-                    if (gettype($val) === 'object' && $val->modified) {
+                    if (gettype($val) === 'object' && !empty($val->modified)) {
                         return true;
                     }
                 }
@@ -629,10 +625,10 @@ abstract class AbstractObject implements JsonSerializable
         $response = $request->get($this);
         $body = json_decode($response, true);
 
-        $this->modified = false;
+        $this->cleanModified = true;
         $this->populated = true;
 
-        $this->hydrate($body, false);
+        $this->hydrate($body);
 
         return $this;
     }
@@ -687,14 +683,17 @@ abstract class AbstractObject implements JsonSerializable
             $response = $request->post($this);
         }
 
-        $this->modified = false;
         $this->populated = true;
 
         $body = json_decode($response, true);
 
         if ($body) {
-            $this->hydrate($body, false);
+            $this->cleanModified = true;
+
+            $this->hydrate($body);
         }
+
+        $this->modified = [];
 
         return $this;
     }

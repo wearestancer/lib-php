@@ -106,6 +106,9 @@ class Card extends ild78\Tests\atoum
                         ->integer($this->testedInstance->getExpMonth())
                             ->isIdenticalTo($month)
 
+                        ->boolean($this->testedInstance->isModified())
+                            ->isTrue
+
                 ->assert('Test month ' . $month . ' : alias')
                     ->given($this->newTestedInstance)
                     ->then
@@ -117,6 +120,9 @@ class Card extends ild78\Tests\atoum
 
                         ->integer($this->testedInstance->getExpirationMonth())
                             ->isIdenticalTo($month)
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isTrue
             ;
         }
 
@@ -137,6 +143,9 @@ class Card extends ild78\Tests\atoum
                             ->isInstanceOf(Exceptions\InvalidExpirationMonthException::class)
                             ->message
                                 ->isIdenticalTo('Invalid expiration month "' . $month . '"')
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isFalse
             ;
         }
     }
@@ -159,6 +168,9 @@ class Card extends ild78\Tests\atoum
                         ->integer($this->testedInstance->getExpYear())
                             ->isIdenticalTo($year)
 
+                        ->boolean($this->testedInstance->isModified())
+                            ->isTrue
+
                 ->assert('Test year ' . $year . ' : alias')
                     ->given($this->newTestedInstance)
                     ->then
@@ -170,6 +182,9 @@ class Card extends ild78\Tests\atoum
 
                         ->integer($this->testedInstance->getExpirationYear())
                             ->isIdenticalTo($year)
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isTrue
             ;
         }
 
@@ -184,6 +199,9 @@ class Card extends ild78\Tests\atoum
                             ->isInstanceOf(Exceptions\InvalidExpirationYearException::class)
                             ->message
                                 ->isIdenticalTo('Invalid expiration year "' . $year . '"')
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isFalse
             ;
         }
     }
@@ -205,6 +223,9 @@ class Card extends ild78\Tests\atoum
                     ->object($this->testedInstance->setTokenize(true))
                         ->isTestedInstance
 
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
                 ->assert('Now it\'s visible')
                     ->boolean($this->testedInstance->getTokenize())
                         ->isTrue
@@ -215,6 +236,9 @@ class Card extends ild78\Tests\atoum
                 ->assert('Visible when forced to false')
                     ->object($this->testedInstance->setTokenize(false))
                         ->isTestedInstance
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
 
                     ->boolean($this->testedInstance->getTokenize())
                         ->isFalse
@@ -249,6 +273,9 @@ class Card extends ild78\Tests\atoum
                         ->hasNestedException
                         ->message
                             ->isIdenticalTo('A valid cvc must have 3 characters.')
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
             ;
         }
     }
@@ -265,6 +292,9 @@ class Card extends ild78\Tests\atoum
                     ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid name must be between 4 and 64 characters.')
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
         ;
     }
 
@@ -293,6 +323,9 @@ class Card extends ild78\Tests\atoum
                     ->string($this->testedInstance->getLast4())
                         ->isIdenticalTo($last)
 
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
             ->assert('Throw exception if invalid')
                 ->given($this->newTestedInstance)
                 ->and($badNumber = $number + 1)
@@ -303,6 +336,9 @@ class Card extends ild78\Tests\atoum
                         ->isInstanceOf(Exceptions\InvalidCardNumberException::class)
                         ->message
                             ->isIdenticalTo('"' . $badNumber . '" is not a valid credit card number.')
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
         ;
     }
 

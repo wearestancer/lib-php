@@ -258,6 +258,9 @@ class Customer extends ild78\Tests\atoum
                     ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid email must be between 5 and 64 characters.')
+
+                ->boolean($this->testedInstance->isModified())
+                    ->isFalse
         ;
     }
 
@@ -273,6 +276,9 @@ class Customer extends ild78\Tests\atoum
                     ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid mobile must be between 8 and 16 characters.')
+
+                ->boolean($this->testedInstance->isModified())
+                    ->isFalse
         ;
     }
 
@@ -288,6 +294,9 @@ class Customer extends ild78\Tests\atoum
                     ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid name must be between 4 and 64 characters.')
+
+                ->boolean($this->testedInstance->isModified())
+                    ->isFalse
         ;
     }
 }

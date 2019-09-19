@@ -883,6 +883,9 @@ class Payment extends ild78\Tests\atoum
                         ->message
                             ->isIdenticalTo('Amount must be greater than or equal to 50.')
 
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
+
                 ->assert('49 is not a valid amount')
                     ->exception(function () {
                         $this->testedInstance->setAmount(49);
@@ -892,17 +895,26 @@ class Payment extends ild78\Tests\atoum
                         ->message
                             ->isIdenticalTo('Amount must be greater than or equal to 50.')
 
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
+
                 ->assert('50 is valid')
-                    ->object($this->testedInstance->setAmount(50))
+                    ->object($this->newTestedInstance->setAmount(50))
                         ->isTestedInstance
                     ->integer($this->testedInstance->getAmount())
                         ->isEqualTo(50)
 
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
                 ->assert('random value')
-                    ->object($this->testedInstance->setAmount($amount = rand(50, 999999)))
+                    ->object($this->newTestedInstance->setAmount($amount = rand(50, 999999)))
                         ->isTestedInstance
                     ->integer($this->testedInstance->getAmount())
                         ->isEqualTo($amount)
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
         ;
     }
 
@@ -912,13 +924,12 @@ class Payment extends ild78\Tests\atoum
     public function testSetCurrency($currency)
     {
         $this
-            ->given($this->newTestedInstance)
-            ->and($fakeCurrency = uniqid())
+            ->given($fakeCurrency = uniqid())
             ->and($upper = strtoupper($currency))
             ->and($lower = strtolower($currency))
             ->then
                 ->assert('Valid currency : ' . $upper)
-                    ->variable($this->testedInstance->getCurrency())
+                    ->variable($this->newTestedInstance->getCurrency())
                         ->isNull
 
                     ->object($this->testedInstance->setCurrency($upper))
@@ -927,28 +938,36 @@ class Payment extends ild78\Tests\atoum
                     ->string($this->testedInstance->getCurrency())
                         ->isIdenticalTo($lower)
 
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
                 ->assert('Valid currency : ' . $lower)
-                    ->object($this->testedInstance->setCurrency($lower))
+                    ->object($this->newTestedInstance->setCurrency($lower))
                         ->isTestedInstance
 
                     ->string($this->testedInstance->getCurrency())
                         ->isIdenticalTo($lower)
 
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
                 ->assert('Invalid currency')
                     ->exception(function () use ($fakeCurrency) {
-                        $this->testedInstance->setCurrency($fakeCurrency);
+                        $this->newTestedInstance->setCurrency($fakeCurrency);
                     })
                         ->isInstanceOf(Exceptions\InvalidCurrencyException::class)
                         ->message
                             ->contains('"' . $fakeCurrency . '" is not a valid currency')
                             ->contains('please use one of the following :')
                             ->contains($upper)
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
         ;
     }
 
     public function testSetDescription()
     {
-        $this->newTestedInstance;
         $description = '';
 
         for ($idx = 0; $idx < 70; $idx++) {
@@ -958,21 +977,27 @@ class Payment extends ild78\Tests\atoum
                 $this
                     ->assert($length . ' characters => Not valid')
                         ->exception(function () use ($description) {
-                            $this->testedInstance->setDescription($description);
+                            $this->newTestedInstance->setDescription($description);
                         })
                             ->isInstanceOf(Exceptions\InvalidDescriptionException::class)
                             ->hasNestedException
                             ->message
                                 ->isIdenticalTo('A valid description must be between 3 and 64 characters.')
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isFalse
                 ;
             } else {
                 $this
                     ->assert($length . ' characters => Valid')
-                        ->object($this->testedInstance->setDescription($description))
+                        ->object($this->newTestedInstance->setDescription($description))
                             ->isTestedInstance
 
                         ->string($this->testedInstance->getDescription())
                             ->isIdenticalTo($description)
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isTrue
                 ;
             }
 
@@ -982,7 +1007,6 @@ class Payment extends ild78\Tests\atoum
 
     public function testSetOrderId()
     {
-        $this->newTestedInstance;
         $orderId = '';
 
         for ($idx = 0; $idx < 30; $idx++) {
@@ -992,21 +1016,27 @@ class Payment extends ild78\Tests\atoum
                 $this
                     ->assert($length . ' characters => Not valid')
                         ->exception(function () use ($orderId) {
-                            $this->testedInstance->setOrderId($orderId);
+                            $this->newTestedInstance->setOrderId($orderId);
                         })
                             ->isInstanceOf(Exceptions\InvalidOrderIdException::class)
                             ->hasNestedException
                             ->message
                                 ->isIdenticalTo('A valid order ID must be between 1 and 24 characters.')
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isFalse
                 ;
             } else {
                 $this
                     ->assert($length . ' characters => Valid')
-                        ->object($this->testedInstance->setOrderId($orderId))
+                        ->object($this->newTestedInstance->setOrderId($orderId))
                             ->isTestedInstance
 
                         ->string($this->testedInstance->getOrderId())
                             ->isIdenticalTo($orderId)
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isTrue
                 ;
             }
 
