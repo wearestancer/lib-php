@@ -25,8 +25,13 @@ class Config
     /** @var self */
     protected static $instance;
 
-    /** @var string[] */
-    protected $keys = [];
+    /** @var array[string]string */
+    protected $keys = [
+        'pprod' => null,
+        'ptest' => null,
+        'sprod' => null,
+        'stest' => null,
+    ];
 
     /** @var Psr\\Log\\LoggerInterface */
     protected $logger;
@@ -208,11 +213,11 @@ class Config
      */
     public function getPublicKey() : string
     {
-        $key = array_key_exists('ptest', $this->keys) ? $this->keys['ptest'] : '';
+        $key = $this->keys['ptest'];
         $type = 'development';
 
         if ($this->isLiveMode()) {
-            $key = array_key_exists('pprod', $this->keys) ? $this->keys['pprod'] : '';
+            $key = $this->keys['pprod'];
             $type = 'production';
         }
 
@@ -233,11 +238,11 @@ class Config
      */
     public function getSecretKey() : string
     {
-        $key = array_key_exists('stest', $this->keys) ? $this->keys['stest'] : '';
+        $key = $this->keys['stest'];
         $type = 'development';
 
         if ($this->isLiveMode()) {
-            $key = array_key_exists('sprod', $this->keys) ? $this->keys['sprod'] : '';
+            $key = $this->keys['sprod'];
             $type = 'production';
         }
 
