@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Refunds
 - Disputes
+- Add `ild78\Api\Config::setKeys()` method
 - Custom user agent
 - First issue/MR templates
 - Setter aliases
