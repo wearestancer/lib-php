@@ -12,14 +12,19 @@ trait TestMethodTrait {
         return $this;
     }
 
+    public function testOnlyGetModified() : array
+    {
+        return $this->modified;
+    }
+
     public function testOnlyGetPopulated() : bool
     {
         return $this->populated;
     }
 
-    public function testOnlySetModified(bool $modified) : ild78\Api\AbstractObject
+    public function testOnlyResetModified() : ild78\Api\AbstractObject
     {
-        $this->modified = $modified;
+        $this->modified = [];
 
         return $this;
     }

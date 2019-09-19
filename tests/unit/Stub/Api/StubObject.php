@@ -698,7 +698,7 @@ class StubObject extends ild78\Tests\atoum
                     ->boolean($this->testedInstance->isNotModified())
                         ->isTrue
 
-                    ->boolean($this->testedInstance->testOnlySetModified(true)->isModified())
+                    ->boolean($this->testedInstance->testOnlyAddModified('string1')->isModified())
                         ->isTrue
 
                     ->boolean($this->testedInstance->isNotModified())
@@ -706,8 +706,8 @@ class StubObject extends ild78\Tests\atoum
 
                 ->assert('Should return false if an object in one property is modified')
                     ->if($this->testedInstance->setObject2($object1))
-                    ->and($object1->testOnlySetModified(true))
-                    ->and($this->testedInstance->testOnlySetModified(false))
+                    ->and($object1->testOnlyAddModified('number'))
+                    ->and($this->testedInstance->testOnlyResetModified())
 
                     ->boolean($this->testedInstance->isModified())
                         ->isTrue
@@ -718,13 +718,21 @@ class StubObject extends ild78\Tests\atoum
                 ->assert('Should return false if an object in a list is modified')
                     ->if($this->testedInstance->addArray4($object2))
                     ->and($this->testedInstance->addArray4($object3))
-                    ->and($this->testedInstance->testOnlySetModified(false))
+                    ->and($this->testedInstance->testOnlyResetModified())
 
-                    ->and($object1->testOnlySetModified(false)) // Be sure last test won't interfere
+                    ->and($object1->testOnlyResetModified()) // Be sure last test won't interfere
 
                     // randomise which one is modified
-                    ->and($object2->testOnlySetModified((bool) rand(1, 10) % 2))
-                    ->and($object3->testOnlySetModified(!$object2->isModified()))
+                    ->and($first = (bool) rand(1, 10) % 2)
+                    ->when(function () use ($first, $object2, $object3) {
+                        if ($first) {
+                            $object2->testOnlyAddModified('string1');
+                            $object3->testOnlyResetModified();
+                        } else {
+                            $object2->testOnlyResetModified();
+                            $object3->testOnlyAddModified('string1');
+                        }
+                    })
 
                     ->boolean($this->testedInstance->isModified())
                         ->isTrue
@@ -736,8 +744,8 @@ class StubObject extends ild78\Tests\atoum
                     ->if($this->newTestedInstance)
                     ->and($this->testedInstance->setObject3($object3))
 
-                    ->and($object3->testOnlySetModified(true))
-                    ->and($this->testedInstance->testOnlySetModified(false))
+                    ->and($object3->testOnlyAddModified('string1'))
+                    ->and($this->testedInstance->testOnlyResetModified())
 
                     ->then
                         ->boolean($this->testedInstance->isModified())
@@ -760,15 +768,15 @@ class StubObject extends ild78\Tests\atoum
             ->and($this->testedInstance->setObject2($object2))
             ->then
                 ->assert('An unmodified object with an ID should return only the ID')
-                    ->if($this->testedInstance->testOnlySetModified(false))
-                    ->and($object2->testOnlySetModified(false))
+                    ->if($this->testedInstance->testOnlyResetModified())
+                    ->and($object2->testOnlyResetModified())
                     ->then
                         ->string($this->testedInstance->jsonSerialize())
                             ->isIdenticalTo($id)
 
                 ->assert('A modified object with an ID return a body (without id)')
-                    ->if($this->testedInstance->testOnlySetModified(true))
-                    ->and($object2->testOnlySetModified(false))
+                    ->if($this->testedInstance->testOnlyAddModified('string1'))
+                    ->and($object2->testOnlyResetModified())
                     ->then
                         ->array($this->testedInstance->jsonSerialize())
                             ->notHasKey('id')
@@ -783,8 +791,8 @@ class StubObject extends ild78\Tests\atoum
                                 ->isIdenticalTo($object2->getId()) // object2 is not modified
 
                 ->assert('A modified object with another modified object in it should return both body (without ids)')
-                    ->if($this->testedInstance->testOnlySetModified(true))
-                    ->and($object2->testOnlySetModified(true))
+                    ->if($this->testedInstance->testOnlyAddModified('string1'))
+                    ->and($object2->testOnlyAddModified('string1'))
                     ->then
                         ->array($this->testedInstance->jsonSerialize())
                             ->notHasKey('id')
@@ -805,8 +813,8 @@ class StubObject extends ild78\Tests\atoum
                             })
 
                 ->assert('A unmodified object with another modified object in it should return both body too (without ids)')
-                    ->if($this->testedInstance->testOnlySetModified(false))
-                    ->and($object2->testOnlySetModified(true))
+                    ->if($this->testedInstance->testOnlyResetModified())
+                    ->and($object2->testOnlyAddModified('string1'))
                     ->then
                         ->array($this->testedInstance->jsonSerialize())
                             ->notHasKey('id')
@@ -842,9 +850,9 @@ class StubObject extends ild78\Tests\atoum
                     ->and($object3->testOnlySetId(uniqid()))
                     ->and($object3->setString1($this->makeStringBetween(10, 20)))
 
-                    ->and($this->testedInstance->testOnlySetModified(false))
-                    ->and($object2->testOnlySetModified(false))
-                    ->and($object3->testOnlySetModified(true))
+                    ->and($this->testedInstance->testOnlyResetModified())
+                    ->and($object2->testOnlyResetModified())
+                    ->and($object3->testOnlyAddModified('string1'))
                     ->then
 
                         // Recap
@@ -1231,10 +1239,10 @@ class StubObject extends ild78\Tests\atoum
             ->and($object1->testOnlySetId(uniqid()))
             ->and($object2->testOnlySetId(uniqid()))
 
-            ->and($this->testedInstance->testOnlySetModified(true))
-            ->and($object1->testOnlySetModified(false))
-            ->and($object2->testOnlySetModified(true))
-            ->and($object3->testOnlySetModified(true))
+            ->and($this->testedInstance->testOnlyAddModified('string1'))
+            ->and($object1->testOnlyResetModified())
+            ->and($object2->testOnlyAddModified('string1'))
+            ->and($object3->testOnlyAddModified('string1'))
 
             ->then
                 ->json($json = $this->testedInstance->toJson())

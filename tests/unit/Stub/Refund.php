@@ -10,11 +10,11 @@ class Refund extends ild78\Tests\atoum
     {
         $this
             ->given($payment = new ild78\Stub\Payment)
-            ->and($payment->testOnlySetModified(true))
+            ->and($payment->testOnlyAddModified('amount'))
 
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setPayment($payment))
-            ->and($this->testedInstance->testOnlySetModified(false))
+            ->and($this->testedInstance->testOnlyResetModified())
             ->then
                 ->boolean($this->testedInstance->isModified())
                     ->isFalse
