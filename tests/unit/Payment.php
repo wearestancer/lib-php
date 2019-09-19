@@ -188,6 +188,69 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
+    public function testGetPaymentPageUrl()
+    {
+        $this
+            ->given($secret = 'stest_' . bin2hex(random_bytes(12)))
+            ->and($public = 'ptest_' . bin2hex(random_bytes(12)))
+            ->and($config = ild78\Api\Config::init([$secret]))
+
+            ->if($client = new mock\ild78\Http\Client)
+            ->and($response = new mock\ild78\Http\Response(200))
+            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-no-method.json'))
+            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($client)->request = $response)
+
+            ->and($config->setHttpClient($client))
+
+            ->if($amount = rand(100, 999999))
+            ->and($currency = $this->currencyDataProvider()[0])
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount($amount))
+            ->and($this->testedInstance->setCurrency($currency))
+
+            ->if($return = 'https://www.example.com?' . uniqid())
+            ->and($url = vsprintf('https://%s/%s/', [
+                str_replace('api', 'payment', $config->getHost()),
+                $public
+            ]))
+
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->getPaymentPageUrl();
+                })
+                    ->isInstanceOf(Exceptions\MissingApiKeyException::class)
+                    ->message
+                        ->isIdenticalTo('You did not provide valid public API key for development.')
+
+                ->object($config->setKeys([$public, $secret]))
+
+                ->exception(function () {
+                    $this->testedInstance->getPaymentPageUrl();
+                })
+                    ->isInstanceOf(Exceptions\MissingReturnUrlException::class)
+                    ->message
+                        ->isIdenticalTo('You must provide a return URL before asking for the payment page.')
+
+                ->object($this->testedInstance->setReturnUrl($return))
+                    ->isTestedInstance
+
+                ->exception(function () {
+                    $this->testedInstance->getPaymentPageUrl();
+                })
+                    ->isInstanceOf(Exceptions\MissingPaymentIdException::class)
+                    ->message
+                        ->isIdenticalTo('A payment ID is mandatory to obtain a payment page URL. Maybe you forgot to save the payment.')
+
+                ->object($this->testedInstance->save())
+                    ->isTestedInstance
+
+                ->string($this->testedInstance->getPaymentPageUrl())
+                    ->isIdenticalTo($url . $this->testedInstance->getId())
+        ;
+    }
+
     public function testGetRefundableAmount()
     {
         $this

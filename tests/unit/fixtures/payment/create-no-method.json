@@ -20,6 +20,6 @@
   "order_id": null,
   "redirect_url": null,
   "response": null,
-  "return_url": null,
+  "return_url": "https://www.example.com/?fake-return",
   "status": null
 }

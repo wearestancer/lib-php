@@ -164,6 +164,46 @@ class Payment extends Api\AbstractObject
         throw new ild78\Exceptions\BadMethodCallException($message);
     }
 
+    // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
+
+    /**
+     * Return the URL for Iliad payment page.
+     *
+     * Maybe used as an iframe or a redirection page if you needed it.
+     *
+     * @return string
+     * @throws ild78\Exceptions\MissingApiKeyException When no public key was given in configuration.
+     * @throws ild78\Exceptions\MissingReturnUrlException When no return URL was given to payment data.
+     * @throws ild78\Exceptions\MissingPaymentIdException When no payment has no ID.
+     */
+    public function getPaymentPageUrl() : string
+    {
+        $config = ild78\Api\Config::getGlobal();
+
+        $params = [
+            str_replace('api', 'payment', $config->getHost()),
+            $config->getPublicKey(),
+        ];
+
+        if (!$this->getReturnUrl()) {
+            $message = 'You must provide a return URL before asking for the payment page.';
+
+            throw new ild78\Exceptions\MissingReturnUrlException($message);
+        }
+
+        if (!$this->getId()) {
+            $message = 'A payment ID is mandatory to obtain a payment page URL. Maybe you forgot to save the payment.';
+
+            throw new ild78\Exceptions\MissingPaymentIdException($message);
+        }
+
+        $params[] = $this->getId();
+
+        return vsprintf('https://%s/%s/%s', $params);
+    }
+
+    // phpcs:enable
+
     /**
      * Refund the refundable amount
      *
