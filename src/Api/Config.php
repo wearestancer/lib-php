@@ -60,20 +60,7 @@ class Config
      */
     public function __construct(array $keys)
     {
-        $prefixes = [
-            'pprod',
-            'ptest',
-            'sprod',
-            'stest',
-        ];
-
-        foreach ($keys as $key) {
-            foreach ($prefixes as $prefix) {
-                if (preg_match('`^' . $prefix . '_\w{24}$`', $key)) {
-                    $this->keys[$prefix] = $key;
-                }
-            }
-        }
+        $this->setKeys($keys);
     }
 
     /**
@@ -409,6 +396,39 @@ class Config
     public function setLogger(LoggerInterface $logger) : self
     {
         $this->logger = $logger;
+
+        return $this;
+    }
+
+    /**
+     * Update authentication keys
+     *
+     * @param string|string[] $keys One or more keys to update.
+     *
+     * @return self
+     */
+    public function setKeys($keys) : self
+    {
+        $k = $keys;
+
+        if (!is_array($keys)) {
+            $k = [$keys];
+        }
+
+        $prefixes = [
+            'pprod',
+            'ptest',
+            'sprod',
+            'stest',
+        ];
+
+        foreach ($k as $key) {
+            foreach ($prefixes as $prefix) {
+                if (preg_match('`^' . $prefix . '_\w{24}$`', $key)) {
+                    $this->keys[$prefix] = $key;
+                }
+            }
+        }
 
         return $this;
     }

@@ -386,4 +386,64 @@ class Config extends ild78\Tests\atoum
                         ->boolean($this->testedInstance->isNotTestMode())->isTrue
         ;
     }
+
+    public function testSetKeys()
+    {
+        $this
+            ->given($ptest1 = 'ptest_' . bin2hex(random_bytes(12)))
+            ->and($ptest2 = 'ptest_' . bin2hex(random_bytes(12)))
+            ->and($stest = 'stest_' . bin2hex(random_bytes(12)))
+
+            ->if($this->newTestedInstance([]))
+            ->then
+                ->assert('No keys on default')
+                    ->exception(function () {
+                        $this->testedInstance->getPublicKey();
+                    })
+                        ->isInstanceOf(Exceptions\MissingApiKeyException::class)
+                        ->message
+                            ->isIdenticalTo('You did not provide valid public API key for development.')
+
+                    ->exception(function () {
+                        $this->testedInstance->getSecretKey();
+                    })
+                        ->isInstanceOf(Exceptions\MissingApiKeyException::class)
+                        ->message
+                            ->isIdenticalTo('You did not provide valid secret API key for development.')
+
+                ->assert('Allow string value')
+                    ->object($this->testedInstance->setKeys($ptest1))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getPublicKey())
+                        ->isIdenticalTo($ptest1)
+
+                    ->exception(function () {
+                        $this->testedInstance->getSecretKey();
+                    })
+                        ->isInstanceOf(Exceptions\MissingApiKeyException::class)
+                        ->message
+                            ->isIdenticalTo('You did not provide valid secret API key for development.')
+
+                ->assert('Allow an array of keys')
+                    ->object($this->testedInstance->setKeys([$ptest2, $stest]))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getPublicKey())
+                        ->isIdenticalTo($ptest2)
+
+                    ->string($this->testedInstance->getSecretKey())
+                        ->isIdenticalTo($stest)
+
+                ->assert('Ignore unknowned keys')
+                    ->object($this->testedInstance->setKeys(uniqid()))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getPublicKey())
+                        ->isIdenticalTo($ptest2)
+
+                    ->string($this->testedInstance->getSecretKey())
+                        ->isIdenticalTo($stest)
+        ;
+    }
 }
