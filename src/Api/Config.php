@@ -25,8 +25,13 @@ class Config
     /** @var self */
     protected static $instance;
 
-    /** @var string[] */
-    protected $keys = [];
+    /** @var array[string]string */
+    protected $keys = [
+        'pprod' => null,
+        'ptest' => null,
+        'sprod' => null,
+        'stest' => null,
+    ];
 
     /** @var Psr\\Log\\LoggerInterface */
     protected $logger;
@@ -55,20 +60,7 @@ class Config
      */
     public function __construct(array $keys)
     {
-        $prefixes = [
-            'pprod',
-            'ptest',
-            'sprod',
-            'stest',
-        ];
-
-        foreach ($keys as $key) {
-            foreach ($prefixes as $prefix) {
-                if (preg_match('`^' . $prefix . '_\w{24}$`', $key)) {
-                    $this->keys[$prefix] = $key;
-                }
-            }
-        }
+        $this->setKeys($keys);
     }
 
     /**
@@ -208,11 +200,11 @@ class Config
      */
     public function getPublicKey() : string
     {
-        $key = array_key_exists('ptest', $this->keys) ? $this->keys['ptest'] : '';
+        $key = $this->keys['ptest'];
         $type = 'development';
 
         if ($this->isLiveMode()) {
-            $key = array_key_exists('pprod', $this->keys) ? $this->keys['pprod'] : '';
+            $key = $this->keys['pprod'];
             $type = 'production';
         }
 
@@ -233,11 +225,11 @@ class Config
      */
     public function getSecretKey() : string
     {
-        $key = array_key_exists('stest', $this->keys) ? $this->keys['stest'] : '';
+        $key = $this->keys['stest'];
         $type = 'development';
 
         if ($this->isLiveMode()) {
-            $key = array_key_exists('sprod', $this->keys) ? $this->keys['sprod'] : '';
+            $key = $this->keys['sprod'];
             $type = 'production';
         }
 
@@ -404,6 +396,39 @@ class Config
     public function setLogger(LoggerInterface $logger) : self
     {
         $this->logger = $logger;
+
+        return $this;
+    }
+
+    /**
+     * Update authentication keys
+     *
+     * @param string|string[] $keys One or more keys to update.
+     *
+     * @return self
+     */
+    public function setKeys($keys) : self
+    {
+        $k = $keys;
+
+        if (!is_array($keys)) {
+            $k = [$keys];
+        }
+
+        $prefixes = [
+            'pprod',
+            'ptest',
+            'sprod',
+            'stest',
+        ];
+
+        foreach ($k as $key) {
+            foreach ($prefixes as $prefix) {
+                if (preg_match('`^' . $prefix . '_\w{24}$`', $key)) {
+                    $this->keys[$prefix] = $key;
+                }
+            }
+        }
 
         return $this;
     }
