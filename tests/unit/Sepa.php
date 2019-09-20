@@ -67,6 +67,12 @@ class Sepa extends ild78\Tests\atoum
 
                     ->boolean($this->testedInstance->isModified())
                         ->isTrue
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasSize(1)
+                        ->hasKey('bic')
+                        ->string['bic']
+                            ->isEqualTo($bic)
                 ;
             } else {
                 $this
@@ -121,6 +127,12 @@ class Sepa extends ild78\Tests\atoum
                     ->boolean($this->testedInstance->isModified())
                         ->isTrue
 
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasSize(1)
+                        ->hasKey('iban')
+                        ->string['iban']
+                            ->isEqualTo($iban)
+
             ->assert('Add a valid BE IBAN from wikipedia')
                 ->given($iban = 'BE71096123456769')
                 ->and($last = '6769')
@@ -150,6 +162,12 @@ class Sepa extends ild78\Tests\atoum
 
                     ->boolean($this->testedInstance->isModified())
                         ->isTrue
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasSize(1)
+                        ->hasKey('iban')
+                        ->string['iban']
+                            ->isEqualTo($iban)
 
             ->assert('Add a valid GB IBAN from wikipedia')
                 ->given($iban = 'GB82WEST12345698765432')
@@ -181,6 +199,12 @@ class Sepa extends ild78\Tests\atoum
                     ->boolean($this->testedInstance->isModified())
                         ->isTrue
 
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasSize(1)
+                        ->hasKey('iban')
+                        ->string['iban']
+                            ->isEqualTo($iban)
+
             ->assert('It should accept space for readeability')
                 ->given($iban = 'GR96 0810 0010 0000 0123 4567 890')
                 ->and($last = '7890')
@@ -210,6 +234,12 @@ class Sepa extends ild78\Tests\atoum
 
                     ->boolean($this->testedInstance->isModified())
                         ->isTrue
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasSize(1)
+                        ->hasKey('iban')
+                        ->string['iban']
+                            ->isEqualTo(str_replace(' ', '', $iban))
 
             ->assert('Add an invalid IBAN')
                 ->given($iban = 'FR87BARC20658244971655')

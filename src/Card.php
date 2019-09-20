@@ -256,7 +256,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
         }
 
         $this->dataModel['expMonth']['value'] = $month;
-        $this->modified[] = 'expMonth';
+        $this->modified[] = 'exp_month';
 
         return $this;
     }
@@ -277,7 +277,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
         }
 
         $this->dataModel['expYear']['value'] = $year;
-        $this->modified[] = 'expYear';
+        $this->modified[] = 'exp_year';
 
         return $this;
     }

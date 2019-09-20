@@ -62,6 +62,12 @@ class Refund extends ild78\Tests\atoum
                 ->boolean($this->testedInstance->isModified())
                     ->isTrue
 
+                ->array($this->testedInstance->jsonSerialize())
+                    ->hasSize(1)
+                    ->hasKey('amount')
+                    ->integer['amount']
+                        ->isEqualTo(50)
+
             ->assert('random value')
                 ->object($this->newTestedInstance->setAmount($amount = rand(50, 999999)))
                     ->isTestedInstance
@@ -70,6 +76,12 @@ class Refund extends ild78\Tests\atoum
 
                 ->boolean($this->testedInstance->isModified())
                     ->isTrue
+
+                ->array($this->testedInstance->jsonSerialize())
+                    ->hasSize(1)
+                    ->hasKey('amount')
+                    ->integer['amount']
+                        ->isEqualTo($amount)
         ;
     }
 }

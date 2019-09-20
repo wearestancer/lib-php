@@ -907,6 +907,12 @@ class Payment extends ild78\Tests\atoum
                     ->boolean($this->testedInstance->isModified())
                         ->isTrue
 
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasSize(1)
+                        ->hasKey('amount')
+                        ->integer['amount']
+                            ->isEqualTo(50)
+
                 ->assert('random value')
                     ->object($this->newTestedInstance->setAmount($amount = rand(50, 999999)))
                         ->isTestedInstance
@@ -915,6 +921,12 @@ class Payment extends ild78\Tests\atoum
 
                     ->boolean($this->testedInstance->isModified())
                         ->isTrue
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasSize(1)
+                        ->hasKey('amount')
+                        ->integer['amount']
+                            ->isEqualTo($amount)
         ;
     }
 
@@ -941,6 +953,12 @@ class Payment extends ild78\Tests\atoum
                     ->boolean($this->testedInstance->isModified())
                         ->isTrue
 
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasSize(1)
+                        ->hasKey('currency')
+                        ->string['currency']
+                            ->isEqualTo($lower)
+
                 ->assert('Valid currency : ' . $lower)
                     ->object($this->newTestedInstance->setCurrency($lower))
                         ->isTestedInstance
@@ -950,6 +968,12 @@ class Payment extends ild78\Tests\atoum
 
                     ->boolean($this->testedInstance->isModified())
                         ->isTrue
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasSize(1)
+                        ->hasKey('currency')
+                        ->string['currency']
+                            ->isEqualTo($lower)
 
                 ->assert('Invalid currency')
                     ->exception(function () use ($fakeCurrency) {
@@ -998,6 +1022,12 @@ class Payment extends ild78\Tests\atoum
 
                         ->boolean($this->testedInstance->isModified())
                             ->isTrue
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('description')
+                            ->string['description']
+                                ->isEqualTo($description)
                 ;
             }
 
@@ -1037,6 +1067,12 @@ class Payment extends ild78\Tests\atoum
 
                         ->boolean($this->testedInstance->isModified())
                             ->isTrue
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('order_id')
+                            ->string['order_id']
+                                ->isEqualTo($orderId)
                 ;
             }
 

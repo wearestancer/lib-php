@@ -109,6 +109,12 @@ class Card extends ild78\Tests\atoum
                         ->boolean($this->testedInstance->isModified())
                             ->isTrue
 
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('exp_month')
+                            ->integer['exp_month']
+                                ->isEqualTo($month)
+
                 ->assert('Test month ' . $month . ' : alias')
                     ->given($this->newTestedInstance)
                     ->then
@@ -123,6 +129,12 @@ class Card extends ild78\Tests\atoum
 
                         ->boolean($this->testedInstance->isModified())
                             ->isTrue
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('exp_month')
+                            ->integer['exp_month']
+                                ->isEqualTo($month)
             ;
         }
 
@@ -171,6 +183,12 @@ class Card extends ild78\Tests\atoum
                         ->boolean($this->testedInstance->isModified())
                             ->isTrue
 
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('exp_year')
+                            ->integer['exp_year']
+                                ->isEqualTo($year)
+
                 ->assert('Test year ' . $year . ' : alias')
                     ->given($this->newTestedInstance)
                     ->then
@@ -185,6 +203,12 @@ class Card extends ild78\Tests\atoum
 
                         ->boolean($this->testedInstance->isModified())
                             ->isTrue
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('exp_year')
+                            ->integer['exp_year']
+                                ->isEqualTo($year)
             ;
         }
 
@@ -223,15 +247,19 @@ class Card extends ild78\Tests\atoum
                     ->object($this->testedInstance->setTokenize(true))
                         ->isTestedInstance
 
-                    ->boolean($this->testedInstance->isModified())
-                        ->isTrue
-
                 ->assert('Now it\'s visible')
                     ->boolean($this->testedInstance->getTokenize())
                         ->isTrue
 
-                    ->array($this->testedInstance->toArray())
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
+                    ->array($data = $this->testedInstance->jsonSerialize())
+                        ->hasSize(1)
                         ->hasKey('tokenize')
+
+                    ->boolean($data['tokenize'])
+                        ->isTrue
 
                 ->assert('Visible when forced to false')
                     ->object($this->testedInstance->setTokenize(false))
@@ -245,6 +273,13 @@ class Card extends ild78\Tests\atoum
 
                     ->array($this->testedInstance->toArray())
                         ->hasKey('tokenize')
+
+                    ->array($data = $this->testedInstance->jsonSerialize())
+                        ->hasSize(1)
+                        ->hasKey('tokenize')
+
+                    ->boolean($data['tokenize'])
+                        ->isFalse
 
                 ->assert('Aliases')
                     ->boolean($this->testedInstance->getTokenize())
