@@ -608,10 +608,6 @@ abstract class AbstractObject implements JsonSerializable
             }
         }
 
-        if (array_key_exists('id', $struct)) {
-            unset($struct['id']);
-        }
-
         return $struct;
     }
 
