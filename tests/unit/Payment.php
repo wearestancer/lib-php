@@ -552,7 +552,7 @@ class Payment extends ild78\Tests\atoum
 
             ->given($this->newTestedInstance(uniqid()))
             ->and($tooMuch = rand($paid + 1, 9999))
-            ->and($notEnough = rand(0, 49))
+            ->and($notEnough = rand(1, 49))
             ->then
                 ->assert('Without refunds we get an empty array')
                     ->if($this->calling($response)->getBody = json_encode($paymentData))
