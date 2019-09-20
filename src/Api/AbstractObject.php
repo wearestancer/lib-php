@@ -321,7 +321,7 @@ abstract class AbstractObject implements JsonSerializable
         }
 
         $this->dataModel[$property]['value'] = $value;
-        $this->modified[] = $property;
+        $this->modified[] = $this->camelCaseToSnakeCase($property);
 
         return $this;
     }
@@ -597,14 +597,14 @@ abstract class AbstractObject implements JsonSerializable
 
             if ($type === 'object') {
                 $value = $value->jsonSerialize();
-            }
-
-            if ($type === 'array') {
+            } elseif ($type === 'array') {
                 foreach ($value as &$val) {
                     if (gettype($val) === 'object') {
                         $val = $val->jsonSerialize();
                     }
                 }
+            } elseif (!in_array($prop, $this->modified)) {
+                unset($struct[$prop]);
             }
         }
 

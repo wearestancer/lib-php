@@ -212,11 +212,7 @@ class Customer extends ild78\Tests\atoum
                     ->and($body = json_decode($body, true))
 
                     ->and($options = [
-                        'body' => json_encode([
-                            'email' => $body['email'],
-                            'mobile' => $body['mobile'],
-                            'name' => $name,
-                        ]),
+                        'body' => json_encode(['name' => $name]),
                         'headers' => [
                             'Authorization' => $config->getBasicAuthHeader(),
                             'Content-Type' => 'application/json',
