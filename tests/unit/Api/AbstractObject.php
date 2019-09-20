@@ -12,6 +12,8 @@ use mock;
 
 class AbstractObject extends ild78\Tests\atoum
 {
+    use ild78\Tests\Provider\Strings;
+
     public function test__construct()
     {
         $this
@@ -133,6 +135,17 @@ class AbstractObject extends ild78\Tests\atoum
                     ->isIdenticalTo($this->testedInstance->getCreationDate)
                     ->isIdenticalTo($this->testedInstance->creationDate)
                     ->isIdenticalTo($this->testedInstance->GeTcReAtIoNdAtE)
+        ;
+    }
+
+    /**
+     * @dataProvider caseStringDataProvider
+     */
+    public function testCamelCaseToSnakeCase($camel, $snake)
+    {
+        $this
+            ->string($this->newTestedInstance->camelCaseToSnakeCase($camel))
+                ->isIdenticalTo($snake)
         ;
     }
 
@@ -332,6 +345,17 @@ class AbstractObject extends ild78\Tests\atoum
 
     // There are no test for `Object::save()` method here
     // Nothing can be saved in `Object`, real test are availaible in `Customer` test case (`Customer::testSave()`)
+
+    /**
+     * @dataProvider caseStringDataProvider
+     */
+    public function testSnakeCaseToCamelCase($camel, $snake)
+    {
+        $this
+            ->string($this->newTestedInstance->snakeCaseToCamelCase($snake))
+                ->isIdenticalTo($camel)
+        ;
+    }
 
     // testToArray, testToString and testToJson moved to stubs (more detailled)
 }

@@ -194,6 +194,22 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
+     * Convert `camelCase` text to `snake_case`
+     *
+     * @param string $text Text to convert.
+     *
+     * @return string
+     */
+    public function camelCaseToSnakeCase(string $text) : string
+    {
+        $replace = function ($matches) {
+            return '_' . strtolower($matches[0]);
+        };
+
+        return preg_replace_callback('`[A-Z]`', $replace, $text);
+    }
+
+    /**
      * Create a fresh instance of an API object
      *
      * @param array $data Additionnal data for creation.
@@ -414,15 +430,7 @@ abstract class AbstractObject implements JsonSerializable
     public function hydrate(array $data) : self
     {
         foreach ($data as $key => $value) {
-            $property = $key;
-
-            if (strpos($key, '_') !== false) {
-                $replace = function ($matches) {
-                    return trim(strtoupper($matches[0]), '_');
-                };
-
-                $property = preg_replace_callback('`_\w`', $replace, $key);
-            }
+            $property = $this->snakeCaseToCamelCase($key);
 
             if ($property === 'id') {
                 $this->id = $value;
@@ -699,6 +707,22 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
+     * Convert `snake_case` text to `camelCase`
+     *
+     * @param string $text Text to convert.
+     *
+     * @return string
+     */
+    public function snakeCaseToCamelCase(string $text) : string
+    {
+        $replace = function ($matches) {
+            return strtoupper(ltrim($matches[0], '_'));
+        };
+
+        return preg_replace_callback('`\_[a-z]`', $replace, $text);
+    }
+
+    /**
      * Return a array representation of the current object.
      *
      * @return string
@@ -714,15 +738,11 @@ abstract class AbstractObject implements JsonSerializable
         ];
         $data = array_merge($data, $this->dataModel);
 
-        $replace = function ($matches) {
-            return '_' . strtolower($matches[0]);
-        };
-
         foreach ($data as $property => $infos) {
             $value = $infos['value'];
 
             if ($value !== null && $infos['exportable']) {
-                $prop = preg_replace_callback('`[A-Z]`', $replace, $property);
+                $prop = $this->camelCaseToSnakeCase($property);
 
                 $json[$prop] = $value;
             }
