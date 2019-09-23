@@ -15,6 +15,7 @@ use ild78;
  * @method string getCountry()
  * @method string getCurrency()
  * @method string|null getDescription()
+ * @method ild78\\Device getDevice()
  * @method integer|null getId_customer()
  * @method string getMethod()
  * @method integer getOrder_id()
@@ -24,6 +25,7 @@ use ild78;
  * @method string getStatus()
  * @method Generator list(array $terms)
  * @method self setAuth(ild78\\Auth $auth)
+ * @method self setDevice(ild78\\Device $device)
  * @method self setReturnUrl(string $https)
  */
 class Payment extends Api\AbstractObject
@@ -68,6 +70,9 @@ class Payment extends Api\AbstractObject
                 'max' => 64,
             ],
             'type' => self::STRING,
+        ],
+        'device' => [
+            'type' => ild78\Device::class,
         ],
         'method' => [
             'restricted' => true,
