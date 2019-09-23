@@ -46,7 +46,7 @@ class Refund extends Api\AbstractObject
      */
     public function isModified() : bool
     {
-        return $this->modified;
+        return !empty($this->modified);
     }
 
     /**
@@ -60,15 +60,16 @@ class Refund extends Api\AbstractObject
     public function save() : Api\AbstractObject
     {
         $payment = $this->getPayment();
-        $modified = $payment->isModified();
-        $payment->modified = false;
+        $modified = $payment->modified;
+        $payment->modified = [];
 
-        $this->modified = true; // Mandatory to force `parent::save()` to work when no amount setted.
+        $this->modified[] = 'amount'; // Mandatory, force `parent::save()` to work even if no amount is setted.
 
         parent::save();
 
         // Force same payment instance.
-        $this->setPayment($payment)->modified = false;
+        $this->setPayment($payment);
+        $this->modified = [];
         $payment->modified = $modified;
 
         return $this;

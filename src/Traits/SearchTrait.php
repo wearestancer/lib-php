@@ -111,7 +111,10 @@ trait SearchTrait
                     foreach ($results['payments'] as $data) {
                         $obj = new static($data['id']);
 
-                        yield $obj->hydrate($data, false);
+                        $obj->cleanModified = true;
+                        $obj->hydrate($data);
+
+                        yield $obj;
                     }
                 }
             } while ($more);

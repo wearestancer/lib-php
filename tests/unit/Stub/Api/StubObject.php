@@ -219,6 +219,9 @@ class StubObject extends ild78\Tests\atoum
             ->given($this->newTestedInstance)
             ->then
                 ->assert('get / set / add with array1 (array of string)')
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->isEmpty
+
                     ->array($this->testedInstance->getArray1())
                         ->isEmpty
 
@@ -229,6 +232,9 @@ class StubObject extends ild78\Tests\atoum
                         ->string[0]
                             ->isIdenticalTo($one)
                         ->size->isEqualTo(1)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains('array1')
 
                     ->object($this->testedInstance->addArray1($two = uniqid()))
                         ->isTestedInstance
@@ -259,6 +265,9 @@ class StubObject extends ild78\Tests\atoum
                     ->string($this->testedInstance->string1)
                         ->isIdenticalTo($string1)
 
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains('string1')
+
                 ->assert('get / set with an array')
                     ->array($this->testedInstance->array1)
                         ->isEmpty
@@ -271,6 +280,9 @@ class StubObject extends ild78\Tests\atoum
                         ->string[1]
                             ->isIdenticalTo($two)
                         ->size->isEqualTo(2)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains('array1')
 
                     // Be careful, no array access, you must modify all the array.
         ;
@@ -307,6 +319,9 @@ class StubObject extends ild78\Tests\atoum
 
                 ->variable($obj->dataModelGetter($property))
                     ->isIdenticalTo($value)
+
+                ->array($this->testedInstance->testOnlyGetModified())
+                    ->contains($property)
         ;
     }
 
@@ -333,6 +348,9 @@ class StubObject extends ild78\Tests\atoum
 
                     ->variable($this->testedInstance->dataModelGetter($property))
                         ->isIdenticalTo($value)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains($property)
         ;
     }
 
@@ -353,6 +371,9 @@ class StubObject extends ild78\Tests\atoum
                     ->array($this->testedInstance->dataModelGetter($property))
                         ->isEmpty
 
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->isEmpty
+
                 ->assert($assertMessage . '"set" will insert value like other')
                     ->object($this->testedInstance->dataModelSetter($property, $value))
                         ->isTestedInstance
@@ -362,6 +383,9 @@ class StubObject extends ild78\Tests\atoum
                         ->size
                             ->isEqualTo(count($value))
 
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains($property)
+
                 ->assert($assertMessage . '"add" will add value without touching previous ones')
                     ->object($this->testedInstance->dataModelAdder($property, $extra))
                         ->isTestedInstance
@@ -370,6 +394,9 @@ class StubObject extends ild78\Tests\atoum
                         ->containsValues($value)
                         ->size
                             ->isEqualTo(count($value) + 1)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains($property)
 
                 ->assert($assertMessage . '"set" will truncate previous')
                     ->array($this->testedInstance->dataModelGetter($property))
@@ -383,6 +410,9 @@ class StubObject extends ild78\Tests\atoum
                         ->isIdenticalTo($value)
                         ->size
                             ->isEqualTo(count($value))
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains($property)
         ;
     }
 
@@ -441,6 +471,9 @@ class StubObject extends ild78\Tests\atoum
                         ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
                         ->message
                             ->isIdenticalTo('Unknown property "' . $property . '"')
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->isEmpty
         ;
     }
 
@@ -475,6 +508,9 @@ class StubObject extends ild78\Tests\atoum
                         ->isInstanceOf($class)
                         ->message
                             ->isIdenticalTo($message)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->isEmpty
         ;
     }
 
@@ -602,6 +638,9 @@ class StubObject extends ild78\Tests\atoum
                     ->array($this->testedInstance->getArray3())
                         ->isEmpty
 
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->isEmpty
+
                 ->assert('Hydratation with empty value')
                     ->object($this->testedInstance->hydrate($withEmpty))
                         ->isTestedInstance
@@ -613,6 +652,9 @@ class StubObject extends ild78\Tests\atoum
                         ->isEmpty
 
                     ->array($this->testedInstance->getArray3())
+                        ->isEmpty
+
+                    ->array($this->testedInstance->testOnlyGetModified())
                         ->isEmpty
 
                 ->assert('Hydratation will pass populated flag')
@@ -631,6 +673,9 @@ class StubObject extends ild78\Tests\atoum
                         ->isIdenticalTo($this->testedInstance->testOnlyGetPopulated())
                         ->isTrue
 
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains('object2')
+
                 ->assert('Hydratation will keep instances')
                     ->object($this->testedInstance->setObject2($objectWithId)->hydrate($withIds))
                         ->isTestedInstance
@@ -640,6 +685,9 @@ class StubObject extends ild78\Tests\atoum
 
                     ->string($objectWithId->getId())
                         ->isIdenticalTo($id)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains('object2')
 
                 ->assert('Work with lists')
                     ->object($this->newTestedInstance->hydrate($withArray))
@@ -659,6 +707,9 @@ class StubObject extends ild78\Tests\atoum
 
                     ->string($array[1]->getId())
                         ->isIdenticalTo($id2)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains('array4')
 
                 ->assert('Work with lists, and keep previous instance too')
                     ->object($object = $this->newTestedInstance($id2))
@@ -680,6 +731,9 @@ class StubObject extends ild78\Tests\atoum
 
                     ->string($array[1]->getId())
                         ->isIdenticalTo($id2)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains('array4')
         ;
     }
 
@@ -698,7 +752,7 @@ class StubObject extends ild78\Tests\atoum
                     ->boolean($this->testedInstance->isNotModified())
                         ->isTrue
 
-                    ->boolean($this->testedInstance->testOnlySetModified(true)->isModified())
+                    ->boolean($this->testedInstance->testOnlyAddModified('string1')->isModified())
                         ->isTrue
 
                     ->boolean($this->testedInstance->isNotModified())
@@ -706,8 +760,8 @@ class StubObject extends ild78\Tests\atoum
 
                 ->assert('Should return false if an object in one property is modified')
                     ->if($this->testedInstance->setObject2($object1))
-                    ->and($object1->testOnlySetModified(true))
-                    ->and($this->testedInstance->testOnlySetModified(false))
+                    ->and($object1->testOnlyAddModified('number'))
+                    ->and($this->testedInstance->testOnlyResetModified())
 
                     ->boolean($this->testedInstance->isModified())
                         ->isTrue
@@ -718,13 +772,21 @@ class StubObject extends ild78\Tests\atoum
                 ->assert('Should return false if an object in a list is modified')
                     ->if($this->testedInstance->addArray4($object2))
                     ->and($this->testedInstance->addArray4($object3))
-                    ->and($this->testedInstance->testOnlySetModified(false))
+                    ->and($this->testedInstance->testOnlyResetModified())
 
-                    ->and($object1->testOnlySetModified(false)) // Be sure last test won't interfere
+                    ->and($object1->testOnlyResetModified()) // Be sure last test won't interfere
 
                     // randomise which one is modified
-                    ->and($object2->testOnlySetModified((bool) rand(1, 10) % 2))
-                    ->and($object3->testOnlySetModified(!$object2->isModified()))
+                    ->and($first = (bool) rand(1, 10) % 2)
+                    ->when(function () use ($first, $object2, $object3) {
+                        if ($first) {
+                            $object2->testOnlyAddModified('string1');
+                            $object3->testOnlyResetModified();
+                        } else {
+                            $object2->testOnlyResetModified();
+                            $object3->testOnlyAddModified('string1');
+                        }
+                    })
 
                     ->boolean($this->testedInstance->isModified())
                         ->isTrue
@@ -736,8 +798,8 @@ class StubObject extends ild78\Tests\atoum
                     ->if($this->newTestedInstance)
                     ->and($this->testedInstance->setObject3($object3))
 
-                    ->and($object3->testOnlySetModified(true))
-                    ->and($this->testedInstance->testOnlySetModified(false))
+                    ->and($object3->testOnlyAddModified('string1'))
+                    ->and($this->testedInstance->testOnlyResetModified())
 
                     ->then
                         ->boolean($this->testedInstance->isModified())
@@ -756,22 +818,24 @@ class StubObject extends ild78\Tests\atoum
 
             ->if($this->newTestedInstance($id = uniqid()))
             ->and($this->testedInstance->setCamelCaseProperty($camelCase = uniqid()))
-            ->and($this->testedInstance->forceRestricted1($restricted = uniqid()))
+            ->and($this->testedInstance->forceRestricted1(uniqid()))
             ->and($this->testedInstance->setObject2($object2))
             ->then
                 ->assert('An unmodified object with an ID should return only the ID')
-                    ->if($this->testedInstance->testOnlySetModified(false))
-                    ->and($object2->testOnlySetModified(false))
+                    ->if($this->testedInstance->testOnlyResetModified())
+                    ->and($object2->testOnlyResetModified())
                     ->then
                         ->string($this->testedInstance->jsonSerialize())
                             ->isIdenticalTo($id)
 
                 ->assert('A modified object with an ID return a body (without id)')
-                    ->if($this->testedInstance->testOnlySetModified(true))
-                    ->and($object2->testOnlySetModified(false))
+                    ->if($this->testedInstance->testOnlyAddModified('camel_case_property'))
+                    ->and($this->testedInstance->testOnlyAddModified('object2'))
+                    ->and($object2->testOnlyResetModified())
                     ->then
                         ->array($this->testedInstance->jsonSerialize())
                             ->notHasKey('id')
+                            ->notHasKey('restricted1') // no output for restricted property
 
                             ->notHasKey('camelCaseProperty') // camelCase properties has converted to snake_case
                             ->hasKey('camel_case_property')
@@ -783,8 +847,8 @@ class StubObject extends ild78\Tests\atoum
                                 ->isIdenticalTo($object2->getId()) // object2 is not modified
 
                 ->assert('A modified object with another modified object in it should return both body (without ids)')
-                    ->if($this->testedInstance->testOnlySetModified(true))
-                    ->and($object2->testOnlySetModified(true))
+                    ->if($this->testedInstance->testOnlyAddModified('camel_case_property'))
+                    ->and($object2->testOnlyAddModified('string1'))
                     ->then
                         ->array($this->testedInstance->jsonSerialize())
                             ->notHasKey('id')
@@ -804,17 +868,15 @@ class StubObject extends ild78\Tests\atoum
                                 ;
                             })
 
-                ->assert('A unmodified object with another modified object in it should return both body too (without ids)')
-                    ->if($this->testedInstance->testOnlySetModified(false))
-                    ->and($object2->testOnlySetModified(true))
+                ->assert('An unmodified object with another modified object in it should return both body too (without ids)')
+                    ->if($this->testedInstance->testOnlyResetModified())
+                    ->and($object2->testOnlyAddModified('string1'))
                     ->then
                         ->array($this->testedInstance->jsonSerialize())
                             ->notHasKey('id')
 
-                            ->notHasKey('camelCaseProperty') // camelCase properties has converted to snake_case
-                            ->hasKey('camel_case_property')
-                            ->string['camel_case_property']
-                                ->isIdenticalTo($camelCase)
+                            ->notHasKey('camelCaseProperty')   // camelCase properties has converted to snake_case
+                            ->notHasKey('camel_case_property') // was not modified
 
                             ->hasKey('object2')
                             ->child['object2'](function ($child) use ($object2) {
@@ -842,9 +904,9 @@ class StubObject extends ild78\Tests\atoum
                     ->and($object3->testOnlySetId(uniqid()))
                     ->and($object3->setString1($this->makeStringBetween(10, 20)))
 
-                    ->and($this->testedInstance->testOnlySetModified(false))
-                    ->and($object2->testOnlySetModified(false))
-                    ->and($object3->testOnlySetModified(true))
+                    ->and($this->testedInstance->testOnlyResetModified())
+                    ->and($object2->testOnlyResetModified())
+                    ->and($object3->testOnlyAddModified('string1'))
                     ->then
 
                         // Recap
@@ -870,6 +932,135 @@ class StubObject extends ild78\Tests\atoum
 
                                         ->string['string1']
                                             ->isIdenticalTo($object3->getString1())
+                                ;
+                            })
+
+                ->assert('An unmodified object should appear if not modified')
+                    ->given($object = $this->newTestedInstance)
+                    ->and($object->testOnlySetId(uniqid()))
+                    ->and($object->setString1($this->makeStringBetween(10, 20)))
+                    ->and($object->testOnlyResetModified())
+
+                    ->and($list1 = clone $object)
+                    ->and($list2 = clone $object)
+
+                    ->if($string = $this->makeStringBetween(10, 20))
+
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->setObject2($object))
+                    ->and($this->testedInstance->addArray4($list1))
+                    ->and($this->testedInstance->addArray4($list2))
+                    ->and($this->testedInstance->testOnlyResetModified())
+                    ->and($this->testedInstance->setString1($string))
+
+                    ->then
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->notHasKey('object2')
+                            ->notHasKey('array4')
+
+                            ->hasKey('string1')
+                            ->string['string1']
+                                ->isIdenticalTo($string)
+
+                ->assert('If one object in a list is modified, all list is exported')
+                    ->given($object1 = $this->newTestedInstance)
+                    ->and($object1->testOnlySetId(uniqid()))
+                    ->and($object1->setString1($this->makeStringBetween(10, 20)))
+                    ->and($object1->testOnlyResetModified())
+
+                    ->if($object2 = $this->newTestedInstance)
+                    ->and($object2->testOnlySetId(uniqid()))
+                    ->and($object2->setString1($this->makeStringBetween(10, 20)))
+
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->addArray4($object1))
+                    ->and($this->testedInstance->addArray4($object2))
+
+                    ->then
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+
+                            ->hasKey('array4')
+                            ->child['array4'](function ($array4) use ($object1, $object2) {
+                                $array4
+                                    ->string[0]
+                                        ->isIdenticalTo($object1->getId())
+
+                                    ->array[1]
+                                        ->notHasKey('id')
+
+                                        ->string['string1']
+                                            ->isIdenticalTo($object2->getString1())
+                                ;
+                            })
+
+                ->assert('An unmodified list should not be exported except if a modified object is in it')
+                    ->given($object1 = $this->newTestedInstance)
+
+                    ->and($string1 = $this->makeStringBetween(10, 20))
+                    ->and($string2 = $this->makeStringBetween(10, 20))
+
+                    ->and($object1->testOnlySetId(uniqid()))
+                    ->and($object1->setString1($this->makeStringBetween(10, 20)))
+                    ->and($object1->testOnlyResetModified())
+
+                    ->if($object2 = $this->newTestedInstance)
+                    ->and($object2->testOnlySetId(uniqid()))
+                    ->and($object2->setString1($this->makeStringBetween(10, 20)))
+
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->addArray1($string1))
+                    ->and($this->testedInstance->addArray1($string2))
+                    ->and($this->testedInstance->addArray4($object1))
+                    ->and($this->testedInstance->addArray4($object2))
+
+                    ->then
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(2)
+
+                            ->hasKey('array1')
+                            ->child['array1'](function ($array1) use ($string1, $string2) {
+                                $array1
+                                    ->string[0]
+                                        ->isIdenticalTo($string1)
+
+                                    ->string[1]
+                                        ->isIdenticalTo($string2)
+                                ;
+                            })
+
+                            ->hasKey('array4')
+                            ->child['array4'](function ($array4) use ($object1, $object2) {
+                                $array4
+                                    ->string[0]
+                                        ->isIdenticalTo($object1->getId())
+
+                                    ->array[1]
+                                        ->notHasKey('id')
+
+                                        ->string['string1']
+                                            ->isIdenticalTo($object2->getString1())
+                                ;
+                            })
+
+                    ->if($this->testedInstance->testOnlyResetModified())
+
+                    ->then
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+
+                            ->hasKey('array4')
+                            ->child['array4'](function ($array4) use ($object1, $object2) {
+                                $array4
+                                    ->string[0]
+                                        ->isIdenticalTo($object1->getId())
+
+                                    ->array[1]
+                                        ->notHasKey('id')
+
+                                        ->string['string1']
+                                            ->isIdenticalTo($object2->getString1())
                                 ;
                             })
         ;
@@ -900,6 +1091,9 @@ class StubObject extends ild78\Tests\atoum
                     ->dateTime($date = $this->testedInstance->getCreationDate())
                         ->variable($date->format('U'))
                             ->isEqualTo($timestamp)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->isEmpty
 
             ->assert('Only one request with two consecutive call')
                 ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
@@ -1076,6 +1270,49 @@ class StubObject extends ild78\Tests\atoum
 
                         ->boolean($this->testedInstance->testOnlyGetPopulated())
                             ->isTrue
+
+            ->assert('Inner object are not marked as modified')
+                ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+
+                ->if($client = new mock\GuzzleHttp\Client)
+                ->and($id = uniqid())
+                ->and($timestamp = time())
+                ->and($data = [
+                    'id' => $id,
+                    'created' => $timestamp,
+                    'object2' => [
+                        'integer1' => rand(10, 20),
+                    ],
+                    'array4' => [
+                        [
+                            'integer1' => rand(10, 20),
+                        ],
+                    ],
+                ])
+                ->and($body = json_encode($data))
+                ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
+                ->and($this->calling($client)->request = $response)
+                ->and($config->setHttpClient($client))
+
+                ->and($this->newTestedInstance($id))
+                ->then
+                    ->object($this->testedInstance->populate())
+
+                    ->mock($client)
+                        ->call('request')
+                            ->once
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
+
+                    ->boolean($this->testedInstance->getObject2()->isModified())
+                        ->isFalse
+
+                    ->array($array4 = $this->testedInstance->getArray4())
+                        ->hasSize(1)
+
+                    ->boolean($array4[0]->isModified())
+                        ->isFalse
         ;
     }
 
@@ -1135,6 +1372,9 @@ class StubObject extends ild78\Tests\atoum
                 ->and($options['body'] = json_encode($this->testedInstance))
                 ->and($location = $this->testedInstance->getUri())
                 ->then
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
                     ->object($this->testedInstance->save())
                         ->isTestedInstance
 
@@ -1142,6 +1382,9 @@ class StubObject extends ild78\Tests\atoum
                         ->call('request')
                             ->withArguments('POST', $location, $options)
                                 ->once
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
 
             ->assert('No error if returned body is null (saw with PATCH implementation)')
                 ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
@@ -1169,6 +1412,9 @@ class StubObject extends ild78\Tests\atoum
                 ->and($options['body'] = json_encode($this->testedInstance))
                 ->and($location = $this->testedInstance->getUri())
                 ->then
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
                     ->object($this->testedInstance->save())
                         ->isTestedInstance
 
@@ -1179,6 +1425,9 @@ class StubObject extends ild78\Tests\atoum
                         ->call('request')
                             ->withArguments('POST', $location, $options)
                                 ->once
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
         ;
     }
 
@@ -1213,8 +1462,10 @@ class StubObject extends ild78\Tests\atoum
             ->given($object1 = $this->newTestedInstance) // Unmodified / Got id and string1
             ->and($object2 = $this->newTestedInstance)   // Modified   / Got id and string1
             ->and($object3 = $this->newTestedInstance)   // Modified   / Got string1
+            ->and($object = $this->newTestedInstance)    // Modified   / Go id and string1  / Not in array
 
             ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setObject2($object))
             ->and($this->testedInstance->addArray4($object1))
             ->and($this->testedInstance->addArray4($object2))
             ->and($this->testedInstance->addArray4($object3))
@@ -1223,18 +1474,17 @@ class StubObject extends ild78\Tests\atoum
             ->and($this->testedInstance->forceRestricted1($restricted = uniqid()))
             ->and($this->testedInstance->setString1($this->makeStringBetween(10, 20)))
 
+            ->and($object->setString1($this->makeStringBetween(10, 20)))
             ->and($object1->setString1($this->makeStringBetween(10, 20)))
             ->and($object2->setString1($this->makeStringBetween(10, 20)))
             ->and($object3->setString1($this->makeStringBetween(10, 20)))
 
             ->and($this->testedInstance->testOnlySetId(uniqid()))
+            ->and($object->testOnlySetId(uniqid()))
             ->and($object1->testOnlySetId(uniqid()))
             ->and($object2->testOnlySetId(uniqid()))
 
-            ->and($this->testedInstance->testOnlySetModified(true))
-            ->and($object1->testOnlySetModified(false))
-            ->and($object2->testOnlySetModified(true))
-            ->and($object3->testOnlySetModified(true))
+            ->and($object1->testOnlyResetModified())
 
             ->then
                 ->json($json = $this->testedInstance->toJson())
@@ -1245,13 +1495,23 @@ class StubObject extends ild78\Tests\atoum
                 ->array(json_decode($json, true))
                     ->notHasKeys(['id', 'camelCaseProperty', 'restricted1'])
 
-                    ->hasKeys(['string1', 'camel_case_property', 'array4'])
+                    ->hasKeys(['string1', 'camel_case_property', 'object2', 'array4'])
 
                     ->string['string1']
                         ->isIdenticalTo($this->testedInstance->getString1())
 
                     ->string['camel_case_property']
                         ->isIdenticalTo($this->testedInstance->getCamelCaseProperty())
+
+                    ->child['object2'](function ($obj2) use ($object) {
+                        $obj2
+                            ->hasSize(1)
+
+                            ->hasKey('string1')
+                            ->string['string1']
+                                ->isIdenticalTo($object->getString1())
+                        ;
+                    })
 
                     ->child['array4'](function ($array4) use ($object1, $object2, $object3) {
                         $array4
@@ -1270,6 +1530,50 @@ class StubObject extends ild78\Tests\atoum
                                         ->isIdenticalTo($object2->getString1())
                                 ;
                             })
+
+                            // $object3
+                            ->child[2](function ($child) use ($object3) {
+                                $child
+                                    ->notHasKey('id')
+
+                                    ->string['string1']
+                                        ->isIdenticalTo($object3->getString1())
+                                ;
+                            })
+                        ;
+                    })
+
+            ->if($this->testedInstance->testOnlyResetModified())
+            ->and($this->testedInstance->testOnlyAddModified('string1'))
+            ->and($object->testOnlyResetModified())
+            ->and($object1->testOnlyResetModified())
+            ->and($object2->testOnlyResetModified())
+
+            ->then
+                ->json($json = $this->testedInstance->toJson())
+                    ->isIdenticalTo($this->testedInstance->toString())
+                    ->isIdenticalTo(json_encode($this->testedInstance))
+                    ->isIdenticalTo((string) $this->testedInstance)
+
+                ->array(json_decode($json, true))
+                    ->notHasKeys(['id', 'camelCaseProperty', 'restricted1', 'camel_case_property', 'object2'])
+
+                    ->hasKeys(['string1', 'array4'])
+
+                    ->string['string1']
+                        ->isIdenticalTo($this->testedInstance->getString1())
+
+                    ->child['array4'](function ($array4) use ($object1, $object2, $object3) {
+                        $array4
+                            ->hasSize(3)
+
+                            // $object1
+                            ->string[0]
+                                ->isIdenticalTo($object1->getId())
+
+                            // $object2
+                            ->string[1]
+                                ->isIdenticalTo($object2->getId())
 
                             // $object3
                             ->child[2](function ($child) use ($object3) {

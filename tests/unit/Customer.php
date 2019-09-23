@@ -212,11 +212,7 @@ class Customer extends ild78\Tests\atoum
                     ->and($body = json_decode($body, true))
 
                     ->and($options = [
-                        'body' => json_encode([
-                            'email' => $body['email'],
-                            'mobile' => $body['mobile'],
-                            'name' => $name,
-                        ]),
+                        'body' => json_encode(['name' => $name]),
                         'headers' => [
                             'Authorization' => $config->getBasicAuthHeader(),
                             'Content-Type' => 'application/json',
@@ -258,6 +254,9 @@ class Customer extends ild78\Tests\atoum
                     ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid email must be between 5 and 64 characters.')
+
+                ->boolean($this->testedInstance->isModified())
+                    ->isFalse
         ;
     }
 
@@ -273,6 +272,9 @@ class Customer extends ild78\Tests\atoum
                     ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid mobile must be between 8 and 16 characters.')
+
+                ->boolean($this->testedInstance->isModified())
+                    ->isFalse
         ;
     }
 
@@ -288,6 +290,9 @@ class Customer extends ild78\Tests\atoum
                     ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid name must be between 4 and 64 characters.')
+
+                ->boolean($this->testedInstance->isModified())
+                    ->isFalse
         ;
     }
 }

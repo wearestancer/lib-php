@@ -34,8 +34,11 @@ abstract class AbstractObject implements JsonSerializable
     /** @var boolean */
     protected $populated = false;
 
+    /** @var string[] */
+    protected $modified = [];
+
     /** @var boolean */
-    protected $modified = false;
+    protected $cleanModified = false;
 
     /** @var array */
     protected $aliases = [];
@@ -191,6 +194,22 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
+     * Convert `camelCase` text to `snake_case`
+     *
+     * @param string $text Text to convert.
+     *
+     * @return string
+     */
+    public function camelCaseToSnakeCase(string $text) : string
+    {
+        $replace = function ($matches) {
+            return '_' . strtolower($matches[0]);
+        };
+
+        return preg_replace_callback('`[A-Z]`', $replace, $text);
+    }
+
+    /**
      * Create a fresh instance of an API object
      *
      * @param array $data Additionnal data for creation.
@@ -286,7 +305,6 @@ abstract class AbstractObject implements JsonSerializable
         }
 
         $type = gettype($value);
-        $changeModified = false;
 
         if ($this->dataModel[$property]['list']) {
             if ($type !== 'array') {
@@ -297,24 +315,13 @@ abstract class AbstractObject implements JsonSerializable
 
             foreach ($value as $val) {
                 $this->validateDataModel($property, $val);
-
-                if (!$changeModified && !($val instanceof self)) {
-                    $changeModified = true;
-                }
             }
         } else {
             $this->validateDataModel($property, $value);
-
-            if (!($value instanceof self)) {
-                $changeModified = true;
-            }
         }
 
         $this->dataModel[$property]['value'] = $value;
-
-        if ($changeModified) { // We will use inner object state.
-            $this->modified = true;
-        }
+        $this->modified[] = $this->camelCaseToSnakeCase($property);
 
         return $this;
     }
@@ -418,21 +425,12 @@ abstract class AbstractObject implements JsonSerializable
      * Hydrate the current object.
      *
      * @param array $data Data for hydratation.
-     * @param boolean $modified Do we need to modify the flag.
      * @return self
      */
-    public function hydrate(array $data, bool $modified = true) : self
+    public function hydrate(array $data) : self
     {
         foreach ($data as $key => $value) {
-            $property = $key;
-
-            if (strpos($key, '_') !== false) {
-                $replace = function ($matches) {
-                    return trim(strtoupper($matches[0]), '_');
-                };
-
-                $property = preg_replace_callback('`_\w`', $replace, $key);
-            }
+            $property = $this->snakeCaseToCamelCase($key);
 
             if ($property === 'id') {
                 $this->id = $value;
@@ -475,6 +473,8 @@ abstract class AbstractObject implements JsonSerializable
                             if ($missing) {
                                 $class = $this->dataModel[$property]['type'];
                                 $obj = new $class($id);
+
+                                $obj->cleanModified = $this->cleanModified;
                                 $obj->hydrate($val);
 
                                 $list[] = $obj;
@@ -498,13 +498,12 @@ abstract class AbstractObject implements JsonSerializable
                         }
 
                         if (is_array($value)) {
+                            $this->dataModel[$property]['value']->cleanModified = $this->cleanModified;
                             $this->dataModel[$property]['value']->hydrate($value);
                         }
-
-                        $this->dataModel[$property]['value']->modified = $modified;
                     }
                 } else {
-                    if ($this->dataModel[$property]['restricted'] || is_null($value) || !$modified) {
+                    if ($this->dataModel[$property]['restricted'] || is_null($value) || is_array($value)) {
                         $this->dataModel[$property]['value'] = $value;
                     } else {
                         $this->$property = $value;
@@ -527,6 +526,11 @@ abstract class AbstractObject implements JsonSerializable
             }
         }
 
+        if ($this->cleanModified) {
+            $this->modified = [];
+            $this->cleanModified = false;
+        }
+
         return $this;
     }
 
@@ -539,7 +543,7 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function isModified() : bool
     {
-        if ($this->modified) {
+        if (!empty($this->modified)) {
             return true;
         }
 
@@ -548,13 +552,13 @@ abstract class AbstractObject implements JsonSerializable
         foreach ($struct as $prop => $value) {
             $type = gettype($value);
 
-            if ($type === 'object' && $value->modified) {
+            if ($type === 'object' && $value->isModified()) {
                 return true;
             }
 
             if ($type === 'array') {
                 foreach ($value as $val) {
-                    if (gettype($val) === 'object' && $val->modified) {
+                    if (gettype($val) === 'object' && $val->isModified()) {
                         return true;
                     }
                 }
@@ -590,22 +594,31 @@ abstract class AbstractObject implements JsonSerializable
 
         foreach ($struct as $prop => &$value) {
             $type = gettype($value);
+            $supp = !in_array($prop, $this->modified);
 
             if ($type === 'object') {
-                $value = $value->jsonSerialize();
+                if (in_array($prop, $this->modified) || $value->isModified()) {
+                    $supp = false;
+                    $value = $value->jsonSerialize();
+                }
             }
 
             if ($type === 'array') {
+                $keepIt = false;
+
                 foreach ($value as &$val) {
                     if (gettype($val) === 'object') {
+                        $keepIt |= $val->isModified();
                         $val = $val->jsonSerialize();
                     }
                 }
-            }
-        }
 
-        if (array_key_exists('id', $struct)) {
-            unset($struct['id']);
+                $supp &= !$keepIt;
+            }
+
+            if ($supp) {
+                unset($struct[$prop]);
+            }
         }
 
         return $struct;
@@ -629,10 +642,10 @@ abstract class AbstractObject implements JsonSerializable
         $response = $request->get($this);
         $body = json_decode($response, true);
 
-        $this->modified = false;
+        $this->cleanModified = true;
         $this->populated = true;
 
-        $this->hydrate($body, false);
+        $this->hydrate($body);
 
         return $this;
     }
@@ -687,16 +700,35 @@ abstract class AbstractObject implements JsonSerializable
             $response = $request->post($this);
         }
 
-        $this->modified = false;
         $this->populated = true;
 
         $body = json_decode($response, true);
 
         if ($body) {
-            $this->hydrate($body, false);
+            $this->cleanModified = true;
+
+            $this->hydrate($body);
         }
 
+        $this->modified = [];
+
         return $this;
+    }
+
+    /**
+     * Convert `snake_case` text to `camelCase`
+     *
+     * @param string $text Text to convert.
+     *
+     * @return string
+     */
+    public function snakeCaseToCamelCase(string $text) : string
+    {
+        $replace = function ($matches) {
+            return strtoupper(ltrim($matches[0], '_'));
+        };
+
+        return preg_replace_callback('`\_[a-z]`', $replace, $text);
     }
 
     /**
@@ -715,15 +747,11 @@ abstract class AbstractObject implements JsonSerializable
         ];
         $data = array_merge($data, $this->dataModel);
 
-        $replace = function ($matches) {
-            return '_' . strtolower($matches[0]);
-        };
-
         foreach ($data as $property => $infos) {
             $value = $infos['value'];
 
             if ($value !== null && $infos['exportable']) {
-                $prop = preg_replace_callback('`[A-Z]`', $replace, $property);
+                $prop = $this->camelCaseToSnakeCase($property);
 
                 $json[$prop] = $value;
             }

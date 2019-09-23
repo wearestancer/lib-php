@@ -294,7 +294,13 @@ class Payment extends Api\AbstractObject
             $refund->setAmount($amount);
         }
 
-        return $this->addRefunds($refund->save());
+        $modified = $this->modified;
+
+        $this->addRefunds($refund->save());
+
+        $this->modified = $modified;
+
+        return $this;
     }
 
     /**
@@ -368,6 +374,7 @@ class Payment extends Api\AbstractObject
         }
 
         $this->dataModel['currency']['value'] = $cur;
+        $this->modified[] = 'currency';
 
         return $this;
     }

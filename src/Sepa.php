@@ -63,6 +63,7 @@ class Sepa extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
         }
 
         $this->dataModel['bic']['value'] = $bic;
+        $this->modified[] = 'bic';
 
         return $this;
     }
@@ -106,6 +107,7 @@ class Sepa extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
         $this->dataModel['country']['value'] = $country;
         $this->dataModel['iban']['value'] = $iban;
         $this->dataModel['last4']['value'] = substr($iban, -4);
+        $this->modified[] = 'iban';
 
         return $this;
     }

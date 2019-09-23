@@ -5,6 +5,13 @@ namespace ild78\Stub;
 use ild78;
 
 trait TestMethodTrait {
+    public function testOnlyAddModified(string $modified) : ild78\Api\AbstractObject
+    {
+        $this->modified[] = $modified;
+
+        return $this;
+    }
+
     public function testOnlySetId(string $id) : ild78\Api\AbstractObject
     {
         $this->id = $id;
@@ -12,14 +19,19 @@ trait TestMethodTrait {
         return $this;
     }
 
+    public function testOnlyGetModified() : array
+    {
+        return $this->modified;
+    }
+
     public function testOnlyGetPopulated() : bool
     {
         return $this->populated;
     }
 
-    public function testOnlySetModified(bool $modified) : ild78\Api\AbstractObject
+    public function testOnlyResetModified() : ild78\Api\AbstractObject
     {
-        $this->modified = $modified;
+        $this->modified = [];
 
         return $this;
     }
