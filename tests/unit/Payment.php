@@ -188,6 +188,69 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
+    public function testGetPaymentPageUrl()
+    {
+        $this
+            ->given($secret = 'stest_' . bin2hex(random_bytes(12)))
+            ->and($public = 'ptest_' . bin2hex(random_bytes(12)))
+            ->and($config = ild78\Api\Config::init([$secret]))
+
+            ->if($client = new mock\ild78\Http\Client)
+            ->and($response = new mock\ild78\Http\Response(200))
+            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-no-method.json'))
+            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($client)->request = $response)
+
+            ->and($config->setHttpClient($client))
+
+            ->if($amount = rand(100, 999999))
+            ->and($currency = $this->currencyDataProvider()[0])
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount($amount))
+            ->and($this->testedInstance->setCurrency($currency))
+
+            ->if($return = 'https://www.example.com?' . uniqid())
+            ->and($url = vsprintf('https://%s/%s/', [
+                str_replace('api', 'payment', $config->getHost()),
+                $public
+            ]))
+
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->getPaymentPageUrl();
+                })
+                    ->isInstanceOf(Exceptions\MissingApiKeyException::class)
+                    ->message
+                        ->isIdenticalTo('You did not provide valid public API key for development.')
+
+                ->object($config->setKeys([$public, $secret]))
+
+                ->exception(function () {
+                    $this->testedInstance->getPaymentPageUrl();
+                })
+                    ->isInstanceOf(Exceptions\MissingReturnUrlException::class)
+                    ->message
+                        ->isIdenticalTo('You must provide a return URL before asking for the payment page.')
+
+                ->object($this->testedInstance->setReturnUrl($return))
+                    ->isTestedInstance
+
+                ->exception(function () {
+                    $this->testedInstance->getPaymentPageUrl();
+                })
+                    ->isInstanceOf(Exceptions\MissingPaymentIdException::class)
+                    ->message
+                        ->isIdenticalTo('A payment ID is mandatory to obtain a payment page URL. Maybe you forgot to save the payment.')
+
+                ->object($this->testedInstance->save())
+                    ->isTestedInstance
+
+                ->string($this->testedInstance->getPaymentPageUrl())
+                    ->isIdenticalTo($url . $this->testedInstance->getId())
+        ;
+    }
+
     public function testGetRefundableAmount()
     {
         $this
@@ -237,6 +300,32 @@ class Payment extends ild78\Tests\atoum
                 ->then
                     ->string($this->testedInstance->getResponseMessage())
                         ->isIdenticalTo($message)
+        ;
+    }
+
+    public function testGetReturnUrl_SetReturnUrl()
+    {
+        $this
+            ->given($https = 'https://www.example.org/?' . uniqid())
+            ->and($http = 'http://www.example.org/?' . uniqid())
+
+            ->if($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getReturnUrl())
+                    ->isNull
+
+                ->object($this->testedInstance->setReturnUrl($https))
+                    ->isTestedInstance
+
+                ->string($this->testedInstance->getReturnUrl())
+                    ->isIdenticalTo($https)
+
+                ->exception(function () use ($http) {
+                    $this->testedInstance->setReturnUrl($http);
+                })
+                    ->isInstanceOf(Exceptions\InvalidUrlException::class)
+                    ->message
+                        ->isIdenticalTo('You must provide an HTTPS URL.')
         ;
     }
 
@@ -845,27 +934,90 @@ class Payment extends ild78\Tests\atoum
     public function testSave_withoutCardOrSepa()
     {
         $this
-            ->given($client = new mock\GuzzleHttp\Client)
-            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+
+            ->if($client = new mock\ild78\Http\Client)
+            ->and($response = new mock\ild78\Http\Response(200))
+            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-no-method.json'))
+            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($client)->request = $response)
+
             ->and($config->setHttpClient($client))
 
+            ->if($customer = new Customer)
+            ->and($customer->setName(uniqid()))
+            ->and($customer->setEmail(uniqid() . '@example.org'))
+            ->and($customer->setMobile(uniqid()))
+
+            ->if($amount = rand(100, 999999))
+            ->and($currency = $this->currencyDataProvider()[0])
+
             ->if($this->newTestedInstance)
-            ->and($this->testedInstance->setAmount(rand(100, 999999)))
-            ->and($this->testedInstance->setCurrency('EUR'))
+            ->and($this->testedInstance->setAmount($amount))
+            ->and($this->testedInstance->setCurrency($currency))
+            ->and($this->testedInstance->setCustomer($customer))
             ->and($this->testedInstance->setDescription(uniqid()))
             ->and($this->testedInstance->setOrderId(uniqid()))
 
+            ->if($logger = new mock\ild78\Api\Logger)
+            ->and($config->setLogger($logger))
+            ->and($logMessage = 'Payment of 100.00 eur without payment method')
+
+            ->and($json = json_encode($this->testedInstance))
+            ->and($options = [
+                'body' => $json,
+                'headers' => [
+                    'Authorization' => $config->getBasicAuthHeader(),
+                    'Content-Type' => 'application/json',
+                    'User-Agent' => $config->getDefaultUserAgent(),
+                ],
+                'timeout' => $config->getTimeout(),
+            ])
+            ->and($location = $this->testedInstance->getUri())
             ->then
-                ->exception(function () {
-                    $this->testedInstance->save();
-                })
-                    ->isInstanceOf(Exceptions\MissingPaymentMethodException::class)
-                    ->message
-                        ->isIdenticalTo('You must provide a valid credit card or SEPA account to make a payment.')
+                ->variable($this->testedInstance->getId())
+                    ->isNull
+                ->object($this->testedInstance->save())
+                    ->isTestedInstance
 
                 ->mock($client)
                     ->call('request')
-                        ->never
+                        ->withArguments('POST', $location, $options)
+                            ->once
+
+                ->mock($logger)
+                    ->call('info')->withArguments($logMessage)->once
+
+                // Payment object
+                ->string($this->testedInstance->getId())
+                    ->isIdenticalTo('paym_pia9ossoqujuFFbX0HdS3FLi')
+
+                ->dateTime($this->testedInstance->getCreationDate())
+                    ->isEqualTo(new DateTime('@1562085759'))
+
+                ->integer($this->testedInstance->getAmount())
+                    ->isIdenticalTo(10000)
+
+                ->string($this->testedInstance->getCurrency())
+                    ->isIdenticalTo('eur')
+
+                ->object($this->testedInstance->getCustomer())
+                    ->isIdenticalTo($customer)
+
+                ->string($this->testedInstance->getDescription())
+                    ->isIdenticalTo('Test payment without any card or sepa account')
+
+                ->variable($this->testedInstance->getOrderId())
+                    ->isNull
+
+                ->variable($this->testedInstance->getCard())
+                    ->isNull
+
+                ->variable($this->testedInstance->getSepa())
+                    ->isNull
+
+                ->variable($this->testedInstance->getMethod())
+                    ->isNull
         ;
     }
 

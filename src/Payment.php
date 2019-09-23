@@ -18,9 +18,11 @@ use ild78;
  * @method string getMethod()
  * @method integer getOrder_id()
  * @method string getResponse()
+ * @method string|null getReturnUrl()
  * @method ild78\\Sepa getSepa()
  * @method string getStatus()
  * @method Generator list(array $terms)
+ * @method self setReturnUrl(string $https)
  */
 class Payment extends Api\AbstractObject
 {
@@ -82,6 +84,13 @@ class Payment extends Api\AbstractObject
             'restricted' => true,
             'size' => [
                 'fixed' => 2,
+            ],
+            'type' => self::STRING,
+        ],
+        'returnUrl' => [
+            'size' => [
+                'min' => 1,
+                'max' => 2048,
             ],
             'type' => self::STRING,
         ],
@@ -154,6 +163,46 @@ class Payment extends Api\AbstractObject
 
         throw new ild78\Exceptions\BadMethodCallException($message);
     }
+
+    // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
+
+    /**
+     * Return the URL for Iliad payment page.
+     *
+     * Maybe used as an iframe or a redirection page if you needed it.
+     *
+     * @return string
+     * @throws ild78\Exceptions\MissingApiKeyException When no public key was given in configuration.
+     * @throws ild78\Exceptions\MissingReturnUrlException When no return URL was given to payment data.
+     * @throws ild78\Exceptions\MissingPaymentIdException When no payment has no ID.
+     */
+    public function getPaymentPageUrl() : string
+    {
+        $config = ild78\Api\Config::getGlobal();
+
+        $params = [
+            str_replace('api', 'payment', $config->getHost()),
+            $config->getPublicKey(),
+        ];
+
+        if (!$this->getReturnUrl()) {
+            $message = 'You must provide a return URL before asking for the payment page.';
+
+            throw new ild78\Exceptions\MissingReturnUrlException($message);
+        }
+
+        if (!$this->getId()) {
+            $message = 'A payment ID is mandatory to obtain a payment page URL. Maybe you forgot to save the payment.';
+
+            throw new ild78\Exceptions\MissingPaymentIdException($message);
+        }
+
+        $params[] = $this->getId();
+
+        return vsprintf('https://%s/%s/%s', $params);
+    }
+
+    // phpcs:enable
 
     /**
      * Refund the refundable amount
@@ -316,18 +365,13 @@ class Payment extends Api\AbstractObject
         $card = $this->getCard();
         $sepa = $this->getSepa();
 
-        if (!$card && !$sepa) {
-            $message = 'You must provide a valid credit card or SEPA account to make a payment.';
-
-            throw new ild78\Exceptions\MissingPaymentMethodException($message);
-        }
-
         parent::save();
 
         $params = [
             $this->getAmount() / 100,
             $this->getCurrency(),
         ];
+        $message = vsprintf('Payment of %.02f %s without payment method', $params);
 
         if ($card) {
             $params[] = $card->getBrand();
@@ -409,5 +453,21 @@ class Payment extends Api\AbstractObject
         } catch (ild78\Exceptions\InvalidArgumentException $excep) {
             throw new ild78\Exceptions\InvalidOrderIdException($excep->getMessage(), $excep->getCode(), $excep);
         }
+    }
+
+    /**
+     * Update return URL
+     *
+     * @param string $url New HTTPS URL.
+     * @return self
+     * @throws ild78\Exceptions\InvalidUrlException When URL is not an HTTPS URL.
+     */
+    public function setReturnUrl(string $url) : self
+    {
+        if (strpos($url, 'https://') !== 0) {
+            throw new ild78\Exceptions\InvalidUrlException('You must provide an HTTPS URL.');
+        }
+
+        return parent::setReturnUrl($url);
     }
 }
