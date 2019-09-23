@@ -142,7 +142,7 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function __get(string $property)
     {
-        $prop = strtolower($property);
+        $prop = $this->snakeCaseToCamelCase($property);
 
         if (array_key_exists($prop, $this->aliases)) {
             return $this->{$this->aliases[$prop]}();
@@ -157,7 +157,7 @@ abstract class AbstractObject implements JsonSerializable
         }
 
         switch ($prop) {
-            case 'creationdate':
+            case 'creationDate':
                 return $this->getCreationDate();
 
             default:
@@ -174,7 +174,7 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function __set(string $property, $value) : void
     {
-        $prop = strtolower($property);
+        $prop = $this->snakeCaseToCamelCase($property);
         $method = 'set' . $prop;
 
         if (method_exists($this, $method)) {

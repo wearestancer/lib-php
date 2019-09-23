@@ -300,6 +300,18 @@ class StubObject extends ild78\Tests\atoum
                     ->array($this->testedInstance->testOnlyGetModified())
                         ->contains('string1')
 
+                ->assert('get / set with a snake_case string')
+                    ->variable($this->testedInstance->camel_case_property)
+                        ->isNull
+
+                    ->variable($this->testedInstance->camel_case_property = $string1)
+
+                    ->string($this->testedInstance->camel_case_property)
+                        ->isIdenticalTo($string1)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains('camel_case_property')
+
                 ->assert('get / set with an array')
                     ->array($this->testedInstance->array1)
                         ->isEmpty

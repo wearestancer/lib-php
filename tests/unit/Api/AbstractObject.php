@@ -130,11 +130,14 @@ class AbstractObject extends ild78\Tests\atoum
                     ->isIdenticalTo($this->testedInstance->getId)
                     ->isIdenticalTo($this->testedInstance->id)
                     ->isIdenticalTo($this->testedInstance->GETID)
+                    ->isIdenticalTo($this->testedInstance->get_id)
 
                 ->variable($this->testedInstance->getCreationDate())
                     ->isIdenticalTo($this->testedInstance->getCreationDate)
                     ->isIdenticalTo($this->testedInstance->creationDate)
                     ->isIdenticalTo($this->testedInstance->GeTcReAtIoNdAtE)
+                    ->isIdenticalTo($this->testedInstance->get_creation_date)
+                    ->isIdenticalTo($this->testedInstance->creation_date)
         ;
     }
 
