@@ -46,10 +46,10 @@ abstract class AbstractObject implements JsonSerializable
     /**
      * Create or get an API object
      *
-     * @param string|null $id Object id.
+     * @param string|array|null $id Object id or data for hydratation.
      * @return self
      */
-    public function __construct(string $id = null)
+    public function __construct($id = null)
     {
         $defaults = [
             'exportable' => null,
@@ -73,7 +73,11 @@ abstract class AbstractObject implements JsonSerializable
             }
         }
 
-        $this->id = $id;
+        if (is_array($id)) {
+            $this->hydrate($id);
+        } else {
+            $this->id = $id;
+        }
     }
 
     /**

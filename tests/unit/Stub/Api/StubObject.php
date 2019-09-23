@@ -213,6 +213,38 @@ class StubObject extends ild78\Tests\atoum
         return substr(md5(uniqid()), 0, $length);
     }
 
+    public function test__construct()
+    {
+        $this
+            ->given($this->newTestedInstance)
+
+            ->if($id = uniqid())
+            ->and($string1 = $this->makeStringBetween(10, 20))
+            ->and($integer1 = $this->makeIntegerBetween(10, 20))
+            ->then
+                ->object($this->newTestedInstance())
+                    ->isInstanceOfTestedClass
+
+                ->object($this->newTestedInstance($id))
+                    ->isInstanceOfTestedClass
+
+                ->string($this->testedInstance->getId())
+                    ->isIdenticalTo($id)
+
+                ->object($this->newTestedInstance(['id' => $id, 'string1' => $string1, 'integer1' => $integer1]))
+                    ->isInstanceOfTestedClass
+
+                ->string($this->testedInstance->getId())
+                    ->isIdenticalTo($id)
+
+                ->string($this->testedInstance->getString1())
+                    ->isIdenticalTo($string1)
+
+                ->integer($this->testedInstance->getInteger1())
+                    ->isIdenticalTo($integer1)
+        ;
+    }
+
     public function test__call()
     {
         $this
