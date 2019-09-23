@@ -830,6 +830,7 @@ class StubObject extends ild78\Tests\atoum
 
                 ->assert('A modified object with an ID return a body (without id)')
                     ->if($this->testedInstance->testOnlyAddModified('camel_case_property'))
+                    ->and($this->testedInstance->testOnlyAddModified('object2'))
                     ->and($object2->testOnlyResetModified())
                     ->then
                         ->array($this->testedInstance->jsonSerialize())
@@ -931,6 +932,66 @@ class StubObject extends ild78\Tests\atoum
 
                                         ->string['string1']
                                             ->isIdenticalTo($object3->getString1())
+                                ;
+                            })
+
+                ->assert('An unmodified object should appear if not modified')
+                    ->given($object = $this->newTestedInstance)
+                    ->and($object->testOnlySetId(uniqid()))
+                    ->and($object->setString1($this->makeStringBetween(10, 20)))
+                    ->and($object->testOnlyResetModified())
+
+                    ->and($list1 = clone $object)
+                    ->and($list2 = clone $object)
+
+                    ->if($string = $this->makeStringBetween(10, 20))
+
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->setObject2($object))
+                    ->and($this->testedInstance->addArray4($list1))
+                    ->and($this->testedInstance->addArray4($list2))
+                    ->and($this->testedInstance->testOnlyResetModified())
+                    ->and($this->testedInstance->setString1($string))
+
+                    ->then
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->notHasKey('object2')
+                            ->notHasKey('array4')
+
+                            ->hasKey('string1')
+                            ->string['string1']
+                                ->isIdenticalTo($string)
+
+                ->assert('If one object in a list is modified, all list is exported')
+                    ->given($object1 = $this->newTestedInstance)
+                    ->and($object1->testOnlySetId(uniqid()))
+                    ->and($object1->setString1($this->makeStringBetween(10, 20)))
+                    ->and($object1->testOnlyResetModified())
+
+                    ->if($object2 = $this->newTestedInstance)
+                    ->and($object2->testOnlySetId(uniqid()))
+                    ->and($object2->setString1($this->makeStringBetween(10, 20)))
+
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->addArray4($object1))
+                    ->and($this->testedInstance->addArray4($object2))
+
+                    ->then
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+
+                            ->hasKey('array4')
+                            ->child['array4'](function ($array4) use ($object1, $object2) {
+                                $array4
+                                    ->string[0]
+                                        ->isIdenticalTo($object1->getId())
+
+                                    ->array[1]
+                                        ->notHasKey('id')
+
+                                        ->string['string1']
+                                            ->isIdenticalTo($object2->getString1())
                                 ;
                             })
         ;
@@ -1332,7 +1393,7 @@ class StubObject extends ild78\Tests\atoum
             ->given($object1 = $this->newTestedInstance) // Unmodified / Got id and string1
             ->and($object2 = $this->newTestedInstance)   // Modified   / Got id and string1
             ->and($object3 = $this->newTestedInstance)   // Modified   / Got string1
-            ->and($object = $this->newTestedInstance)    // Modified   / Go id and string1  / No in array
+            ->and($object = $this->newTestedInstance)    // Modified   / Go id and string1  / Not in array
 
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setObject2($object))
@@ -1426,15 +1487,12 @@ class StubObject extends ild78\Tests\atoum
                     ->isIdenticalTo((string) $this->testedInstance)
 
                 ->array(json_decode($json, true))
-                    ->notHasKeys(['id', 'camelCaseProperty', 'restricted1', 'camel_case_property'])
+                    ->notHasKeys(['id', 'camelCaseProperty', 'restricted1', 'camel_case_property', 'object2'])
 
-                    ->hasKeys(['string1', 'object2', 'array4'])
+                    ->hasKeys(['string1', 'array4'])
 
                     ->string['string1']
                         ->isIdenticalTo($this->testedInstance->getString1())
-
-                    ->string['object2']
-                        ->isIdenticalTo($object->getId())
 
                     ->child['array4'](function ($array4) use ($object1, $object2, $object3) {
                         $array4

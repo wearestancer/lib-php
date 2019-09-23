@@ -594,16 +594,31 @@ abstract class AbstractObject implements JsonSerializable
 
         foreach ($struct as $prop => &$value) {
             $type = gettype($value);
+            $supp = !in_array($prop, $this->modified);
 
             if ($type === 'object') {
-                $value = $value->jsonSerialize();
-            } elseif ($type === 'array') {
+                if (in_array($prop, $this->modified) || $value->isModified()) {
+                    $supp = false;
+                    $value = $value->jsonSerialize();
+                }
+            }
+
+            if ($type === 'array') {
+                $keepIt = false;
+
                 foreach ($value as &$val) {
                     if (gettype($val) === 'object') {
+                        $keepIt |= $val->isModified();
                         $val = $val->jsonSerialize();
+                    } else {
+                        $keepIt = true;
                     }
                 }
-            } elseif (!in_array($prop, $this->modified)) {
+
+                $supp = !$keepIt;
+            }
+
+            if ($supp) {
                 unset($struct[$prop]);
             }
         }
