@@ -26,6 +26,7 @@ use ild78;
  * @method Generator list(array $terms)
  * @method self setDevice(ild78\\Device $device)
  * @method self setReturnUrl(string $https)
+ * @method self setStatus(string $status)
  */
 class Payment extends Api\AbstractObject
 {
@@ -107,7 +108,6 @@ class Payment extends Api\AbstractObject
             'type' => ild78\Sepa::class,
         ],
         'status' => [
-            'restricted' => true,
             'type' => self::STRING,
         ],
     ];

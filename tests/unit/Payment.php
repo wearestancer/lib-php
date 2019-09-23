@@ -1405,6 +1405,64 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
+    public function testSave_status()
+    {
+        $this
+            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+
+            ->if($client = new mock\ild78\Http\Client)
+            ->and($response = new mock\ild78\Http\Response(200))
+            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-no-method.json'))
+            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($client)->request = $response)
+
+            ->and($config->setHttpClient($client))
+
+            ->if($customer = new Customer)
+            ->and($customer->setName(uniqid()))
+            ->and($customer->setEmail(uniqid() . '@example.org'))
+            ->and($customer->setMobile(uniqid()))
+
+            ->if($amount = rand(100, 999999))
+            ->and($currency = $this->currencyDataProvider()[0])
+
+            ->if($card = new Card)
+            ->and($card->setCvc(substr(uniqid(), 0, 3)))
+            ->and($card->setExpMonth(rand(1, 12)))
+            ->and($card->setExpYear(rand(date('Y'), 3000)))
+            ->and($card->setNumber($number = '4111111111111111'))
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount($amount))
+            ->and($this->testedInstance->setCurrency($currency))
+            ->and($this->testedInstance->setCustomer($customer))
+            ->and($this->testedInstance->setDescription(uniqid()))
+            ->and($this->testedInstance->setOrderId(uniqid()))
+            ->and($this->testedInstance->save())
+
+            ->if($status = ild78\Payment\Status::AUTHORIZE)
+
+            ->and($options = [
+                'body' => json_encode(['status' => $status]),
+                'headers' => [
+                    'Authorization' => $config->getBasicAuthHeader(),
+                    'Content-Type' => 'application/json',
+                    'User-Agent' => $config->getDefaultUserAgent(),
+                ],
+                'timeout' => $config->getTimeout(),
+            ])
+            ->and($location = $this->testedInstance->getUri())
+            ->then
+                ->object($this->testedInstance->setStatus($status)->save())
+                    ->isTestedInstance
+
+                ->mock($client)
+                    ->call('request')
+                        ->withArguments('PATCH', $location, $options)
+                            ->once
+        ;
+    }
+
     public function testSetAmount()
     {
         $this
