@@ -994,6 +994,75 @@ class StubObject extends ild78\Tests\atoum
                                             ->isIdenticalTo($object2->getString1())
                                 ;
                             })
+
+                ->assert('An unmodified list should not be exported except if a modified object is in it')
+                    ->given($object1 = $this->newTestedInstance)
+
+                    ->and($string1 = $this->makeStringBetween(10, 20))
+                    ->and($string2 = $this->makeStringBetween(10, 20))
+
+                    ->and($object1->testOnlySetId(uniqid()))
+                    ->and($object1->setString1($this->makeStringBetween(10, 20)))
+                    ->and($object1->testOnlyResetModified())
+
+                    ->if($object2 = $this->newTestedInstance)
+                    ->and($object2->testOnlySetId(uniqid()))
+                    ->and($object2->setString1($this->makeStringBetween(10, 20)))
+
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->addArray1($string1))
+                    ->and($this->testedInstance->addArray1($string2))
+                    ->and($this->testedInstance->addArray4($object1))
+                    ->and($this->testedInstance->addArray4($object2))
+
+                    ->then
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(2)
+
+                            ->hasKey('array1')
+                            ->child['array1'](function ($array1) use ($string1, $string2) {
+                                $array1
+                                    ->string[0]
+                                        ->isIdenticalTo($string1)
+
+                                    ->string[1]
+                                        ->isIdenticalTo($string2)
+                                ;
+                            })
+
+                            ->hasKey('array4')
+                            ->child['array4'](function ($array4) use ($object1, $object2) {
+                                $array4
+                                    ->string[0]
+                                        ->isIdenticalTo($object1->getId())
+
+                                    ->array[1]
+                                        ->notHasKey('id')
+
+                                        ->string['string1']
+                                            ->isIdenticalTo($object2->getString1())
+                                ;
+                            })
+
+                    ->if($this->testedInstance->testOnlyResetModified())
+
+                    ->then
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+
+                            ->hasKey('array4')
+                            ->child['array4'](function ($array4) use ($object1, $object2) {
+                                $array4
+                                    ->string[0]
+                                        ->isIdenticalTo($object1->getId())
+
+                                    ->array[1]
+                                        ->notHasKey('id')
+
+                                        ->string['string1']
+                                            ->isIdenticalTo($object2->getString1())
+                                ;
+                            })
         ;
     }
 

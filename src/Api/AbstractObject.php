@@ -610,12 +610,10 @@ abstract class AbstractObject implements JsonSerializable
                     if (gettype($val) === 'object') {
                         $keepIt |= $val->isModified();
                         $val = $val->jsonSerialize();
-                    } else {
-                        $keepIt = true;
                     }
                 }
 
-                $supp = !$keepIt;
+                $supp &= !$keepIt;
             }
 
             if ($supp) {
