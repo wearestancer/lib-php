@@ -10,6 +10,7 @@ use ild78;
  * Representation of a payment
  *
  * @method integer getAmount()
+ * @method ild78\\Auth getAuth()
  * @method ild78\\Card getCard()
  * @method string getCountry()
  * @method string getCurrency()
@@ -22,6 +23,7 @@ use ild78;
  * @method ild78\\Sepa getSepa()
  * @method string getStatus()
  * @method Generator list(array $terms)
+ * @method self setAuth(ild78\\Auth $auth)
  * @method self setReturnUrl(string $https)
  */
 class Payment extends Api\AbstractObject
@@ -40,6 +42,9 @@ class Payment extends Api\AbstractObject
                 'min' => 50,
             ],
             'type' => self::INTEGER,
+        ],
+        'auth' => [
+            'type' => ild78\Auth::class,
         ],
         'capture' => [
             'type' => self::BOOLEAN,
