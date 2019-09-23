@@ -59,6 +59,9 @@ class Payment extends Api\AbstractObject
             'required' => true,
             'type' => self::STRING,
         ],
+        'customer' => [
+            'type' => ild78\Customer::class,
+        ],
         'description' => [
             'size' => [
                 'min' => 3,
@@ -66,17 +69,9 @@ class Payment extends Api\AbstractObject
             ],
             'type' => self::STRING,
         ],
-        'customer' => [
-            'type' => ild78\Customer::class,
-        ],
         'method' => [
             'restricted' => true,
             'type' => self::STRING,
-        ],
-        'refunds' => [
-            'exportable' => false,
-            'list' => true,
-            'type' => ild78\Refund::class,
         ],
         'orderId' => [
             'size' => [
@@ -84,6 +79,11 @@ class Payment extends Api\AbstractObject
                 'max' => 24,
             ],
             'type' => self::STRING,
+        ],
+        'refunds' => [
+            'exportable' => false,
+            'list' => true,
+            'type' => ild78\Refund::class,
         ],
         'responseCode' => [
             'restricted' => true,
@@ -99,12 +99,12 @@ class Payment extends Api\AbstractObject
             ],
             'type' => self::STRING,
         ],
+        'sepa' => [
+            'type' => ild78\Sepa::class,
+        ],
         'status' => [
             'restricted' => true,
             'type' => self::STRING,
-        ],
-        'sepa' => [
-            'type' => ild78\Sepa::class,
         ],
     ];
 
