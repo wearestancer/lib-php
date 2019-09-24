@@ -7,17 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- 3DS support
 - Refunds
 - Disputes
 - Allow payment without card or sepa
 - Add `ild78\Payment::getReturnUrl()` and `ild78\Payment::setReturnUrl()` methods
 - Add `ild78\Payment::getPaymentPageUrl()` method
 - Add `ild78\Api\Config::setKeys()` method
+- Hydration on instanciation
 - Custom user agent
 - First issue/MR templates
 - Setter aliases
 
 ### Changes
+- Getters and setters handles snake_case and camelCase property correctly
 - Exception message will return API error message when possible
 - `Config` handle multiple keys
 - Test mode is set a default now
