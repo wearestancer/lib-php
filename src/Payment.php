@@ -371,8 +371,14 @@ class Payment extends Api\AbstractObject
      */
     public function save() : ild78\Api\AbstractObject
     {
+        $auth = $this->getAuth();
         $card = $this->getCard();
         $sepa = $this->getSepa();
+
+        if (is_object($auth) && $auth->getReturnUrl() && !is_object($this->getDevice())) {
+            $device = new ild78\Device();
+            $this->setDevice($device);
+        }
 
         parent::save();
 
