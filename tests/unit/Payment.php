@@ -1311,6 +1311,100 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
+    public function testSave_authenticationAndPaymentPage()
+    {
+        $this
+            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+
+            ->if($client = new mock\ild78\Http\Client)
+            ->and($response = new mock\ild78\Http\Response(200))
+            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-no-method-auth.json'))
+            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($client)->request = $response)
+
+            ->and($config->setHttpClient($client))
+
+            ->if($amount = rand(100, 999999))
+            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($description = uniqid())
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount($amount))
+            ->and($this->testedInstance->setAuth(true))
+            ->and($this->testedInstance->setCurrency($currency))
+            ->and($this->testedInstance->setDescription($description))
+
+            ->and($json = json_encode([
+                'amount' => $amount,
+                'auth' => [
+                    'status' => ild78\Auth\Status::REQUEST,
+                ],
+                'currency' => strtolower($currency),
+                'description' => $description,
+            ]))
+            ->and($options = [
+                'body' => $json,
+                'headers' => [
+                    'Authorization' => $config->getBasicAuthHeader(),
+                    'Content-Type' => 'application/json',
+                    'User-Agent' => $config->getDefaultUserAgent(),
+                ],
+                'timeout' => $config->getTimeout(),
+            ])
+            ->and($location = $this->testedInstance->getUri())
+            ->then
+                ->variable($this->testedInstance->getId())
+                    ->isNull
+                ->object($this->testedInstance->save())
+                    ->isTestedInstance
+
+                ->mock($client)
+                    ->call('request')
+                        ->withArguments('POST', $location, $options)
+                            ->once
+
+                // Payment object
+                ->string($this->testedInstance->getId())
+                    ->isIdenticalTo('paym_RMLytyx2xLkdXkATKSxHOlvC')
+
+                ->dateTime($this->testedInstance->getCreationDate())
+                    ->isEqualTo(new DateTime('@1567094428'))
+
+                ->integer($this->testedInstance->getAmount())
+                    ->isIdenticalTo(1337)
+
+                ->string($this->testedInstance->getCurrency())
+                    ->isIdenticalTo('eur')
+
+                ->string($this->testedInstance->getDescription())
+                    ->isIdenticalTo('Auth test')
+
+                ->variable($this->testedInstance->getCard())
+                    ->isNull
+
+                ->variable($this->testedInstance->getSepa())
+                    ->isNull
+
+                ->variable($this->testedInstance->getMethod())
+                    ->isNull
+
+                ->variable($this->testedInstance->getStatus())
+                    ->isNull
+
+                ->object($auth = $this->testedInstance->getAuth())
+                    ->isInstanceOf(ild78\Auth::class)
+
+                ->variable($auth->getRedirectUrl())
+                    ->isNull
+
+                ->variable($auth->getReturnUrl())
+                    ->isNull
+
+                ->variable($auth->getStatus())
+                    ->isIdenticalTo(ild78\Auth\Status::REQUESTED)
+        ;
+    }
+
     public function testSetAmount()
     {
         $this
