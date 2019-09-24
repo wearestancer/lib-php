@@ -211,7 +211,7 @@ class Payment extends ild78\Tests\atoum
             ->and($this->testedInstance->setAmount($amount))
             ->and($this->testedInstance->setCurrency($currency))
 
-            ->if($return = 'https://www.example.com?' . uniqid())
+            ->if($return = 'https://www.example.org?' . uniqid())
             ->and($url = vsprintf('https://%s/%s/', [
                 str_replace('api', 'payment', $config->getHost()),
                 $public
