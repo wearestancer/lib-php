@@ -1082,6 +1082,81 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
+    public function testSetAuth()
+    {
+        $this
+            ->assert('With an Auth object')
+                ->if($auth = new ild78\Auth)
+                ->and($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->getAuth())
+                        ->isNull
+
+                    ->object($this->testedInstance->setAuth($auth))
+                        ->isTestedInstance
+
+                    ->object($this->testedInstance->getAuth())
+                        ->isIdenticalTo($auth)
+
+            ->assert('With an URL')
+                ->if($https = 'https://www.example.org?' . uniqid())
+                ->and($http = 'http://www.example.org?' . uniqid())
+                ->and($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->getAuth())
+                        ->isNull
+
+                    ->object($this->testedInstance->setAuth($https))
+                        ->isTestedInstance
+
+                    ->object($this->testedInstance->getAuth())
+                        ->isInstanceOf(ild78\Auth::class)
+
+                    ->string($this->testedInstance->getAuth()->getReturnUrl())
+                        ->isIdenticalTo($https)
+
+                    ->string($this->testedInstance->getAuth()->getStatus())
+                        ->isIdenticalTo(ild78\Auth\Status::REQUEST)
+
+                    ->exception(function () use ($http) {
+                        $this->testedInstance->setAuth($http);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidUrlException::class)
+                        ->message
+                            ->isIdenticalTo('You must provide an HTTPS URL.')
+
+            ->assert('With a true value')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->getAuth())
+                        ->isNull
+
+                    ->object($this->testedInstance->setAuth(true))
+                        ->isTestedInstance
+
+                    ->object($this->testedInstance->getAuth())
+                        ->isInstanceOf(ild78\Auth::class)
+
+                    ->variable($this->testedInstance->getAuth()->getReturnUrl())
+                        ->isNull
+
+                    ->string($this->testedInstance->getAuth()->getStatus())
+                        ->isIdenticalTo(ild78\Auth\Status::REQUEST)
+
+            ->assert('With false')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->getAuth())
+                        ->isNull
+
+                    ->object($this->testedInstance->setAuth(false))
+                        ->isTestedInstance
+
+                    ->variable($this->testedInstance->getAuth())
+                        ->isNull
+        ;
+    }
+
     /**
      * @dataProvider currencyDataProvider
      */

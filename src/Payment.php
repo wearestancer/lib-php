@@ -24,7 +24,6 @@ use ild78;
  * @method ild78\\Sepa getSepa()
  * @method string getStatus()
  * @method Generator list(array $terms)
- * @method self setAuth(ild78\\Auth $auth)
  * @method self setDevice(ild78\\Device $device)
  * @method self setReturnUrl(string $https)
  */
@@ -398,6 +397,37 @@ class Payment extends Api\AbstractObject
         Api\Config::getGlobal()->getLogger()->info($message);
 
         return $this;
+    }
+
+    /**
+     * Set an authenticated payment
+     *
+     * You supposed to give an `ild78\Auth` object to start an authenticated payment.
+     * To simplify your workflow, we allow you to pass directly the return URL used in authenticated payment.
+     *
+     * If you are using our payment page, you can simpliy pass a boolean to acitvate an authenticated payment,
+     * we will manage everything else for you.
+     *
+     * @param ild78\Auth|string|boolean $auth Authentication data.
+     * @return self
+     */
+    public function setAuth($auth) : self
+    {
+        if ($auth === false) {
+            return $this;
+        }
+
+        $obj = $auth;
+
+        if (is_string($auth)) {
+            $obj = new ild78\Auth(['returnUrl' => $auth]);
+        }
+
+        if (is_bool($auth)) {
+            $obj = new ild78\Auth();
+        }
+
+        return parent::setAuth($obj);
     }
 
     /**
