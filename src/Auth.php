@@ -28,9 +28,16 @@ class Auth extends Api\AbstractObject
             'type' => self::STRING,
         ],
         'status' => [
+            'exportable' => true,
             'restricted' => true,
             'type' => self::STRING,
+            'value' => ild78\Auth\Status::REQUEST,
         ],
+    ];
+
+    /** @var string[] */
+    protected $modified = [
+        'status',
     ];
 
     /**

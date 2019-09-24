@@ -11,6 +11,15 @@ class Auth extends ild78\Tests\atoum
         $this
             ->currentlyTestedClass
                 ->extends(ild78\Api\AbstractObject::class)
+
+            ->string($this->newTestedInstance->getStatus())
+                ->isIdenticalTo(ild78\Auth\Status::REQUEST)
+
+            ->array($this->testedInstance->jsonSerialize())
+                ->hasSize(1)
+                ->hasKey('status')
+                ->string['status']
+                    ->isIdenticalTo(ild78\Auth\Status::REQUEST)
         ;
     }
 
