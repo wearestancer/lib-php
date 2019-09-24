@@ -476,7 +476,12 @@ abstract class AbstractObject implements JsonSerializable
 
                             if ($missing) {
                                 $class = $this->dataModel[$property]['type'];
-                                $obj = new $class($id);
+
+                                if (is_null($id)) {
+                                    $obj = new $class($id);
+                                } else {
+                                    $obj = new $class($id);
+                                }
 
                                 $obj->cleanModified = $this->cleanModified;
                                 $obj->hydrate($val);
@@ -498,7 +503,12 @@ abstract class AbstractObject implements JsonSerializable
 
                         if (!$this->dataModel[$property]['value']) {
                             $class = $this->dataModel[$property]['type'];
-                            $this->dataModel[$property]['value'] = new $class($id);
+
+                            if (is_null($id)) {
+                                $this->dataModel[$property]['value'] = new $class();
+                            } else {
+                                $this->dataModel[$property]['value'] = new $class($id);
+                            }
                         }
 
                         if (is_array($value)) {
