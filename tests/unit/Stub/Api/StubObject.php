@@ -248,10 +248,10 @@ class StubObject extends ild78\Tests\atoum
     public function test__call()
     {
         $this
-            ->given($this->newTestedInstance)
+            ->if($string1 = $this->makeStringBetween(10, 20))
             ->then
                 ->assert('get / set / add with array1 (array of string)')
-                    ->array($this->testedInstance->testOnlyGetModified())
+                    ->array($this->newTestedInstance->testOnlyGetModified())
                         ->isEmpty
 
                     ->array($this->testedInstance->getArray1())
@@ -277,19 +277,42 @@ class StubObject extends ild78\Tests\atoum
                         ->string[1]
                             ->isIdenticalTo($two)
                         ->size->isEqualTo(2)
+
+                ->assert('get / set with snake_case property')
+                    ->variable($this->newTestedInstance->get_camel_case_property())
+                        ->isNull
+
+                    ->variable($this->testedInstance->set_camel_case_property($string1))
+
+                    ->string($this->testedInstance->get_camel_case_property())
+                        ->isIdenticalTo($string1)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains('camel_case_property')
+
+                ->assert('get / set with snake_case property in different case')
+                    ->variable($this->newTestedInstance->getCamelCaseProperty())
+                        ->isNull
+
+                    ->variable($this->testedInstance->setCamelCaseProperty($string1))
+
+                    ->string($this->testedInstance->getCamelCaseProperty())
+                        ->isIdenticalTo($string1)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains('camel_case_property')
         ;
     }
 
     public function test__get__set()
     {
         $this
-            ->given($this->newTestedInstance)
-            ->and($string1 = $this->makeStringBetween(10, 20))
+            ->given($string1 = $this->makeStringBetween(10, 20))
             ->and($one = uniqid())
             ->and($two = uniqid())
             ->then
                 ->assert('get / set with a string')
-                    ->variable($this->testedInstance->string1)
+                    ->variable($this->newTestedInstance->string1)
                         ->isNull
 
                     ->variable($this->testedInstance->string1 = $string1)
@@ -301,7 +324,7 @@ class StubObject extends ild78\Tests\atoum
                         ->contains('string1')
 
                 ->assert('get / set with a snake_case string')
-                    ->variable($this->testedInstance->camel_case_property)
+                    ->variable($this->newTestedInstance->camel_case_property)
                         ->isNull
 
                     ->variable($this->testedInstance->camel_case_property = $string1)
@@ -312,8 +335,20 @@ class StubObject extends ild78\Tests\atoum
                     ->array($this->testedInstance->testOnlyGetModified())
                         ->contains('camel_case_property')
 
+                ->assert('get / set with a snake_case string in different case')
+                    ->variable($this->newTestedInstance->camelCaseProperty)
+                        ->isNull
+
+                    ->variable($this->testedInstance->camelCaseProperty = $string1)
+
+                    ->string($this->testedInstance->camelCaseProperty)
+                        ->isIdenticalTo($string1)
+
+                    ->array($this->testedInstance->testOnlyGetModified())
+                        ->contains('camel_case_property')
+
                 ->assert('get / set with an array')
-                    ->array($this->testedInstance->array1)
+                    ->array($this->newTestedInstance->array1)
                         ->isEmpty
 
                     ->variable($this->testedInstance->array1 = [$one, $two])

@@ -93,7 +93,7 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function __call(string $method, array $arguments)
     {
-        $lower = strtolower($method);
+        $lower = $this->snakeCaseToCamelCase($method);
 
         if (array_key_exists($lower, $this->aliases)) {
             return $this->{$this->aliases[$lower]}();
@@ -101,7 +101,7 @@ abstract class AbstractObject implements JsonSerializable
 
         $message = sprintf('Method "%s::%s()" unknown', get_class($this), $method);
         $action = substr($method, 0, 3);
-        $property = lcfirst(substr($method, 3));
+        $property = lcfirst(substr($this->snakeCaseToCamelCase($method), 3));
 
         if ($action === 'set' && property_exists($this, $property)) {
             $tmp = $property;
