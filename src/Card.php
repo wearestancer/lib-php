@@ -72,7 +72,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
 
     /** @var array */
     protected $aliases = [
-        'istokenized' => 'gettokenize',
+        'isTokenized' => 'getTokenize',
     ];
 
     /**

@@ -11,6 +11,7 @@ use ild78\Payment as testedClass;
 class Payment extends TestCase
 {
     use ild78\Tests\Provider\Currencies;
+    use ild78\Tests\Provider\Network;
 
     protected $order;
     protected $paymentList = [];
@@ -248,6 +249,82 @@ class Payment extends TestCase
                     ->dateTime($customer->getCreationDate())
                         ->hasDay(date('d'))
 
+            ->assert('With authentication')
+                ->given($amount = rand(50, 99999))
+                ->and($description = vsprintf('Automatic auth test, %.02f %s', [
+                    $amount / 100,
+                    $currency,
+                ]))
+
+                ->if($card = new ild78\Card)
+                ->and($card->setNumber($this->getValidCardNumber()))
+                ->and($card->setExpirationMonth(rand(1, 12)))
+                ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
+                ->and($card->setCvc((string) rand(100, 999)))
+
+                ->if($customer = new ild78\Customer)
+                ->and($customer->setName('John Doe'))
+                ->and($customer->setEmail('john.doe@example.com'))
+
+                ->if($url = 'https://www.example.org?' . uniqid())
+
+                ->if($this->newTestedInstance)
+                ->and($this->testedInstance->setAmount($amount))
+                ->and($this->testedInstance->setAuth($url))
+                ->and($this->testedInstance->setCurrency($currency))
+                ->and($this->testedInstance->setCard($card))
+                ->and($this->testedInstance->setCustomer($customer))
+                ->and($this->testedInstance->setDescription($description))
+
+                // You may not need to do that, we will use SERVER_ADDR and SERVER_PORT environment variable
+                //  as IP and port (they are populated by Apache or nginx)
+                ->if($ip = $this->ipDataProvider()[0])
+                ->and($port = rand(1, 65535))
+                ->and($this->testedInstance->setDevice(new ild78\Device(['ip' => $ip, 'port' => $port])))
+
+                ->then
+                    ->object($this->testedInstance->save())
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getId())
+                        ->startWith('paym_')
+                        ->hasLength(29)
+
+                    ->dateTime($this->testedInstance->getCreationDate())
+                        ->hasDay(date('d'))
+
+                    ->string($this->testedInstance->getMethod())
+                        ->isIdenticalTo('card')
+
+                    ->variable($this->testedInstance->getStatus())
+                        ->isNull
+
+                    ->string($card->getId())
+                        ->startWith('card_')
+                        ->hasLength(29)
+
+                    ->dateTime($card->getCreationDate())
+                        ->hasDay(date('d'))
+
+                    ->string($customer->getId())
+                        ->startWith('cust_')
+                        ->hasLength(29)
+
+                    ->dateTime($customer->getCreationDate())
+                        ->hasDay(date('d'))
+
+                    ->object($auth = $this->testedInstance->getAuth())
+                        ->isInstanceOf(ild78\Auth::class)
+
+                    ->string($auth->getReturnUrl())
+                        ->isIdenticalTo($url)
+
+                    ->string($auth->getRedirectUrl())
+                        ->startWith('https://3ds.')
+
+                    ->string($auth->getStatus())
+                        ->isIdenticalTo(ild78\Auth\Status::AVAILABLE)
+
             ->assert('For payment page')
                 ->given($amount = rand(50, 99999))
                 ->and($description = vsprintf('Non authenticated payment page test, %.02f %s', [
@@ -285,6 +362,60 @@ class Payment extends TestCase
 
                     ->dateTime($customer->getCreationDate())
                         ->hasDay(date('d'))
+
+            ->assert('For payment page with authentication')
+                ->given($amount = rand(50, 99999))
+                ->and($description = vsprintf('Authenticated payment page test, %.02f %s', [
+                    $amount / 100,
+                    $currency,
+                ]))
+
+                ->if($customer = new ild78\Customer)
+                ->and($customer->setName('John Doe'))
+                ->and($customer->setEmail('john.doe@example.com'))
+
+                ->if($this->newTestedInstance)
+                ->and($this->testedInstance->setAmount($amount))
+                ->and($this->testedInstance->setAuth(true))
+                ->and($this->testedInstance->setCurrency($currency))
+                ->and($this->testedInstance->setCustomer($customer))
+                ->and($this->testedInstance->setDescription($description))
+
+                ->then
+                    ->object($this->testedInstance->save())
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getId())
+                        ->startWith('paym_')
+                        ->hasLength(29)
+
+                    ->dateTime($this->testedInstance->getCreationDate())
+                        ->hasDay(date('d'))
+
+                    ->variable($this->testedInstance->getMethod())
+                        ->isNull
+
+                    ->variable($this->testedInstance->getStatus())
+                        ->isNull
+
+                    ->string($customer->getId())
+                        ->startWith('cust_')
+                        ->hasLength(29)
+
+                    ->dateTime($customer->getCreationDate())
+                        ->hasDay(date('d'))
+
+                    ->object($auth = $this->testedInstance->getAuth())
+                        ->isInstanceOf(ild78\Auth::class)
+
+                    ->variable($auth->getReturnUrl())
+                        ->isNull
+
+                    ->variable($auth->getRedirectUrl())
+                        ->isNull
+
+                    ->string($auth->getStatus())
+                        ->isIdenticalTo(ild78\Auth\Status::REQUESTED)
         ;
     }
 }

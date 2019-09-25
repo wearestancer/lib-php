@@ -20,6 +20,7 @@ use mock;
 class Payment extends ild78\Tests\atoum
 {
     use ild78\Tests\Provider\Currencies;
+    use ild78\Tests\Provider\Network;
 
     public function responseMessageDataProvider()
     {
@@ -210,7 +211,7 @@ class Payment extends ild78\Tests\atoum
             ->and($this->testedInstance->setAmount($amount))
             ->and($this->testedInstance->setCurrency($currency))
 
-            ->if($return = 'https://www.example.com?' . uniqid())
+            ->if($return = 'https://www.example.org?' . uniqid())
             ->and($url = vsprintf('https://%s/%s/', [
                 str_replace('api', 'payment', $config->getHost()),
                 $public
@@ -931,6 +932,295 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
+    public function testSave_authenticatedPayment()
+    {
+        $_SERVER['SERVER_ADDR'] = $ip = $this->ipDataProvider()[0];
+        $_SERVER['SERVER_PORT'] = $port = rand(1, 65535);
+
+        $this
+            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+
+            ->if($client = new mock\ild78\Http\Client)
+            ->and($response = new mock\ild78\Http\Response(200))
+            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-card-auth.json'))
+            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($client)->request = $response)
+
+            ->and($config->setHttpClient($client))
+
+            ->if($amount = rand(10, 99999))
+            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($description = uniqid())
+            ->and($url = 'https://www.example.org?' . uniqid())
+
+            ->if($card = new Card)
+            ->and($card->setCvc(substr(uniqid(), 0, 3)))
+            ->and($card->setExpMonth(rand(1, 12)))
+            ->and($card->setExpYear(rand(date('Y'), 3000)))
+            ->and($card->setNumber($number = '5555555555554444'))
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount($amount))
+            ->and($this->testedInstance->setAuth($url))
+            ->and($this->testedInstance->setCard($card))
+            ->and($this->testedInstance->setCurrency($currency))
+            ->and($this->testedInstance->setDescription($description))
+
+            ->and($json = json_encode([
+                'amount' => $amount,
+                'auth' => [
+                    'return_url' => $url,
+                    'status' => ild78\Auth\Status::REQUEST,
+                ],
+                'card' => [
+                    'cvc' => $card->getCvc(),
+                    'exp_month' => $card->getExpMonth(),
+                    'exp_year' => $card->getExpYear(),
+                    'number' => $card->getNumber(),
+                ],
+                'currency' => strtolower($currency),
+                'description' => $description,
+                'device' => [
+                    'ip' => $ip,
+                    'port' => $port,
+                ],
+            ]))
+            ->and($options = [
+                'body' => $json,
+                'headers' => [
+                    'Authorization' => $config->getBasicAuthHeader(),
+                    'Content-Type' => 'application/json',
+                    'User-Agent' => $config->getDefaultUserAgent(),
+                ],
+                'timeout' => $config->getTimeout(),
+            ])
+            ->and($location = $this->testedInstance->getUri())
+
+            ->then
+                ->variable($this->testedInstance->getId())
+                    ->isNull
+
+                ->object($this->testedInstance->save())
+                    ->isTestedInstance
+
+                ->mock($client)
+                    ->call('request')
+                        ->withArguments('POST', $location, $options)
+                            ->once
+
+                // Payment object
+                ->string($this->testedInstance->getId())
+                    ->isIdenticalTo('paym_RMLytyx2xLkdXkATKSxHOlvC')
+
+                ->dateTime($this->testedInstance->getCreationDate())
+                    ->isEqualTo(new DateTime('@1567094428'))
+
+                ->integer($this->testedInstance->getAmount())
+                    ->isIdenticalTo(1337)
+
+                ->object($this->testedInstance->getCard())
+                    ->isIdenticalTo($card)
+
+                ->string($this->testedInstance->getCurrency())
+                    ->isIdenticalTo('eur')
+
+                ->string($this->testedInstance->getDescription())
+                    ->isIdenticalTo('Auth test')
+
+                // Card object
+                ->string($card->getBrand())
+                    ->isIdenticalTo('mastercard')
+
+                ->string($card->getCountry())
+                    ->isIdenticalTo('US')
+
+                ->integer($card->getExpMonth())
+                    ->isIdenticalTo(2)
+
+                ->integer($card->getExpYear())
+                    ->isIdenticalTo(2020)
+
+                ->string($card->getId())
+                    ->isIdenticalTo('card_xognFbZs935LMKJYeHyCAYUd')
+
+                ->string($card->getLast4())
+                    ->isIdenticalTo('4444')
+
+                ->string($card->getNumber())
+                    ->isIdenticalTo($number) // Number is unchanged in save process
+
+                // Auth object
+                ->object($auth = $this->testedInstance->getAuth())
+                    ->isInstanceOf(ild78\Auth::class)
+
+                ->string($auth->getReturnUrl())
+                    ->isIdenticalTo('https://www.free.fr')
+
+                ->string($auth->getStatus())
+                    ->isIdenticalTo(ild78\Auth\Status::AVAILABLE)
+
+                // Device object
+                ->object($device = $this->testedInstance->getDevice())
+                    ->isInstanceOf(ild78\Device::class)
+
+                ->string($device->getIp())
+                    ->isIdenticalTo('212.27.48.10')
+
+                ->integer($device->getPort())
+                    ->isEqualTo(1337)
+
+                ->string($device->getHttpAccept())
+                    ->isIdenticalTo('text/html')
+        ;
+    }
+
+    public function testSave_fullyCustomAuthenticatedPayment()
+    {
+        $this
+            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+
+            ->if($client = new mock\ild78\Http\Client)
+            ->and($response = new mock\ild78\Http\Response(200))
+            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-card-auth.json'))
+            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($client)->request = $response)
+
+            ->and($config->setHttpClient($client))
+
+            ->if($amount = rand(10, 99999))
+            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($description = uniqid())
+            ->and($url = 'https://www.example.org?' . uniqid())
+
+            ->if($auth = new ild78\Auth)
+            ->and($auth->setReturnUrl($url))
+
+            ->if($ip = $this->ipDataProvider()[0])
+            ->and($port = rand(1, 65535))
+            ->and($device = new ild78\Device(['ip' => $ip, 'port' => $port]))
+
+            ->if($card = new ild78\Card)
+            ->and($card->setCvc(substr(uniqid(), 0, 3)))
+            ->and($card->setExpMonth(rand(1, 12)))
+            ->and($card->setExpYear(rand(date('Y'), 3000)))
+            ->and($card->setNumber($number = '5555555555554444'))
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount($amount))
+            ->and($this->testedInstance->setAuth($auth))
+            ->and($this->testedInstance->setCard($card))
+            ->and($this->testedInstance->setCurrency($currency))
+            ->and($this->testedInstance->setDescription($description))
+            ->and($this->testedInstance->setDevice($device))
+
+            ->and($json = json_encode([
+                'amount' => $amount,
+                'auth' => [
+                    'return_url' => $url,
+                    'status' => ild78\Auth\Status::REQUEST,
+                ],
+                'card' => [
+                    'cvc' => $card->getCvc(),
+                    'exp_month' => $card->getExpMonth(),
+                    'exp_year' => $card->getExpYear(),
+                    'number' => $card->getNumber(),
+                ],
+                'currency' => strtolower($currency),
+                'description' => $description,
+                'device' => [
+                    'ip' => $ip,
+                    'port' => $port,
+                ],
+            ]))
+            ->and($options = [
+                'body' => $json,
+                'headers' => [
+                    'Authorization' => $config->getBasicAuthHeader(),
+                    'Content-Type' => 'application/json',
+                    'User-Agent' => $config->getDefaultUserAgent(),
+                ],
+                'timeout' => $config->getTimeout(),
+            ])
+            ->and($location = $this->testedInstance->getUri())
+
+            ->then
+                ->variable($this->testedInstance->getId())
+                    ->isNull
+
+                ->object($this->testedInstance->save())
+                    ->isTestedInstance
+
+                ->mock($client)
+                    ->call('request')
+                        ->withArguments('POST', $location, $options)
+                            ->once
+
+                // Payment object
+                ->string($this->testedInstance->getId())
+                    ->isIdenticalTo('paym_RMLytyx2xLkdXkATKSxHOlvC')
+
+                ->dateTime($this->testedInstance->getCreationDate())
+                    ->isEqualTo(new DateTime('@1567094428'))
+
+                ->integer($this->testedInstance->getAmount())
+                    ->isIdenticalTo(1337)
+
+                ->object($this->testedInstance->getCard())
+                    ->isIdenticalTo($card)
+
+                ->string($this->testedInstance->getCurrency())
+                    ->isIdenticalTo('eur')
+
+                ->string($this->testedInstance->getDescription())
+                    ->isIdenticalTo('Auth test')
+
+                // Card object
+                ->string($card->getBrand())
+                    ->isIdenticalTo('mastercard')
+
+                ->string($card->getCountry())
+                    ->isIdenticalTo('US')
+
+                ->integer($card->getExpMonth())
+                    ->isIdenticalTo(2)
+
+                ->integer($card->getExpYear())
+                    ->isIdenticalTo(2020)
+
+                ->string($card->getId())
+                    ->isIdenticalTo('card_xognFbZs935LMKJYeHyCAYUd')
+
+                ->string($card->getLast4())
+                    ->isIdenticalTo('4444')
+
+                ->string($card->getNumber())
+                    ->isIdenticalTo($number) // Number is unchanged in save process
+
+                // Auth object
+                ->object($this->testedInstance->getAuth())
+                    ->isIdenticalTo($auth)
+
+                ->string($auth->getReturnUrl())
+                    ->isIdenticalTo('https://www.free.fr')
+
+                ->string($auth->getStatus())
+                    ->isIdenticalTo(ild78\Auth\Status::AVAILABLE)
+
+                // Device object
+                ->object($this->testedInstance->getDevice())
+                    ->isIdenticalTo($device)
+
+                ->string($device->getIp())
+                    ->isIdenticalTo('212.27.48.10')
+
+                ->integer($device->getPort())
+                    ->isEqualTo(1337)
+
+                ->string($device->getHttpAccept())
+                    ->isIdenticalTo('text/html')
+        ;
+    }
+
     public function testSave_withoutCardOrSepa()
     {
         $this
@@ -1021,6 +1311,100 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
+    public function testSave_authenticationAndPaymentPage()
+    {
+        $this
+            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+
+            ->if($client = new mock\ild78\Http\Client)
+            ->and($response = new mock\ild78\Http\Response(200))
+            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-no-method-auth.json'))
+            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($client)->request = $response)
+
+            ->and($config->setHttpClient($client))
+
+            ->if($amount = rand(100, 999999))
+            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($description = uniqid())
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount($amount))
+            ->and($this->testedInstance->setAuth(true))
+            ->and($this->testedInstance->setCurrency($currency))
+            ->and($this->testedInstance->setDescription($description))
+
+            ->and($json = json_encode([
+                'amount' => $amount,
+                'auth' => [
+                    'status' => ild78\Auth\Status::REQUEST,
+                ],
+                'currency' => strtolower($currency),
+                'description' => $description,
+            ]))
+            ->and($options = [
+                'body' => $json,
+                'headers' => [
+                    'Authorization' => $config->getBasicAuthHeader(),
+                    'Content-Type' => 'application/json',
+                    'User-Agent' => $config->getDefaultUserAgent(),
+                ],
+                'timeout' => $config->getTimeout(),
+            ])
+            ->and($location = $this->testedInstance->getUri())
+            ->then
+                ->variable($this->testedInstance->getId())
+                    ->isNull
+                ->object($this->testedInstance->save())
+                    ->isTestedInstance
+
+                ->mock($client)
+                    ->call('request')
+                        ->withArguments('POST', $location, $options)
+                            ->once
+
+                // Payment object
+                ->string($this->testedInstance->getId())
+                    ->isIdenticalTo('paym_RMLytyx2xLkdXkATKSxHOlvC')
+
+                ->dateTime($this->testedInstance->getCreationDate())
+                    ->isEqualTo(new DateTime('@1567094428'))
+
+                ->integer($this->testedInstance->getAmount())
+                    ->isIdenticalTo(1337)
+
+                ->string($this->testedInstance->getCurrency())
+                    ->isIdenticalTo('eur')
+
+                ->string($this->testedInstance->getDescription())
+                    ->isIdenticalTo('Auth test')
+
+                ->variable($this->testedInstance->getCard())
+                    ->isNull
+
+                ->variable($this->testedInstance->getSepa())
+                    ->isNull
+
+                ->variable($this->testedInstance->getMethod())
+                    ->isNull
+
+                ->variable($this->testedInstance->getStatus())
+                    ->isNull
+
+                ->object($auth = $this->testedInstance->getAuth())
+                    ->isInstanceOf(ild78\Auth::class)
+
+                ->variable($auth->getRedirectUrl())
+                    ->isNull
+
+                ->variable($auth->getReturnUrl())
+                    ->isNull
+
+                ->variable($auth->getStatus())
+                    ->isIdenticalTo(ild78\Auth\Status::REQUESTED)
+        ;
+    }
+
     public function testSetAmount()
     {
         $this
@@ -1079,6 +1463,81 @@ class Payment extends ild78\Tests\atoum
                         ->hasKey('amount')
                         ->integer['amount']
                             ->isEqualTo($amount)
+        ;
+    }
+
+    public function testSetAuth()
+    {
+        $this
+            ->assert('With an Auth object')
+                ->if($auth = new ild78\Auth)
+                ->and($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->getAuth())
+                        ->isNull
+
+                    ->object($this->testedInstance->setAuth($auth))
+                        ->isTestedInstance
+
+                    ->object($this->testedInstance->getAuth())
+                        ->isIdenticalTo($auth)
+
+            ->assert('With an URL')
+                ->if($https = 'https://www.example.org?' . uniqid())
+                ->and($http = 'http://www.example.org?' . uniqid())
+                ->and($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->getAuth())
+                        ->isNull
+
+                    ->object($this->testedInstance->setAuth($https))
+                        ->isTestedInstance
+
+                    ->object($this->testedInstance->getAuth())
+                        ->isInstanceOf(ild78\Auth::class)
+
+                    ->string($this->testedInstance->getAuth()->getReturnUrl())
+                        ->isIdenticalTo($https)
+
+                    ->string($this->testedInstance->getAuth()->getStatus())
+                        ->isIdenticalTo(ild78\Auth\Status::REQUEST)
+
+                    ->exception(function () use ($http) {
+                        $this->testedInstance->setAuth($http);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidUrlException::class)
+                        ->message
+                            ->isIdenticalTo('You must provide an HTTPS URL.')
+
+            ->assert('With a true value')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->getAuth())
+                        ->isNull
+
+                    ->object($this->testedInstance->setAuth(true))
+                        ->isTestedInstance
+
+                    ->object($this->testedInstance->getAuth())
+                        ->isInstanceOf(ild78\Auth::class)
+
+                    ->variable($this->testedInstance->getAuth()->getReturnUrl())
+                        ->isNull
+
+                    ->string($this->testedInstance->getAuth()->getStatus())
+                        ->isIdenticalTo(ild78\Auth\Status::REQUEST)
+
+            ->assert('With false')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->getAuth())
+                        ->isNull
+
+                    ->object($this->testedInstance->setAuth(false))
+                        ->isTestedInstance
+
+                    ->variable($this->testedInstance->getAuth())
+                        ->isNull
         ;
     }
 

@@ -10,18 +10,21 @@ use ild78;
  * Representation of a payment
  *
  * @method integer getAmount()
+ * @method ild78\\Auth getAuth()
  * @method ild78\\Card getCard()
  * @method string getCountry()
  * @method string getCurrency()
+ * @method ild78\\Customer getCustomer()
  * @method string|null getDescription()
- * @method integer|null getId_customer()
+ * @method ild78\\Device getDevice()
  * @method string getMethod()
- * @method integer getOrder_id()
+ * @method string getOrderId()
  * @method string getResponse()
  * @method string|null getReturnUrl()
  * @method ild78\\Sepa getSepa()
  * @method string getStatus()
  * @method Generator list(array $terms)
+ * @method self setDevice(ild78\\Device $device)
  * @method self setReturnUrl(string $https)
  */
 class Payment extends Api\AbstractObject
@@ -41,6 +44,9 @@ class Payment extends Api\AbstractObject
             ],
             'type' => self::INTEGER,
         ],
+        'auth' => [
+            'type' => ild78\Auth::class,
+        ],
         'capture' => [
             'type' => self::BOOLEAN,
         ],
@@ -54,6 +60,9 @@ class Payment extends Api\AbstractObject
             'required' => true,
             'type' => self::STRING,
         ],
+        'customer' => [
+            'type' => ild78\Customer::class,
+        ],
         'description' => [
             'size' => [
                 'min' => 3,
@@ -61,17 +70,12 @@ class Payment extends Api\AbstractObject
             ],
             'type' => self::STRING,
         ],
-        'customer' => [
-            'type' => ild78\Customer::class,
+        'device' => [
+            'type' => ild78\Device::class,
         ],
         'method' => [
             'restricted' => true,
             'type' => self::STRING,
-        ],
-        'refunds' => [
-            'exportable' => false,
-            'list' => true,
-            'type' => ild78\Refund::class,
         ],
         'orderId' => [
             'size' => [
@@ -79,6 +83,11 @@ class Payment extends Api\AbstractObject
                 'max' => 24,
             ],
             'type' => self::STRING,
+        ],
+        'refunds' => [
+            'exportable' => false,
+            'list' => true,
+            'type' => ild78\Refund::class,
         ],
         'responseCode' => [
             'restricted' => true,
@@ -94,12 +103,12 @@ class Payment extends Api\AbstractObject
             ],
             'type' => self::STRING,
         ],
+        'sepa' => [
+            'type' => ild78\Sepa::class,
+        ],
         'status' => [
             'restricted' => true,
             'type' => self::STRING,
-        ],
-        'sepa' => [
-            'type' => ild78\Sepa::class,
         ],
     ];
 
@@ -362,8 +371,14 @@ class Payment extends Api\AbstractObject
      */
     public function save() : ild78\Api\AbstractObject
     {
+        $auth = $this->getAuth();
         $card = $this->getCard();
         $sepa = $this->getSepa();
+
+        if (is_object($auth) && $auth->getReturnUrl() && !is_object($this->getDevice())) {
+            $device = new ild78\Device();
+            $this->setDevice($device);
+        }
 
         parent::save();
 
@@ -388,6 +403,37 @@ class Payment extends Api\AbstractObject
         Api\Config::getGlobal()->getLogger()->info($message);
 
         return $this;
+    }
+
+    /**
+     * Set an authenticated payment
+     *
+     * You supposed to give an `ild78\Auth` object to start an authenticated payment.
+     * To simplify your workflow, we allow you to pass directly the return URL used in authenticated payment.
+     *
+     * If you are using our payment page, you can simpliy pass a boolean to acitvate an authenticated payment,
+     * we will manage everything else for you.
+     *
+     * @param ild78\Auth|string|boolean $auth Authentication data.
+     * @return self
+     */
+    public function setAuth($auth) : self
+    {
+        if ($auth === false) {
+            return $this;
+        }
+
+        $obj = $auth;
+
+        if (is_string($auth)) {
+            $obj = new ild78\Auth(['returnUrl' => $auth]);
+        }
+
+        if (is_bool($auth)) {
+            $obj = new ild78\Auth();
+        }
+
+        return parent::setAuth($obj);
     }
 
     /**

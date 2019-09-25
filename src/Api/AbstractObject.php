@@ -46,10 +46,10 @@ abstract class AbstractObject implements JsonSerializable
     /**
      * Create or get an API object
      *
-     * @param string|null $id Object id.
+     * @param string|array|null $id Object id or data for hydratation.
      * @return self
      */
-    public function __construct(string $id = null)
+    public function __construct($id = null)
     {
         $defaults = [
             'exportable' => null,
@@ -73,7 +73,11 @@ abstract class AbstractObject implements JsonSerializable
             }
         }
 
-        $this->id = $id;
+        if (is_array($id)) {
+            $this->hydrate($id);
+        } else {
+            $this->id = $id;
+        }
     }
 
     /**
@@ -89,7 +93,7 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function __call(string $method, array $arguments)
     {
-        $lower = strtolower($method);
+        $lower = $this->snakeCaseToCamelCase($method);
 
         if (array_key_exists($lower, $this->aliases)) {
             return $this->{$this->aliases[$lower]}();
@@ -97,7 +101,7 @@ abstract class AbstractObject implements JsonSerializable
 
         $message = sprintf('Method "%s::%s()" unknown', get_class($this), $method);
         $action = substr($method, 0, 3);
-        $property = lcfirst(substr($method, 3));
+        $property = lcfirst(substr($this->snakeCaseToCamelCase($method), 3));
 
         if ($action === 'set' && property_exists($this, $property)) {
             $tmp = $property;
@@ -138,7 +142,7 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function __get(string $property)
     {
-        $prop = strtolower($property);
+        $prop = $this->snakeCaseToCamelCase($property);
 
         if (array_key_exists($prop, $this->aliases)) {
             return $this->{$this->aliases[$prop]}();
@@ -153,7 +157,7 @@ abstract class AbstractObject implements JsonSerializable
         }
 
         switch ($prop) {
-            case 'creationdate':
+            case 'creationDate':
                 return $this->getCreationDate();
 
             default:
@@ -170,7 +174,7 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function __set(string $property, $value) : void
     {
-        $prop = strtolower($property);
+        $prop = $this->snakeCaseToCamelCase($property);
         $method = 'set' . $prop;
 
         if (method_exists($this, $method)) {
@@ -472,7 +476,12 @@ abstract class AbstractObject implements JsonSerializable
 
                             if ($missing) {
                                 $class = $this->dataModel[$property]['type'];
-                                $obj = new $class($id);
+
+                                if (is_null($id)) {
+                                    $obj = new $class($id);
+                                } else {
+                                    $obj = new $class($id);
+                                }
 
                                 $obj->cleanModified = $this->cleanModified;
                                 $obj->hydrate($val);
@@ -494,7 +503,12 @@ abstract class AbstractObject implements JsonSerializable
 
                         if (!$this->dataModel[$property]['value']) {
                             $class = $this->dataModel[$property]['type'];
-                            $this->dataModel[$property]['value'] = new $class($id);
+
+                            if (is_null($id)) {
+                                $this->dataModel[$property]['value'] = new $class();
+                            } else {
+                                $this->dataModel[$property]['value'] = new $class($id);
+                            }
                         }
 
                         if (is_array($value)) {

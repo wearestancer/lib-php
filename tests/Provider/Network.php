@@ -4,6 +4,18 @@ namespace ild78\Tests\Provider;
 
 trait Network
 {
+    public function ipDataProvider()
+    {
+        $v4 = $this->ipv4DataProvider();
+        $v6 = $this->ipv6DataProvider();
+
+        $data = array_merge($v4, $v6);
+
+        shuffle($data);
+
+        return $data;
+    }
+
     public function ipv4DataProvider()
     {
         $data = [];
