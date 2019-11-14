@@ -15,9 +15,9 @@ use JsonSerializable;
  */
 abstract class AbstractObject implements JsonSerializable
 {
-    const BOOLEAN = 'boolean';
-    const INTEGER = 'integer';
-    const STRING = 'string';
+    public const BOOLEAN = 'boolean';
+    public const INTEGER = 'integer';
+    public const STRING = 'string';
 
     /** @var string */
     protected $endpoint = '';

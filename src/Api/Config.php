@@ -12,9 +12,9 @@ use Psr\Log\LoggerInterface;
  */
 class Config
 {
-    const LIVE_MODE = 'live';
-    const TEST_MODE = 'test';
-    const VERSION = '0.0.2';
+    public const LIVE_MODE = 'live';
+    public const TEST_MODE = 'test';
+    public const VERSION = '0.0.2';
 
     /** @var string */
     protected $host = 'api.iliad78.net';

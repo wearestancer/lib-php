@@ -8,13 +8,13 @@ namespace ild78\Auth;
  */
 class Status
 {
-    const ATTEMPTED = 'attempted';
-    const AVAILABLE = 'available';
-    const DECLINED = 'declined';
-    const EXPIRED = 'expired';
-    const FAILED = 'failed';
-    const REQUEST = 'request';
-    const REQUESTED = 'requested';
-    const SUCCESS = 'success';
-    const UNAVAILABLE = 'unavailable';
+    public const ATTEMPTED = 'attempted';
+    public const AVAILABLE = 'available';
+    public const DECLINED = 'declined';
+    public const EXPIRED = 'expired';
+    public const FAILED = 'failed';
+    public const REQUEST = 'request';
+    public const REQUESTED = 'requested';
+    public const SUCCESS = 'success';
+    public const UNAVAILABLE = 'unavailable';
 }
