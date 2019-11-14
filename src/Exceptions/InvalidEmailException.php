@@ -19,7 +19,7 @@ class InvalidEmailException extends InvalidArgumentException implements Exceptio
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         return 'Invalid email';
     }

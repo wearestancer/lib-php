@@ -19,7 +19,7 @@ class InvalidSearchStart extends InvalidArgumentException implements ExceptionIn
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         return 'Start must be a positive integer.';
     }

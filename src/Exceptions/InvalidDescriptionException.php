@@ -19,7 +19,7 @@ class InvalidDescriptionException extends InvalidArgumentException implements Ex
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         return 'Invalid description';
     }

@@ -19,7 +19,7 @@ class InvalidOrderIdException extends InvalidArgumentException implements Except
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         return 'Invalid order ID';
     }

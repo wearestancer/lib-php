@@ -120,7 +120,7 @@ class Payment extends Api\AbstractObject
      * @param array $options Charge options.
      * @return self
      */
-    public static function charge(array $options) : self
+    public static function charge(array $options): self
     {
         $obj = new static();
         $source = $options['source'];
@@ -166,7 +166,7 @@ class Payment extends Api\AbstractObject
      * @return void No return possible
      * @throws ild78\Exceptions\BadMethodCallException On every call, this method is not allowed in this context.
      */
-    public function delete() : ild78\Api\AbstractObject
+    public function delete(): ild78\Api\AbstractObject
     {
         $message = 'You are not allowed to delete a payment, you need to refund it instead.';
 
@@ -185,7 +185,7 @@ class Payment extends Api\AbstractObject
      * @throws ild78\Exceptions\MissingReturnUrlException When no return URL was given to payment data.
      * @throws ild78\Exceptions\MissingPaymentIdException When no payment has no ID.
      */
-    public function getPaymentPageUrl() : string
+    public function getPaymentPageUrl(): string
     {
         $config = ild78\Api\Config::getGlobal();
 
@@ -218,7 +218,7 @@ class Payment extends Api\AbstractObject
      *
      * @return integer
      */
-    public function getRefundableAmount() : int
+    public function getRefundableAmount(): int
     {
         $getAmounts = function ($refund) {
             return $refund->getAmount();
@@ -235,7 +235,7 @@ class Payment extends Api\AbstractObject
      *
      * @return string
      */
-    public function getResponseMessage() : string
+    public function getResponseMessage(): string
     {
         $messages = [
             '00' => 'OK',
@@ -259,7 +259,7 @@ class Payment extends Api\AbstractObject
      *
      * @return boolean
      */
-    public function isNotSuccess() : bool
+    public function isNotSuccess(): bool
     {
         return !$this->isSuccess();
     }
@@ -269,7 +269,7 @@ class Payment extends Api\AbstractObject
      *
      * @return boolean
      */
-    public function isSuccess() : bool
+    public function isSuccess(): bool
     {
         return $this->getResponseCode() === '00';
     }
@@ -286,7 +286,7 @@ class Payment extends Api\AbstractObject
      * @return array
      * @throws ild78\Exceptions\InvalidSearchOrderIdFilter When `order_id` is invalid.
      */
-    public static function filterListFilter(array $terms) : array
+    public static function filterListFilter(array $terms): array
     {
         $params = [];
 
@@ -310,7 +310,7 @@ class Payment extends Api\AbstractObject
      * @param ild78\Interfaces\PaymentMeansInterface $means Payment means.
      * @return self
      */
-    public function pay(int $amount, string $currency, ild78\Interfaces\PaymentMeansInterface $means) : self
+    public function pay(int $amount, string $currency, ild78\Interfaces\PaymentMeansInterface $means): self
     {
         if ($means instanceof Card) {
             $this->setCard($means);
@@ -331,7 +331,7 @@ class Payment extends Api\AbstractObject
      * @throws ild78\Exceptions\InvalidAmountException When trying to refund more than paid.
      * @throws ild78\Exceptions\InvalidAmountException When the amount is invalid.
      */
-    public function refund(int $amount = null) : self
+    public function refund(int $amount = null): self
     {
         $refund = new Refund();
         $refund->setPayment($this);
@@ -369,7 +369,7 @@ class Payment extends Api\AbstractObject
      * @throws ild78\Exceptions\MissingPaymentMethodException When trying to pay something without any
      *   credit card or SEPA account.
      */
-    public function save() : ild78\Api\AbstractObject
+    public function save(): ild78\Api\AbstractObject
     {
         $auth = $this->getAuth();
         $card = $this->getCard();
@@ -417,7 +417,7 @@ class Payment extends Api\AbstractObject
      * @param ild78\Auth|string|boolean $auth Authentication data.
      * @return self
      */
-    public function setAuth($auth) : self
+    public function setAuth($auth): self
     {
         if ($auth === false) {
             return $this;
@@ -443,7 +443,7 @@ class Payment extends Api\AbstractObject
      * @return self
      * @throws ild78\Exceptions\InvalidCurrencyException When currency is not EUR, USD or GBP.
      */
-    public function setCurrency(string $currency) : self
+    public function setCurrency(string $currency): self
     {
         $cur = strtolower($currency);
 
@@ -476,7 +476,7 @@ class Payment extends Api\AbstractObject
      * @return self
      * @throws ild78\Exceptions\InvalidDescriptionException When the description is invalid.
      */
-    public function setDescription(string $description) : self
+    public function setDescription(string $description): self
     {
         try {
             return parent::setDescription($description);
@@ -492,7 +492,7 @@ class Payment extends Api\AbstractObject
      * @return self
      * @throws ild78\Exceptions\InvalidOrderIdException When the order ID is invalid.
      */
-    public function setOrderId(string $orderId) : self
+    public function setOrderId(string $orderId): self
     {
         try {
             return parent::setOrderId($orderId);
@@ -508,7 +508,7 @@ class Payment extends Api\AbstractObject
      * @return self
      * @throws ild78\Exceptions\InvalidUrlException When URL is not an HTTPS URL.
      */
-    public function setReturnUrl(string $url) : self
+    public function setReturnUrl(string $url): self
     {
         if (strpos($url, 'https://') !== 0) {
             throw new ild78\Exceptions\InvalidUrlException('You must provide an HTTPS URL.');

@@ -30,7 +30,7 @@ trait MessageTrait
      * @param string|string[] $value Header value.
      * @return self
      */
-    public function addHeader(string $name, $value) : self
+    public function addHeader(string $name, $value): self
     {
         $key = strtolower($name);
 
@@ -51,7 +51,7 @@ trait MessageTrait
      *
      * @return string|null
      */
-    public function getBody() : ?string
+    public function getBody(): ?string
     {
         return $this->body;
     }
@@ -70,7 +70,7 @@ trait MessageTrait
      *    header. If the header does not appear in the message, this method MUST
      *    return an empty array.
      */
-    public function getHeader($name) : array
+    public function getHeader($name): array
     {
         if (!$this->hasHeader($name)) {
             return [];
@@ -96,7 +96,7 @@ trait MessageTrait
      *    concatenated together using a comma. If the header does not appear in
      *    the message, this method MUST return an empty string.
      */
-    public function getHeaderLine($name) : string
+    public function getHeaderLine($name): string
     {
         return implode(', ', $this->getHeader($name));
     }
@@ -111,7 +111,7 @@ trait MessageTrait
      *     key MUST be a header name, and each value MUST be an array of strings
      *     for that header.
      */
-    public function getHeaders() : array
+    public function getHeaders(): array
     {
         $headers = [];
         $func = function ($data, $key) use (&$headers) {
@@ -128,7 +128,7 @@ trait MessageTrait
      *
      * @return string HTTP protocol version.
      */
-    public function getProtocolVersion() : string
+    public function getProtocolVersion(): string
     {
         return $this->protocol;
     }
@@ -141,7 +141,7 @@ trait MessageTrait
      *     name using a case-insensitive string comparison. Returns false if
      *     no matching header name is found in the message.
      */
-    public function hasHeader($name) : bool
+    public function hasHeader($name): bool
     {
         $key = strtolower($name);
 
@@ -154,7 +154,7 @@ trait MessageTrait
      * @param string $name Header name to remove.
      * @return self
      */
-    public function removeHeader($name) : self
+    public function removeHeader($name): self
     {
         $key = strtolower($name);
         unset($this->headers[$key]);
@@ -173,7 +173,7 @@ trait MessageTrait
      * @param string|string[] $value Header value(s).
      * @return self
      */
-    public function withAddedHeader($name, $value) : self
+    public function withAddedHeader($name, $value): self
     {
         $obj = clone $this;
 
@@ -186,7 +186,7 @@ trait MessageTrait
      * @param Psr\Http\Message\StreamInterface $body Body.
      * @return self
      */
-    public function withBody(Psr\Http\Message\StreamInterface $body) : self
+    public function withBody(Psr\Http\Message\StreamInterface $body): self
     {
         $obj = clone $this;
         $obj->body = (string) $body;
@@ -201,7 +201,7 @@ trait MessageTrait
      * @param string|string[] $value Header value(s).
      * @return self
      */
-    public function withHeader($name, $value) : self
+    public function withHeader($name, $value): self
     {
         return $this->withoutHeader($name)->addHeader($name, $value);
     }
@@ -212,7 +212,7 @@ trait MessageTrait
      * @param string $name Case-insensitive header field name to remove.
      * @return self
      */
-    public function withoutHeader($name) : self
+    public function withoutHeader($name): self
     {
         $obj = clone $this;
 
@@ -225,7 +225,7 @@ trait MessageTrait
      * @param string $version HTTP protocol version.
      * @return self
      */
-    public function withProtocolVersion($version) : self
+    public function withProtocolVersion($version): self
     {
         $obj = clone $this;
         $obj->protocol = $version;

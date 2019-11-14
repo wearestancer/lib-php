@@ -18,5 +18,5 @@ interface HttpClientInterface
      *
      * @return Psr\Http\Message\ResponseInterface
      */
-    public function request(string $method, string $uri, array $options = []) : Psr\Http\Message\ResponseInterface;
+    public function request(string $method, string $uri, array $options = []): Psr\Http\Message\ResponseInterface;
 }

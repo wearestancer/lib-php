@@ -27,7 +27,7 @@ class NotAuthorizedException extends ClientException implements ExceptionInterfa
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         return 'You are not authorized to access that resource.';
     }

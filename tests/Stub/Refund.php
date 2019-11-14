@@ -8,7 +8,7 @@ class Refund extends ild78\Refund
 {
     use ild78\Stub\TestMethodTrait;
 
-    public function testOnlySetPayment(ild78\Payment $payment) : self
+    public function testOnlySetPayment(ild78\Payment $payment): self
     {
         $this->payment = $payment;
 

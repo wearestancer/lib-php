@@ -54,7 +54,7 @@ class Request implements Psr\Http\Message\RequestInterface
      *
      * @return string Returns the request method.
      */
-    public function getMethod() : string
+    public function getMethod(): string
     {
         return $this->method;
     }
@@ -75,7 +75,7 @@ class Request implements Psr\Http\Message\RequestInterface
      *
      * @return string
      */
-    public function getRequestTarget() : string
+    public function getRequestTarget(): string
     {
         return $this->getUri();
     }
@@ -88,7 +88,7 @@ class Request implements Psr\Http\Message\RequestInterface
      * @link http://tools.ietf.org/html/rfc3986#section-4.3
      * @return string Returns the URI of the request.
      */
-    public function getUri() : string
+    public function getUri(): string
     {
         return $this->uri;
     }
@@ -99,7 +99,7 @@ class Request implements Psr\Http\Message\RequestInterface
      * @param string $uri New URI.
      * @return self
      */
-    public function updateUri(string $uri) : self
+    public function updateUri(string $uri): self
     {
         $matches = [];
         $name = 'Host';
@@ -128,7 +128,7 @@ class Request implements Psr\Http\Message\RequestInterface
      * @param string $method Case-sensitive method.
      * @return self
      */
-    public function withMethod($method) : self
+    public function withMethod($method): self
     {
         $obj = clone $this;
         $obj->method = strtoupper($method);
@@ -144,7 +144,7 @@ class Request implements Psr\Http\Message\RequestInterface
      * @param mixed $requestTarget New target.
      * @return self
      */
-    public function withRequestTarget($requestTarget) : self
+    public function withRequestTarget($requestTarget): self
     {
         $obj = clone $this;
 
@@ -184,7 +184,7 @@ class Request implements Psr\Http\Message\RequestInterface
      * @return void
      * @throws ild78\Exceptions\BadMethodCallException For everycall.
      */
-    public function withUri(Psr\Http\Message\UriInterface $uri, $preserveHost = false) : self
+    public function withUri(Psr\Http\Message\UriInterface $uri, $preserveHost = false): self
     {
         $message = 'This method is not implemented for now';
 

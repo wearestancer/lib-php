@@ -15,7 +15,7 @@ class InvalidSearchOrderIdFilter extends InvalidSearchFilter
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         return 'Invalid order ID.';
     }

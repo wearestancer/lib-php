@@ -47,7 +47,7 @@ class Auth extends Api\AbstractObject
      * @return self
      * @throws ild78\Exceptions\InvalidUrlException When URL is not an HTTPS URL.
      */
-    public function setReturnUrl(string $url) : self
+    public function setReturnUrl(string $url): self
     {
         if (strpos($url, 'https://') !== 0) {
             throw new ild78\Exceptions\InvalidUrlException('You must provide an HTTPS URL.');

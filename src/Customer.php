@@ -50,7 +50,7 @@ class Customer extends Api\AbstractObject
      * @throws ild78\Exceptions\BadMethodCallException When trying to save a customer without an email
      *    or a phone number.
      */
-    public function save() : ild78\Api\AbstractObject
+    public function save(): ild78\Api\AbstractObject
     {
         if (!$this->getId() && !$this->getEmail() && !$this->getMobile()) {
             $message = 'You must provide an email or a phone number to create a customer.';
@@ -68,7 +68,7 @@ class Customer extends Api\AbstractObject
      * @return self
      * @throws ild78\Exceptions\InvalidEmailException When the email is invalid.
      */
-    public function setEmail(string $email) : self
+    public function setEmail(string $email): self
     {
         try {
             return parent::setEmail($email);
@@ -84,7 +84,7 @@ class Customer extends Api\AbstractObject
      * @return self
      * @throws ild78\Exceptions\InvalidMobileException When the mobile phone number is invalid.
      */
-    public function setMobile(string $mobile) : self
+    public function setMobile(string $mobile): self
     {
         try {
             return parent::setMobile($mobile);
@@ -100,7 +100,7 @@ class Customer extends Api\AbstractObject
      * @return self
      * @throws ild78\Exceptions\InvalidNameException When the name is invalid.
      */
-    public function setName(string $name) : self
+    public function setName(string $name): self
     {
         try {
             return parent::setName($name);

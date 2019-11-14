@@ -19,7 +19,7 @@ class InvalidExpirationMonthException extends InvalidArgumentException implement
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         return 'Expiration month is invalid.';
     }

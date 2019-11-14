@@ -44,7 +44,7 @@ class Refund extends Api\AbstractObject
      *
      * @return boolean
      */
-    public function isModified() : bool
+    public function isModified(): bool
     {
         return !empty($this->modified);
     }
@@ -57,7 +57,7 @@ class Refund extends Api\AbstractObject
      * @return Api\AbstractObject
      * @throws ild78\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
-    public function save() : Api\AbstractObject
+    public function save(): Api\AbstractObject
     {
         $payment = $this->getPayment();
         $modified = $payment->modified;

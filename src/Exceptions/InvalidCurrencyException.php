@@ -19,7 +19,7 @@ class InvalidCurrencyException extends InvalidArgumentException implements Excep
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         return 'Invalid currency';
     }

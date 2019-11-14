@@ -111,7 +111,7 @@ class Device extends Api\AbstractObject
      * @return self
      * @throws ild78\Exceptions\InvalidIpAddressException When $ip is not a correct IP address.
      */
-    public function setIp(string $ip) : self
+    public function setIp(string $ip): self
     {
         if (filter_var($ip, FILTER_VALIDATE_IP) === false) {
             $message = sprintf('"%s" is not a valid IP address.', $ip);
@@ -131,7 +131,7 @@ class Device extends Api\AbstractObject
      * @return self
      * @throws ild78\Exceptions\InvalidPortException When $port is not a correct port.
      */
-    public function setPort(int $port) : self
+    public function setPort(int $port): self
     {
         try {
             return parent::setPort($port);

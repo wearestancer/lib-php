@@ -127,7 +127,7 @@ class Response implements Psr\Http\Message\ResponseInterface
      * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
      * @return string Reason phrase; must return an empty string if none present.
      */
-    public function getReasonPhrase() : string
+    public function getReasonPhrase(): string
     {
         if ($this->reason) {
             return $this->reason;
@@ -150,7 +150,7 @@ class Response implements Psr\Http\Message\ResponseInterface
      *
      * @return integer Status code.
      */
-    public function getStatusCode() : int
+    public function getStatusCode(): int
     {
         return $this->code;
     }
@@ -170,7 +170,7 @@ class Response implements Psr\Http\Message\ResponseInterface
      *     use the defaults as suggested in the HTTP specification.
      * @return self
      */
-    public function withStatus($code, $reasonPhrase = '') : self
+    public function withStatus($code, $reasonPhrase = ''): self
     {
         $obj = clone $this;
         $obj->code = $code;

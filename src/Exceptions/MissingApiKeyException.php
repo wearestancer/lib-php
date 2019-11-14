@@ -19,7 +19,7 @@ class MissingApiKeyException extends InvalidArgumentException implements Excepti
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         return 'You did not provide valid API key.';
     }

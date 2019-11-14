@@ -12,12 +12,12 @@ interface ExceptionInterface
      *
      * @return string
      */
-    public static function getDefaultMessage() : string;
+    public static function getDefaultMessage(): string;
 
     /**
      * Return default log level for that kind of exception
      *
      * @return string
      */
-    public static function getLogLevel() : string;
+    public static function getLogLevel(): string;
 }

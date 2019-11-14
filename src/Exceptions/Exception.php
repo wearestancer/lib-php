@@ -35,7 +35,7 @@ class Exception extends \Exception implements ExceptionInterface
      * @param array $params Parameters, keys must correspond to exception properties.
      * @return self
      */
-    public static function create(array $params = []) : self
+    public static function create(array $params = []): self
     {
         $keys = [
             'message' => '',
@@ -59,7 +59,7 @@ class Exception extends \Exception implements ExceptionInterface
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         return 'Unexpected error';
     }
@@ -69,7 +69,7 @@ class Exception extends \Exception implements ExceptionInterface
      *
      * @return string
      */
-    public static function getLogLevel() : string
+    public static function getLogLevel(): string
     {
         return static::$logLevel;
     }

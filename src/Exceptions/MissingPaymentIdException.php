@@ -19,7 +19,7 @@ class MissingPaymentIdException extends InvalidArgumentException implements Exce
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         return 'A payment ID is mandatory. Maybe you forgot to save the payment.';
     }

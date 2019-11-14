@@ -42,7 +42,7 @@ class Sepa extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      *
      * @return string
      */
-    public function getFormattedIban() : string
+    public function getFormattedIban(): string
     {
         return trim(chunk_split($this->getIban(), 4, ' '));
     }
@@ -54,7 +54,7 @@ class Sepa extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @return self
      * @throws ild78\Exceptions\InvalidBicException When BIC seems invalid.
      */
-    public function setBic(string $bic) : self
+    public function setBic(string $bic): self
     {
         $length = strlen($bic);
 
@@ -75,7 +75,7 @@ class Sepa extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @return self
      * @throws ild78\Exceptions\InvalidIbanException When IBAN is invalid.
      */
-    public function setIban(string $iban) : self
+    public function setIban(string $iban): self
     {
         $iban = str_replace(' ', '', $iban);
         $country = substr($iban, 0, 2);
@@ -119,7 +119,7 @@ class Sepa extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @return self
      * @throws ild78\Exceptions\InvalidNameException When the name is invalid.
      */
-    public function setName(string $name) : self
+    public function setName(string $name): self
     {
         try {
             return parent::setName($name);

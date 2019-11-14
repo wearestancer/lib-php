@@ -61,7 +61,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
      *
      * @return ild78\Http\Response|null
      */
-    public function getLastResponse() : ?ild78\Http\Response
+    public function getLastResponse(): ?ild78\Http\Response
     {
         return $this->lastResponse;
     }
@@ -71,7 +71,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
      *
      * @return ild78\Http\Request|null
      */
-    public function getLastRequest() : ?ild78\Http\Request
+    public function getLastRequest(): ?ild78\Http\Request
     {
         return $this->lastRequest;
     }
@@ -81,7 +81,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
      *
      * @return array
      */
-    public function getResponseHeaders() : array
+    public function getResponseHeaders(): array
     {
         return $this->headers;
     }
@@ -95,7 +95,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
      * @param string $line One header line.
      * @return integer
      */
-    public function parseHeaderLine($curl, string $line) : int
+    public function parseHeaderLine($curl, string $line): int
     {
         if (!trim($line)) {
             return strlen($line);
@@ -142,7 +142,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
      * @throws ild78\Exceptions\ClientException On over 400 level HTTP error.
      * @throws ild78\Exceptions\ServerException On over 500 level HTTP error.
      */
-    public function request(string $method, string $uri, array $options = []) : Psr\Http\Message\ResponseInterface
+    public function request(string $method, string $uri, array $options = []): Psr\Http\Message\ResponseInterface
     {
         $config = ild78\Api\Config::getGlobal();
         $logger = $config->getLogger();
