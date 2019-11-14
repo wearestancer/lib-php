@@ -326,7 +326,7 @@ class Payment extends Api\AbstractObject
     /**
      * Refund a payment, or part of it.
      *
-     * @param integet|null $amount Amount to refund, if not present all paid amount will be refund.
+     * @param integer|null $amount Amount to refund, if not present all paid amount will be refund.
      * @return self
      * @throws ild78\Exceptions\InvalidAmountException When trying to refund more than paid.
      * @throws ild78\Exceptions\InvalidAmountException When the amount is invalid.
