@@ -839,9 +839,7 @@ abstract class AbstractObject implements JsonSerializable
         $isLower = false;
         $isUpper = false;
 
-        if (!is_null($model['size']['fixed'])
-            && $model['size']['fixed'] !== $length
-        ) {
+        if (!is_null($model['size']['fixed']) && $model['size']['fixed'] !== $length) {
             $message = sprintf('A valid %s must have %d characters.', $property, $model['size']['fixed']);
 
             throw new ild78\Exceptions\InvalidArgumentException($message);

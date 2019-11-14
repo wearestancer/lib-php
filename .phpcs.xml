@@ -24,6 +24,11 @@
 
     <exclude name="Generic.PHP.LowerCaseType.ParamTypeFound" />
 
+    <!-- Remove for multiline condition -->
+    <exclude name="PEAR.ControlStructures.MultiLineCondition.SpacingAfterOpenBrace" />
+    <exclude name="PEAR.ControlStructures.MultiLineCondition.StartWithBoolean" />
+    <exclude name="PSR2.ControlStructures.ControlStructureSpacing.SpacingAfterOpenBrace" />
+
     <exclude name="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned" />
     <exclude name="Squiz.Arrays.ArrayDeclaration.MultiLineNotAllowed" />
 
