@@ -19,7 +19,7 @@ class InvalidNameException extends InvalidArgumentException implements Exception
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         return 'Invalid name';
     }

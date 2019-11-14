@@ -16,7 +16,7 @@ trait AmountTrait
      * @return self
      * @throws ild78\Exceptions\InvalidAmountException When the amount is invalid.
      */
-    public function setAmount(int $amount) : self
+    public function setAmount(int $amount): self
     {
         try {
             return parent::setAmount($amount);

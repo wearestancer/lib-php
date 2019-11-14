@@ -15,9 +15,9 @@ use JsonSerializable;
  */
 abstract class AbstractObject implements JsonSerializable
 {
-    const BOOLEAN = 'boolean';
-    const INTEGER = 'integer';
-    const STRING = 'string';
+    public const BOOLEAN = 'boolean';
+    public const INTEGER = 'integer';
+    public const STRING = 'string';
 
     /** @var string */
     protected $endpoint = '';
@@ -172,7 +172,7 @@ abstract class AbstractObject implements JsonSerializable
      * @param mixed $value New value.
      * @return void
      */
-    public function __set(string $property, $value) : void
+    public function __set(string $property, $value): void
     {
         $prop = $this->snakeCaseToCamelCase($property);
         $method = 'set' . $prop;
@@ -192,7 +192,7 @@ abstract class AbstractObject implements JsonSerializable
      * @uses self::toString()
      * @return string
      */
-    public function __toString() : string
+    public function __toString(): string
     {
         return $this->toString();
     }
@@ -204,7 +204,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return string
      */
-    public function camelCaseToSnakeCase(string $text) : string
+    public function camelCaseToSnakeCase(string $text): string
     {
         $replace = function ($matches) {
             return '_' . strtolower($matches[0]);
@@ -219,7 +219,7 @@ abstract class AbstractObject implements JsonSerializable
      * @param array $data Additionnal data for creation.
      * @return self
      */
-    public static function create(array $data) : self
+    public static function create(array $data): self
     {
         $obj = new static();
 
@@ -237,7 +237,7 @@ abstract class AbstractObject implements JsonSerializable
      * @throws ild78\Exceptions\InvalidArgumentException When asking an unknown property.
      * @throws ild78\Exceptions\InvalidArgumentException If used on properties not declared as list.
      */
-    public function dataModelAdder(string $property, $value) : self
+    public function dataModelAdder(string $property, $value): self
     {
         if (!array_key_exists($property, $this->dataModel)) {
             throw new ild78\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
@@ -296,7 +296,7 @@ abstract class AbstractObject implements JsonSerializable
      * @throws ild78\Exceptions\InvalidArgumentException When setting a restricted property.
      * @throws ild78\Exceptions\InvalidArgumentException When the value do not match expected pattern.
      */
-    public function dataModelSetter(string $property, $value) : self
+    public function dataModelSetter(string $property, $value): self
     {
         if (!array_key_exists($property, $this->dataModel)) {
             throw new ild78\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
@@ -335,7 +335,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return self
      */
-    public function delete() : self
+    public function delete(): self
     {
         $request = new Request();
         $request->delete($this);
@@ -350,7 +350,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return DateTime|null
      */
-    public function getCreationDate() : ?DateTime
+    public function getCreationDate(): ?DateTime
     {
         $date = $this->created;
 
@@ -366,7 +366,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return string
      */
-    public function getEndpoint() : string
+    public function getEndpoint(): string
     {
         return $this->endpoint;
     }
@@ -376,7 +376,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return string|null
      */
-    public function getId() : ?string
+    public function getId(): ?string
     {
         return $this->id;
     }
@@ -407,7 +407,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return string
      */
-    public function getUri() : string
+    public function getUri(): string
     {
         $tmp = [
             Config::getGlobal()->getUri(),
@@ -431,7 +431,7 @@ abstract class AbstractObject implements JsonSerializable
      * @param array $data Data for hydratation.
      * @return self
      */
-    public function hydrate(array $data) : self
+    public function hydrate(array $data): self
     {
         foreach ($data as $key => $value) {
             $property = $this->snakeCaseToCamelCase($key);
@@ -555,7 +555,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return boolean
      */
-    public function isModified() : bool
+    public function isModified(): bool
     {
         if (!empty($this->modified)) {
             return true;
@@ -587,7 +587,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return boolean
      */
-    public function isNotModified() : bool
+    public function isNotModified(): bool
     {
         return !$this->isModified();
     }
@@ -646,7 +646,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return self
      */
-    public function populate() : self
+    public function populate(): self
     {
         if ($this->populated || !$this->getId() || !$this->getEndpoint()) {
             return $this;
@@ -672,7 +672,7 @@ abstract class AbstractObject implements JsonSerializable
      * @param string $id Identifier of the object.
      * @return self
      */
-    static public function retrieve(string $id) : self
+    static public function retrieve(string $id): self
     {
         return new static($id);
     }
@@ -684,7 +684,7 @@ abstract class AbstractObject implements JsonSerializable
      * @return self
      * @throws ild78\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
-    public function save() : self
+    public function save(): self
     {
         if ($this->isNotModified()) {
             return $this;
@@ -736,7 +736,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return string
      */
-    public function snakeCaseToCamelCase(string $text) : string
+    public function snakeCaseToCamelCase(string $text): string
     {
         $replace = function ($matches) {
             return strtoupper(ltrim($matches[0], '_'));
@@ -750,7 +750,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return string
      */
-    public function toArray() : array
+    public function toArray(): array
     {
         $json = [];
         $data = [
@@ -780,7 +780,7 @@ abstract class AbstractObject implements JsonSerializable
      * @uses self::__toString()
      * @return string
      */
-    public function toJson() : string
+    public function toJson(): string
     {
         return json_encode($this);
     }
@@ -790,7 +790,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return string
      */
-    public function toString() : string
+    public function toString(): string
     {
         return $this->toJson();
     }
@@ -806,7 +806,7 @@ abstract class AbstractObject implements JsonSerializable
      * @return self
      * @throws ild78\Exceptions\InvalidArgumentException When the value do not match expected pattern.
      */
-    protected function validateDataModel(string $property, $value) : self
+    protected function validateDataModel(string $property, $value): self
     {
         $model = $this->dataModel[$property];
 
@@ -839,9 +839,7 @@ abstract class AbstractObject implements JsonSerializable
         $isLower = false;
         $isUpper = false;
 
-        if (!is_null($model['size']['fixed'])
-            && $model['size']['fixed'] !== $length
-        ) {
+        if (!is_null($model['size']['fixed']) && $model['size']['fixed'] !== $length) {
             $message = sprintf('A valid %s must have %d characters.', $property, $model['size']['fixed']);
 
             throw new ild78\Exceptions\InvalidArgumentException($message);

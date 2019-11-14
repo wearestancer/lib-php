@@ -19,7 +19,7 @@ class MissingPaymentMethodException extends BadMethodCallException implements Ex
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         return 'You must provide a valid credit card or SEPA account to make a payment.';
     }

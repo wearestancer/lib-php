@@ -19,7 +19,7 @@ class InvalidArgumentException extends Exception implements ExceptionInterface
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         return 'Invalid argument';
     }

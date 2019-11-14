@@ -30,7 +30,7 @@ trait SearchTrait
      * @throws ild78\Exceptions\InvalidSearchLimit When `limit` is invalid.
      * @throws ild78\Exceptions\InvalidSearchStart When `start` is invalid.
      */
-    public static function list(array $terms) : Generator
+    public static function list(array $terms): Generator
     {
         $allowed = array_flip(['created', 'limit', 'start']);
         $others = [];

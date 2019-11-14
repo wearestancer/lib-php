@@ -19,7 +19,7 @@ class InvalidSearchLimit extends InvalidArgumentException implements ExceptionIn
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         return 'Limit must be between 1 and 100.';
     }

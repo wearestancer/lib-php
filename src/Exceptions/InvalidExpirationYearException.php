@@ -19,7 +19,7 @@ class InvalidExpirationYearException extends InvalidArgumentException implements
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         return 'Expiration year is invalid.';
     }

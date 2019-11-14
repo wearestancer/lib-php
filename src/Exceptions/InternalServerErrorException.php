@@ -27,7 +27,7 @@ class InternalServerErrorException extends ServerException implements ExceptionI
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         return 'Servor error, please leave a minute to repair it and try again';
     }

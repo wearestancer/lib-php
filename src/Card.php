@@ -83,7 +83,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      *
      * @return string
      */
-    public function getBrandName() : string
+    public function getBrandName(): string
     {
         $names = [
             'amex' => 'American Express',
@@ -113,7 +113,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @throws ild78\Exceptions\InvalidExpirationMonthException When month is not set.
      * @throws ild78\Exceptions\InvalidExpirationYearException When year is not set.
      */
-    public function getExpDate() : DateTime
+    public function getExpDate(): DateTime
     {
         $month = $this->getExpMonth();
         $year = $this->getExpYear();
@@ -147,7 +147,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @see self::getExpDate() Return the expiration date.
      * @return DateTime
      */
-    public function getExpirationDate() : DateTime
+    public function getExpirationDate(): DateTime
     {
         return $this->getExpDate();
     }
@@ -187,7 +187,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      *
      * @return boolean
      */
-    public function getTokenize() : bool
+    public function getTokenize(): bool
     {
         $tokenize = parent::getTokenize();
 
@@ -207,7 +207,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @return self
      * @throws ild78\Exceptions\InvalidCardCvcException When CVC is not valid.
      */
-    public function setCvc(string $cvc) : self
+    public function setCvc(string $cvc): self
     {
         try {
             return parent::setCvc($cvc);
@@ -223,7 +223,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @param integer $month The expiration month.
      * @return self
      */
-    public function setExpirationMonth(int $month) : self
+    public function setExpirationMonth(int $month): self
     {
         return $this->setExpMonth($month);
     }
@@ -235,7 +235,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @param integer $year The expiration year.
      * @return integer|null
      */
-    public function setExpirationYear(int $year) : self
+    public function setExpirationYear(int $year): self
     {
         return $this->setExpYear($year);
     }
@@ -247,7 +247,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @return self
      * @throws ild78\Exceptions\InvalidExpirationMonthException When expiration is invalid (not between 1 and 12).
      */
-    public function setExpMonth(int $month) : self
+    public function setExpMonth(int $month): self
     {
         if ($month < 1 || $month > 12) {
             $message = sprintf('Invalid expiration month "%d"', $month);
@@ -268,7 +268,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @return self
      * @throws ild78\Exceptions\InvalidExpirationYearException When expiration is invalid (in past).
      */
-    public function setExpYear(int $year) : self
+    public function setExpYear(int $year): self
     {
         if ($year < date('Y')) {
             $message = sprintf('Invalid expiration year "%d"', $year);
@@ -289,7 +289,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @return self
      * @throws ild78\Exceptions\InvalidNameException When the name is invalid.
      */
-    public function setName(string $name) : self
+    public function setName(string $name): self
     {
         try {
             return parent::setName($name);
@@ -305,7 +305,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @return self
      * @throws ild78\Exceptions\InvalidCardNumberException When the card number is invalid.
      */
-    public function setNumber(string $number) : self
+    public function setNumber(string $number): self
     {
         $number = preg_replace('`\s*`', '', $number);
         $parts = str_split($number);

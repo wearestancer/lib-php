@@ -12,9 +12,9 @@ use Psr\Log\LoggerInterface;
  */
 class Config
 {
-    const LIVE_MODE = 'live';
-    const TEST_MODE = 'test';
-    const VERSION = '0.0.2';
+    public const LIVE_MODE = 'live';
+    public const TEST_MODE = 'test';
+    public const VERSION = '0.0.2';
 
     /** @var string */
     protected $host = 'api.iliad78.net';
@@ -68,7 +68,7 @@ class Config
      *
      * @return string
      */
-    public function getBasicAuthHeader() : string
+    public function getBasicAuthHeader(): string
     {
         return 'Basic ' . base64_encode($this->getSecretKey() . ':');
     }
@@ -78,7 +78,7 @@ class Config
      *
      * @return string
      */
-    public function getDefaultUserAgent() : string
+    public function getDefaultUserAgent(): string
     {
         $params = [
             static::VERSION,
@@ -111,7 +111,7 @@ class Config
      * @return self
      * @throws ild78\Exceptions\InvalidArgumentException When no previous instance was stored (use `Config::init()`).
      */
-    public static function getGlobal() : self
+    public static function getGlobal(): self
     {
         if (static::$instance instanceof static) {
             return static::$instance;
@@ -127,7 +127,7 @@ class Config
      *
      * @return string
      */
-    public function getHost() : string
+    public function getHost(): string
     {
         return $this->host;
     }
@@ -173,7 +173,7 @@ class Config
      *
      * @return string
      */
-    public function getMode() : string
+    public function getMode(): string
     {
         return $this->mode ?: static::TEST_MODE;
     }
@@ -187,7 +187,7 @@ class Config
      *
      * @return integer
      */
-    public function getPort() : int
+    public function getPort(): int
     {
         return $this->port ?: 443;
     }
@@ -198,7 +198,7 @@ class Config
      * @return string
      * @throws ild78\Exceptions\MissingApiKeyException When no key is found.
      */
-    public function getPublicKey() : string
+    public function getPublicKey(): string
     {
         $key = $this->keys['ptest'];
         $type = 'development';
@@ -223,7 +223,7 @@ class Config
      * @return string
      * @throws ild78\Exceptions\MissingApiKeyException When no key is found.
      */
-    public function getSecretKey() : string
+    public function getSecretKey(): string
     {
         $key = $this->keys['stest'];
         $type = 'development';
@@ -249,7 +249,7 @@ class Config
      *
      * @return integer
      */
-    public function getTimeout() : int
+    public function getTimeout(): int
     {
         return $this->timeout;
     }
@@ -261,7 +261,7 @@ class Config
      *
      * @return string
      */
-    public function getUri() : string
+    public function getUri(): string
     {
         $pattern = '%1$s://%2$s/v%4$s/';
 
@@ -286,7 +286,7 @@ class Config
      *
      * @return string
      */
-    public function getVersion() : int
+    public function getVersion(): int
     {
         return $this->version;
     }
@@ -298,7 +298,7 @@ class Config
      * @param string[] $keys Authentication keys.
      * @return self
      */
-    public static function init(array $keys) : self
+    public static function init(array $keys): self
     {
         $obj = new static($keys);
 
@@ -310,7 +310,7 @@ class Config
      *
      * @return boolean
      */
-    public function isLiveMode() : bool
+    public function isLiveMode(): bool
     {
         return $this->getMode() === static::LIVE_MODE;
     }
@@ -320,7 +320,7 @@ class Config
      *
      * @return boolean
      */
-    public function isNotLiveMode() : bool
+    public function isNotLiveMode(): bool
     {
         return !$this->isLiveMode();
     }
@@ -330,7 +330,7 @@ class Config
      *
      * @return boolean
      */
-    public function isNotTestMode() : bool
+    public function isNotTestMode(): bool
     {
         return !$this->isTestMode();
     }
@@ -340,7 +340,7 @@ class Config
      *
      * @return boolean
      */
-    public function isTestMode() : bool
+    public function isTestMode(): bool
     {
         return $this->getMode() === static::TEST_MODE;
     }
@@ -351,7 +351,7 @@ class Config
      * @param self $instance Current API instance.
      * @return self
      */
-    public static function setGlobal(self $instance) : self
+    public static function setGlobal(self $instance): self
     {
         static::$instance = $instance;
 
@@ -364,7 +364,7 @@ class Config
      * @param string $host New host.
      * @return self
      */
-    public function setHost(string $host) : self
+    public function setHost(string $host): self
     {
         $this->host = $host;
 
@@ -380,7 +380,7 @@ class Config
      * @param ild78\Http\Client|GuzzleHttp\ClientInterface $client New instance.
      * @return self
      */
-    public function setHttpClient($client) : self
+    public function setHttpClient($client): self
     {
         $this->httpClient = $client;
 
@@ -393,7 +393,7 @@ class Config
      * @param Psr\Log\LoggerInterface $logger A PSR3 compatible logger.
      * @return self
      */
-    public function setLogger(LoggerInterface $logger) : self
+    public function setLogger(LoggerInterface $logger): self
     {
         $this->logger = $logger;
 
@@ -407,7 +407,7 @@ class Config
      *
      * @return self
      */
-    public function setKeys($keys) : self
+    public function setKeys($keys): self
     {
         $k = $keys;
 
@@ -442,7 +442,7 @@ class Config
      * @return self
      * @throws ild78\Exceptions\InvalidArgumentException If new mode is not valid.
      */
-    public function setMode(string $mode) : self
+    public function setMode(string $mode): self
     {
         $validMode = [
             static::LIVE_MODE,
@@ -466,7 +466,7 @@ class Config
      * @param integer $port New port.
      * @return self
      */
-    public function setPort(int $port) : self
+    public function setPort(int $port): self
     {
         $this->port = $port;
 
@@ -480,7 +480,7 @@ class Config
      * @return self
      * @throws ild78\Exceptions\InvalidArgumentException When setting a too high timeout.
      */
-    public function setTimeout(int $timeout) : self
+    public function setTimeout(int $timeout): self
     {
         $max = 180;
 
@@ -511,7 +511,7 @@ class Config
      * @param integer $version New version.
      * @return self
      */
-    public function setVersion(int $version) : self
+    public function setVersion(int $version): self
     {
         $this->version = $version;
 

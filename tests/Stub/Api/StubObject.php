@@ -93,7 +93,7 @@ class StubObject extends ild78\Api\AbstractObject
     ];
 
     // Test only methods
-    public function forceRestricted1(string $value) : self
+    public function forceRestricted1(string $value): self
     {
         $this->dataModel['restricted1']['value'] = $value;
 
