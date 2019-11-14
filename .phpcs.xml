@@ -9,6 +9,10 @@
   <rule ref="PSR2" />
   <rule ref="PSR12" />
 
+  <rule ref="PSR12">
+    <exclude name="PSR12.Files.FileHeader.SpacingAfterBlock" /> <!-- Space between `<?php` and `declare` -->
+  </rule>
+
   <rule ref="Squiz">
     <exclude name="Generic.Commenting.DocComment.ContentAfterOpen" />
     <exclude name="Generic.Commenting.DocComment.ContentBeforeClose" />
