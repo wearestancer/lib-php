@@ -388,19 +388,6 @@ class Config
     }
 
     /**
-     * Update logger handler
-     *
-     * @param Psr\Log\LoggerInterface $logger A PSR3 compatible logger.
-     * @return self
-     */
-    public function setLogger(LoggerInterface $logger): self
-    {
-        $this->logger = $logger;
-
-        return $this;
-    }
-
-    /**
      * Update authentication keys
      *
      * @param string|string[] $keys One or more keys to update.
@@ -429,6 +416,19 @@ class Config
                 }
             }
         }
+
+        return $this;
+    }
+
+    /**
+     * Update logger handler
+     *
+     * @param Psr\Log\LoggerInterface $logger A PSR3 compatible logger.
+     * @return self
+     */
+    public function setLogger(LoggerInterface $logger): self
+    {
+        $this->logger = $logger;
 
         return $this;
     }
