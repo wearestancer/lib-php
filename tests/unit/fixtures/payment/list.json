@@ -51,7 +51,7 @@
       "order_id": "822386023",
       "id": "paym_p5tjCrXHy93xtVtVqvEJoC1c",
       "response": "00",
-      "status": 2
+      "status": "to_capture"
     }
   ],
   "range": {

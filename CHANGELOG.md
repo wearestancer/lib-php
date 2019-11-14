@@ -15,11 +15,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Add `ild78\Payment::getPaymentPageUrl()` method
 - Add `ild78\Api\Config::setKeys()` method
 - Hydration on instanciation
+- Add `ild78\Payment\Status`
 - Custom user agent
 - First issue/MR templates
 - Setter aliases
 
 ### Changes
+- `ild78\Payment::$status` is now editable
 - Getters and setters handles snake_case and camelCase property correctly
 - Exception message will return API error message when possible
 - `Config` handle multiple keys

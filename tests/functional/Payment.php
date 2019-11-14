@@ -416,6 +416,81 @@ class Payment extends TestCase
 
                     ->string($auth->getStatus())
                         ->isIdenticalTo(ild78\Auth\Status::REQUESTED)
+
+            ->assert('Patch card and status')
+                ->given($this->newTestedInstance)
+                ->and($amount = rand(50, 99999))
+                ->and($currency = $this->currencyDataProvider()[0])
+                ->and($description = sprintf('Automatic test, PATCH card, %.02f %s', $amount / 100, $currency))
+
+                ->if($customer = new ild78\Customer)
+                ->and($customer->setName('John Doe'))
+                ->and($customer->setEmail('john.doe@example.com'))
+
+                ->if($this->testedInstance->setAmount($amount))
+                ->and($this->testedInstance->setCurrency($currency))
+                ->and($this->testedInstance->setDescription($description))
+                ->and($this->testedInstance->setCustomer($customer))
+
+                ->if($card = new ild78\Card)
+                ->and($card->setNumber($this->getValidCardNumber()))
+                ->and($card->setExpirationMonth(rand(1, 12)))
+                ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
+                ->and($card->setCvc(rand(100, 999)))
+
+                ->then
+                    ->object($this->testedInstance->save())
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getId())
+                        ->startWith('paym_')
+                        ->hasLength(29)
+
+                    ->variable($this->testedInstance->getMethod())
+                        ->isNull
+
+                    ->variable($this->testedInstance->getCard())
+                        ->isNull
+
+                    ->variable($this->testedInstance->getSepa())
+                        ->isNull
+
+                    ->variable($this->testedInstance->getStatus())
+                        ->isNull
+
+                    ->object($this->testedInstance->setCard($card))
+                        ->isTestedInstance
+
+                    ->object($this->testedInstance->save())
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getMethod())
+                        ->isEqualTo('card')
+
+                    ->object($this->testedInstance->getCard())
+                        ->isIdenticalTo($card)
+
+                    ->variable($this->testedInstance->getSepa())
+                        ->isNull
+
+                    ->variable($this->testedInstance->getStatus())
+                        ->isNull
+
+                    ->string($card->getId())
+                        ->startWith('card_')
+                        ->hasLength(29)
+
+                    ->object($this->testedInstance->setStatus(ild78\Payment\Status::AUTHORIZE)->save())
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getStatus())
+                        ->isIdenticalTo(ild78\Payment\Status::AUTHORIZED)
+
+                    ->object($this->testedInstance->setStatus(ild78\Payment\Status::CAPTURE)->save())
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getStatus())
+                        ->isIdenticalTo(ild78\Payment\Status::TO_CAPTURE)
         ;
     }
 }
