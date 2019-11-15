@@ -1794,10 +1794,10 @@ class Payment extends ild78\Tests\atoum
     {
         $orderId = '';
 
-        for ($idx = 0; $idx < 30; $idx++) {
+        for ($idx = 0; $idx < 40; $idx++) {
             $length = strlen($orderId);
 
-            if ($length < 1 || $length > 24) {
+            if ($length < 1 || $length > 36) {
                 $this
                     ->assert($length . ' characters => Not valid')
                         ->exception(function () use ($orderId) {
@@ -1806,7 +1806,7 @@ class Payment extends ild78\Tests\atoum
                             ->isInstanceOf(Exceptions\InvalidOrderIdException::class)
                             ->hasNestedException
                             ->message
-                                ->isIdenticalTo('A valid order ID must be between 1 and 24 characters.')
+                                ->isIdenticalTo('A valid order ID must be between 1 and 36 characters.')
 
                         ->boolean($this->testedInstance->isModified())
                             ->isFalse

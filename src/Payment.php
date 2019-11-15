@@ -81,7 +81,7 @@ class Payment extends Api\AbstractObject
         'orderId' => [
             'size' => [
                 'min' => 1,
-                'max' => 24,
+                'max' => 36,
             ],
             'type' => self::STRING,
         ],

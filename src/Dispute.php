@@ -29,7 +29,7 @@ class Dispute extends Api\AbstractObject
             'restricted' => true,
             'size' => [
                 'min' => 1,
-                'max' => 24,
+                'max' => 36,
             ],
             'type' => self::STRING,
         ],
