@@ -568,7 +568,7 @@ class Client extends ild78\Tests\atoum
                     }
                 })
 
-                ->if($logger = new mock\ild78\Api\Logger)
+                ->if($logger = new mock\ild78\Core\Logger)
                 ->and($config->setLogger($logger))
                 ->then
                     ->exception(function () {

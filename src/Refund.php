@@ -12,7 +12,7 @@ use ild78;
  * @method string getCurrency()
  * @method ild78\\Payment getPayment()
  */
-class Refund extends Api\AbstractObject
+class Refund extends ild78\Core\AbstractObject
 {
     use ild78\Traits\AmountTrait;
 
@@ -54,10 +54,10 @@ class Refund extends Api\AbstractObject
      *
      * Overrided to make sure that the payment instance and the modified flag will not change.
      *
-     * @return Api\AbstractObject
+     * @return ild78\Core\AbstractObject
      * @throws ild78\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
-    public function save(): Api\AbstractObject
+    public function save(): ild78\Core\AbstractObject
     {
         $payment = $this->getPayment();
         $modified = $payment->modified;

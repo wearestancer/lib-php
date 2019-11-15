@@ -12,7 +12,7 @@ use ild78;
  * @method string getMobile()
  * @method string getName()
  */
-class Customer extends Api\AbstractObject
+class Customer extends ild78\Core\AbstractObject
 {
     /** @var string */
     protected $endpoint = 'customers';
@@ -50,7 +50,7 @@ class Customer extends Api\AbstractObject
      * @throws ild78\Exceptions\BadMethodCallException When trying to save a customer without an email
      *    or a phone number.
      */
-    public function save(): ild78\Api\AbstractObject
+    public function save(): ild78\Core\AbstractObject
     {
         if (!$this->getId() && !$this->getEmail() && !$this->getMobile()) {
             $message = 'You must provide an email or a phone number to create a customer.';

@@ -1,10 +1,10 @@
 <?php
 
-namespace ild78\Stub\Api;
+namespace ild78\Stub\Core;
 
 use ild78;
 
-class StubObject extends ild78\Api\AbstractObject
+class StubObject extends ild78\Core\AbstractObject
 {
     use ild78\Stub\TestMethodTrait;
 

@@ -9,7 +9,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use ild78;
-use ild78\Api;
+use ild78\Core;
 use ild78\Card;
 use ild78\Customer;
 use ild78\Exceptions;
@@ -161,7 +161,7 @@ class Payment extends ild78\Tests\atoum
     {
         $this
             ->currentlyTestedClass()
-                ->isSubclassOf(Api\AbstractObject::class)
+                ->isSubclassOf(ild78\Core\AbstractObject::class)
                 ->hasTrait(ild78\Traits\AmountTrait::class)
                 ->hasTrait(ild78\Traits\SearchTrait::class)
         ;
@@ -759,7 +759,7 @@ class Payment extends ild78\Tests\atoum
             ->and($this->testedInstance->setDescription(uniqid()))
             ->and($this->testedInstance->setOrderId(uniqid()))
 
-            ->if($logger = new mock\ild78\Api\Logger)
+            ->if($logger = new mock\ild78\Core\Logger)
             ->and($config->setLogger($logger))
             ->and($logMessage = 'Payment of 1.00 eur with mastercard "4444"')
 
@@ -866,7 +866,7 @@ class Payment extends ild78\Tests\atoum
             ->and($this->testedInstance->setDescription(uniqid()))
             ->and($this->testedInstance->setOrderId(uniqid()))
 
-            ->if($logger = new mock\ild78\Api\Logger)
+            ->if($logger = new mock\ild78\Core\Logger)
             ->and($config->setLogger($logger))
             ->and($logMessage = 'Payment of 1.00 eur with IBAN "2606" / BIC "ILADFRPP"')
 
@@ -1249,7 +1249,7 @@ class Payment extends ild78\Tests\atoum
             ->and($this->testedInstance->setDescription(uniqid()))
             ->and($this->testedInstance->setOrderId(uniqid()))
 
-            ->if($logger = new mock\ild78\Api\Logger)
+            ->if($logger = new mock\ild78\Core\Logger)
             ->and($config->setLogger($logger))
             ->and($logMessage = 'Payment of 100.00 eur without payment method')
 

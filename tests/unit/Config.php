@@ -138,7 +138,7 @@ class Config extends ild78\Tests\atoum
             ->and($mock = new mock\Psr\Log\LoggerInterface)
             ->then
                 ->object($this->testedInstance->getLogger())
-                    ->isInstanceOf(ild78\Api\Logger::class)
+                    ->isInstanceOf(ild78\Core\Logger::class)
 
                 ->object($this->testedInstance->setLogger($mock))
                     ->isTestedInstance

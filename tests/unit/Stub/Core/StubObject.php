@@ -1,6 +1,6 @@
 <?php
 
-namespace ild78\tests\unit\Stub\Api;
+namespace ild78\tests\unit\Stub\Core;
 
 use GuzzleHttp;
 use ild78;

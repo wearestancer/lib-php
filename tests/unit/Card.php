@@ -4,7 +4,7 @@ namespace ild78\tests\unit;
 
 use DateTime;
 use ild78;
-use ild78\Api;
+use ild78\Core;
 use ild78\Card as testedClass;
 use ild78\Exceptions;
 
@@ -16,7 +16,7 @@ class Card extends ild78\Tests\atoum
     {
         $this
             ->currentlyTestedClass
-                ->extends(ild78\Api\AbstractObject::class)
+                ->extends(ild78\Core\AbstractObject::class)
                 ->implements(ild78\Interfaces\PaymentMeansInterface::class)
         ;
     }

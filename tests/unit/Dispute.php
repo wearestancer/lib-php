@@ -11,7 +11,7 @@ class Dispute extends ild78\Tests\atoum
     {
         $this
             ->currentlyTestedClass()
-                ->isSubclassOf(ild78\Api\AbstractObject::class)
+                ->isSubclassOf(ild78\Core\AbstractObject::class)
                 ->hasTrait(ild78\Traits\AmountTrait::class)
                 ->hasTrait(ild78\Traits\SearchTrait::class)
         ;

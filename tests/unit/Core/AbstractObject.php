@@ -1,12 +1,12 @@
 <?php
 
-namespace ild78\tests\unit\Api;
+namespace ild78\tests\unit\Core;
 
 use DateTime;
 use GuzzleHttp;
 use ild78;
-use ild78\Api;
-use ild78\Api\AbstractObject as testedClass;
+use ild78\Core;
+use ild78\Core\AbstractObject as testedClass;
 use ild78\Exceptions;
 use mock;
 

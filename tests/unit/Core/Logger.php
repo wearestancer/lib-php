@@ -1,9 +1,9 @@
 <?php
 
-namespace ild78\tests\unit\Api;
+namespace ild78\tests\unit\Core;
 
 use ild78;
-use ild78\Api\Logger as testedClass;
+use ild78\Core\Logger as testedClass;
 use Psr;
 
 class Logger extends ild78\Tests\atoum

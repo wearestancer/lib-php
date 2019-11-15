@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 // phpcs:disable Generic.NamingConventions.ConstructorName.OldStyle
 
-namespace ild78\Api;
+namespace ild78\Core;
 
 use GuzzleHttp;
 use Exception;
@@ -18,7 +18,7 @@ class Request
      * Simple proxy for a DELETE request
      *
      * @see self::request() For full documentation.
-     * @param ild78\Api\AbstractObject $object Object.
+     * @param ild78\Core\AbstractObject $object Object.
      * @return string
      */
     public function delete(AbstractObject $object): string
@@ -32,7 +32,7 @@ class Request
      * Simple proxy for a GET request
      *
      * @see self::request() For full documentation.
-     * @param ild78\Api\AbstractObject $object Object.
+     * @param ild78\Core\AbstractObject $object Object.
      * @param array $params Query parameters.
      * @return string
      */
@@ -53,7 +53,7 @@ class Request
      * Simple proxy for a PATCH request
      *
      * @see self::request() For full documentation.
-     * @param ild78\Api\AbstractObject $object Object.
+     * @param ild78\Core\AbstractObject $object Object.
      * @return string
      */
     public function patch(AbstractObject $object): string
@@ -68,7 +68,7 @@ class Request
      * Simple proxy for a POST request
      *
      * @see self::request() For full documentation.
-     * @param ild78\Api\AbstractObject $object Object.
+     * @param ild78\Core\AbstractObject $object Object.
      * @return string
      */
     public function post(AbstractObject $object): string
@@ -83,7 +83,7 @@ class Request
      * Simple proxy for a PUT request
      *
      * @see self::request() For full documentation.
-     * @param ild78\Api\AbstractObject $object Object.
+     * @param ild78\Core\AbstractObject $object Object.
      * @return string
      */
     public function put(AbstractObject $object): string
@@ -98,7 +98,7 @@ class Request
      * Alias for patch method
      *
      * @see self::patch() The patch method.
-     * @param ild78\Api\AbstractObject $object Object.
+     * @param ild78\Core\AbstractObject $object Object.
      * @return string
      */
     public function update(AbstractObject $object): string
@@ -114,7 +114,7 @@ class Request
      *
      * @uses ild78\Config
      * @param ild78\Http\Verb\AbstractVerb $verb HTTP verb for the call.
-     * @param ild78\Api\AbstractObject $object Object.
+     * @param ild78\Core\AbstractObject $object Object.
      * @param array $options Guzzle options.
      * @return string
      * @throws ild78\Exceptions\InvalidArgumentException When calling with unsupported verb.

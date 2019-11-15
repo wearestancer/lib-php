@@ -159,9 +159,9 @@ class Config
      *
      * @return Psr\\Log\\LoggerInterface
      */
-    public function getLogger()
+    public function getLogger(): LoggerInterface
     {
-        return $this->logger ?: new ild78\Api\Logger();
+        return $this->logger ?: new ild78\Core\Logger();
     }
 
     /**

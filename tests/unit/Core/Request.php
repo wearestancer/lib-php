@@ -1,11 +1,11 @@
 <?php
 
-namespace ild78\tests\unit\Api;
+namespace ild78\tests\unit\Core;
 
 use Exception;
 use GuzzleHttp;
 use ild78;
-use ild78\Api\Request as testedClass;
+use ild78\Core\Request as testedClass;
 use mock;
 
 class Request extends ild78\Tests\atoum
@@ -25,9 +25,9 @@ class Request extends ild78\Tests\atoum
 
             ->if($this->newTestedInstance)
             ->and($method = new ild78\Http\Verb\Get)
-            ->and($object = new mock\ild78\Api\AbstractObject)
+            ->and($object = new mock\ild78\Core\AbstractObject)
 
-            ->if($logger = new mock\ild78\Api\Logger)
+            ->if($logger = new mock\ild78\Core\Logger)
             ->and($config->setLogger($logger))
 
             ->then
@@ -82,10 +82,10 @@ class Request extends ild78\Tests\atoum
                 ->if($client = new ild78\Http\Client)
                 ->and($config->setHttpClient($client))
 
-                ->if($object = new mock\ild78\Api\AbstractObject)
+                ->if($object = new mock\ild78\Core\AbstractObject)
                 ->and($method = new ild78\Http\Verb\Post)
 
-                ->if($logger = new mock\ild78\Api\Logger)
+                ->if($logger = new mock\ild78\Core\Logger)
                 ->and($config->setLogger($logger))
                 ->and($debugMessage = vsprintf('API call : %s %s', [
                     (string) $method,
@@ -115,10 +115,10 @@ class Request extends ild78\Tests\atoum
             ->assert('Unsupported method')
                 ->if($this->newTestedInstance)
                 ->and($this->function->curl_exec = uniqid())
-                ->and($object = new mock\ild78\Api\AbstractObject)
+                ->and($object = new mock\ild78\Core\AbstractObject)
                 ->and($method = new mock\ild78\Http\Verb\AbstractVerb)
 
-                ->if($logger = new mock\ild78\Api\Logger)
+                ->if($logger = new mock\ild78\Core\Logger)
                 ->and($config->setLogger($logger))
                 ->and($errorMessage = sprintf('HTTP verb "%s" unsupported', (string) $method))
                 ->then
@@ -155,9 +155,9 @@ class Request extends ild78\Tests\atoum
 
                 ->if($this->newTestedInstance)
                 ->and($method = new ild78\Http\Verb\Get)
-                ->and($object = new mock\ild78\Api\AbstractObject)
+                ->and($object = new mock\ild78\Core\AbstractObject)
 
-                ->if($logger = new mock\ild78\Api\Logger)
+                ->if($logger = new mock\ild78\Core\Logger)
                 ->and($config->setLogger($logger))
                 ->and($debugMessage = 'API call : ' . $method . ' ' . $object->getUri())
                 ->then
@@ -185,9 +185,9 @@ class Request extends ild78\Tests\atoum
 
                 ->if($this->newTestedInstance)
                 ->and($method = new ild78\Http\Verb\Get)
-                ->and($object = new mock\ild78\Api\AbstractObject)
+                ->and($object = new mock\ild78\Core\AbstractObject)
 
-                ->if($logger = new mock\ild78\Api\Logger)
+                ->if($logger = new mock\ild78\Core\Logger)
                 ->and($config->setLogger($logger))
 
                 ->if($key1 = uniqid())
@@ -219,10 +219,10 @@ class Request extends ild78\Tests\atoum
                 ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
                 ->and($config->setHttpClient($client))
 
-                ->if($object = new mock\ild78\Api\AbstractObject)
+                ->if($object = new mock\ild78\Core\AbstractObject)
                 ->and($method = new ild78\Http\Verb\Post)
 
-                ->if($logger = new mock\ild78\Api\Logger)
+                ->if($logger = new mock\ild78\Core\Logger)
                 ->and($config->setLogger($logger))
                 ->and($debugMessage = vsprintf('API call : %s %s', [
                     (string) $method,
@@ -254,10 +254,10 @@ class Request extends ild78\Tests\atoum
                 ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
                 ->and($config->setHttpClient($client))
 
-                ->if($object = new mock\ild78\Api\AbstractObject)
+                ->if($object = new mock\ild78\Core\AbstractObject)
                 ->and($method = new ild78\Http\Verb\Get)
 
-                ->if($logger = new mock\ild78\Api\Logger)
+                ->if($logger = new mock\ild78\Core\Logger)
                 ->and($config->setLogger($logger))
                 ->and($debugMessage = vsprintf('API call : %s %s', [
                     (string) $method,
@@ -367,10 +367,10 @@ class Request extends ild78\Tests\atoum
                     ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
                     ->and($config->setHttpClient($client))
 
-                    ->if($object = new mock\ild78\Api\AbstractObject)
+                    ->if($object = new mock\ild78\Core\AbstractObject)
                     ->and($method = new ild78\Http\Verb\Get)
 
-                    ->if($logger = new mock\ild78\Api\Logger)
+                    ->if($logger = new mock\ild78\Core\Logger)
                     ->and($config->setLogger($logger))
                     ->and($debugMessage = vsprintf('API call : %s %s', [
                         (string) $method,
@@ -422,10 +422,10 @@ class Request extends ild78\Tests\atoum
         // testing a mock is not a good test but here we only want to test we call an other method
 
         $this
-            ->given($request = new mock\ild78\Api\Request)
+            ->given($request = new mock\ild78\Core\Request)
             ->and($this->calling($request)->request = true)
 
-            ->if($object = new mock\ild78\Api\AbstractObject(uniqid()))
+            ->if($object = new mock\ild78\Core\AbstractObject(uniqid()))
 
             ->and($delete = new ild78\Http\Verb\Delete)
             ->and($get = new ild78\Http\Verb\Get)

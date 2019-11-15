@@ -28,7 +28,7 @@ use ild78;
  * @method self setReturnUrl(string $https)
  * @method self setStatus(string $status)
  */
-class Payment extends Api\AbstractObject
+class Payment extends ild78\Core\AbstractObject
 {
     use ild78\Traits\AmountTrait;
     use ild78\Traits\SearchTrait;
@@ -166,7 +166,7 @@ class Payment extends Api\AbstractObject
      * @return void No return possible
      * @throws ild78\Exceptions\BadMethodCallException On every call, this method is not allowed in this context.
      */
-    public function delete(): ild78\Api\AbstractObject
+    public function delete(): ild78\Core\AbstractObject
     {
         $message = 'You are not allowed to delete a payment, you need to refund it instead.';
 
@@ -371,7 +371,7 @@ class Payment extends Api\AbstractObject
      * @throws ild78\Exceptions\InvalidPortException When no device was already given, authenticated payment
      *   was asked and an error occur during device creation.
      */
-    public function save(): ild78\Api\AbstractObject
+    public function save(): ild78\Core\AbstractObject
     {
         $auth = $this->getAuth();
         $card = $this->getCard();

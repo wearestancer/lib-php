@@ -89,7 +89,7 @@ trait SearchTrait
             }
         }
 
-        $request = new ild78\Api\Request();
+        $request = new ild78\Core\Request();
         $element = new static(); // Mandatory for requests.
 
         $gen = function () use ($request, $element, $params) {

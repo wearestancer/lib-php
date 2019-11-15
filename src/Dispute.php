@@ -15,7 +15,7 @@ use ild78;
  * @method string getResponseCode()
  * @method Generator list(array $terms)
  */
-class Dispute extends Api\AbstractObject
+class Dispute extends ild78\Core\AbstractObject
 {
     use ild78\Traits\AmountTrait;
     use ild78\Traits\SearchTrait;

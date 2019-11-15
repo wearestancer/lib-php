@@ -21,7 +21,7 @@ use ild78;
  * @method self setLanguages(string $languages)
  * @method self setUserAgent(string $userAgent)
  */
-class Device extends Api\AbstractObject
+class Device extends ild78\Core\AbstractObject
 {
     /** @var array */
     protected $dataModel = [

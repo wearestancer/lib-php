@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace ild78\Api;
+namespace ild78\Core;
 
 use DateTime;
 use GuzzleHttp;

@@ -20,7 +20,7 @@ class Device extends ild78\Tests\atoum
     {
         $this
             ->currentlyTestedClass
-                ->extends(ild78\Api\AbstractObject::class)
+                ->extends(ild78\Core\AbstractObject::class)
         ;
     }
 
