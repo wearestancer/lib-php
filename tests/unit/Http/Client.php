@@ -233,7 +233,7 @@ class Client extends ild78\Tests\atoum
     public function testGetLastRequest_LastResponse()
     {
         $this
-            ->given($config = ild78\Api\Config::init([]))
+            ->given($config = ild78\Config::init([]))
 
             ->if($this->newTestedInstance)
             ->and($curl = $this->testedInstance->getCurlResource())
@@ -324,7 +324,7 @@ class Client extends ild78\Tests\atoum
     public function testRequest()
     {
         $this
-            ->given($config = ild78\Api\Config::init([]))
+            ->given($config = ild78\Config::init([]))
 
             ->assert('Basic request')
                 ->given($this->newTestedInstance)
@@ -552,7 +552,7 @@ class Client extends ild78\Tests\atoum
     public function testRequest_exceptions($error, $code, $class, $message, $logLevel, $logMessage)
     {
         $this
-            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
             ->assert($code . ' should throw ' . $class)
                 ->given($this->newTestedInstance)

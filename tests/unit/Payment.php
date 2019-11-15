@@ -47,7 +47,7 @@ class Payment extends ild78\Tests\atoum
             ->if($client = new mock\GuzzleHttp\Client)
             ->and($response = new mock\GuzzleHttp\Psr7\Response)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
 
             ->assert('Test with a card token')
@@ -194,7 +194,7 @@ class Payment extends ild78\Tests\atoum
         $this
             ->given($secret = 'stest_' . bin2hex(random_bytes(12)))
             ->and($public = 'ptest_' . bin2hex(random_bytes(12)))
-            ->and($config = ild78\Api\Config::init([$secret]))
+            ->and($config = ild78\Config::init([$secret]))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -255,7 +255,7 @@ class Payment extends ild78\Tests\atoum
     public function testGetRefundableAmount()
     {
         $this
-            ->given($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($client = new mock\ild78\Http\Client)
             ->and($config->setHttpClient($client))
 
@@ -354,7 +354,7 @@ class Payment extends ild78\Tests\atoum
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/list.json'))
             ->and($this->calling($response)->getBody = $body)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
 
             ->and($options = [
@@ -576,7 +576,7 @@ class Payment extends ild78\Tests\atoum
             ->given($client = new mock\GuzzleHttp\Client)
             ->and($response = new mock\GuzzleHttp\Psr7\Response)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
 
             ->then
@@ -623,7 +623,7 @@ class Payment extends ild78\Tests\atoum
             ->given($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
             // Behavior modification are done in assert part to prevent confusion on multiple calls mocking
 
@@ -735,7 +735,7 @@ class Payment extends ild78\Tests\atoum
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-card.json'))
             ->and($this->calling($response)->getBody = $body)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
 
             ->if($card = new Card)
@@ -851,7 +851,7 @@ class Payment extends ild78\Tests\atoum
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-sepa.json'))
             ->and($this->calling($response)->getBody = $body)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
 
             ->if($sepa = new Sepa)
@@ -938,7 +938,7 @@ class Payment extends ild78\Tests\atoum
         $_SERVER['SERVER_PORT'] = $port = rand(1, 65535);
 
         $this
-            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -1077,7 +1077,7 @@ class Payment extends ild78\Tests\atoum
     public function testSave_fullyCustomAuthenticatedPayment()
     {
         $this
-            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -1224,7 +1224,7 @@ class Payment extends ild78\Tests\atoum
     public function testSave_withoutCardOrSepa()
     {
         $this
-            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -1314,7 +1314,7 @@ class Payment extends ild78\Tests\atoum
     public function testSave_authenticationAndPaymentPage()
     {
         $this
-            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -1408,7 +1408,7 @@ class Payment extends ild78\Tests\atoum
     public function testSave_status()
     {
         $this
-            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -1466,7 +1466,7 @@ class Payment extends ild78\Tests\atoum
     public function testSave_device()
     {
         $this
-            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($port = rand(1, 65535))
             ->and($addr = $this->ipDataProvider()[0])
             ->and($url = 'https://www.example.org?' . uniqid())

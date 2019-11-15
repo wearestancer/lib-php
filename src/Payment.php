@@ -187,7 +187,7 @@ class Payment extends Api\AbstractObject
      */
     public function getPaymentPageUrl(): string
     {
-        $config = ild78\Api\Config::getGlobal();
+        $config = ild78\Config::getGlobal();
 
         $params = [
             str_replace('api', 'payment', $config->getHost()),
@@ -416,7 +416,7 @@ class Payment extends Api\AbstractObject
             $message = vsprintf('Payment of %.02f %s with IBAN "%s" / BIC "%s"', $params);
         }
 
-        Api\Config::getGlobal()->getLogger()->info($message);
+        ild78\Config::getGlobal()->getLogger()->info($message);
 
         return $this;
     }

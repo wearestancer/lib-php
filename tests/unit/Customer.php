@@ -67,7 +67,7 @@ class Customer extends ild78\Tests\atoum
             ->and($body = file_get_contents(__DIR__ . '/fixtures/customers/create.json'))
             ->and($this->calling($response)->getBody = $body)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
 
             ->if($this->newTestedInstance)
@@ -165,7 +165,7 @@ class Customer extends ild78\Tests\atoum
     public function testSave_forUpdate()
     {
         $this
-            ->given($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($client = new mock\ild78\Http\Client)
             ->and($config->setHttpClient($client))
 

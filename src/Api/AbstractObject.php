@@ -410,7 +410,7 @@ abstract class AbstractObject implements JsonSerializable
     public function getUri(): string
     {
         $tmp = [
-            Config::getGlobal()->getUri(),
+            ild78\Config::getGlobal()->getUri(),
             $this->getEndpoint(),
         ];
 

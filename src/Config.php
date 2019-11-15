@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace ild78\Api;
+namespace ild78;
 
 use GuzzleHttp;
 use ild78;
@@ -161,7 +161,7 @@ class Config
      */
     public function getLogger()
     {
-        return $this->logger ?: new Logger();
+        return $this->logger ?: new ild78\Api\Logger();
     }
 
     /**

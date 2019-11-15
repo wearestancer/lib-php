@@ -144,7 +144,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
      */
     public function request(string $method, string $uri, array $options = []): Psr\Http\Message\ResponseInterface
     {
-        $config = ild78\Api\Config::getGlobal();
+        $config = ild78\Config::getGlobal();
         $logger = $config->getLogger();
 
         // Set URL.

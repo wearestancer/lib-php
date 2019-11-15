@@ -24,7 +24,7 @@ class TestCase extends ild78\Tests\atoum
         }
 
         if (!$this->config) {
-            $this->config = ild78\Api\Config::setGlobal(new ild78\Api\Config([$env['API_KEY']]));
+            $this->config = ild78\Config::setGlobal(new ild78\Config([$env['API_KEY']]));
         }
 
         $this->config->setHost($env['API_HOST']);

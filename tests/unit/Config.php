@@ -1,10 +1,10 @@
 <?php
 
-namespace ild78\tests\unit\Api;
+namespace ild78\tests\unit;
 
 use GuzzleHttp;
 use ild78;
-use ild78\Api\Config as testedClass;
+use ild78\Config as testedClass;
 use ild78\Exceptions;
 use ild78\Exceptions\InvalidArgumentException;
 use ild78\Exceptions\NotAuthorizedException;
@@ -16,7 +16,7 @@ class Config extends ild78\Tests\atoum
     public function testClass()
     {
         $this
-            ->given($package = json_decode(file_get_contents(__DIR__ . '/../../../composer.json'), true))
+            ->given($package = json_decode(file_get_contents(__DIR__ . '/../../composer.json'), true))
             ->then
                 ->currentlyTestedClass
                     ->hasConstant('LIVE_MODE')

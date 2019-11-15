@@ -112,7 +112,7 @@ class Request
     /**
      * Make a call to API
      *
-     * @uses ild78\Api\Config
+     * @uses ild78\Config
      * @param ild78\Http\Verb\AbstractVerb $verb HTTP verb for the call.
      * @param ild78\Api\AbstractObject $object Object.
      * @param array $options Guzzle options.
@@ -127,7 +127,7 @@ class Request
      */
     public function request(ild78\Http\Verb\AbstractVerb $verb, AbstractObject $object, array $options = []): string
     {
-        $config = Config::getGlobal();
+        $config = ild78\Config::getGlobal();
         $client = $config->getHttpClient();
         $logger = $config->getLogger();
 
