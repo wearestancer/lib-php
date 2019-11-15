@@ -23,10 +23,9 @@ class Request
      */
     public function delete(AbstractObject $object): string
     {
-        $options = ['body' => json_encode($object->getId())];
         $verb = new ild78\Http\Verb\Delete();
 
-        return $this->request($verb, $object, $options);
+        return $this->request($verb, $object);
     }
 
     /**
