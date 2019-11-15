@@ -71,25 +71,11 @@ class Device extends Api\AbstractObject
      */
     public function __construct(array $data = [])
     {
-        if (empty($data['http_accept'])) {
-            $data['http_accept'] = $_SERVER['HTTP_ACCEPT'] ?? null;
-        }
-
-        if (empty($data['languages'])) {
-            $data['languages'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
-        }
-
-        if (empty($data['ip'])) {
-            $data['ip'] = $_SERVER['SERVER_ADDR'] ?? null;
-        }
-
-        if (empty($data['port'])) {
-            $data['port'] = $_SERVER['SERVER_PORT'] ?? 0;
-        }
-
-        if (empty($data['user_agent'])) {
-            $data['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? null;
-        }
+        $data['http_accept'] = $data['http_accept'] ?? $_SERVER['HTTP_ACCEPT'] ?? null;
+        $data['languages'] = $data['languages'] ?? $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
+        $data['ip'] = $data['ip'] ?? $_SERVER['SERVER_ADDR'] ?? null;
+        $data['port'] = $data['port'] ?? $_SERVER['SERVER_PORT'] ?? 0;
+        $data['user_agent'] = $data['user_agent'] ?? $_SERVER['HTTP_USER_AGENT'] ?? null;
 
         if (!$data['ip']) {
             throw new ild78\Exceptions\InvalidIpAddressException('You must provide an IP address.');
