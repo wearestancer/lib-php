@@ -5,7 +5,7 @@ namespace ild78\tests\unit\Exceptions;
 use ild78;
 use Psr;
 
-class InvalidSearchStart extends ild78\Tests\atoum
+class InvalidSearchStartException extends ild78\Tests\atoum
 {
     public function testClass()
     {

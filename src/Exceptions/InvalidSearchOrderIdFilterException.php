@@ -8,7 +8,7 @@ use Psr;
 /**
  * Exception thrown on invalid search order id.
  */
-class InvalidSearchOrderIdFilter extends InvalidSearchFilter
+class InvalidSearchOrderIdFilterException extends InvalidSearchFilterException
 {
     /**
      * Return default message for that kind of exception

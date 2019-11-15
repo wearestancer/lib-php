@@ -5,14 +5,13 @@ namespace ild78\tests\unit\Exceptions;
 use ild78;
 use Psr;
 
-class InvalidSearchLimit extends ild78\Tests\atoum
+class InvalidSearchOrderIdFilterException extends ild78\Tests\atoum
 {
     public function testClass()
     {
         $this
             ->currentlyTestedClass
-                ->extends(ild78\Exceptions\InvalidArgumentException::class)
-                ->implements(ild78\Interfaces\ExceptionInterface::class)
+                ->extends(ild78\Exceptions\InvalidSearchFilterException::class)
         ;
     }
 
@@ -22,7 +21,7 @@ class InvalidSearchLimit extends ild78\Tests\atoum
             ->if($class = $this->testedClass->getClass())
             ->then
                 ->string($class::getDefaultMessage())
-                    ->isIdenticalTo('Limit must be between 1 and 100.')
+                    ->isIdenticalTo('Invalid order ID.')
         ;
     }
 

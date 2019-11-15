@@ -365,21 +365,21 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     testedClass::list(['limit' => 0]);
                 })
-                    ->isInstanceOf(ild78\Exceptions\InvalidSearchLimit::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchLimitException::class)
                     ->message
                         ->isIdenticalTo('Limit must be between 1 and 100.')
 
                 ->exception(function () {
                     testedClass::list(['limit' => 101]);
                 })
-                    ->isInstanceOf(ild78\Exceptions\InvalidSearchLimit::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchLimitException::class)
                     ->message
                         ->isIdenticalTo('Limit must be between 1 and 100.')
 
                 ->exception(function () {
                     testedClass::list(['limit' => uniqid()]);
                 })
-                    ->isInstanceOf(ild78\Exceptions\InvalidSearchLimit::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchLimitException::class)
                     ->message
                         ->isIdenticalTo('Limit must be between 1 and 100.')
 
@@ -387,14 +387,14 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     testedClass::list(['start' => -1]);
                 })
-                    ->isInstanceOf(ild78\Exceptions\InvalidSearchStart::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchStartException::class)
                     ->message
                         ->isIdenticalTo('Start must be a positive integer.')
 
                 ->exception(function () {
                     testedClass::list(['start' => uniqid()]);
                 })
-                    ->isInstanceOf(ild78\Exceptions\InvalidSearchStart::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchStartException::class)
                     ->message
                         ->isIdenticalTo('Start must be a positive integer.')
 
@@ -402,14 +402,14 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     testedClass::list([]);
                 })
-                    ->isInstanceOf(ild78\Exceptions\InvalidSearchFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchFilterException::class)
                     ->message
                         ->isIdenticalTo('Invalid search filters.')
 
                 ->exception(function () {
                     testedClass::list(['foo' => 'bar']);
                 })
-                    ->isInstanceOf(ild78\Exceptions\InvalidSearchFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchFilterException::class)
                     ->message
                         ->isIdenticalTo('Invalid search filters.')
 
@@ -417,7 +417,7 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     testedClass::list(['created' => time() + 100]);
                 })
-                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilterException::class)
                     ->message
                         ->isIdenticalTo('Created must be in the past.')
 
@@ -427,21 +427,21 @@ class Payment extends ild78\Tests\atoum
 
                     testedClass::list(['created' => $date]);
                 })
-                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilterException::class)
                     ->message
                         ->isIdenticalTo('Created must be in the past.')
 
                 ->exception(function () {
                     testedClass::list(['created' => 0]);
                 })
-                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilterException::class)
                     ->message
                         ->isIdenticalTo('Created must be a position integer or a DateTime object.')
 
                 ->exception(function () {
                     testedClass::list(['created' => uniqid()]);
                 })
-                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilterException::class)
                     ->message
                         ->isIdenticalTo('Created must be a position integer or a DateTime object.')
 
@@ -449,14 +449,14 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     testedClass::list(['order_id' => '']);
                 })
-                    ->isInstanceOf(ild78\Exceptions\InvalidSearchOrderIdFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchOrderIdFilterException::class)
                     ->message
                         ->isIdenticalTo('Invalid order ID.')
 
                 ->exception(function () {
                     testedClass::list(['order_id' => rand(0, PHP_INT_MAX)]);
                 })
-                    ->isInstanceOf(ild78\Exceptions\InvalidSearchOrderIdFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchOrderIdFilterException::class)
                     ->message
                         ->isIdenticalTo('Invalid order ID.')
 

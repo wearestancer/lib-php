@@ -7,9 +7,9 @@ use ild78\Interfaces\ExceptionInterface;
 use Psr;
 
 /**
- * Exception thrown on invalid search filters.
+ * Exception thrown on invalid search start.
  */
-class InvalidSearchFilter extends InvalidArgumentException implements ExceptionInterface
+class InvalidSearchStartException extends InvalidArgumentException implements ExceptionInterface
 {
     /** @var string Default log level */
     protected static $logLevel = Psr\Log\LogLevel::DEBUG;
@@ -21,6 +21,6 @@ class InvalidSearchFilter extends InvalidArgumentException implements ExceptionI
      */
     public static function getDefaultMessage(): string
     {
-        return 'Invalid search filters.';
+        return 'Start must be a positive integer.';
     }
 }

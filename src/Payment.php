@@ -284,7 +284,7 @@ class Payment extends ild78\Core\AbstractObject
      *
      * @param array $terms Search terms. May have `order_id` key.
      * @return array
-     * @throws ild78\Exceptions\InvalidSearchOrderIdFilter When `order_id` is invalid.
+     * @throws ild78\Exceptions\InvalidSearchOrderIdFilterException When `order_id` is invalid.
      */
     public static function filterListFilter(array $terms): array
     {
@@ -295,7 +295,7 @@ class Payment extends ild78\Core\AbstractObject
             $type = gettype($terms['order_id']);
 
             if (!$terms['order_id'] || $type !== 'string') {
-                throw new ild78\Exceptions\InvalidSearchOrderIdFilter();
+                throw new ild78\Exceptions\InvalidSearchOrderIdFilterException();
             }
         }
 

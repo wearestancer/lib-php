@@ -3,12 +3,10 @@ declare(strict_types=1);
 
 namespace ild78\Exceptions;
 
-use Psr;
-
 /**
  * Exception thrown on invalid search creation date.
  */
-class InvalidSearchCreationFilter extends InvalidSearchFilter
+class InvalidSearchCreationFilterException extends InvalidSearchFilterException
 {
     /**
      * Return default message for that kind of exception

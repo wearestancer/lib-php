@@ -6,13 +6,13 @@ use atoum;
 use ild78;
 use Psr;
 
-class InvalidSearchCreationFilter extends ild78\Tests\atoum
+class InvalidSearchCreationFilterException extends ild78\Tests\atoum
 {
     public function testClass()
     {
         $this
             ->currentlyTestedClass
-                ->extends(ild78\Exceptions\InvalidSearchFilter::class)
+                ->extends(ild78\Exceptions\InvalidSearchFilterException::class)
         ;
     }
 

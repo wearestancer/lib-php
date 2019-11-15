@@ -25,10 +25,10 @@ trait SearchTrait
      *
      * @param array $terms Search terms. May have `created`, `limit` or `start` key.
      * @return Generator
-     * @throws ild78\Exceptions\InvalidSearchFilter When `$terms` is invalid.
-     * @throws ild78\Exceptions\InvalidSearchCreationFilter When `created` is invalid.
-     * @throws ild78\Exceptions\InvalidSearchLimit When `limit` is invalid.
-     * @throws ild78\Exceptions\InvalidSearchStart When `start` is invalid.
+     * @throws ild78\Exceptions\InvalidSearchFilterException When `$terms` is invalid.
+     * @throws ild78\Exceptions\InvalidSearchCreationFilterException When `created` is invalid.
+     * @throws ild78\Exceptions\InvalidSearchLimitException When `limit` is invalid.
+     * @throws ild78\Exceptions\InvalidSearchStartException When `start` is invalid.
      */
     public static function list(array $terms): Generator
     {
@@ -42,7 +42,7 @@ trait SearchTrait
         $params = array_merge(array_intersect_key($terms, $allowed), $others);
 
         if (!$params) {
-            throw new ild78\Exceptions\InvalidSearchFilter();
+            throw new ild78\Exceptions\InvalidSearchFilterException();
         }
 
         if (array_key_exists('created', $terms)) {
@@ -59,13 +59,13 @@ trait SearchTrait
             if (!$created || $type !== 'integer') {
                 $message = 'Created must be a position integer or a DateTime object.';
 
-                throw new ild78\Exceptions\InvalidSearchCreationFilter($message);
+                throw new ild78\Exceptions\InvalidSearchCreationFilterException($message);
             }
 
             if ($created > time()) {
                 $message = 'Created must be in the past.';
 
-                throw new ild78\Exceptions\InvalidSearchCreationFilter($message);
+                throw new ild78\Exceptions\InvalidSearchCreationFilterException($message);
             }
         }
 
@@ -74,7 +74,7 @@ trait SearchTrait
             $type = gettype($terms['limit']);
 
             if ($type !== 'integer' || $terms['limit'] < 1 || $terms['limit'] > 100) {
-                throw new ild78\Exceptions\InvalidSearchLimit();
+                throw new ild78\Exceptions\InvalidSearchLimitException();
             }
         }
 
@@ -85,7 +85,7 @@ trait SearchTrait
             $type = gettype($terms['start']);
 
             if ($type !== 'integer' || $terms['start'] < 0) {
-                throw new ild78\Exceptions\InvalidSearchStart();
+                throw new ild78\Exceptions\InvalidSearchStartException();
             }
         }
 
