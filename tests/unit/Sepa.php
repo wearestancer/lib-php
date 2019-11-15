@@ -3,8 +3,6 @@
 namespace ild78\tests\unit;
 
 use ild78;
-use ild78\Core;
-use ild78\Exceptions;
 use ild78\Sepa as testedClass;
 
 class Sepa extends ild78\Tests\atoum

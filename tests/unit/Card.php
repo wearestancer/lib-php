@@ -4,9 +4,7 @@ namespace ild78\tests\unit;
 
 use DateTime;
 use ild78;
-use ild78\Core;
 use ild78\Card as testedClass;
-use ild78\Exceptions;
 
 class Card extends ild78\Tests\atoum
 {
@@ -71,7 +69,7 @@ class Card extends ild78\Tests\atoum
                     ->exception(function () {
                         $this->testedInstance->getExpDate();
                     })
-                        ->isInstanceOf(Exceptions\InvalidExpirationMonthException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidExpirationMonthException::class)
                         ->message
                             ->isIdenticalTo('You must set an expiration month before asking for a date.')
 
@@ -84,7 +82,7 @@ class Card extends ild78\Tests\atoum
                     ->exception(function () {
                         $this->testedInstance->getExpDate();
                     })
-                        ->isInstanceOf(Exceptions\InvalidExpirationYearException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidExpirationYearException::class)
                         ->message
                             ->isIdenticalTo('You must set an expiration year before asking for a date.')
         ;
@@ -152,7 +150,7 @@ class Card extends ild78\Tests\atoum
                         ->exception(function () use ($month) {
                             $this->testedInstance->setExpMonth($month);
                         })
-                            ->isInstanceOf(Exceptions\InvalidExpirationMonthException::class)
+                            ->isInstanceOf(ild78\Exceptions\InvalidExpirationMonthException::class)
                             ->message
                                 ->isIdenticalTo('Invalid expiration month "' . $month . '"')
 
@@ -220,7 +218,7 @@ class Card extends ild78\Tests\atoum
                         ->exception(function () use ($year) {
                             $this->testedInstance->setExpYear($year);
                         })
-                            ->isInstanceOf(Exceptions\InvalidExpirationYearException::class)
+                            ->isInstanceOf(ild78\Exceptions\InvalidExpirationYearException::class)
                             ->message
                                 ->isIdenticalTo('Invalid expiration year "' . $year . '"')
 
@@ -304,7 +302,7 @@ class Card extends ild78\Tests\atoum
                     ->exception(function () use ($cvc) {
                         $this->testedInstance->setCvc($cvc);
                     })
-                        ->isInstanceOf(Exceptions\InvalidCardCvcException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidCardCvcException::class)
                         ->hasNestedException
                         ->message
                             ->isIdenticalTo('A valid cvc must have 3 characters.')
@@ -323,7 +321,7 @@ class Card extends ild78\Tests\atoum
                 ->exception(function () {
                     $this->testedInstance->setName('');
                 })
-                    ->isInstanceOf(Exceptions\InvalidNameException::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidNameException::class)
                     ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid name must be between 4 and 64 characters.')
@@ -368,7 +366,7 @@ class Card extends ild78\Tests\atoum
                     ->exception(function () use ($badNumber) {
                         $this->testedInstance->setNumber((string) $badNumber);
                     })
-                        ->isInstanceOf(Exceptions\InvalidCardNumberException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidCardNumberException::class)
                         ->message
                             ->isIdenticalTo('"' . $badNumber . '" is not a valid credit card number.')
 

@@ -9,12 +9,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use ild78;
-use ild78\Core;
-use ild78\Card;
-use ild78\Customer;
-use ild78\Exceptions;
 use ild78\Payment as testedClass;
-use ild78\Sepa;
 use mock;
 
 class Payment extends ild78\Tests\atoum
@@ -173,7 +168,7 @@ class Payment extends ild78\Tests\atoum
             ->exception(function () {
                 $this->newTestedInstance(uniqid())->delete();
             })
-                ->isInstanceOf(Exceptions\BadMethodCallException::class)
+                ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
                 ->message
                     ->isIdenticalTo('You are not allowed to delete a payment, you need to refund it instead.')
         ;
@@ -221,7 +216,7 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     $this->testedInstance->getPaymentPageUrl();
                 })
-                    ->isInstanceOf(Exceptions\MissingApiKeyException::class)
+                    ->isInstanceOf(ild78\Exceptions\MissingApiKeyException::class)
                     ->message
                         ->isIdenticalTo('You did not provide valid public API key for development.')
 
@@ -230,7 +225,7 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     $this->testedInstance->getPaymentPageUrl();
                 })
-                    ->isInstanceOf(Exceptions\MissingReturnUrlException::class)
+                    ->isInstanceOf(ild78\Exceptions\MissingReturnUrlException::class)
                     ->message
                         ->isIdenticalTo('You must provide a return URL before asking for the payment page.')
 
@@ -240,7 +235,7 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     $this->testedInstance->getPaymentPageUrl();
                 })
-                    ->isInstanceOf(Exceptions\MissingPaymentIdException::class)
+                    ->isInstanceOf(ild78\Exceptions\MissingPaymentIdException::class)
                     ->message
                         ->isIdenticalTo('A payment ID is mandatory to obtain a payment page URL. Maybe you forgot to save the payment.')
 
@@ -324,7 +319,7 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () use ($http) {
                     $this->testedInstance->setReturnUrl($http);
                 })
-                    ->isInstanceOf(Exceptions\InvalidUrlException::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidUrlException::class)
                     ->message
                         ->isIdenticalTo('You must provide an HTTPS URL.')
         ;
@@ -370,21 +365,21 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     testedClass::list(['limit' => 0]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchLimit::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchLimit::class)
                     ->message
                         ->isIdenticalTo('Limit must be between 1 and 100.')
 
                 ->exception(function () {
                     testedClass::list(['limit' => 101]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchLimit::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchLimit::class)
                     ->message
                         ->isIdenticalTo('Limit must be between 1 and 100.')
 
                 ->exception(function () {
                     testedClass::list(['limit' => uniqid()]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchLimit::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchLimit::class)
                     ->message
                         ->isIdenticalTo('Limit must be between 1 and 100.')
 
@@ -392,14 +387,14 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     testedClass::list(['start' => -1]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchStart::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchStart::class)
                     ->message
                         ->isIdenticalTo('Start must be a positive integer.')
 
                 ->exception(function () {
                     testedClass::list(['start' => uniqid()]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchStart::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchStart::class)
                     ->message
                         ->isIdenticalTo('Start must be a positive integer.')
 
@@ -407,14 +402,14 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     testedClass::list([]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchFilter::class)
                     ->message
                         ->isIdenticalTo('Invalid search filters.')
 
                 ->exception(function () {
                     testedClass::list(['foo' => 'bar']);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchFilter::class)
                     ->message
                         ->isIdenticalTo('Invalid search filters.')
 
@@ -422,7 +417,7 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     testedClass::list(['created' => time() + 100]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchCreationFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilter::class)
                     ->message
                         ->isIdenticalTo('Created must be in the past.')
 
@@ -432,21 +427,21 @@ class Payment extends ild78\Tests\atoum
 
                     testedClass::list(['created' => $date]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchCreationFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilter::class)
                     ->message
                         ->isIdenticalTo('Created must be in the past.')
 
                 ->exception(function () {
                     testedClass::list(['created' => 0]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchCreationFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilter::class)
                     ->message
                         ->isIdenticalTo('Created must be a position integer or a DateTime object.')
 
                 ->exception(function () {
                     testedClass::list(['created' => uniqid()]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchCreationFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilter::class)
                     ->message
                         ->isIdenticalTo('Created must be a position integer or a DateTime object.')
 
@@ -454,14 +449,14 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     testedClass::list(['order_id' => '']);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchOrderIdFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchOrderIdFilter::class)
                     ->message
                         ->isIdenticalTo('Invalid order ID.')
 
                 ->exception(function () {
                     testedClass::list(['order_id' => rand(0, PHP_INT_MAX)]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchOrderIdFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchOrderIdFilter::class)
                     ->message
                         ->isIdenticalTo('Invalid order ID.')
 
@@ -581,7 +576,7 @@ class Payment extends ild78\Tests\atoum
 
             ->then
                 ->assert('Pay with card')
-                    ->if($card = new Card)
+                    ->if($card = new ild78\Card)
                     ->and($card->setCvc(substr(uniqid(), 0, 3)))
                     ->and($card->setExpMonth(rand(1, 12)))
                     ->and($card->setExpYear(date('Y') + rand(1, 10)))
@@ -600,7 +595,7 @@ class Payment extends ild78\Tests\atoum
                                 ->once
 
                 ->assert('Pay with SEPA')
-                    ->if($sepa = new Sepa)
+                    ->if($sepa = new ild78\Sepa)
                     ->and($sepa->setBic('DEUTDEFF')) // Thx Wikipedia
                     ->and($sepa->setIban('DE91 1000 0000 0123 4567 89')) // Thx Wikipedia
                     ->and($sepa->setName(uniqid()))
@@ -654,7 +649,7 @@ class Payment extends ild78\Tests\atoum
                     ->exception(function () use ($tooMuch) {
                         $this->testedInstance->refund($tooMuch);
                     })
-                        ->isInstanceOf(Exceptions\InvalidAmountException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidAmountException::class)
                         ->message
                             ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $tooMuch / 100) . ' EUR) more than paid (34.06 EUR).')
 
@@ -662,7 +657,7 @@ class Payment extends ild78\Tests\atoum
                     ->exception(function () use ($notEnough) {
                         $this->testedInstance->refund($notEnough);
                     })
-                        ->isInstanceOf(Exceptions\InvalidAmountException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidAmountException::class)
                         ->hasNestedException
                         ->message
                             ->isIdenticalTo('Amount must be greater than or equal to 50.')
@@ -738,7 +733,7 @@ class Payment extends ild78\Tests\atoum
             ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
 
-            ->if($card = new Card)
+            ->if($card = new ild78\Card)
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
             ->and($card->setExpMonth(rand(1, 12)))
             ->and($card->setExpYear(rand(date('Y'), 3000)))
@@ -746,7 +741,7 @@ class Payment extends ild78\Tests\atoum
             ->and($card->setNumber($number = '4111111111111111'))
             ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
 
-            ->if($customer = new Customer)
+            ->if($customer = new ild78\Customer)
             ->and($customer->setName(uniqid()))
             ->and($customer->setEmail(uniqid() . '@example.org'))
             ->and($customer->setMobile(uniqid()))
@@ -854,7 +849,7 @@ class Payment extends ild78\Tests\atoum
             ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
 
-            ->if($sepa = new Sepa)
+            ->if($sepa = new ild78\Sepa)
             ->and($sepa->setBic('DEUTDEFF')) // Thx Wikipedia
             ->and($sepa->setIban('DE91 1000 0000 0123 4567 89')) // Thx Wikipedia
             ->and($sepa->setName(uniqid()))
@@ -953,7 +948,7 @@ class Payment extends ild78\Tests\atoum
             ->and($description = uniqid())
             ->and($url = 'https://www.example.org?' . uniqid())
 
-            ->if($card = new Card)
+            ->if($card = new ild78\Card)
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
             ->and($card->setExpMonth(rand(1, 12)))
             ->and($card->setExpYear(rand(date('Y'), 3000)))
@@ -1234,7 +1229,7 @@ class Payment extends ild78\Tests\atoum
 
             ->and($config->setHttpClient($client))
 
-            ->if($customer = new Customer)
+            ->if($customer = new ild78\Customer)
             ->and($customer->setName(uniqid()))
             ->and($customer->setEmail(uniqid() . '@example.org'))
             ->and($customer->setMobile(uniqid()))
@@ -1418,7 +1413,7 @@ class Payment extends ild78\Tests\atoum
 
             ->and($config->setHttpClient($client))
 
-            ->if($customer = new Customer)
+            ->if($customer = new ild78\Customer)
             ->and($customer->setName(uniqid()))
             ->and($customer->setEmail(uniqid() . '@example.org'))
             ->and($customer->setMobile(uniqid()))
@@ -1426,7 +1421,7 @@ class Payment extends ild78\Tests\atoum
             ->if($amount = rand(100, 999999))
             ->and($currency = $this->currencyDataProvider()[0])
 
-            ->if($card = new Card)
+            ->if($card = new ild78\Card)
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
             ->and($card->setExpMonth(rand(1, 12)))
             ->and($card->setExpYear(rand(date('Y'), 3000)))
@@ -1479,7 +1474,7 @@ class Payment extends ild78\Tests\atoum
 
             ->and($config->setHttpClient($client))
 
-            ->if($card = new Card)
+            ->if($card = new ild78\Card)
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
             ->and($card->setExpMonth(rand(1, 12)))
             ->and($card->setExpYear(rand(date('Y'), 3000)))
@@ -1487,7 +1482,7 @@ class Payment extends ild78\Tests\atoum
             ->and($card->setNumber($number = '4111111111111111'))
             ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
 
-            ->if($customer = new Customer)
+            ->if($customer = new ild78\Customer)
             ->and($customer->setName(uniqid()))
             ->and($customer->setEmail(uniqid() . '@example.org'))
             ->and($customer->setMobile(uniqid()))
@@ -1558,7 +1553,7 @@ class Payment extends ild78\Tests\atoum
                     ->exception(function () {
                         $this->testedInstance->setAmount(0);
                     })
-                        ->isInstanceOf(Exceptions\InvalidAmountException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidAmountException::class)
                         ->hasNestedException
                         ->message
                             ->isIdenticalTo('Amount must be greater than or equal to 50.')
@@ -1570,7 +1565,7 @@ class Payment extends ild78\Tests\atoum
                     ->exception(function () {
                         $this->testedInstance->setAmount(49);
                     })
-                        ->isInstanceOf(Exceptions\InvalidAmountException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidAmountException::class)
                         ->hasNestedException
                         ->message
                             ->isIdenticalTo('Amount must be greater than or equal to 50.')
@@ -1734,7 +1729,7 @@ class Payment extends ild78\Tests\atoum
                     ->exception(function () use ($fakeCurrency) {
                         $this->newTestedInstance->setCurrency($fakeCurrency);
                     })
-                        ->isInstanceOf(Exceptions\InvalidCurrencyException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidCurrencyException::class)
                         ->message
                             ->contains('"' . $fakeCurrency . '" is not a valid currency')
                             ->contains('please use one of the following :')
@@ -1758,7 +1753,7 @@ class Payment extends ild78\Tests\atoum
                         ->exception(function () use ($description) {
                             $this->newTestedInstance->setDescription($description);
                         })
-                            ->isInstanceOf(Exceptions\InvalidDescriptionException::class)
+                            ->isInstanceOf(ild78\Exceptions\InvalidDescriptionException::class)
                             ->hasNestedException
                             ->message
                                 ->isIdenticalTo('A valid description must be between 3 and 64 characters.')
@@ -1803,7 +1798,7 @@ class Payment extends ild78\Tests\atoum
                         ->exception(function () use ($orderId) {
                             $this->newTestedInstance->setOrderId($orderId);
                         })
-                            ->isInstanceOf(Exceptions\InvalidOrderIdException::class)
+                            ->isInstanceOf(ild78\Exceptions\InvalidOrderIdException::class)
                             ->hasNestedException
                             ->message
                                 ->isIdenticalTo('A valid order ID must be between 1 and 36 characters.')

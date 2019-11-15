@@ -5,9 +5,6 @@ namespace ild78\tests\unit;
 use GuzzleHttp;
 use ild78;
 use ild78\Config as testedClass;
-use ild78\Exceptions;
-use ild78\Exceptions\InvalidArgumentException;
-use ild78\Exceptions\NotAuthorizedException;
 use mock;
 use Psr;
 
@@ -77,7 +74,7 @@ class Config extends ild78\Tests\atoum
             ->exception(function () {
                 testedClass::getGlobal();
             })
-                ->isInstanceOf(InvalidArgumentException::class)
+                ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
                 ->message
                     ->contains('You need to provide API credential')
 
@@ -170,7 +167,7 @@ class Config extends ild78\Tests\atoum
                 ->exception(function () use ($invalidMode) {
                     $this->testedInstance->setMode($invalidMode);
                 })
-                    ->isInstanceOf(InvalidArgumentException::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
                     ->message
                         ->contains($invalidMode)
                         ->contains('LIVE_MODE')
@@ -218,7 +215,7 @@ class Config extends ild78\Tests\atoum
                 ->exception(function () {
                     $this->testedInstance->setMode(testedClass::LIVE_MODE)->getPublicKey();
                 })
-                    ->isInstanceOf(Exceptions\MissingApiKeyException::class)
+                    ->isInstanceOf(ild78\Exceptions\MissingApiKeyException::class)
                     ->message
                         ->isIdenticalTo('You did not provide valid public API key for production.')
 
@@ -227,7 +224,7 @@ class Config extends ild78\Tests\atoum
                 ->exception(function () {
                     $this->testedInstance->setMode(testedClass::TEST_MODE)->getPublicKey();
                 })
-                    ->isInstanceOf(Exceptions\MissingApiKeyException::class)
+                    ->isInstanceOf(ild78\Exceptions\MissingApiKeyException::class)
                     ->message
                         ->isIdenticalTo('You did not provide valid public API key for development.')
         ;
@@ -257,7 +254,7 @@ class Config extends ild78\Tests\atoum
                 ->exception(function () {
                     $this->testedInstance->setMode(testedClass::LIVE_MODE)->getSecretKey();
                 })
-                    ->isInstanceOf(Exceptions\MissingApiKeyException::class)
+                    ->isInstanceOf(ild78\Exceptions\MissingApiKeyException::class)
                     ->message
                         ->isIdenticalTo('You did not provide valid secret API key for production.')
 
@@ -266,7 +263,7 @@ class Config extends ild78\Tests\atoum
                 ->exception(function () {
                     $this->testedInstance->setMode(testedClass::TEST_MODE)->getSecretKey();
                 })
-                    ->isInstanceOf(Exceptions\MissingApiKeyException::class)
+                    ->isInstanceOf(ild78\Exceptions\MissingApiKeyException::class)
                     ->message
                         ->isIdenticalTo('You did not provide valid secret API key for development.')
         ;
@@ -400,14 +397,14 @@ class Config extends ild78\Tests\atoum
                     ->exception(function () {
                         $this->testedInstance->getPublicKey();
                     })
-                        ->isInstanceOf(Exceptions\MissingApiKeyException::class)
+                        ->isInstanceOf(ild78\Exceptions\MissingApiKeyException::class)
                         ->message
                             ->isIdenticalTo('You did not provide valid public API key for development.')
 
                     ->exception(function () {
                         $this->testedInstance->getSecretKey();
                     })
-                        ->isInstanceOf(Exceptions\MissingApiKeyException::class)
+                        ->isInstanceOf(ild78\Exceptions\MissingApiKeyException::class)
                         ->message
                             ->isIdenticalTo('You did not provide valid secret API key for development.')
 
@@ -421,7 +418,7 @@ class Config extends ild78\Tests\atoum
                     ->exception(function () {
                         $this->testedInstance->getSecretKey();
                     })
-                        ->isInstanceOf(Exceptions\MissingApiKeyException::class)
+                        ->isInstanceOf(ild78\Exceptions\MissingApiKeyException::class)
                         ->message
                             ->isIdenticalTo('You did not provide valid secret API key for development.')
 

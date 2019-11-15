@@ -5,9 +5,7 @@ namespace ild78\tests\unit\Core;
 use DateTime;
 use GuzzleHttp;
 use ild78;
-use ild78\Core;
 use ild78\Core\AbstractObject as testedClass;
-use ild78\Exceptions;
 use mock;
 
 class AbstractObject extends ild78\Tests\atoum
@@ -76,28 +74,28 @@ class AbstractObject extends ild78\Tests\atoum
                 ->exception(function () {
                     $this->testedInstance->setCreated(uniqid());
                 })
-                    ->isInstanceOf(Exceptions\BadMethodCallException::class)
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
                     ->message
                         ->isIdenticalTo('You are not allowed to modify the creation date.')
 
                 ->exception(function () {
                     $this->testedInstance->setEndpoint(uniqid());
                 })
-                    ->isInstanceOf(Exceptions\BadMethodCallException::class)
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
                     ->message
                         ->isIdenticalTo('You are not allowed to modify the endpoint.')
 
                 ->exception(function () {
                     $this->testedInstance->setId(uniqid());
                 })
-                    ->isInstanceOf(Exceptions\BadMethodCallException::class)
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
                     ->message
                         ->isIdenticalTo('You are not allowed to modify the id.')
 
                 ->exception(function () {
                     $this->testedInstance->setDataModel(uniqid());
                 })
-                    ->isInstanceOf(Exceptions\BadMethodCallException::class)
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
                     ->message
                         ->isIdenticalTo('You are not allowed to modify the data model.')
 
@@ -107,7 +105,7 @@ class AbstractObject extends ild78\Tests\atoum
                     ->exception(function () use ($method) {
                         $this->testedInstance->$method();
                     })
-                        ->isInstanceOf(Exceptions\BadMethodCallException::class)
+                        ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
                         ->message
                             ->isIdenticalTo(vsprintf('Method "%s::%s()" unknown', [
                                 get_class($this->testedInstance),
@@ -163,7 +161,7 @@ class AbstractObject extends ild78\Tests\atoum
                 ->exception(function () use ($property, $value) {
                     $this->testedInstance->dataModelAdder($property, $value);
                 })
-                    ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
                     ->message
                         ->isIdenticalTo('Unknown property "' . $property . '"')
         ;
@@ -179,7 +177,7 @@ class AbstractObject extends ild78\Tests\atoum
                 ->exception(function () use ($property) {
                     $this->testedInstance->dataModelGetter($property);
                 })
-                    ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
                     ->message
                         ->isIdenticalTo('Unknown property "' . $property . '"')
         ;
@@ -196,7 +194,7 @@ class AbstractObject extends ild78\Tests\atoum
                 ->exception(function () use ($property, $value) {
                     $this->testedInstance->dataModelSetter($property, $value);
                 })
-                    ->isInstanceOf(Exceptions\InvalidArgumentException::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
                     ->message
                         ->isIdenticalTo('Unknown property "' . $property . '"')
         ;

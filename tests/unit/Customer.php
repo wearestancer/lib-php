@@ -8,10 +8,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use ild78;
-use ild78\Core;
-use ild78\Exceptions;
 use ild78\Customer as testedClass;
-use ild78\Exceptions\NotFoundException;
 use mock;
 
 class Customer extends ild78\Tests\atoum
@@ -152,7 +149,7 @@ class Customer extends ild78\Tests\atoum
                         ->exception(function () {
                             $this->testedInstance->save();
                         })
-                            ->isInstanceOf(Exceptions\BadMethodCallException::class)
+                            ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
                             ->message
                                 ->isIdenticalTo('You must provide an email or a phone number to create a customer.')
 
@@ -250,7 +247,7 @@ class Customer extends ild78\Tests\atoum
                 ->exception(function () {
                     $this->testedInstance->setEmail('');
                 })
-                    ->isInstanceOf(Exceptions\InvalidEmailException::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidEmailException::class)
                     ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid email must be between 5 and 64 characters.')
@@ -268,7 +265,7 @@ class Customer extends ild78\Tests\atoum
                 ->exception(function () {
                     $this->testedInstance->setMobile('');
                 })
-                    ->isInstanceOf(Exceptions\InvalidMobileException::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidMobileException::class)
                     ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid mobile must be between 8 and 16 characters.')
@@ -286,7 +283,7 @@ class Customer extends ild78\Tests\atoum
                 ->exception(function () {
                     $this->testedInstance->setName('');
                 })
-                    ->isInstanceOf(Exceptions\InvalidNameException::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidNameException::class)
                     ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid name must be between 4 and 64 characters.')
