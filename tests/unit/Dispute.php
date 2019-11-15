@@ -59,18 +59,18 @@ class Dispute extends ild78\Tests\atoum
         ;
     }
 
-    public function testGetResponseCode()
+    public function testGetResponse()
     {
         $this
             ->given($this->newTestedInstance)
             ->and($response = uniqid())
             ->then
-                ->variable($this->testedInstance->getResponseCode())
+                ->variable($this->testedInstance->getResponse())
                     ->isNull
 
-            ->if($this->testedInstance->hydrate(['response_code' => $response]))
+            ->if($this->testedInstance->hydrate(['response' => $response]))
             ->then
-                ->string($this->testedInstance->getResponseCode())
+                ->string($this->testedInstance->getResponse())
                     ->isIdenticalTo($response)
         ;
     }

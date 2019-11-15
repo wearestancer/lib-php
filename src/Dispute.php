@@ -37,7 +37,7 @@ class Dispute extends Api\AbstractObject
             'restricted' => true,
             'type' => ild78\Payment::class,
         ],
-        'responseCode' => [
+        'response' => [
             'restricted' => true,
             'size' => [
                 'fixed' => 2,

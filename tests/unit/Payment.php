@@ -297,7 +297,7 @@ class Payment extends ild78\Tests\atoum
         $this
             ->assert($code . ' / ' . $message)
                 ->given($this->newTestedInstance)
-                ->and($this->testedInstance->hydrate(['response_code' => $code]))
+                ->and($this->testedInstance->hydrate(['response' => $code]))
                 ->then
                     ->string($this->testedInstance->getResponseMessage())
                         ->isIdenticalTo($message)
@@ -338,7 +338,7 @@ class Payment extends ild78\Tests\atoum
         $this
             ->assert($code . ' / ' . $message)
                 ->given($this->newTestedInstance)
-                ->and($this->testedInstance->hydrate(['response_code' => $code]))
+                ->and($this->testedInstance->hydrate(['response' => $code]))
                 ->then
                     ->boolean($this->testedInstance->isSuccess())
                         ->isIdenticalTo($code === '00')

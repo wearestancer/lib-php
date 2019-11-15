@@ -90,7 +90,7 @@ class Payment extends Api\AbstractObject
             'list' => true,
             'type' => ild78\Refund::class,
         ],
-        'responseCode' => [
+        'response' => [
             'restricted' => true,
             'size' => [
                 'fixed' => 2,
@@ -245,7 +245,7 @@ class Payment extends Api\AbstractObject
             '51' => 'Insufficient funds',
         ];
 
-        $code = $this->getResponseCode();
+        $code = $this->getResponse();
 
         if (array_key_exists($code, $messages)) {
             return $messages[$code];
@@ -271,7 +271,7 @@ class Payment extends Api\AbstractObject
      */
     public function isSuccess(): bool
     {
-        return $this->getResponseCode() === '00';
+        return $this->getResponse() === '00';
     }
 
     /**
