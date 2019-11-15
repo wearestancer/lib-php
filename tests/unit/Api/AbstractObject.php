@@ -224,7 +224,6 @@ class AbstractObject extends ild78\Tests\atoum
                 'User-Agent' => $config->getDefaultUserAgent(),
             ])
             ->and($options['timeout'] = $config->getTimeout())
-            ->and($options['body'] = json_encode($id))
             ->and($location = $this->testedInstance->getUri())
             ->then
                 ->object($this->testedInstance->delete())

@@ -436,13 +436,10 @@ class Request extends ild78\Tests\atoum
             ->then
                 ->assert('DELETE')
                     ->if($request->delete($object))
-                    ->and($options = [
-                        'body' => json_encode($object),
-                    ])
                     ->then
                         ->mock($request)
                             ->call('request')
-                                ->withArguments($delete, $object, $options)
+                                ->withArguments($delete, $object)
                                     ->once
 
                 ->assert('GET')
