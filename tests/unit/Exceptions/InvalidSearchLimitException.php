@@ -32,7 +32,7 @@ class InvalidSearchLimitException extends ild78\Tests\atoum
             ->if($class = $this->testedClass->getClass())
             ->then
                 ->string($class::getLogLevel())
-                    ->isIdenticalTo(Psr\Log\logLevel::DEBUG)
+                    ->isIdenticalTo(Psr\Log\logLevel::NOTICE)
         ;
     }
 }
