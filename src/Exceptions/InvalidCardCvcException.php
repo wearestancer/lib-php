@@ -21,6 +21,6 @@ class InvalidCardCvcException extends InvalidArgumentException implements Except
      */
     public static function getDefaultMessage(): string
     {
-        return 'Invalid CVC';
+        return 'Invalid CVC.';
     }
 }
