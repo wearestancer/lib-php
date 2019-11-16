@@ -21,6 +21,6 @@ class InvalidMobileException extends InvalidArgumentException implements Excepti
      */
     public static function getDefaultMessage(): string
     {
-        return 'Invalid mobile phone number';
+        return 'Invalid mobile phone number.';
     }
 }
