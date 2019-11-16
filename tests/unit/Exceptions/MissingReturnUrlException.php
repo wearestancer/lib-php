@@ -11,7 +11,7 @@ class MissingReturnUrlException extends ild78\Tests\atoum
     {
         $this
             ->currentlyTestedClass
-                ->extends(ild78\Exceptions\InvalidArgumentException::class)
+                ->extends(ild78\Exceptions\BadMethodCallException::class)
                 ->implements(ild78\Interfaces\ExceptionInterface::class)
         ;
     }
@@ -32,7 +32,7 @@ class MissingReturnUrlException extends ild78\Tests\atoum
             ->if($class = $this->testedClass->getClass())
             ->then
                 ->string($class::getLogLevel())
-                    ->isIdenticalTo(Psr\Log\logLevel::ERROR)
+                    ->isIdenticalTo(Psr\Log\logLevel::CRITICAL)
         ;
     }
 }
