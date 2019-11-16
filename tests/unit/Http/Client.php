@@ -34,7 +34,7 @@ class Client extends ild78\Tests\atoum
             401,
             ild78\Exceptions\NotAuthorizedException::class,
             ild78\Exceptions\NotAuthorizedException::getDefaultMessage(),
-            'notice',
+            'critical',
             'HTTP 401 - Invalid credential : %s',
         ];
 

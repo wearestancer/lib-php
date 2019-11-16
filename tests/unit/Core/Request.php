@@ -91,7 +91,7 @@ class Request extends ild78\Tests\atoum
                     (string) $method,
                     $object->getUri(),
                 ]))
-                ->and($noticeMessage = vsprintf('HTTP 401 - Invalid credential : %s', [
+                ->and($criticalMessage = vsprintf('HTTP 401 - Invalid credential : %s', [
                     $config->getSecretKey(),
                 ]))
 
@@ -110,7 +110,7 @@ class Request extends ild78\Tests\atoum
                     ->mock($logger)
                         ->call('debug')->withArguments($debugMessage, [])->once
                         ->call('error')->never
-                        ->call('notice')->withArguments($noticeMessage, [])->once
+                        ->call('critical')->withArguments($criticalMessage, [])->once
 
             ->assert('Unsupported method')
                 ->if($this->newTestedInstance)
@@ -132,7 +132,7 @@ class Request extends ild78\Tests\atoum
                     ->mock($logger)
                         ->call('debug')->never
                         ->call('error')->withArguments($errorMessage)->once
-                        ->call('notice')->never
+                        ->call('critical')->never
 
                     ->function('curl_exec')
                         ->wasCalled->never

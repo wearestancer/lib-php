@@ -17,7 +17,7 @@ class NotAuthorizedException extends ClientException implements ExceptionInterfa
     protected static $defaultMessage = 'Unauthorized';
 
     /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::NOTICE;
+    protected static $logLevel = Psr\Log\LogLevel::CRITICAL;
 
     /** @var string */
     protected static $status = '401';
