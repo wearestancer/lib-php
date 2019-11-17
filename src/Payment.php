@@ -180,16 +180,17 @@ class Payment extends ild78\Core\AbstractObject
      *
      * Maybe used as an iframe or a redirection page if you needed it.
      *
+     * @param array $params Parameters to add to the URL.
      * @return string
      * @throws ild78\Exceptions\MissingApiKeyException When no public key was given in configuration.
      * @throws ild78\Exceptions\MissingReturnUrlException When no return URL was given to payment data.
      * @throws ild78\Exceptions\MissingPaymentIdException When no payment has no ID.
      */
-    public function getPaymentPageUrl(): string
+    public function getPaymentPageUrl(array $params = []): string
     {
         $config = ild78\Config::getGlobal();
 
-        $params = [
+        $data = [
             str_replace('api', 'payment', $config->getHost()),
             $config->getPublicKey(),
         ];
@@ -206,9 +207,16 @@ class Payment extends ild78\Core\AbstractObject
             throw new ild78\Exceptions\MissingPaymentIdException($message);
         }
 
-        $params[] = $this->getId();
+        $data[] = $this->getId();
 
-        return vsprintf('https://%s/%s/%s', $params);
+        $params = array_intersect_key($params, ['lang' => 1]);
+        $query = http_build_query($params);
+
+        if ($query) {
+            $query = '?' . $query;
+        }
+
+        return vsprintf('https://%s/%s/%s', $data) . $query;
     }
 
     // phpcs:enable

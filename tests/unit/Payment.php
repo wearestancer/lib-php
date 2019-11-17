@@ -212,6 +212,12 @@ class Payment extends ild78\Tests\atoum
                 $public
             ]))
 
+            ->if($lang = uniqid())
+            ->and($params = [
+                'lang' => $lang,
+                uniqid() => uniqid(),
+            ])
+
             ->then
                 ->exception(function () {
                     $this->testedInstance->getPaymentPageUrl();
@@ -244,6 +250,9 @@ class Payment extends ild78\Tests\atoum
 
                 ->string($this->testedInstance->getPaymentPageUrl())
                     ->isIdenticalTo($url . $this->testedInstance->getId())
+
+                ->string($this->testedInstance->getPaymentPageUrl($params))
+                    ->isIdenticalTo($url . $this->testedInstance->getId() . '?lang=' . $lang)
         ;
     }
 
