@@ -1466,6 +1466,45 @@ class StubObject extends ild78\Tests\atoum
                     ->boolean($this->testedInstance->isModified())
                         ->isFalse
 
+            ->assert('Update data if object has an id')
+                ->if($string1 = $this->makeStringBetween(10, 20))
+                ->and($id = uniqid())
+                ->and($created = time())
+
+                ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->and($body = json_encode(compact('id', 'created', 'string1')))
+                ->and($client = new mock\GuzzleHttp\Client)
+                ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
+                ->and($this->calling($client)->request = $response)
+                ->and($config->setHttpClient($client))
+
+                ->if($this->newTestedInstance($id))
+                ->and($this->testedInstance->setString1($string1))
+
+                ->if($options = [])
+                ->and($options['headers'] = [
+                    'Authorization' => $config->getBasicAuthHeader(),
+                    'Content-Type' => 'application/json',
+                    'User-Agent' => $config->getDefaultUserAgent(),
+                ])
+                ->and($options['timeout'] = $config->getTimeout())
+                ->and($options['body'] = json_encode(['string1' => $string1]))
+                ->and($location = $this->testedInstance->getUri())
+                ->then
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
+                    ->object($this->testedInstance->save())
+                        ->isTestedInstance
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('PATCH', $location, $options)
+                                ->once
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
+
             ->assert('No error if returned body is null (saw with PATCH implementation)')
                 ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($client = new mock\ild78\Http\Client)

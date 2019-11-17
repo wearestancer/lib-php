@@ -698,27 +698,27 @@ abstract class AbstractObject implements JsonSerializable
             return $this;
         }
 
-        // phpcs:disable Squiz.PHP.DisallowBooleanStatement.Found
-        $filter = function ($model) {
-            return $model['required'] && is_null($model['value']);
-        };
-        // phpcs:enable
-        $required = array_filter($this->dataModel, $filter);
-
-        if ($required) {
-            $keys = array_keys($required);
-            sort($keys);
-            $properties = implode(', ', $keys);
-            $message = sprintf('You need to provide a value for : %s', $properties);
-
-            throw new ild78\Exceptions\InvalidArgumentException($message);
-        }
-
         $request = new Request();
 
         if ($this->getId()) {
             $response = $request->patch($this);
         } else {
+            // phpcs:disable Squiz.PHP.DisallowBooleanStatement.Found
+            $filter = function ($model) {
+                return $model['required'] && is_null($model['value']);
+            };
+            // phpcs:enable
+            $required = array_filter($this->dataModel, $filter);
+
+            if ($required) {
+                $keys = array_keys($required);
+                sort($keys);
+                $properties = implode(', ', $keys);
+                $message = sprintf('You need to provide a value for : %s', $properties);
+
+                throw new ild78\Exceptions\InvalidArgumentException($message);
+            }
+
             $response = $request->post($this);
         }
 
