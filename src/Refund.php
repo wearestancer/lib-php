@@ -11,6 +11,7 @@ use ild78;
  * @method integer getAmount()
  * @method string getCurrency()
  * @method ild78\\Payment getPayment()
+ * @method string getStatus()
  */
 class Refund extends ild78\Core\AbstractObject
 {
@@ -34,6 +35,10 @@ class Refund extends ild78\Core\AbstractObject
         'payment' => [
             'required' => true,
             'type' => ild78\Payment::class,
+        ],
+        'status' => [
+            'restricted' => true,
+            'type' => self::STRING,
         ],
     ];
 

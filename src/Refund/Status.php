@@ -1,0 +1,15 @@
+<?php
+declare(strict_types=1);
+
+namespace ild78\Refund;
+
+/**
+ * List of a refund status
+ */
+class Status
+{
+    public const NOT_HONORED = 'not_honored';
+    public const REFUND_SENT = 'refund_sent';
+    public const REFUNDED = 'refunded';
+    public const TO_REFUND = 'to_refund';
+}

@@ -26,6 +26,41 @@ class Refund extends ild78\Tests\atoum
         ;
     }
 
+    public function testGetStatus()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getStatus())
+                    ->isIdenticalTo($this->testedInstance->status)
+                    ->isNull
+
+                ->exception(function () {
+                    $this->testedInstance->setStatus(uniqid());
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify "status".')
+        ;
+
+        $list = [
+            ild78\Refund\Status::NOT_HONORED,
+            ild78\Refund\Status::REFUND_SENT,
+            ild78\Refund\Status::REFUNDED,
+            ild78\Refund\Status::TO_REFUND,
+        ];
+
+        foreach ($list as $status) {
+            $this
+                ->if($this->testedInstance->hydrate(['status' => $status]))
+                ->then
+                    ->string($this->testedInstance->getStatus())
+                        ->isIdenticalTo($this->testedInstance->status)
+                        ->isIdenticalTo($status)
+            ;
+        }
+    }
+
     public function testSetAmount()
     {
         $this
