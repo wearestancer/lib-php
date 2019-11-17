@@ -442,6 +442,8 @@ class Payment extends ild78\Core\AbstractObject
      *
      * @uses Request::post()
      * @return self
+     * @throws ild78\Exceptions\InvalidAmountException When no amount was given.
+     * @throws ild78\Exceptions\InvalidCurrencyException When no currency was given.
      * @throws ild78\Exceptions\InvalidIpAddressException When no device was already given, authenticated payment
      *   was asked and an error occur during device creation.
      * @throws ild78\Exceptions\InvalidPortException When no device was already given, authenticated payment
@@ -449,6 +451,14 @@ class Payment extends ild78\Core\AbstractObject
      */
     public function save(): ild78\Core\AbstractObject
     {
+        if (!$this->getAmount()) {
+            throw new ild78\Exceptions\InvalidAmountException();
+        }
+
+        if (!$this->getCurrency()) {
+            throw new ild78\Exceptions\InvalidCurrencyException();
+        }
+
         $auth = $this->getAuth();
         $card = $this->getCard();
         $sepa = $this->getSepa();

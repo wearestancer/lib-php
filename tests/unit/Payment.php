@@ -856,6 +856,37 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
+    public function testSave_exceptions()
+    {
+        $this
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+
+            ->if($client = new mock\ild78\Http\Client)
+            ->and($response = new mock\ild78\Http\Response(200))
+            ->and($this->calling($client)->request = $response)
+            ->and($config->setHttpClient($client))
+
+            ->if($this->newTestedInstance)
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->save();
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidAmountException::class)
+
+            ->if($this->testedInstance->setAmount(rand(100, 999999)))
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->save();
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidCurrencyException::class)
+
+            ->if($this->testedInstance->setCurrency($this->currencyDataProvider(true)))
+            ->then
+                ->object($this->testedInstance->save())
+                    ->isTestedInstance
+        ;
+    }
+
     public function testSave_withCard()
     {
         $this

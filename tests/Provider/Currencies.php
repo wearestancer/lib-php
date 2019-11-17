@@ -4,7 +4,7 @@ namespace ild78\Tests\Provider;
 
 trait Currencies
 {
-    public function currencyDataProvider()
+    public function currencyDataProvider($one = false)
     {
         $data = [
             'EUR',
@@ -13,6 +13,10 @@ trait Currencies
         ];
 
         shuffle($data);
+
+        if ($one) {
+            return $data[0];
+        }
 
         return $data;
     }
