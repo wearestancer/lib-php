@@ -3,6 +3,7 @@
 namespace ild78\tests\unit\Core;
 
 use DateTime;
+use DateTimeZone;
 use GuzzleHttp;
 use ild78;
 use ild78\Core\AbstractObject as testedClass;
@@ -10,6 +11,7 @@ use mock;
 
 class AbstractObject extends ild78\Tests\atoum
 {
+    use ild78\Tests\Provider\Dates;
     use ild78\Tests\Provider\Strings;
 
     public function test__construct()
@@ -43,6 +45,8 @@ class AbstractObject extends ild78\Tests\atoum
     {
         $this
             ->given($this->newTestedInstance)
+            ->and(ild78\Config::init([]))
+
             ->assert('getter')
                 ->and($data = [
                     'id' => uniqid(),
@@ -118,6 +122,7 @@ class AbstractObject extends ild78\Tests\atoum
     {
         $this
             ->given($this->newTestedInstance)
+            ->and(ild78\Config::init([]))
             ->and($data = [
                 'id' => uniqid(),
                 'created' => rand(946681200, 1893452400),
@@ -238,10 +243,15 @@ class AbstractObject extends ild78\Tests\atoum
         ;
     }
 
-    public function testGetCreationDate()
+    /**
+     * @dataProvider timeZoneProvider
+     */
+    public function testGetCreationDate($tz)
     {
         $this
-            ->given($timestamp = rand(946681200, 1893452400))
+            ->given(ild78\Config::init([]))
+
+            ->if($timestamp = rand(946681200, 1893452400))
             ->and($data = [
                 'created' => $timestamp,
             ])
@@ -250,6 +260,12 @@ class AbstractObject extends ild78\Tests\atoum
             ->then
                 ->dateTime($this->testedInstance->getCreationDate())
                     ->isEqualTo(new DateTime('@' . $timestamp))
+
+            ->if($config = ild78\Config::init([]))
+            ->and($config->setDefaultTimeZone($tz))
+            ->then
+                ->dateTime($this->testedInstance->getCreationDate())
+                    ->hasTimezone(new DateTimeZone($tz))
         ;
     }
 
@@ -298,6 +314,7 @@ class AbstractObject extends ild78\Tests\atoum
                 'id' => uniqid(),
                 'created' => rand(946681200, 1893452400),
             ])
+            ->and(ild78\Config::init([]))
             ->and($this->newTestedInstance)
             ->then
                 ->object($this->testedInstance->hydrate($data))

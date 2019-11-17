@@ -358,6 +358,14 @@ abstract class AbstractObject implements JsonSerializable
             $date = $this->populate()->created;
         }
 
+        if ($date) {
+            $tz = ild78\Config::getGlobal()->getDefaultTimeZone();
+
+            if ($tz) {
+                $date->setTimezone($tz);
+            }
+        }
+
         return $date;
     }
 

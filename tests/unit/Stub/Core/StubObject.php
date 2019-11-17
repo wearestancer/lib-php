@@ -697,6 +697,7 @@ class StubObject extends ild78\Tests\atoum
                     $id2,
                 ],
             ])
+            ->and(ild78\Config::init([]))
 
             ->if($this->newTestedInstance)
             ->then
