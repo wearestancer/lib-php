@@ -181,6 +181,44 @@ class Payment extends ild78\Core\AbstractObject
         throw new ild78\Exceptions\BadMethodCallException($message);
     }
 
+    /**
+     * Filter for list method
+     *
+     * `$terms` must be an associative array with one of the following key : `order_id`, `unique_id`.
+     *
+     * `order_id` and `unique_id` will be treated as a string and will filter payments corresponding to the data
+     * you specified in your initial payment request.
+     *
+     * @param array $terms Search terms. May have `order_id` or `unique_id` key.
+     * @return array
+     * @throws ild78\Exceptions\InvalidSearchOrderIdFilterException When `order_id` is invalid.
+     * @throws ild78\Exceptions\InvalidSearchUniqueIdFilterException When `unique_id` is invalid.
+     */
+    public static function filterListFilter(array $terms): array
+    {
+        $params = [];
+
+        if (array_key_exists('order_id', $terms)) {
+            $params['order_id'] = $terms['order_id'];
+            $type = gettype($terms['order_id']);
+
+            if (!$terms['order_id'] || $type !== 'string') {
+                throw new ild78\Exceptions\InvalidSearchOrderIdFilterException();
+            }
+        }
+
+        if (array_key_exists('unique_id', $terms)) {
+            $params['unique_id'] = $terms['unique_id'];
+            $type = gettype($terms['unique_id']);
+
+            if (!$terms['unique_id'] || $type !== 'string') {
+                throw new ild78\Exceptions\InvalidSearchUniqueIdFilterException();
+            }
+        }
+
+        return $params;
+    }
+
     // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
 
     /**
@@ -288,34 +326,6 @@ class Payment extends ild78\Core\AbstractObject
     public function isSuccess(): bool
     {
         return $this->getResponse() === '00';
-    }
-
-    /**
-     * Filter for list method
-     *
-     * `$terms` must be an associative array with one of the following key : `order_id`.
-     *
-     * `order_id` will be treated as a string, will filter payments corresponding to the `order_id` you specified
-     * in your initial payment request.
-     *
-     * @param array $terms Search terms. May have `order_id` key.
-     * @return array
-     * @throws ild78\Exceptions\InvalidSearchOrderIdFilterException When `order_id` is invalid.
-     */
-    public static function filterListFilter(array $terms): array
-    {
-        $params = [];
-
-        if (array_key_exists('order_id', $terms)) {
-            $params['order_id'] = $terms['order_id'];
-            $type = gettype($terms['order_id']);
-
-            if (!$terms['order_id'] || $type !== 'string') {
-                throw new ild78\Exceptions\InvalidSearchOrderIdFilterException();
-            }
-        }
-
-        return $params;
     }
 
     /**

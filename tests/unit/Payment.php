@@ -469,11 +469,27 @@ class Payment extends ild78\Tests\atoum
                     ->message
                         ->isIdenticalTo('Invalid order ID.')
 
+            ->assert('Invalid unique id filter')
+                ->exception(function () {
+                    testedClass::list(['unique_id' => '']);
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchUniqueIdFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Invalid unique ID.')
+
+                ->exception(function () {
+                    testedClass::list(['unique_id' => rand(0, PHP_INT_MAX)]);
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchUniqueIdFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Invalid unique ID.')
+
             ->assert('Make request')
                 ->if($limit = rand(1, 100))
                 ->and($start = rand(0, PHP_INT_MAX))
                 ->and($orderId = uniqid())
                 ->and($created = time() - rand(10, 1000000))
+                ->and($uniqueId = uniqid())
 
                 ->and($location = $this->newTestedInstance->getUri())
                 ->and($terms1 = [
@@ -481,6 +497,7 @@ class Payment extends ild78\Tests\atoum
                     'limit' => $limit,
                     'start' => $start,
                     'order_id' => $orderId,
+                    'unique_id' => $uniqueId,
                 ])
                 ->and($location1 = $location . '?' . http_build_query($terms1))
 
@@ -489,6 +506,7 @@ class Payment extends ild78\Tests\atoum
                     'limit' => $limit,
                     'start' => $start + 2, // Forced in json sample
                     'order_id' => $orderId,
+                    'unique_id' => $uniqueId,
                 ])
                 ->and($location2 = $location . '?' . http_build_query($terms2))
                 ->then
