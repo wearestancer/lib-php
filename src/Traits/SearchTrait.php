@@ -35,8 +35,8 @@ trait SearchTrait
         $allowed = array_flip(['created', 'limit', 'start']);
         $others = [];
 
-        if (method_exists(static::class, 'filterListFilter')) {
-            $others = static::filterListFilter($terms);
+        if (method_exists(static::class, 'filterListParams')) {
+            $others = static::filterListParams($terms);
         }
 
         $params = array_merge(array_intersect_key($terms, $allowed), $others);

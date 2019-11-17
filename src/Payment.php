@@ -194,7 +194,7 @@ class Payment extends ild78\Core\AbstractObject
      * @throws ild78\Exceptions\InvalidSearchOrderIdFilterException When `order_id` is invalid.
      * @throws ild78\Exceptions\InvalidSearchUniqueIdFilterException When `unique_id` is invalid.
      */
-    public static function filterListFilter(array $terms): array
+    public static function filterListParams(array $terms): array
     {
         $params = [];
 
