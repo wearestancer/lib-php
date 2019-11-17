@@ -420,7 +420,6 @@ class Payment extends TestCase
             ->assert('Patch card and status')
                 ->given($this->newTestedInstance)
                 ->and($amount = rand(50, 99999))
-                ->and($currency = $this->currencyDataProvider()[0])
                 ->and($description = sprintf('Automatic test, PATCH card, %.02f %s', $amount / 100, $currency))
 
                 ->if($customer = new ild78\Customer)

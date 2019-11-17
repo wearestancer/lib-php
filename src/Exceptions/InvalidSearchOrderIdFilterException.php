@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace ild78\Exceptions;
 
-use Psr;
-
 /**
  * Exception thrown on invalid search order id.
  */
