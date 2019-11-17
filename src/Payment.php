@@ -491,6 +491,20 @@ class Payment extends ild78\Core\AbstractObject
     }
 
     /**
+     * Set a card.
+     *
+     * @param ild78\Card $card New card instance.
+     * @return self
+     */
+    public function setCard(Card $card): self
+    {
+        parent::setCard($card);
+        $this->dataModel['method']['value'] = 'card';
+
+        return $this;
+    }
+
+    /**
      * Set the currency.
      *
      * @param string $currency The currency, must one in the following : EUR, USD, GBP.
@@ -569,6 +583,20 @@ class Payment extends ild78\Core\AbstractObject
         }
 
         return parent::setReturnUrl($url);
+    }
+
+    /**
+     * Set a sepa account.
+     *
+     * @param ild78\Sepa $sepa New sepa instance.
+     * @return self
+     */
+    public function setSepa(Sepa $sepa): self
+    {
+        parent::setSepa($sepa);
+        $this->dataModel['method']['value'] = 'sepa';
+
+        return $this;
     }
 
     /**

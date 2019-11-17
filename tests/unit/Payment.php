@@ -1768,6 +1768,29 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
+    public function testSetCard()
+    {
+        $this
+            ->if($card = new ild78\Card)
+            ->and($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getCard())
+                    ->isNull
+
+                ->variable($this->testedInstance->getMethod())
+                    ->isNull
+
+                ->object($this->testedInstance->setCard($card))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getCard())
+                    ->isIdenticalTo($card)
+
+                ->string($this->testedInstance->getMethod())
+                    ->isIdenticalTo('card')
+        ;
+    }
+
     /**
      * @dataProvider currencyDataProvider
      */
@@ -1871,6 +1894,29 @@ class Payment extends ild78\Tests\atoum
 
             $description .= chr(rand(65, 90));
         }
+    }
+
+    public function testSetSepa()
+    {
+        $this
+            ->if($sepa = new ild78\Sepa)
+            ->and($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getSepa())
+                    ->isNull
+
+                ->variable($this->testedInstance->getMethod())
+                    ->isNull
+
+                ->object($this->testedInstance->setSepa($sepa))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getSepa())
+                    ->isIdenticalTo($sepa)
+
+                ->string($this->testedInstance->getMethod())
+                    ->isIdenticalTo('sepa')
+        ;
     }
 
     public function testSetOrderId()
