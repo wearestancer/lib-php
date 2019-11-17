@@ -2,6 +2,8 @@
 
 namespace ild78\tests\unit;
 
+use DateTime;
+use DateTimeZone;
 use GuzzleHttp;
 use ild78;
 use ild78\Config as testedClass;
@@ -10,6 +12,8 @@ use Psr;
 
 class Config extends ild78\Tests\atoum
 {
+    use ild78\Tests\Provider\Dates;
+
     public function testClass()
     {
         $this
@@ -37,6 +41,53 @@ class Config extends ild78\Tests\atoum
             ->then
                 ->string($this->testedInstance->getBasicAuthHeader())
                     ->isIdenticalTo('Basic ' . base64_encode($stest . ':'))
+        ;
+    }
+
+    /**
+     * @dataProvider timeZoneProvider
+     */
+    public function testGetDefaultTimeZone_SetDefaultTimeZone($zone)
+    {
+        $this
+            ->assert('Default value')
+                ->if($this->newTestedInstance([]))
+                ->then
+                    ->variable($this->testedInstance->getDefaultTimeZone())
+                        ->isNull
+
+            ->assert('Exception if not a string or a DateTimeZone instance')
+                ->exception(function () {
+                    $this->newTestedInstance([])->setDefaultTimeZone(new DateTime);
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Invalid "$tz" argument.')
+
+            ->assert('Update with a string')
+                ->if($this->newTestedInstance([]))
+                ->then
+                    ->object($this->testedInstance->setDefaultTimeZone($zone))
+                        ->isTestedInstance
+
+                    ->object($this->testedInstance->getDefaultTimeZone())
+                        ->isInstanceOf(DateTimeZone::class)
+
+                    ->string($this->testedInstance->getDefaultTimeZone()->getName())
+                        ->isIdenticalTo($zone)
+
+            ->assert('Update with an instance')
+                ->if($this->newTestedInstance([]))
+                ->and($tz = new DateTimeZone($zone))
+                ->then
+                    ->object($this->testedInstance->setDefaultTimeZone($tz))
+                        ->isTestedInstance
+
+                    ->object($this->testedInstance->getDefaultTimeZone())
+                        ->isInstanceOf(DateTimeZone::class)
+
+                    ->string($this->testedInstance->getDefaultTimeZone()->getName())
+                        ->isIdenticalTo($zone)
         ;
     }
 
