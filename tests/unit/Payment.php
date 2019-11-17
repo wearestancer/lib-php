@@ -799,6 +799,14 @@ class Payment extends ild78\Tests\atoum
                                 ->withArguments(sprintf('Refund of %.02f EUR on payment "%s"', $amount / 100, $id))
                                     ->once
 
+                ->assert('We can not refund more than refundable')
+                    ->exception(function () use ($paid) {
+                        $this->testedInstance->refund($paid);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidAmountException::class)
+                        ->message
+                            ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $paid / 100) . ' EUR) more than paid (34.06 EUR with ' . sprintf('%.02f', $amount / 100) . ' EUR already refunded).')
+
                 ->assert('Without amount we will refund all')
                     ->if($this->calling($response)->getBody = json_encode($refund2Data))
                     ->then

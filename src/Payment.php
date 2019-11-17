@@ -394,16 +394,26 @@ class Payment extends ild78\Core\AbstractObject
         $refund->setPayment($this);
 
         if ($amount) {
-            if ($amount > $this->getAmount()) {
-                $params = [
-                    $amount / 100,
-                    strtoupper($this->getCurrency()),
-                    $this->getAmount() / 100,
-                    strtoupper($this->getCurrency()),
-                ];
-                $message = vsprintf('You are trying to refund (%.02f %s) more than paid (%.02f %s).', $params);
+            $params = [
+                $amount / 100,
+                strtoupper($this->getCurrency()),
+                $this->getAmount() / 100,
+                $this->getRefundedAmount() / 100,
+            ];
+            $message = '';
 
-                throw new ild78\Exceptions\InvalidAmountException($message);
+            if ($amount > $this->getRefundableAmount()) {
+                $message = 'You are trying to refund (%1$.02f %2$s) more than paid';
+                $message .= ' (%3$.02f %2$s with %4$.02f %2$s already refunded).';
+            }
+
+            if ($amount > $this->getAmount()) {
+                $message = 'You are trying to refund (%1$.02f %2$s) more than paid';
+                $message .= ' (%3$.02f %2$s).';
+            }
+
+            if ($message) {
+                throw new ild78\Exceptions\InvalidAmountException(vsprintf($message, $params));
             }
 
             $refund->setAmount($amount);
