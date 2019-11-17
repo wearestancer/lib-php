@@ -23,6 +23,7 @@ use ild78;
  * @method string|null getReturnUrl()
  * @method ild78\\Sepa getSepa()
  * @method string getStatus()
+ * @method string getUniqueId()
  * @method Generator list(array $terms)
  * @method self setDevice(ild78\\Device $device)
  * @method self setReturnUrl(string $https)
@@ -108,6 +109,13 @@ class Payment extends ild78\Core\AbstractObject
             'type' => ild78\Sepa::class,
         ],
         'status' => [
+            'type' => self::STRING,
+        ],
+        'uniqueId' => [
+            'size' => [
+                'min' => 1,
+                'max' => 36,
+            ],
             'type' => self::STRING,
         ],
     ];
@@ -539,5 +547,21 @@ class Payment extends ild78\Core\AbstractObject
         }
 
         return parent::setReturnUrl($url);
+    }
+
+    /**
+     * Update unique ID
+     *
+     * @param string $uniqueId New unique ID.
+     * @return self
+     * @throws ild78\Exceptions\InvalidUniqueIdException When the unique ID is invalid.
+     */
+    public function setUniqueId(string $uniqueId): self
+    {
+        try {
+            return parent::setUniqueId($uniqueId);
+        } catch (ild78\Exceptions\InvalidArgumentException $excep) {
+            throw new ild78\Exceptions\InvalidUniqueIdException($excep->getMessage(), $excep->getCode(), $excep);
+        }
     }
 }

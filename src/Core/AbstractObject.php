@@ -874,9 +874,11 @@ abstract class AbstractObject implements JsonSerializable
         }
 
         if ($isLower || $isUpper) {
+            $readable = str_replace(['_id', '_'], [' ID', ' '], $this->camelCaseToSnakeCase($property));
+
             $params = [
-                $property,
-                ucfirst($property),
+                $readable,
+                ucfirst($readable),
                 $model['size']['min'],
                 $model['size']['max'],
             ];
@@ -899,10 +901,6 @@ abstract class AbstractObject implements JsonSerializable
 
                 $message .= '.';
             } else {
-                if ($property === 'orderId') {
-                    $params[0] = 'order ID';
-                }
-
                 $message = vsprintf('A valid %1$s must be between %3$d and %4$d characters.', $params);
 
                 if (!$hasMax) {

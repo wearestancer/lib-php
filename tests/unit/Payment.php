@@ -1838,4 +1838,52 @@ class Payment extends ild78\Tests\atoum
             $orderId .= chr(rand(65, 90));
         }
     }
+
+    public function testSetUniqueId()
+    {
+        $uniqueId = '';
+
+        for ($idx = 0; $idx < 40; $idx++) {
+            $length = strlen($uniqueId);
+
+            if ($length < 1 || $length > 36) {
+                $this
+                    ->assert($length . ' characters => Not valid')
+                        ->exception(function () use ($uniqueId) {
+                            $this->newTestedInstance->setUniqueId($uniqueId);
+                        })
+                            ->isInstanceOf(ild78\Exceptions\InvalidUniqueIdException::class)
+                            ->hasNestedException
+                            ->message
+                                ->isIdenticalTo('A valid unique ID must be between 1 and 36 characters.')
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isFalse
+                ;
+            } else {
+                $this
+                    ->assert($length . ' characters => Valid')
+                        ->object($this->newTestedInstance->setUniqueId($uniqueId))
+                            ->isTestedInstance
+
+                        ->string($this->testedInstance->getUniqueId())
+                            ->isIdenticalTo($this->testedInstance->uniqueId)
+                            ->isIdenticalTo($this->testedInstance->unique_id)
+                            ->isIdenticalTo($uniqueId)
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isTrue
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->notHasKey('uniqueId')
+                            ->hasKey('unique_id')
+                            ->string['unique_id']
+                                ->isEqualTo($uniqueId)
+                ;
+            }
+
+            $uniqueId .= chr(rand(65, 90));
+        }
+    }
 }
