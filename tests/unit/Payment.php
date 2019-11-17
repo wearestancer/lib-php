@@ -344,13 +344,22 @@ class Payment extends ild78\Tests\atoum
                     ->integer($this->newTestedInstance($id)->getRefundableAmount())
                         ->isIdenticalTo($paid)
 
+                    ->integer($this->testedInstance->getRefundedAmount())
+                        ->isZero
+
                 ->assert('When all was refunded, no more refund is possible')
                     ->integer($this->newTestedInstance($id)->addRefunds($completeRefund)->getRefundableAmount())
                         ->isZero
 
+                    ->integer($this->testedInstance->getRefundedAmount())
+                        ->isIdenticalTo($paid)
+
                 ->assert('When one refund was done (' . $amount . ' / ' . $paid . ')')
                     ->integer($this->newTestedInstance($id)->addRefunds($partialRefund)->getRefundableAmount())
                         ->isIdenticalTo($paid - $amount)
+
+                    ->integer($this->testedInstance->getRefundedAmount())
+                        ->isIdenticalTo($amount)
         ;
     }
 

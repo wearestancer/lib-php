@@ -280,11 +280,21 @@ class Payment extends ild78\Core\AbstractObject
     // phpcs:enable
 
     /**
-     * Refund the refundable amount
+     * Return the refundable amount
      *
      * @return integer
      */
     public function getRefundableAmount(): int
+    {
+        return $this->getAmount() - $this->getRefundedAmount();
+    }
+
+    /**
+     * Return the already refunded amount
+     *
+     * @return integer
+     */
+    public function getRefundedAmount(): int
     {
         $getAmounts = function ($refund) {
             return $refund->getAmount();
@@ -293,7 +303,7 @@ class Payment extends ild78\Core\AbstractObject
         $refunds = $this->getRefunds();
         $refunded = array_map($getAmounts, $refunds);
 
-        return $this->getAmount() - array_sum($refunded);
+        return array_sum($refunded);
     }
 
     /**
