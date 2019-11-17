@@ -327,6 +327,10 @@ class Payment extends ild78\Core\AbstractObject
      */
     public function isNotSuccess(): bool
     {
+        if (is_null($this->getResponse())) {
+            return false;
+        }
+
         return !$this->isSuccess();
     }
 

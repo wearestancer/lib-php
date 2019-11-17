@@ -403,7 +403,14 @@ class Payment extends ild78\Tests\atoum
         $this
             ->assert($code . ' / ' . $message)
                 ->given($this->newTestedInstance)
-                ->and($this->testedInstance->hydrate(['response' => $code]))
+                ->then
+                    ->boolean($this->testedInstance->isSuccess())
+                        ->isFalse
+
+                    ->boolean($this->testedInstance->isNotSuccess())
+                        ->isFalse
+
+                ->if($this->testedInstance->hydrate(['response' => $code]))
                 ->then
                     ->boolean($this->testedInstance->isSuccess())
                         ->isIdenticalTo($code === '00')
