@@ -717,6 +717,9 @@ class Payment extends ild78\Tests\atoum
             ->and($config->setHttpClient($client))
             // Behavior modification are done in assert part to prevent confusion on multiple calls mocking
 
+            ->and($logger = new mock\ild78\Core\Logger)
+            ->and($config->setLogger($logger))
+
             ->if($body = file_get_contents(__DIR__ . '/fixtures/payment/read.json'))
             ->and($paymentData = json_decode($body, true))
             ->and($paid = $paymentData['amount'])
@@ -730,7 +733,8 @@ class Payment extends ild78\Tests\atoum
             ->and($refund2Data = json_decode($body, true))
             ->and($refund2Data['amount'] = $lastPart)
 
-            ->given($this->newTestedInstance(uniqid()))
+            ->given($id = 'paym_SKMLflt8NBATuiUzgvTYqsw5') // from fixtures
+            ->and($this->newTestedInstance($id))
             ->and($tooMuch = rand($paid + 1, 9999))
             ->and($notEnough = rand(1, 49))
             ->then
@@ -781,6 +785,11 @@ class Payment extends ild78\Tests\atoum
                         ->boolean($refunds[0]->isModified())
                             ->isFalse
 
+                        ->mock($logger)
+                            ->call('info')
+                                ->withArguments(sprintf('Refund of %.02f EUR on payment "%s"', $amount / 100, $id))
+                                    ->once
+
                 ->assert('Without amount we will refund all')
                     ->if($this->calling($response)->getBody = json_encode($refund2Data))
                     ->then
@@ -814,6 +823,11 @@ class Payment extends ild78\Tests\atoum
 
                         ->boolean($refunds[1]->isModified())
                             ->isFalse
+
+                        ->mock($logger)
+                            ->call('info')
+                                ->withArguments(sprintf('Refund of %.02f EUR on payment "%s"', $lastPart / 100, $id))
+                                    ->once
         ;
     }
 

@@ -400,6 +400,15 @@ class Payment extends ild78\Core\AbstractObject
 
         $this->modified = $modified;
 
+        $params = [
+            $refund->getAmount() / 100,
+            strtoupper($refund->getCurrency()),
+            $this->getId(),
+        ];
+        $message = vsprintf('Refund of %.02f %s on payment "%s"', $params);
+
+        ild78\Config::getGlobal()->getLogger()->info($message);
+
         return $this;
     }
 
