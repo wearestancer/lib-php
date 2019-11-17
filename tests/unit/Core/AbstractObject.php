@@ -210,7 +210,9 @@ class AbstractObject extends ild78\Tests\atoum
         $this
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($client = new mock\ild78\Http\Client)
+            ->and($logger = new mock\ild78\Core\Logger)
             ->and($config->setHttpClient($client))
+            ->and($config->setLogger($logger))
 
             ->if($response = new mock\ild78\Http\Response(204))
             ->and($this->calling($client)->request = $response)
@@ -228,6 +230,8 @@ class AbstractObject extends ild78\Tests\atoum
             ])
             ->and($options['timeout'] = $config->getTimeout())
             ->and($location = $this->testedInstance->getUri())
+
+            ->and($logMessage = sprintf('AbstractObject "%s" deleted', $id))
             ->then
                 ->object($this->testedInstance->delete())
                     ->isTestedInstance
@@ -239,6 +243,11 @@ class AbstractObject extends ild78\Tests\atoum
                 ->mock($client)
                     ->call('request')
                         ->withArguments('DELETE', $location, $options)
+                            ->once
+
+                ->mock($logger)
+                    ->call('info')
+                        ->withArguments($logMessage)
                             ->once
         ;
     }

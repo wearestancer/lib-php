@@ -340,6 +340,10 @@ abstract class AbstractObject implements JsonSerializable
         $request = new Request();
         $request->delete($this);
 
+        $tmp = explode('\\', get_class($this));
+        $class = end($tmp);
+        ild78\Config::getGlobal()->getLogger()->info(sprintf('%s "%s" deleted', $class, $this->id));
+
         $this->id = null;
 
         return $this;
@@ -699,8 +703,10 @@ abstract class AbstractObject implements JsonSerializable
         }
 
         $request = new Request();
+        $action = 'created';
 
         if ($this->getId()) {
+            $action = 'updated';
             $response = $request->patch($this);
         } else {
             // phpcs:disable Squiz.PHP.DisallowBooleanStatement.Found
@@ -733,6 +739,10 @@ abstract class AbstractObject implements JsonSerializable
         }
 
         $this->modified = [];
+
+        $tmp = explode('\\', get_class($this));
+        $class = end($tmp);
+        ild78\Config::getGlobal()->getLogger()->info(sprintf('%s "%s" %s', $class, $this->id, $action));
 
         return $this;
     }

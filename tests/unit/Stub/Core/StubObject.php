@@ -1438,6 +1438,10 @@ class StubObject extends ild78\Tests\atoum
                 ->and($this->calling($client)->request = $response)
                 ->and($config->setHttpClient($client))
 
+                ->and($logger = new mock\ild78\Core\Logger)
+                ->and($config->setLogger($logger))
+                ->and($logMessage = sprintf('StubObject "%s" created', $id))
+
                 ->if($this->newTestedInstance)
                 ->and($this->testedInstance->setString1($string1))
                 ->and($this->testedInstance->setInteger1($integer1))
@@ -1463,6 +1467,11 @@ class StubObject extends ild78\Tests\atoum
                             ->withArguments('POST', $location, $options)
                                 ->once
 
+                    ->mock($logger)
+                        ->call('info')
+                            ->withArguments($logMessage)
+                                ->once
+
                     ->boolean($this->testedInstance->isModified())
                         ->isFalse
 
@@ -1477,6 +1486,10 @@ class StubObject extends ild78\Tests\atoum
                 ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
                 ->and($this->calling($client)->request = $response)
                 ->and($config->setHttpClient($client))
+
+                ->and($logger = new mock\ild78\Core\Logger)
+                ->and($config->setLogger($logger))
+                ->and($logMessage = sprintf('StubObject "%s" updated', $id))
 
                 ->if($this->newTestedInstance($id))
                 ->and($this->testedInstance->setString1($string1))
@@ -1500,6 +1513,11 @@ class StubObject extends ild78\Tests\atoum
                     ->mock($client)
                         ->call('request')
                             ->withArguments('PATCH', $location, $options)
+                                ->once
+
+                    ->mock($logger)
+                        ->call('info')
+                            ->withArguments($logMessage)
                                 ->once
 
                     ->boolean($this->testedInstance->isModified())
