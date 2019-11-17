@@ -382,9 +382,14 @@ class Payment extends ild78\Core\AbstractObject
      * @return self
      * @throws ild78\Exceptions\InvalidAmountException When trying to refund more than paid.
      * @throws ild78\Exceptions\InvalidAmountException When the amount is invalid.
+     * @throws ild78\Exceptions\MissingPaymentIdException When the payment has no ID.
      */
     public function refund(int $amount = null): self
     {
+        if (!$this->getId()) {
+            throw new ild78\Exceptions\MissingPaymentIdException();
+        }
+
         $refund = new Refund();
         $refund->setPayment($this);
 

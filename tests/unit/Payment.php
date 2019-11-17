@@ -837,6 +837,14 @@ class Payment extends ild78\Tests\atoum
                             ->call('info')
                                 ->withArguments(sprintf('Refund of %.02f EUR on payment "%s"', $lastPart / 100, $id))
                                     ->once
+
+                ->assert('We can not refund on unsaved payment')
+                    ->exception(function () {
+                        $this->newTestedInstance->refund();
+                    })
+                        ->isInstanceOf(ild78\Exceptions\MissingPaymentIdException::class)
+                        ->message
+                            ->isIdenticalTo('A payment ID is mandatory. Maybe you forgot to save the payment.')
         ;
     }
 
