@@ -123,7 +123,7 @@ class StubObject extends ild78\Tests\atoum
         $datas[] = [
             'restricted1',
             $this->makeStringBetween(10, 20),
-            ild78\Exceptions\InvalidArgumentException::class,
+            ild78\Exceptions\BadMethodCallException::class,
             'You are not allowed to modify "restricted1".',
         ];
 

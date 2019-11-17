@@ -293,7 +293,7 @@ abstract class AbstractObject implements JsonSerializable
      * @return self
      * @uses self::validateDataModel() To check value's integrity.
      * @throws ild78\Exceptions\InvalidArgumentException When asking an unknown property.
-     * @throws ild78\Exceptions\InvalidArgumentException When setting a restricted property.
+     * @throws ild78\Exceptions\BadMethodCallException When setting a restricted property.
      * @throws ild78\Exceptions\InvalidArgumentException When the value do not match expected pattern.
      */
     public function dataModelSetter(string $property, $value): self
@@ -305,7 +305,7 @@ abstract class AbstractObject implements JsonSerializable
         if ($this->dataModel[$property]['restricted']) {
             $message = sprintf('You are not allowed to modify "%s".', $property);
 
-            throw new ild78\Exceptions\InvalidArgumentException($message);
+            throw new ild78\Exceptions\BadMethodCallException($message);
         }
 
         $type = gettype($value);
