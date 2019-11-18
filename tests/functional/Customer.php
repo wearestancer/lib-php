@@ -64,12 +64,16 @@ class Customer extends TestCase
     public function testSave()
     {
         $this
+            ->given($key = uniqid())
+            ->and($name = 'John Doe (' . $key . ')')
+            ->and($email = 'john.doe+' . $key . '@example.com')
+            ->and($mobile = $this->getRandomNumber())
+
             ->assert('Complete customer')
                 ->given($this->newTestedInstance)
-                ->and($id = uniqid())
-                ->and($this->testedInstance->setName('John Doe (' . $id . ')'))
-                ->and($this->testedInstance->setEmail('john.doe+' . $id . '@example.com'))
-                ->and($this->testedInstance->setMobile($this->getRandomNumber()))
+                ->and($this->testedInstance->setName($name))
+                ->and($this->testedInstance->setEmail($email))
+                ->and($this->testedInstance->setMobile($mobile))
                 ->then
                     ->variable($this->testedInstance->getId())
                         ->isNull
@@ -77,13 +81,26 @@ class Customer extends TestCase
                     ->object($this->testedInstance->save())
                         ->isTestedInstance
 
-                    ->string($this->testedInstance->getId())
+                    ->string($id = $this->testedInstance->getId())
                         ->isNotEmpty
+
+            ->assert('Same data throw conflicts')
+                ->given($this->newTestedInstance)
+                ->and($this->testedInstance->setName($name))
+                ->and($this->testedInstance->setEmail($email))
+                ->and($this->testedInstance->setMobile($mobile))
+                ->then
+                    ->exception(function () {
+                        $this->testedInstance->save();
+                    })
+                        ->isInstanceOf(ild78\Exceptions\ConflictException::class)
+                        ->message
+                            ->isIdenticalTo('Customer already exists, you may want to update it instead creating a new one (' . $id . ')')
 
             ->assert('Only email is good')
                 ->given($this->newTestedInstance)
-                ->and($id = uniqid())
-                ->and($this->testedInstance->setEmail('john.doe+' . $id . '@example.com'))
+                ->and($key = uniqid())
+                ->and($this->testedInstance->setEmail('john.doe+' . $key . '@example.com'))
                 ->then
                     ->variable($this->testedInstance->getId())
                         ->isNull
@@ -96,7 +113,6 @@ class Customer extends TestCase
 
             ->assert('Only mobile is good')
                 ->given($this->newTestedInstance)
-                ->and($id = uniqid())
                 ->and($this->testedInstance->setMobile($this->getRandomNumber()))
                 ->then
                     ->variable($this->testedInstance->getId())
