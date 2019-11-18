@@ -136,6 +136,97 @@ class Request extends ild78\Tests\atoum
 
                     ->function('curl_exec')
                         ->wasCalled->never
+
+            ->assert('Use error.message.error as message')
+                ->given($body = [
+                    'error' => [
+                        'message' => [
+                            'error' => uniqid(),
+                        ],
+                    ],
+                ])
+
+                ->if($this->newTestedInstance)
+                ->and($this->function->curl_exec = json_encode($body))
+                ->and($this->function->curl_getinfo = 400)
+
+                ->if($object = new mock\ild78\Core\AbstractObject)
+                ->and($method = new ild78\Http\Verb\Post)
+                ->then
+                    ->exception(function () use ($method, $object) {
+                        $this->testedInstance->request($method, $object);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\BadRequestException::class)
+                        ->message
+                            ->isIdenticalTo($body['error']['message']['error'])
+
+            ->assert('Same with error.message.id')
+                ->given($body = [
+                    'error' => [
+                        'message' => [
+                            'id' => uniqid(),
+                        ],
+                    ],
+                ])
+
+                ->if($this->newTestedInstance)
+                ->and($this->function->curl_exec = json_encode($body))
+                ->and($this->function->curl_getinfo = 400)
+
+                ->if($object = new mock\ild78\Core\AbstractObject)
+                ->and($method = new ild78\Http\Verb\Post)
+                ->then
+                    ->exception(function () use ($method, $object) {
+                        $this->testedInstance->request($method, $object);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\BadRequestException::class)
+                        ->message
+                            ->isIdenticalTo($body['error']['message']['id'])
+
+            ->assert('Same with error.message.error and error.message.id')
+                ->given($body = [
+                    'error' => [
+                        'message' => [
+                            'error' => uniqid(),
+                            'id' => uniqid(),
+                        ],
+                    ],
+                ])
+
+                ->if($this->newTestedInstance)
+                ->and($this->function->curl_exec = json_encode($body))
+                ->and($this->function->curl_getinfo = 400)
+
+                ->if($object = new mock\ild78\Core\AbstractObject)
+                ->and($method = new ild78\Http\Verb\Post)
+                ->then
+                    ->exception(function () use ($method, $object) {
+                        $this->testedInstance->request($method, $object);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\BadRequestException::class)
+                        ->message
+                            ->isIdenticalTo($body['error']['message']['error'] . ' (' . $body['error']['message']['id'] . ')')
+
+            ->assert('Same with error.message')
+                ->given($body = [
+                    'error' => [
+                        'message' => uniqid(),
+                    ],
+                ])
+
+                ->if($this->newTestedInstance)
+                ->and($this->function->curl_exec = json_encode($body))
+                ->and($this->function->curl_getinfo = 400)
+
+                ->if($object = new mock\ild78\Core\AbstractObject)
+                ->and($method = new ild78\Http\Verb\Post)
+                ->then
+                    ->exception(function () use ($method, $object) {
+                        $this->testedInstance->request($method, $object);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\BadRequestException::class)
+                        ->message
+                            ->isIdenticalTo($body['error']['message'])
         ;
     }
 
@@ -244,6 +335,117 @@ class Request extends ild78\Tests\atoum
                         ->call('debug')->withArguments($debugMessage, [])->once
                         ->call('error')->never
                         ->call('notice')->withArguments($noticeMessage, [])->once
+
+            ->assert('Use error.message.error as message')
+                ->given($body = [
+                    'error' => [
+                        'message' => [
+                            'error' => uniqid(),
+                        ],
+                    ],
+                ])
+
+                ->if($response = new GuzzleHttp\Psr7\Response(400, [], json_encode($body)))
+                ->and($mock = new GuzzleHttp\Handler\MockHandler([$response]))
+                ->and($handler = GuzzleHttp\HandlerStack::create($mock))
+                ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
+
+                ->and($config->setHttpClient($client))
+
+                ->if($this->newTestedInstance)
+
+                ->if($object = new mock\ild78\Core\AbstractObject)
+                ->and($method = new ild78\Http\Verb\Post)
+                ->then
+                    ->exception(function () use ($method, $object) {
+                        $this->testedInstance->request($method, $object);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\BadRequestException::class)
+                        ->message
+                            ->isIdenticalTo($body['error']['message']['error'])
+
+            ->assert('Same with error.message.id')
+                ->given($body = [
+                    'error' => [
+                        'message' => [
+                            'id' => uniqid(),
+                        ],
+                    ],
+                ])
+
+                ->if($response = new GuzzleHttp\Psr7\Response(400, [], json_encode($body)))
+                ->and($mock = new GuzzleHttp\Handler\MockHandler([$response]))
+                ->and($handler = GuzzleHttp\HandlerStack::create($mock))
+                ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
+
+                ->and($config->setHttpClient($client))
+
+                ->if($this->newTestedInstance)
+
+                ->if($object = new mock\ild78\Core\AbstractObject)
+                ->and($method = new ild78\Http\Verb\Post)
+                ->then
+                    ->exception(function () use ($method, $object) {
+                        $this->testedInstance->request($method, $object);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\BadRequestException::class)
+                        ->message
+                            ->isIdenticalTo($body['error']['message']['id'])
+
+            ->assert('Same with error.message.error and error.message.id')
+                ->given($body = [
+                    'error' => [
+                        'message' => [
+                            'error' => uniqid(),
+                            'id' => uniqid(),
+                        ],
+                    ],
+                ])
+
+                ->if($response = new GuzzleHttp\Psr7\Response(400, [], json_encode($body)))
+                ->and($mock = new GuzzleHttp\Handler\MockHandler([$response]))
+                ->and($handler = GuzzleHttp\HandlerStack::create($mock))
+                ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
+
+                ->and($config->setHttpClient($client))
+
+                ->if($this->newTestedInstance)
+
+                ->if($object = new mock\ild78\Core\AbstractObject)
+                ->and($method = new ild78\Http\Verb\Post)
+                ->then
+                    ->exception(function () use ($method, $object) {
+                        $this->testedInstance->request($method, $object);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\BadRequestException::class)
+                        ->message
+                            ->isIdenticalTo($body['error']['message']['error'] . ' (' . $body['error']['message']['id'] . ')')
+
+            ->assert('Same with error.message')
+                ->given($body = [
+                    'error' => [
+                        'message' => uniqid(),
+                    ],
+                ])
+
+                ->if($response = new GuzzleHttp\Psr7\Response(400, [], json_encode($body)))
+                ->and($mock = new GuzzleHttp\Handler\MockHandler([$response]))
+                ->and($handler = GuzzleHttp\HandlerStack::create($mock))
+                ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
+
+                ->and($config->setHttpClient($client))
+
+                ->if($this->newTestedInstance)
+
+                ->if($object = new mock\ild78\Core\AbstractObject)
+                ->and($method = new ild78\Http\Verb\Post)
+                ->then
+                    ->exception(function () use ($method, $object) {
+                        $this->testedInstance->request($method, $object);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\BadRequestException::class)
+                        ->message
+                            ->isIdenticalTo($body['error']['message'])
 
             ->assert('Every Guzzle exceptions (except the ones below)')
                 ->given($content = file_get_contents(__DIR__ . '/../fixtures/auth/not-authorized.json'))

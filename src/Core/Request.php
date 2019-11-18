@@ -202,9 +202,6 @@ class Request
                     break;
 
                 case 401:
-                    $body = json_decode((string) $response->getBody());
-                    $excepParams['message'] = $body->error->message;
-
                     $logMethod = 'notice';
                     $logMessage = sprintf('HTTP 401 - Invalid credential : %s', $config->getSecretKey());
                     break;
@@ -227,6 +224,35 @@ class Request
                 default:
                     $logMethod = 'error';
                     break;
+            }
+
+            $body = json_decode((string) $response->getBody(), true);
+
+            if (
+                is_array($body)
+                && array_key_exists('error', $body)
+                && is_array($body['error'])
+                && array_key_exists('message', $body['error'])
+            ) {
+                $excepParams['message'] = $body['error']['message'];
+
+                if (is_array($body['error']['message'])) {
+                    $excepParams['message'] = current($body['error']['message']);
+                    $id = '';
+
+                    if (array_key_exists('id', $body['error']['message'])) {
+                        $id = $body['error']['message']['id'];
+                        $excepParams['message'] = $body['error']['message']['id'];
+                    }
+
+                    if (array_key_exists('error', $body['error']['message'])) {
+                        $excepParams['message'] = $body['error']['message']['error'];
+
+                        if ($id) {
+                            $excepParams['message'] .= ' (' . $id . ')';
+                        }
+                    }
+                }
             }
 
         // Others exceptions ...
