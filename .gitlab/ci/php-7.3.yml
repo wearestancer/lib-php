@@ -1,0 +1,19 @@
+
+.php7.3:
+  variables:
+    PHP_VERSION: '7.3'
+
+atoum:PHP7.3:
+  extends:
+    - .atoum
+    - .php7.3
+
+lint:PHP7.3:
+  extends:
+    - .lint
+    - .php7.3
+
+coverage-check:PHP 7.3:
+  extends:
+    - .coverage-check
+    - .php7.3

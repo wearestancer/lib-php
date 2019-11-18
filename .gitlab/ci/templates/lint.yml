@@ -1,0 +1,13 @@
+
+.lint:
+  extends: .bases
+
+  stage: lint
+
+  script:
+    - mkdir -p reports
+    - ./vendor/bin/phpcs --report=junit --report-file=reports/phpcs-$PHP_VERSION.junit.xml
+
+  artifacts:
+    reports:
+      junit: reports/phpcs-$PHP_VERSION.junit.xml
