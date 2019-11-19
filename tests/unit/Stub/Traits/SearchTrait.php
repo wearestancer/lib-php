@@ -170,6 +170,26 @@ class SearchTrait extends ild78\Tests\atoum
                             ->withArguments('GET', $location2, $options)
                                 ->once
 
+            ->assert('Invalid response')
+                ->given($this->calling($response)->getBody = null)
+
+                ->if($limit = rand(1, 100))
+                ->and($terms = [
+                    'limit' => $limit,
+                ])
+                ->and($query = http_build_query(['limit' => $limit, 'start' => 0]))
+                ->and($location = $this->newTestedInstance->getUri() . '?' . $query)
+                ->then
+                    ->generator($gen = testedClass::list($terms))
+                        ->yields
+                            ->variable
+                                ->isNull
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location, $options)
+                                ->once
+
             ->assert('Empty response')
                 ->given($body = [
                     'payments' => [],
@@ -197,15 +217,15 @@ class SearchTrait extends ild78\Tests\atoum
                             ->withArguments('GET', $location, $options)
                                 ->once
 
-            ->assert('Invalid response')
-                ->given($this->calling($response)->getBody = null)
+            ->assert('Empty response (real case)')
+                ->given($this->calling($client)->request->throw = new ild78\Exceptions\NotFoundException)
 
                 ->if($limit = rand(1, 100))
                 ->and($terms = [
                     'limit' => $limit,
                 ])
                 ->and($query = http_build_query(['limit' => $limit, 'start' => 0]))
-                ->and($location = $this->newTestedInstance->getUri() . '?' . $query)
+                ->and($location = $this->testedInstance->getUri() . '?' . $query)
                 ->then
                     ->generator($gen = testedClass::list($terms))
                         ->yields

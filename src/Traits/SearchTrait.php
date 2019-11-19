@@ -99,23 +99,27 @@ trait SearchTrait
             do {
                 $params['start'] += $start;
 
-                $tmp = $request->get($element, $params);
+                try {
+                    $tmp = $request->get($element, $params);
 
-                if (!$tmp) {
-                    $more = false;
-                } else {
-                    $results = json_decode($tmp, true);
-                    $more = $results['range']['has_more'];
-                    $start += $results['range']['limit'];
+                    if (!$tmp) {
+                        $more = false;
+                    } else {
+                        $results = json_decode($tmp, true);
+                        $more = $results['range']['has_more'];
+                        $start += $results['range']['limit'];
 
-                    foreach ($results['payments'] as $data) {
-                        $obj = new static($data['id']);
+                        foreach ($results['payments'] as $data) {
+                            $obj = new static($data['id']);
 
-                        $obj->cleanModified = true;
-                        $obj->hydrate($data);
+                            $obj->cleanModified = true;
+                            $obj->hydrate($data);
 
-                        yield $obj;
+                            yield $obj;
+                        }
                     }
+                } catch (ild78\Exceptions\NotFoundException $exception) {
+                    $more = false;
                 }
             } while ($more);
         };
