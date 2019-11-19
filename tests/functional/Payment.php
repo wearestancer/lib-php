@@ -506,6 +506,10 @@ class Payment extends TestCase
                 ->and($description = sprintf('Automatic test, with unique ID, %.02f %s', $amount / 100, $currency))
                 ->and($uniqueID = $this->getRandomString(10, 20))
 
+                ->if($name = 'Pickle Rick')
+                ->and($email = 'pickle.rick@example.com')
+                ->and($mobile = $this->getRandomNumber())
+
                 ->if($card = new ild78\Card)
                 ->and($card->setNumber($this->getValidCardNumber()))
                 ->and($card->setExpirationMonth(rand(1, 12)))
@@ -513,9 +517,9 @@ class Payment extends TestCase
                 ->and($card->setCvc(rand(100, 999)))
 
                 ->if($customer = new ild78\Customer)
-                ->and($customer->setName('Pickle Rick'))
-                ->and($customer->setEmail('pickle.rick@example.com'))
-                ->and($customer->setMobile($this->getRandomNumber()))
+                ->and($customer->setName($name))
+                ->and($customer->setEmail($email))
+                ->and($customer->setMobile($mobile))
 
                 ->if($this->testedInstance->setAmount($amount))
                 ->and($this->testedInstance->setCard($card))
@@ -548,7 +552,7 @@ class Payment extends TestCase
                     ->object($this->testedInstance->getCustomer())
                         ->isIdenticalTo($customer)
 
-                    ->string($customer->getId())
+                    ->string($customerID = $customer->getId())
                         ->startWith('cust_')
                         ->hasLength(29)
 
@@ -565,6 +569,54 @@ class Payment extends TestCase
                         ->isInstanceOf(ild78\Exceptions\ConflictException::class)
                         ->message
                             ->isIdenticalTo('Payment already exists, duplicate unique_id (' . $id . ')')
+
+            ->assert('Allow duplicate customer')
+                ->given($this->newTestedInstance)
+                ->and($amount = rand(50, 99999))
+                ->and($description = sprintf('Automatic test, duplicate customer, %.02f %s', $amount / 100, $currency))
+
+                ->if($card = new ild78\Card)
+                ->and($card->setNumber($this->getValidCardNumber()))
+                ->and($card->setExpirationMonth(rand(1, 12)))
+                ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
+                ->and($card->setCvc(rand(100, 999)))
+
+                ->if($customer = new ild78\Customer)
+                ->and($customer->setName($name)) // From previous test
+                ->and($customer->setEmail($email)) // From previous test
+                ->and($customer->setMobile($mobile)) // From previous test
+
+                ->if($this->testedInstance->setAmount($amount))
+                ->and($this->testedInstance->setCard($card))
+                ->and($this->testedInstance->setCurrency($currency))
+                ->and($this->testedInstance->setDescription($description))
+                ->and($this->testedInstance->setCustomer($customer))
+
+                ->then
+                    ->object($this->testedInstance->save())
+                        ->isTestedInstance
+
+                    ->string($id = $this->testedInstance->getId())
+                        ->startWith('paym_')
+                        ->hasLength(29)
+
+                    ->string($this->testedInstance->getMethod())
+                        ->isIdenticalTo('card')
+
+                    ->object($this->testedInstance->getCard())
+                        ->isIdenticalTo($card)
+
+                    ->string($card->getId())
+                        ->startWith('card_')
+                        ->hasLength(29)
+
+                    ->object($this->testedInstance->getCustomer())
+                        ->isIdenticalTo($customer)
+
+                    ->string($customer->getId())
+                        ->startWith('cust_')
+                        ->hasLength(29)
+                        ->isIdenticalTo($customerID) // From previous test
         ;
     }
 }
