@@ -174,6 +174,67 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
+    public function testFilterListParams()
+    {
+        $gen = function ($length) {
+            $text = '';
+
+            for ($i = 0; $i < $length; $i++) {
+                $text .= chr(rand(65, 122));
+            }
+
+            return $text;
+        };
+
+        $this
+            ->given($this->newTestedInstance)
+            ->and($order = ['order_id' => uniqid()])
+            ->and($unique = ['unique_id' => uniqid()])
+            ->then
+                ->assert('Remove unknown')
+                    ->array($this->testedInstance->filterListParams([uniqid() => uniqid()]))
+                        ->isEmpty
+
+                ->assert('Allow order_id')
+                    ->array($this->testedInstance->filterListParams($order))
+                        ->isIdenticalTo($order)
+
+                ->assert('Validate order_id')
+                    ->exception(function () {
+                        $this->testedInstance->filterListParams(['order_id' => rand(1, PHP_INT_MAX)]);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidSearchOrderIdFilterException::class)
+                        ->message
+                            ->isIdenticalTo('Order ID must be a string.')
+
+                    ->exception(function () use ($gen) {
+                        $this->testedInstance->filterListParams(['order_id' => $gen(37)]);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidSearchOrderIdFilterException::class)
+                        ->message
+                            ->isIdenticalTo('A valid order ID must be between 1 and 36 characters.')
+
+                ->assert('Allow unique_id')
+                    ->array($this->testedInstance->filterListParams($unique))
+                        ->isIdenticalTo($unique)
+
+                ->assert('Validate unique_id')
+                    ->exception(function () {
+                        $this->testedInstance->filterListParams(['unique_id' => rand(1, PHP_INT_MAX)]);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidSearchUniqueIdFilterException::class)
+                        ->message
+                            ->isIdenticalTo('Unique ID must be a string.')
+
+                    ->exception(function () use ($gen) {
+                        $this->testedInstance->filterListParams(['unique_id' => $gen(37)]);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidSearchUniqueIdFilterException::class)
+                        ->message
+                            ->isIdenticalTo('A valid unique ID must be between 1 and 36 characters.')
+        ;
+    }
+
     public function testGetEndpoint()
     {
         $this
@@ -460,14 +521,14 @@ class Payment extends ild78\Tests\atoum
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchOrderIdFilterException::class)
                     ->message
-                        ->isIdenticalTo('Invalid order ID.')
+                        ->isIdenticalTo('A valid order ID must be between 1 and 36 characters.')
 
                 ->exception(function () {
                     testedClass::list(['order_id' => rand(0, PHP_INT_MAX)]);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchOrderIdFilterException::class)
                     ->message
-                        ->isIdenticalTo('Invalid order ID.')
+                        ->isIdenticalTo('Order ID must be a string.')
 
             ->assert('Invalid unique id filter')
                 ->exception(function () {
@@ -475,14 +536,14 @@ class Payment extends ild78\Tests\atoum
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchUniqueIdFilterException::class)
                     ->message
-                        ->isIdenticalTo('Invalid unique ID.')
+                        ->isIdenticalTo('A valid unique ID must be between 1 and 36 characters.')
 
                 ->exception(function () {
                     testedClass::list(['unique_id' => rand(0, PHP_INT_MAX)]);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchUniqueIdFilterException::class)
                     ->message
-                        ->isIdenticalTo('Invalid unique ID.')
+                        ->isIdenticalTo('Unique ID must be a string.')
 
             ->assert('Make request')
                 ->if($limit = rand(1, 100))

@@ -202,8 +202,14 @@ class Payment extends ild78\Core\AbstractObject
             $params['order_id'] = $terms['order_id'];
             $type = gettype($terms['order_id']);
 
-            if (!$terms['order_id'] || $type !== 'string') {
-                throw new ild78\Exceptions\InvalidSearchOrderIdFilterException();
+            if ($type !== 'string') {
+                throw new ild78\Exceptions\InvalidSearchOrderIdFilterException('Order ID must be a string.');
+            }
+
+            if (strlen($terms['order_id']) > 36 || !$terms['order_id']) {
+                $message = 'A valid order ID must be between 1 and 36 characters.';
+
+                throw new ild78\Exceptions\InvalidSearchOrderIdFilterException($message);
             }
         }
 
@@ -211,8 +217,14 @@ class Payment extends ild78\Core\AbstractObject
             $params['unique_id'] = $terms['unique_id'];
             $type = gettype($terms['unique_id']);
 
-            if (!$terms['unique_id'] || $type !== 'string') {
-                throw new ild78\Exceptions\InvalidSearchUniqueIdFilterException();
+            if ($type !== 'string') {
+                throw new ild78\Exceptions\InvalidSearchUniqueIdFilterException('Unique ID must be a string.');
+            }
+
+            if (strlen($terms['unique_id']) > 36 || !$terms['unique_id']) {
+                $message = 'A valid unique ID must be between 1 and 36 characters.';
+
+                throw new ild78\Exceptions\InvalidSearchUniqueIdFilterException($message);
             }
         }
 
