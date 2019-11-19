@@ -15,7 +15,7 @@ class SearchTrait extends ild78\Tests\atoum
         $this
             ->given($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
-            ->and($body = file_get_contents(__DIR__ . '/../../fixtures/payment/list.json'))
+            ->and($body = file_get_contents(__DIR__ . '/../../fixtures/stub/list.json'))
             ->and($this->calling($response)->getBody = $body)
             ->and($this->calling($client)->request = $response)
             ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
@@ -142,7 +142,7 @@ class SearchTrait extends ild78\Tests\atoum
                             ->object
                                 ->isInstanceOf(testedClass::class)
                                 ->toString
-                                    ->isIdenticalTo('"paym_JnU7xyTGJvxRWZuxvj78qz7e"') // From json sample
+                                    ->isIdenticalTo('"stub_JnU7xyTGJvxRWZuxvj78qz7e"') // From json sample
 
                     ->mock($client)
                         ->call('request')
@@ -156,12 +156,12 @@ class SearchTrait extends ild78\Tests\atoum
                             ->object
                                 ->isInstanceOf(testedClass::class)
                                 ->toString
-                                    ->isIdenticalTo('"paym_p5tjCrXHy93xtVtVqvEJoC1c"') // From json sample
+                                    ->isIdenticalTo('"stub_p5tjCrXHy93xtVtVqvEJoC1c"') // From json sample
                         ->yields
                             ->object
                                 ->isInstanceOf(testedClass::class)
                                 ->toString
-                                    ->isIdenticalTo('"paym_JnU7xyTGJvxRWZuxvj78qz7e"') // From json sample
+                                    ->isIdenticalTo('"stub_JnU7xyTGJvxRWZuxvj78qz7e"') // From json sample
 
                     ->mock($client)
                         ->call('request')
@@ -192,7 +192,33 @@ class SearchTrait extends ild78\Tests\atoum
 
             ->assert('Empty response')
                 ->given($body = [
-                    'payments' => [],
+                    'searchtraits' => [],
+                    'range' => [
+                        'has_more' => false,
+                        'limit' => 10,
+                    ],
+                ])
+                ->and($this->calling($response)->getBody = json_encode($body))
+
+                ->if($limit = rand(1, 100))
+                ->and($terms = [
+                    'limit' => $limit,
+                ])
+                ->and($query = http_build_query(['limit' => $limit, 'start' => 0]))
+                ->and($location = $this->testedInstance->getUri() . '?' . $query)
+                ->then
+                    ->generator($gen = testedClass::list($terms))
+                        ->yields
+                            ->variable
+                                ->isNull
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location, $options)
+                                ->once
+
+            ->assert('Results not present')
+                ->given($body = [
                     'range' => [
                         'has_more' => false,
                         'limit' => 10,

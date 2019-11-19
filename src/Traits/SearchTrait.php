@@ -91,8 +91,9 @@ trait SearchTrait
 
         $request = new ild78\Core\Request();
         $element = new static(); // Mandatory for requests.
+        $property = strtolower($element->getEntityName() . 's');
 
-        $gen = function () use ($request, $element, $params) {
+        $gen = function () use ($request, $element, $params, $property) {
             $more = true;
             $start = 0;
 
@@ -106,16 +107,21 @@ trait SearchTrait
                         $more = false;
                     } else {
                         $results = json_decode($tmp, true);
-                        $more = $results['range']['has_more'];
-                        $start += $results['range']['limit'];
 
-                        foreach ($results['payments'] as $data) {
-                            $obj = new static($data['id']);
+                        if (!array_key_exists($property, $results)) {
+                            $more = false;
+                        } else {
+                            $more = $results['range']['has_more'];
+                            $start += $results['range']['limit'];
 
-                            $obj->cleanModified = true;
-                            $obj->hydrate($data);
+                            foreach ($results[$property] as $data) {
+                                $obj = new static($data['id']);
 
-                            yield $obj;
+                                $obj->cleanModified = true;
+                                $obj->hydrate($data);
+
+                                yield $obj;
+                            }
                         }
                     }
                 } catch (ild78\Exceptions\NotFoundException $exception) {
