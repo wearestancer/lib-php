@@ -60,7 +60,7 @@ class Refund extends TestCase
         $this
             ->given($total = rand(500, 10000))
             ->and($amount1 = floor($total / 3))
-            ->and($amount2 = floor(($total - $amount1) / rand(2, 10)))
+            ->and($amount2 = max(50, floor(($total - $amount1) / rand(2, 10))))
             ->and($amount3 = $total - $amount1 - $amount2)
 
             ->if($payment = new ild78\Payment)
