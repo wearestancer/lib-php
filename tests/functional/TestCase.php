@@ -30,6 +30,19 @@ class TestCase extends ild78\Tests\atoum
         $this->config->setHost($env['API_HOST']);
     }
 
+    public function getDisputedCardNumber()
+    {
+        $cards = [
+            '4000000000000259',
+            '4000000000001976',
+            '4000000000005423',
+        ];
+
+        shuffle($cards);
+
+        return array_shift($cards);
+    }
+
     public function getRandomNumber()
     {
         // Simulate a french mobile phone number
