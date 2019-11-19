@@ -86,23 +86,24 @@ class Payment extends TestCase
     public function testList($currency)
     {
         $this
-            ->given($this->newTestedInstance)
-            ->and($this->testedInstance->setAmount($amount = rand(50, 10000)))
-            ->and($this->testedInstance->setDescription(sprintf('Automatic test for list, %.02f %s', $amount / 100, $currency)))
-            ->and($this->testedInstance->setCurrency($currency))
-            ->and($this->testedInstance->setCard($card = new ild78\Card))
-            ->and($this->testedInstance->setOrderId($this->order))
-            ->and($card->setNumber($this->getValidCardNumber()))
-            ->and($card->setExpirationMonth(rand(1, 12)))
-            ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
-            ->and($card->setCvc((string) rand(100, 999)))
-            ->and($this->testedInstance->setCustomer($customer = new ild78\Customer))
-            ->and($customer->setName('John Doe'))
-            ->and($customer->setEMail('john.doe@example.com'))
-            ->and($this->testedInstance->save())
-            ->and(array_push($this->paymentList, $this->testedInstance))
-            ->then
-                ->generator($gen = testedClass::list(['order_id' => $this->order]))
+            ->assert('Regular listing')
+                ->given($this->newTestedInstance)
+                ->and($this->testedInstance->setAmount($amount = rand(50, 10000)))
+                ->and($this->testedInstance->setDescription(sprintf('Automatic test for list, %.02f %s', $amount / 100, $currency)))
+                ->and($this->testedInstance->setCurrency($currency))
+                ->and($this->testedInstance->setCard($card = new ild78\Card))
+                ->and($this->testedInstance->setOrderId($this->order))
+                ->and($card->setNumber($this->getValidCardNumber()))
+                ->and($card->setExpirationMonth(rand(1, 12)))
+                ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
+                ->and($card->setCvc((string) rand(100, 999)))
+                ->and($this->testedInstance->setCustomer($customer = new ild78\Customer))
+                ->and($customer->setName('John Doe'))
+                ->and($customer->setEMail('john.doe@example.com'))
+                ->and($this->testedInstance->save())
+                ->and(array_push($this->paymentList, $this->testedInstance))
+                ->then
+                    ->generator($gen = testedClass::list(['order_id' => $this->order]))
         ;
 
         $methods = [
@@ -141,6 +142,14 @@ class Payment extends TestCase
                 ;
             }
         }
+
+        $this
+            ->assert('Empty list')
+                ->generator(testedClass::list(['order_id' => bin2hex(random_bytes(12))]))
+                    ->yields
+                        ->variable
+                            ->isNull
+        ;
     }
 
     /**
