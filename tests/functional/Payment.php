@@ -499,6 +499,72 @@ class Payment extends TestCase
 
                     ->string($this->testedInstance->getStatus())
                         ->isIdenticalTo(ild78\Payment\Status::TO_CAPTURE)
+
+            ->assert('With unique ID')
+                ->given($this->newTestedInstance)
+                ->and($amount = rand(50, 99999))
+                ->and($description = sprintf('Automatic test, with unique ID, %.02f %s', $amount / 100, $currency))
+                ->and($uniqueID = $this->getRandomString(10, 20))
+
+                ->if($card = new ild78\Card)
+                ->and($card->setNumber($this->getValidCardNumber()))
+                ->and($card->setExpirationMonth(rand(1, 12)))
+                ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
+                ->and($card->setCvc(rand(100, 999)))
+
+                ->if($customer = new ild78\Customer)
+                ->and($customer->setName('Pickle Rick'))
+                ->and($customer->setEmail('pickle.rick@example.com'))
+                ->and($customer->setMobile($this->getRandomNumber()))
+
+                ->if($this->testedInstance->setAmount($amount))
+                ->and($this->testedInstance->setCard($card))
+                ->and($this->testedInstance->setCurrency($currency))
+                ->and($this->testedInstance->setDescription($description))
+                ->and($this->testedInstance->setCustomer($customer))
+                ->and($this->testedInstance->setUniqueId($uniqueID))
+
+                ->then
+                    ->object($this->testedInstance->save())
+                        ->isTestedInstance
+
+                    ->string($id = $this->testedInstance->getId())
+                        ->startWith('paym_')
+                        ->hasLength(29)
+
+                    ->string($this->testedInstance->getMethod())
+                        ->isIdenticalTo('card')
+
+                    ->string($this->testedInstance->getUniqueId())
+                        ->isIdenticalTo($uniqueID)
+
+                    ->object($this->testedInstance->getCard())
+                        ->isIdenticalTo($card)
+
+                    ->string($card->getId())
+                        ->startWith('card_')
+                        ->hasLength(29)
+
+                    ->object($this->testedInstance->getCustomer())
+                        ->isIdenticalTo($customer)
+
+                    ->string($customer->getId())
+                        ->startWith('cust_')
+                        ->hasLength(29)
+
+                ->if($this->newTestedInstance)
+                ->and($this->testedInstance->setAmount(rand(50, 99999)))
+                ->and($this->testedInstance->setCard($card))
+                ->and($this->testedInstance->setCurrency($currency))
+                ->and($this->testedInstance->setDescription('Will fail'))
+                ->and($this->testedInstance->setUniqueId($uniqueID))
+                ->then
+                    ->exception(function() {
+                        $this->testedInstance->save();
+                    })
+                        ->isInstanceOf(ild78\Exceptions\ConflictException::class)
+                        ->message
+                            ->isIdenticalTo('Payment already exists, duplicate unique_id (' . $id . ')')
         ;
     }
 }
