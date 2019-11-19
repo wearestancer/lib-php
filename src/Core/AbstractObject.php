@@ -340,9 +340,7 @@ abstract class AbstractObject implements JsonSerializable
         $request = new Request();
         $request->delete($this);
 
-        $tmp = explode('\\', get_class($this));
-        $class = end($tmp);
-        ild78\Config::getGlobal()->getLogger()->info(sprintf('%s "%s" deleted', $class, $this->id));
+        ild78\Config::getGlobal()->getLogger()->info(sprintf('%s "%s" deleted', $this->getEntityName(), $this->id));
 
         $this->id = null;
 
@@ -381,6 +379,18 @@ abstract class AbstractObject implements JsonSerializable
     public function getEndpoint(): string
     {
         return $this->endpoint;
+    }
+
+    /**
+     * Return entity name
+     *
+     * @return string
+     */
+    public function getEntityName(): string
+    {
+        $tmp = explode('\\', get_class($this));
+
+        return end($tmp);
     }
 
     /**
@@ -740,9 +750,7 @@ abstract class AbstractObject implements JsonSerializable
 
         $this->modified = [];
 
-        $tmp = explode('\\', get_class($this));
-        $class = end($tmp);
-        ild78\Config::getGlobal()->getLogger()->info(sprintf('%s "%s" %s', $class, $this->id, $action));
+        ild78\Config::getGlobal()->getLogger()->info(sprintf('%s "%s" %s', $this->getEntityName(), $this->id, $action));
 
         return $this;
     }

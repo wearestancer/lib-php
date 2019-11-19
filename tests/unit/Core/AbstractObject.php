@@ -278,6 +278,20 @@ class AbstractObject extends ild78\Tests\atoum
         ;
     }
 
+    public function testGetEntityName()
+    {
+        $this
+            ->given($class = uniqid())
+            ->and($ns = implode('\\', array_fill(0, rand(0, 3), uniqid())))
+
+            ->if($this->function->get_class = $ns . '\\' . $class)
+            ->and($this->newTestedInstance)
+            ->then
+                ->string($this->testedInstance->getEntityName())
+                    ->isIdenticalTo($class)
+        ;
+    }
+
     public function testGetId()
     {
         $this
