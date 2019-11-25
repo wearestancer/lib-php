@@ -1463,6 +1463,92 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
+    public function testSave_device()
+    {
+        $this
+            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($port = rand(1, 65535))
+            ->and($addr = $this->ipDataProvider()[0])
+            ->and($url = 'https://www.example.org?' . uniqid())
+
+            ->if($client = new mock\ild78\Http\Client)
+            ->and($response = new mock\ild78\Http\Response(200))
+            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-card.json'))
+            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($client)->request = $response)
+
+            ->and($config->setHttpClient($client))
+
+            ->if($card = new Card)
+            ->and($card->setCvc(substr(uniqid(), 0, 3)))
+            ->and($card->setExpMonth(rand(1, 12)))
+            ->and($card->setExpYear(rand(date('Y'), 3000)))
+            ->and($card->setName(uniqid()))
+            ->and($card->setNumber($number = '4111111111111111'))
+            ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
+
+            ->if($customer = new Customer)
+            ->and($customer->setName(uniqid()))
+            ->and($customer->setEmail(uniqid() . '@example.org'))
+            ->and($customer->setMobile(uniqid()))
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount(rand(100, 999999)))
+            ->and($this->testedInstance->setAuth($url))
+            ->and($this->testedInstance->setCard($card))
+            ->and($this->testedInstance->setCurrency('EUR'))
+            ->and($this->testedInstance->setCustomer($customer))
+            ->and($this->testedInstance->setDescription(uniqid()))
+
+            ->and($json = json_encode(array_merge($this->testedInstance->toArray(), [
+                'device' => [
+                    'ip' => $addr,
+                    'port' => $port,
+                ],
+            ])))
+            ->and($options = [
+                'body' => $json,
+                'headers' => [
+                    'Authorization' => $config->getBasicAuthHeader(),
+                    'Content-Type' => 'application/json',
+                    'User-Agent' => $config->getDefaultUserAgent(),
+                ],
+                'timeout' => $config->getTimeout(),
+            ])
+            ->and($location = $this->testedInstance->getUri())
+            ->then
+                ->assert('Must have an IP address in env')
+                    ->exception(function () {
+                        $this->testedInstance->save();
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidIpAddressException::class)
+
+                ->assert('Must have an port in env')
+                    ->if($_SERVER['SERVER_ADDR'] = $addr)
+                    ->then
+                        ->exception(function () {
+                            $this->testedInstance->save();
+                        })
+                            ->isInstanceOf(ild78\Exceptions\InvalidPortException::class)
+
+                ->assert('Should add a device')
+                    ->if($_SERVER['SERVER_PORT'] = $port)
+                    ->then
+                        ->variable($this->testedInstance->getId())
+                            ->isNull
+                        ->object($this->testedInstance->save())
+                            ->isTestedInstance
+
+                        ->mock($client)
+                            ->call('request')
+                                ->withArguments('POST', $location, $options)
+                                    ->once
+
+                        ->string($this->testedInstance->getId())
+                            ->isIdenticalTo('paym_KIVaaHi7G8QAYMQpQOYBrUQE')
+        ;
+    }
+
     public function testSetAmount()
     {
         $this
