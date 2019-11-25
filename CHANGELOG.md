@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 3DS support
 - Refunds
 - Disputes
+- Add `Device` on every payment
 - Allow payment without card or sepa
 - Add `ild78\Payment::getReturnUrl()` and `ild78\Payment::setReturnUrl()` methods
 - Add `ild78\Payment::getPaymentPageUrl()` method
