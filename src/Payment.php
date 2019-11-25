@@ -366,8 +366,10 @@ class Payment extends Api\AbstractObject
      *
      * @uses Request::post()
      * @return self
-     * @throws ild78\Exceptions\MissingPaymentMethodException When trying to pay something without any
-     *   credit card or SEPA account.
+     * @throws ild78\Exceptions\InvalidIpAddressException When no device was already given, authenticated payment
+     *   was asked and an error occur during device creation.
+     * @throws ild78\Exceptions\InvalidPortException When no device was already given, authenticated payment
+     *   was asked and an error occur during device creation.
      */
     public function save(): ild78\Api\AbstractObject
     {
@@ -375,9 +377,23 @@ class Payment extends Api\AbstractObject
         $card = $this->getCard();
         $sepa = $this->getSepa();
 
-        if (is_object($auth) && $auth->getReturnUrl() && !is_object($this->getDevice())) {
-            $device = new ild78\Device();
-            $this->setDevice($device);
+        if (!is_object($this->getDevice())) {
+            // phpcs:disable Squiz.PHP.DisallowBooleanStatement.Found
+            $mandatoryDevice = is_object($auth) && $auth->getReturnUrl();
+            // phpcs:enable
+
+            try {
+                $device = new ild78\Device();
+                $this->setDevice($device);
+            } catch (ild78\Exceptions\InvalidIpAddressException $exception) {
+                if ($mandatoryDevice) {
+                    throw $exception;
+                }
+            } catch (ild78\Exceptions\InvalidPortException $exception) {
+                if ($mandatoryDevice) {
+                    throw $exception;
+                }
+            }
         }
 
         parent::save();
