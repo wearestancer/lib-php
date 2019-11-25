@@ -366,8 +366,6 @@ class Payment extends Api\AbstractObject
      *
      * @uses Request::post()
      * @return self
-     * @throws ild78\Exceptions\MissingPaymentMethodException When trying to pay something without any
-     *   credit card or SEPA account.
      */
     public function save(): ild78\Api\AbstractObject
     {
