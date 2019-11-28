@@ -32,18 +32,12 @@ class Device extends ild78\Core\AbstractObject
             'type' => self::STRING,
         ],
         'httpAccept' => [
-            'size' => [
-                'max' => 2048,
-            ],
             'type' => self::STRING,
         ],
         'ip' => [
             'type' => self::STRING,
         ],
         'languages' => [
-            'size' => [
-                'max' => 32,
-            ],
             'type' => self::STRING,
         ],
         'port' => [
@@ -54,9 +48,6 @@ class Device extends ild78\Core\AbstractObject
             'type' => self::INTEGER,
         ],
         'userAgent' => [
-            'size' => [
-                'max' => 256,
-            ],
             'type' => self::STRING,
         ],
     ];
