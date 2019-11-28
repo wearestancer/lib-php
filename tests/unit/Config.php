@@ -44,6 +44,50 @@ class Config extends ild78\Tests\atoum
         ;
     }
 
+    public function testGetDebug_SetDebug()
+    {
+        $this
+            ->assert('TRUE in test mode')
+                ->if($this->newTestedInstance([]))
+                ->then
+                    ->boolean($this->testedInstance->getDebug())
+                        ->isTrue
+
+                    ->object($this->testedInstance->setDebug(false))
+                        ->isTestedInstance
+
+                    ->boolean($this->testedInstance->getDebug())
+                        ->isFalse
+
+            ->assert('FALSE in live mode')
+                ->if($this->newTestedInstance([]))
+                ->and($this->testedInstance->setMode(testedClass::LIVE_MODE))
+                ->then
+                    ->boolean($this->testedInstance->getDebug())
+                        ->isFalse
+
+                    ->object($this->testedInstance->setDebug(true))
+                        ->isTestedInstance
+
+                    ->boolean($this->testedInstance->getDebug())
+                        ->isTrue
+
+            ->assert('Can be forced')
+                ->if($this->newTestedInstance([]))
+                ->then
+                    ->object($this->testedInstance->setDebug(true))
+                        ->isTestedInstance
+
+                    ->boolean($this->testedInstance->getDebug())
+                        ->isTrue
+
+                ->if($this->testedInstance->setMode(testedClass::LIVE_MODE))
+                ->then
+                    ->boolean($this->testedInstance->getDebug())
+                        ->isTrue
+        ;
+    }
+
     /**
      * @dataProvider timeZoneProvider
      */

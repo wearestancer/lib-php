@@ -17,6 +17,9 @@ class Config
     public const TEST_MODE = 'test';
     public const VERSION = '0.0.2';
 
+    /** @var boolean */
+    protected $debug;
+
     /** @var string */
     protected $host = 'api.iliad78.net';
 
@@ -75,6 +78,20 @@ class Config
     public function getBasicAuthHeader(): string
     {
         return 'Basic ' . base64_encode($this->getSecretKey() . ':');
+    }
+
+    /**
+     * Indicate if we are in debug mode.
+     *
+     * @return boolean
+     */
+    public function getDebug(): bool
+    {
+        if (!is_null($this->debug)) {
+            return $this->debug;
+        }
+
+        return $this->isTestMode();
     }
 
     /**
@@ -357,6 +374,19 @@ class Config
     public function isTestMode(): bool
     {
         return $this->getMode() === static::TEST_MODE;
+    }
+
+    /**
+     * Change debug mode.
+     *
+     * @param boolean $value New value for the mode.
+     * @return self
+     */
+    public function setDebug(bool $value): self
+    {
+        $this->debug = $value;
+
+        return $this;
     }
 
     /**
