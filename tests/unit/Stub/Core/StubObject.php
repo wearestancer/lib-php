@@ -1195,7 +1195,7 @@ class StubObject extends ild78\Tests\atoum
                         ->call('request')
                             ->once
 
-            ->assert('Save blocks populate')
+            ->assert('Send blocks populate')
                 ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($id = uniqid())
                 ->and($created = time())
@@ -1212,7 +1212,7 @@ class StubObject extends ild78\Tests\atoum
                 ->and($this->testedInstance->setString1($string1))
                 ->and($this->testedInstance->setInteger1($integer1))
                 ->then
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
                     ->object($this->testedInstance->populate())
 
                     ->mock($client)
@@ -1223,7 +1223,7 @@ class StubObject extends ild78\Tests\atoum
                             ->withArguments('GET')
                                 ->never
 
-            ->assert('Populate blocks save')
+            ->assert('Populate blocks send')
                 ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($id = uniqid())
                 ->and($created = time())
@@ -1241,7 +1241,7 @@ class StubObject extends ild78\Tests\atoum
                 ->and($this->testedInstance->setInteger1($integer1))
                 ->then
                     ->object($this->testedInstance->populate())
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
 
                     ->mock($client)
                         ->call('request')
@@ -1411,7 +1411,7 @@ class StubObject extends ild78\Tests\atoum
         ;
     }
 
-    public function testSave()
+    public function testSend()
     {
         $this
             ->assert('Throw exception if requirement are not provided')
@@ -1419,13 +1419,13 @@ class StubObject extends ild78\Tests\atoum
                 ->and($this->testedInstance->setString2($this->makeStringAtLeast(10)))
                 ->then
                     ->exception(function () {
-                        $this->testedInstance->save();
+                        $this->testedInstance->send();
                     })
                         ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
                         ->message
                             ->isIdenticalTo('You need to provide a value for : integer1, string1')
 
-            ->assert('Save data if all requirement are complete')
+            ->assert('Send data if all requirement are complete')
                 ->if($string1 = $this->makeStringBetween(10, 20))
                 ->and($integer1 = $this->makeIntegerBetween(10, 20))
                 ->and($id = uniqid())
@@ -1459,7 +1459,7 @@ class StubObject extends ild78\Tests\atoum
                     ->boolean($this->testedInstance->isModified())
                         ->isTrue
 
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
                         ->isTestedInstance
 
                     ->mock($client)
@@ -1507,7 +1507,7 @@ class StubObject extends ild78\Tests\atoum
                     ->boolean($this->testedInstance->isModified())
                         ->isTrue
 
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
                         ->isTestedInstance
 
                     ->mock($client)
@@ -1552,7 +1552,7 @@ class StubObject extends ild78\Tests\atoum
                     ->boolean($this->testedInstance->isModified())
                         ->isTrue
 
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
                         ->isTestedInstance
 
                     ->variable($this->testedInstance->getId())

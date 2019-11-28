@@ -17,7 +17,7 @@ class Customer extends TestCase
             ->and($this->testedInstance->setName('John Doe (' . $key . ')'))
             ->and($this->testedInstance->setEmail('john.doe+' . $key . '@example.com'))
             ->and($this->testedInstance->setMobile($this->getRandomNumber()))
-            ->and($id = $this->testedInstance->save()->getId())
+            ->and($id = $this->testedInstance->send()->getId())
             ->then
                 ->object($this->testedInstance->delete())
                     ->isTestedInstance
@@ -61,7 +61,7 @@ class Customer extends TestCase
         ;
     }
 
-    public function testSave()
+    public function testSend()
     {
         $this
             ->given($key = uniqid())
@@ -78,7 +78,7 @@ class Customer extends TestCase
                     ->variable($this->testedInstance->getId())
                         ->isNull
 
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
                         ->isTestedInstance
 
                     ->string($id = $this->testedInstance->getId())
@@ -91,7 +91,7 @@ class Customer extends TestCase
                 ->and($this->testedInstance->setMobile($mobile))
                 ->then
                     ->exception(function () {
-                        $this->testedInstance->save();
+                        $this->testedInstance->send();
                     })
                         ->isInstanceOf(ild78\Exceptions\ConflictException::class)
                         ->message
@@ -105,7 +105,7 @@ class Customer extends TestCase
                     ->variable($this->testedInstance->getId())
                         ->isNull
 
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
                         ->isTestedInstance
 
                     ->string($this->testedInstance->getId())
@@ -118,7 +118,7 @@ class Customer extends TestCase
                     ->variable($this->testedInstance->getId())
                         ->isNull
 
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
                         ->isTestedInstance
 
                     ->string($this->testedInstance->getId())
@@ -131,7 +131,7 @@ class Customer extends TestCase
         $this
             ->given($this->newTestedInstance)
             ->and($this->testedInstance->setMobile($this->getRandomNumber()))
-            ->and($this->testedInstance->save())
+            ->and($this->testedInstance->send())
 
             ->and($id = $this->testedInstance->getId())
 
@@ -141,21 +141,21 @@ class Customer extends TestCase
             ->and($newMobile = $this->getRandomNumber())
             ->then
                 ->assert('Change name')
-                    ->object($this->testedInstance->setName($newName)->save())
+                    ->object($this->testedInstance->setName($newName)->send())
                         ->isTestedInstance
 
                     ->string($this->newTestedInstance($id)->getName())
                         ->isIdenticalTo($newName)
 
                 ->assert('Change email')
-                    ->object($this->testedInstance->setEmail($newEmail)->save())
+                    ->object($this->testedInstance->setEmail($newEmail)->send())
                         ->isTestedInstance
 
                     ->string($this->newTestedInstance($id)->getEmail())
                         ->isIdenticalTo($newEmail)
 
                 ->assert('Change mobile phone number')
-                    ->object($this->testedInstance->setMobile($newMobile)->save())
+                    ->object($this->testedInstance->setMobile($newMobile)->send())
                         ->isTestedInstance
 
                     ->string($this->newTestedInstance($id)->getMobile())

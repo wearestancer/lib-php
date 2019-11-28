@@ -55,22 +55,22 @@ class Refund extends ild78\Core\AbstractObject
     }
 
     /**
-     * Save the current object.
+     * Send the current object.
      *
      * Overrided to make sure that the payment instance and the modified flag will not change.
      *
      * @return ild78\Core\AbstractObject
      * @throws ild78\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
-    public function save(): ild78\Core\AbstractObject
+    public function send(): ild78\Core\AbstractObject
     {
         $payment = $this->getPayment();
         $modified = $payment->modified;
         $payment->modified = [];
 
-        $this->modified[] = 'amount'; // Mandatory, force `parent::save()` to work even if no amount is setted.
+        $this->modified[] = 'amount'; // Mandatory, force `parent::send()` to work even if no amount is setted.
 
-        parent::save();
+        parent::send();
 
         // Force same payment instance.
         $this->setPayment($payment);

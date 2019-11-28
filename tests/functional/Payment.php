@@ -100,7 +100,7 @@ class Payment extends TestCase
                 ->and($this->testedInstance->setCustomer($customer = new ild78\Customer))
                 ->and($customer->setName('John Doe'))
                 ->and($customer->setEMail('john.doe@example.com'))
-                ->and($this->testedInstance->save())
+                ->and($this->testedInstance->send())
                 ->and(array_push($this->paymentList, $this->testedInstance))
                 ->then
                     ->generator($gen = testedClass::list(['order_id' => $this->order]))
@@ -193,7 +193,7 @@ class Payment extends TestCase
                 ->object($customer->setEMail('john.doe@example.com'))
                     ->isInstanceOf(ild78\Customer::class)
 
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
 
                 ->string($this->testedInstance->getId())
@@ -203,7 +203,7 @@ class Payment extends TestCase
     /**
      * @dataProvider currencyDataProvider
      */
-    public function testSave($currency)
+    public function testSend($currency)
     {
         $this
             ->assert('With a card')
@@ -231,7 +231,7 @@ class Payment extends TestCase
                 ->and($this->testedInstance->setDescription($description))
 
                 ->then
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
                         ->isTestedInstance
 
                     ->string($this->testedInstance->getId())
@@ -292,7 +292,7 @@ class Payment extends TestCase
                 ->and($this->testedInstance->setDevice(new ild78\Device(['ip' => $ip, 'port' => $port])))
 
                 ->then
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
                         ->isTestedInstance
 
                     ->string($this->testedInstance->getId())
@@ -352,7 +352,7 @@ class Payment extends TestCase
                 ->and($this->testedInstance->setDescription($description))
 
                 ->then
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
                         ->isTestedInstance
 
                     ->string($this->testedInstance->getId())
@@ -391,7 +391,7 @@ class Payment extends TestCase
                 ->and($this->testedInstance->setDescription($description))
 
                 ->then
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
                         ->isTestedInstance
 
                     ->string($this->testedInstance->getId())
@@ -447,7 +447,7 @@ class Payment extends TestCase
                 ->and($card->setCvc(rand(100, 999)))
 
                 ->then
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
                         ->isTestedInstance
 
                     ->string($this->testedInstance->getId())
@@ -469,7 +469,7 @@ class Payment extends TestCase
                     ->object($this->testedInstance->setCard($card))
                         ->isTestedInstance
 
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
                         ->isTestedInstance
 
                     ->string($this->testedInstance->getMethod())
@@ -488,13 +488,13 @@ class Payment extends TestCase
                         ->startWith('card_')
                         ->hasLength(29)
 
-                    ->object($this->testedInstance->setStatus(ild78\Payment\Status::AUTHORIZE)->save())
+                    ->object($this->testedInstance->setStatus(ild78\Payment\Status::AUTHORIZE)->send())
                         ->isTestedInstance
 
                     ->string($this->testedInstance->getStatus())
                         ->isIdenticalTo(ild78\Payment\Status::AUTHORIZED)
 
-                    ->object($this->testedInstance->setStatus(ild78\Payment\Status::CAPTURE)->save())
+                    ->object($this->testedInstance->setStatus(ild78\Payment\Status::CAPTURE)->send())
                         ->isTestedInstance
 
                     ->string($this->testedInstance->getStatus())
@@ -529,7 +529,7 @@ class Payment extends TestCase
                 ->and($this->testedInstance->setUniqueId($uniqueID))
 
                 ->then
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
                         ->isTestedInstance
 
                     ->string($id = $this->testedInstance->getId())
@@ -564,7 +564,7 @@ class Payment extends TestCase
                 ->and($this->testedInstance->setUniqueId($uniqueID))
                 ->then
                     ->exception(function() {
-                        $this->testedInstance->save();
+                        $this->testedInstance->send();
                     })
                         ->isInstanceOf(ild78\Exceptions\ConflictException::class)
                         ->message
@@ -593,7 +593,7 @@ class Payment extends TestCase
                 ->and($this->testedInstance->setCustomer($customer))
 
                 ->then
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
                         ->isTestedInstance
 
                     ->string($id = $this->testedInstance->getId())

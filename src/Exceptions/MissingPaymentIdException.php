@@ -21,6 +21,6 @@ class MissingPaymentIdException extends BadMethodCallException implements Except
      */
     public static function getDefaultMessage(): string
     {
-        return 'A payment ID is mandatory. Maybe you forgot to save the payment.';
+        return 'A payment ID is mandatory. Maybe you forgot to send the payment.';
     }
 }

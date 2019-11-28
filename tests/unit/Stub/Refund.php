@@ -25,7 +25,7 @@ class Refund extends ild78\Tests\atoum
         ;
     }
 
-    public function testSave()
+    public function testSend()
     {
         $this
             ->assert('With amount')
@@ -63,7 +63,7 @@ class Refund extends ild78\Tests\atoum
                 ]))
 
                 ->then
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
                         ->isTestedInstance
 
                     ->mock($client)
@@ -115,7 +115,7 @@ class Refund extends ild78\Tests\atoum
                 ]))
 
                 ->then
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
                         ->isTestedInstance
 
                     ->mock($client)

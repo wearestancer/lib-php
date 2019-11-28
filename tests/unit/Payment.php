@@ -304,9 +304,9 @@ class Payment extends ild78\Tests\atoum
                 })
                     ->isInstanceOf(ild78\Exceptions\MissingPaymentIdException::class)
                     ->message
-                        ->isIdenticalTo('A payment ID is mandatory to obtain a payment page URL. Maybe you forgot to save the payment.')
+                        ->isIdenticalTo('A payment ID is mandatory to obtain a payment page URL. Maybe you forgot to send the payment.')
 
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
 
                 ->string($this->testedInstance->getPaymentPageUrl())
@@ -846,17 +846,17 @@ class Payment extends ild78\Tests\atoum
                                 ->withArguments(sprintf('Refund of %.02f EUR on payment "%s"', $lastPart / 100, $id))
                                     ->once
 
-                ->assert('We can not refund on unsaved payment')
+                ->assert('We can not refund on unsent payment')
                     ->exception(function () {
                         $this->newTestedInstance->refund();
                     })
                         ->isInstanceOf(ild78\Exceptions\MissingPaymentIdException::class)
                         ->message
-                            ->isIdenticalTo('A payment ID is mandatory. Maybe you forgot to save the payment.')
+                            ->isIdenticalTo('A payment ID is mandatory. Maybe you forgot to send the payment.')
         ;
     }
 
-    public function testSave_exceptions()
+    public function testSend_exceptions()
     {
         $this
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
@@ -869,25 +869,25 @@ class Payment extends ild78\Tests\atoum
             ->if($this->newTestedInstance)
             ->then
                 ->exception(function () {
-                    $this->testedInstance->save();
+                    $this->testedInstance->send();
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidAmountException::class)
 
             ->if($this->testedInstance->setAmount(rand(100, 999999)))
             ->then
                 ->exception(function () {
-                    $this->testedInstance->save();
+                    $this->testedInstance->send();
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidCurrencyException::class)
 
             ->if($this->testedInstance->setCurrency($this->currencyDataProvider(true)))
             ->then
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
         ;
     }
 
-    public function testSave_withCard()
+    public function testSend_withCard()
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client)
@@ -937,7 +937,7 @@ class Payment extends ild78\Tests\atoum
             ->then
                 ->variable($this->testedInstance->getId())
                     ->isNull
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
 
                 ->mock($client)
@@ -996,14 +996,14 @@ class Payment extends ild78\Tests\atoum
                     ->isNull
 
                 ->string($card->getNumber())
-                    ->isIdenticalTo($number) // Number is unchanged in save process
+                    ->isIdenticalTo($number) // Number is unchanged in send process
 
                 ->variable($card->getZipCode())
                     ->isNull
         ;
     }
 
-    public function testSave_withSepa()
+    public function testSend_withSepa()
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client)
@@ -1044,7 +1044,7 @@ class Payment extends ild78\Tests\atoum
             ->then
                 ->variable($this->testedInstance->getId())
                     ->isNull
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
 
                 ->mock($client)
@@ -1092,7 +1092,7 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
-    public function testSave_authenticatedPayment()
+    public function testSend_authenticatedPayment()
     {
         $_SERVER['SERVER_ADDR'] = $ip = $this->ipDataProvider()[0];
         $_SERVER['SERVER_PORT'] = $port = rand(1, 65535);
@@ -1160,7 +1160,7 @@ class Payment extends ild78\Tests\atoum
                 ->variable($this->testedInstance->getId())
                     ->isNull
 
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
 
                 ->mock($client)
@@ -1207,7 +1207,7 @@ class Payment extends ild78\Tests\atoum
                     ->isIdenticalTo('4444')
 
                 ->string($card->getNumber())
-                    ->isIdenticalTo($number) // Number is unchanged in save process
+                    ->isIdenticalTo($number) // Number is unchanged in send process
 
                 // Auth object
                 ->object($auth = $this->testedInstance->getAuth())
@@ -1234,7 +1234,7 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
-    public function testSave_fullyCustomAuthenticatedPayment()
+    public function testSend_fullyCustomAuthenticatedPayment()
     {
         $this
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
@@ -1307,7 +1307,7 @@ class Payment extends ild78\Tests\atoum
                 ->variable($this->testedInstance->getId())
                     ->isNull
 
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
 
                 ->mock($client)
@@ -1354,7 +1354,7 @@ class Payment extends ild78\Tests\atoum
                     ->isIdenticalTo('4444')
 
                 ->string($card->getNumber())
-                    ->isIdenticalTo($number) // Number is unchanged in save process
+                    ->isIdenticalTo($number) // Number is unchanged in send process
 
                 // Auth object
                 ->object($this->testedInstance->getAuth())
@@ -1381,7 +1381,7 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
-    public function testSave_withoutCardOrSepa()
+    public function testSend_withoutCardOrSepa()
     {
         $this
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
@@ -1427,7 +1427,7 @@ class Payment extends ild78\Tests\atoum
             ->then
                 ->variable($this->testedInstance->getId())
                     ->isNull
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
 
                 ->mock($client)
@@ -1471,7 +1471,7 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
-    public function testSave_authenticationAndPaymentPage()
+    public function testSend_authenticationAndPaymentPage()
     {
         $this
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
@@ -1515,7 +1515,7 @@ class Payment extends ild78\Tests\atoum
             ->then
                 ->variable($this->testedInstance->getId())
                     ->isNull
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
 
                 ->mock($client)
@@ -1565,7 +1565,7 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
-    public function testSave_status()
+    public function testSend_status()
     {
         $this
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
@@ -1598,7 +1598,7 @@ class Payment extends ild78\Tests\atoum
             ->and($this->testedInstance->setCustomer($customer))
             ->and($this->testedInstance->setDescription(uniqid()))
             ->and($this->testedInstance->setOrderId(uniqid()))
-            ->and($this->testedInstance->save())
+            ->and($this->testedInstance->send())
 
             ->if($status = ild78\Payment\Status::AUTHORIZE)
 
@@ -1613,7 +1613,7 @@ class Payment extends ild78\Tests\atoum
             ])
             ->and($location = $this->testedInstance->getUri())
             ->then
-                ->object($this->testedInstance->setStatus($status)->save())
+                ->object($this->testedInstance->setStatus($status)->send())
                     ->isTestedInstance
 
                 ->mock($client)
@@ -1623,7 +1623,7 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
-    public function testSave_device()
+    public function testSend_device()
     {
         $this
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
@@ -1679,7 +1679,7 @@ class Payment extends ild78\Tests\atoum
             ->then
                 ->assert('Must have an IP address in env')
                     ->exception(function () {
-                        $this->testedInstance->save();
+                        $this->testedInstance->send();
                     })
                         ->isInstanceOf(ild78\Exceptions\InvalidIpAddressException::class)
 
@@ -1687,7 +1687,7 @@ class Payment extends ild78\Tests\atoum
                     ->if($_SERVER['SERVER_ADDR'] = $addr)
                     ->then
                         ->exception(function () {
-                            $this->testedInstance->save();
+                            $this->testedInstance->send();
                         })
                             ->isInstanceOf(ild78\Exceptions\InvalidPortException::class)
 
@@ -1696,7 +1696,7 @@ class Payment extends ild78\Tests\atoum
                     ->then
                         ->variable($this->testedInstance->getId())
                             ->isNull
-                        ->object($this->testedInstance->save())
+                        ->object($this->testedInstance->send())
                             ->isTestedInstance
 
                         ->mock($client)

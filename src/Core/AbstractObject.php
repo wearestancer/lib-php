@@ -700,13 +700,13 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Save the current object.
+     * Send the current object.
      *
      * @uses Request::post()
      * @return self
      * @throws ild78\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
-    public function save(): self
+    public function send(): self
     {
         if ($this->isNotModified()) {
             return $this;

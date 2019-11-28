@@ -22,7 +22,7 @@ class MissingPaymentIdException extends ild78\Tests\atoum
             ->if($class = $this->testedClass->getClass())
             ->then
                 ->string($class::getDefaultMessage())
-                    ->isIdenticalTo('A payment ID is mandatory. Maybe you forgot to save the payment.')
+                    ->isIdenticalTo('A payment ID is mandatory. Maybe you forgot to send the payment.')
         ;
     }
 

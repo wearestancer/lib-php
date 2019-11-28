@@ -43,14 +43,14 @@ class Customer extends ild78\Core\AbstractObject
     ];
 
     /**
-     * Save a customer.
+     * Send a customer.
      *
      * @uses Request::post()
      * @return self
-     * @throws ild78\Exceptions\BadMethodCallException When trying to save a customer without an email
+     * @throws ild78\Exceptions\BadMethodCallException When trying to send a customer without an email
      *    or a phone number.
      */
-    public function save(): ild78\Core\AbstractObject
+    public function send(): ild78\Core\AbstractObject
     {
         if (!$this->getId() && !$this->getEmail() && !$this->getMobile()) {
             $message = 'You must provide an email or a phone number to create a customer.';
@@ -58,7 +58,7 @@ class Customer extends ild78\Core\AbstractObject
             throw new ild78\Exceptions\BadMethodCallException($message);
         }
 
-        return parent::save();
+        return parent::send();
     }
 
     /**

@@ -164,7 +164,7 @@ class Payment extends ild78\Core\AbstractObject
 
         $means = new $class($id);
 
-        return $obj->hydrate($options)->$method($means->hydrate($data))->save();
+        return $obj->hydrate($options)->$method($means->hydrate($data))->send();
     }
 
     /**
@@ -260,7 +260,7 @@ class Payment extends ild78\Core\AbstractObject
         }
 
         if (!$this->getId()) {
-            $message = 'A payment ID is mandatory to obtain a payment page URL. Maybe you forgot to save the payment.';
+            $message = 'A payment ID is mandatory to obtain a payment page URL. Maybe you forgot to send the payment.';
 
             throw new ild78\Exceptions\MissingPaymentIdException($message);
         }
@@ -372,7 +372,7 @@ class Payment extends ild78\Core\AbstractObject
             $this->setSepa($means);
         }
 
-        return $this->setAmount($amount)->setCurrency($currency)->save();
+        return $this->setAmount($amount)->setCurrency($currency)->send();
     }
 
     /**
@@ -421,7 +421,7 @@ class Payment extends ild78\Core\AbstractObject
 
         $modified = $this->modified;
 
-        $this->addRefunds($refund->save());
+        $this->addRefunds($refund->send());
 
         $this->modified = $modified;
 
@@ -438,7 +438,7 @@ class Payment extends ild78\Core\AbstractObject
     }
 
     /**
-     * Save the current object.
+     * Send the current object.
      *
      * @uses Request::post()
      * @return self
@@ -449,7 +449,7 @@ class Payment extends ild78\Core\AbstractObject
      * @throws ild78\Exceptions\InvalidPortException When no device was already given, authenticated payment
      *   was asked and an error occur during device creation.
      */
-    public function save(): ild78\Core\AbstractObject
+    public function send(): ild78\Core\AbstractObject
     {
         if (!$this->getAmount()) {
             throw new ild78\Exceptions\InvalidAmountException();
@@ -482,7 +482,7 @@ class Payment extends ild78\Core\AbstractObject
             }
         }
 
-        parent::save();
+        parent::send();
 
         $params = [
             $this->getAmount() / 100,

@@ -29,7 +29,7 @@ class Dispute extends TestCase
             ->and($payment->setCustomer($customer = new ild78\Customer))
             ->and($customer->setName('John Doe'))
             ->and($customer->setEMail('john.doe@example.com'))
-            ->and($payment->save())
+            ->and($payment->send())
 
             ->if($this->newTestedInstance) // Needed to use "isInstanceOfTestedClass" asserter
             ->then

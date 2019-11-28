@@ -383,8 +383,8 @@ class AbstractObject extends ild78\Tests\atoum
         ;
     }
 
-    // There are no test for `Object::save()` method here
-    // Nothing can be saved in `Object`, real test are availaible in `Customer` test case (`Customer::testSave()`)
+    // There are no test for `Object::send()` method here
+    // Nothing can be sent in `Object`, real test are availaible in `Customer` test case (`Customer::testSend()`)
 
     /**
      * @dataProvider caseStringDataProvider

@@ -56,7 +56,7 @@ class Customer extends ild78\Tests\atoum
         ;
     }
 
-    public function testSave()
+    public function testSend()
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client)
@@ -87,7 +87,7 @@ class Customer extends ild78\Tests\atoum
                 ->variable($this->testedInstance->getId())
                     ->isNull
 
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
 
                 ->mock($client)
@@ -111,9 +111,9 @@ class Customer extends ild78\Tests\atoum
                     ->isIdenticalTo('David Coaster')
 
                 // Check it was not called twice
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
-                    ->isInstanceOf($this->testedInstance->save())
+                    ->isInstanceOf($this->testedInstance->send())
 
                 ->mock($client)
                     ->call('request')
@@ -122,17 +122,17 @@ class Customer extends ild78\Tests\atoum
 
                 ->assert('Update a property allow new request')
                     ->if($this->testedInstance->setName(uniqid()))
-                    ->and($this->testedInstance->save())
+                    ->and($this->testedInstance->send())
                     ->then
                         ->mock($client)
                             ->call('request')
                                 ->once
 
-                ->assert('Populate block save')
+                ->assert('Populate block send')
                     ->if($this->newTestedInstance(uniqid()))
                     ->and($this->testedInstance->setName(uniqid()))
                     ->and($this->testedInstance->populate())
-                    ->and($this->testedInstance->save())
+                    ->and($this->testedInstance->send())
                     ->then
                         ->mock($client)
                             ->call('request')
@@ -147,7 +147,7 @@ class Customer extends ild78\Tests\atoum
                     ->given($this->newTestedInstance)
                     ->then
                         ->exception(function () {
-                            $this->testedInstance->save();
+                            $this->testedInstance->send();
                         })
                             ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
                             ->message
@@ -159,7 +159,7 @@ class Customer extends ild78\Tests\atoum
         ;
     }
 
-    public function testSave_forUpdate()
+    public function testSend_forUpdate()
     {
         $this
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
@@ -187,7 +187,7 @@ class Customer extends ild78\Tests\atoum
                     ])
 
                     ->then
-                        ->object($this->testedInstance->save())
+                        ->object($this->testedInstance->send())
                             ->isTestedInstance
 
                         ->mock($client)
@@ -219,7 +219,7 @@ class Customer extends ild78\Tests\atoum
                     ])
 
                     ->then
-                        ->object($this->testedInstance->save())
+                        ->object($this->testedInstance->send())
                             ->isTestedInstance
 
                         ->mock($client)
@@ -230,7 +230,7 @@ class Customer extends ild78\Tests\atoum
                 ->assert('Unmodified instance will not trigger an update')
                     ->if($this->newTestedInstance(uniqid()))
                     ->then
-                        ->object($this->testedInstance->save())
+                        ->object($this->testedInstance->send())
                             ->isTestedInstance
 
                         ->mock($client)
