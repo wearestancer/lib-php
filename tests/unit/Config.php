@@ -44,6 +44,193 @@ class Config extends ild78\Tests\atoum
         ;
     }
 
+    public function testGetCalls()
+    {
+        $this
+            ->given($this->function->setDefaultNamespace('ild78\\Http'))
+
+            ->assert('With debug mode activated / Default client / Without exception')
+                ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . bin2hex(random_bytes(12))])))
+                ->and($this->testedInstance->setDebug(true))
+
+                ->if($body = uniqid())
+                ->and($this->function->curl_exec = $body)
+                ->and($this->function->curl_getinfo = 200)
+                ->and($this->function->curl_errno = 0)
+
+                ->if($client = new mock\ild78\Http\Client)
+                ->and($this->testedInstance->setHttpClient($client))
+
+                ->if($object = new ild78\Stub\Core\StubObject)
+                ->and($req = new ild78\Core\Request)
+                ->then
+                    ->array($this->testedInstance->getCalls())
+                        ->isEmpty
+
+                ->if($req->get($object))
+                ->then
+                    ->array($calls = $this->testedInstance->getCalls())
+                        ->hasSize(1)
+
+                    ->object($calls[0])
+                        ->isInstanceOf(ild78\Core\Request\Call::class)
+
+                    ->variable($calls[0]->getException())
+                        ->isNull
+
+                    ->object($calls[0]->getRequest())
+                        ->isInstanceOf(ild78\Http\Request::class)
+
+                    ->object($calls[0]->getResponse())
+                        ->isInstanceOf(ild78\Http\Response::class)
+
+            ->assert('With debug mode activated / Default client / With exception')
+                ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . bin2hex(random_bytes(12))])))
+                ->and($this->testedInstance->setDebug(true))
+
+                ->if($body = uniqid())
+                ->and($this->function->curl_exec = $body)
+                ->and($this->function->curl_getinfo = 401)
+                ->and($this->function->curl_errno = rand(100, 200))
+
+                ->if($client = new mock\ild78\Http\Client)
+                ->and($this->testedInstance->setHttpClient($client))
+
+                ->if($object = new ild78\Stub\Core\StubObject)
+                ->and($req = new ild78\Core\Request)
+                ->then
+                    ->array($this->testedInstance->getCalls())
+                        ->isEmpty
+
+                    ->exception(function () use ($req, $object) {
+                        $req->get($object);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\NotAuthorizedException::class)
+
+                    ->array($calls = $this->testedInstance->getCalls())
+                        ->hasSize(1)
+
+                    ->object($calls[0])
+                        ->isInstanceOf(ild78\Core\Request\Call::class)
+
+                    ->object($calls[0]->getException())
+                        ->isInstanceOf(ild78\Exceptions\NotAuthorizedException::class)
+                        ->isIdenticalTo($this->exception)
+
+                    ->object($calls[0]->getRequest())
+                        ->isInstanceOf(ild78\Http\Request::class)
+
+                    ->object($calls[0]->getResponse())
+                        ->isInstanceOf(ild78\Http\Response::class)
+
+                    ->string($calls[0]->getResponse()->getBody())
+                        ->isIdenticalTo($body)
+
+            ->assert('With debug mode activated / Guzzle / Without exception')
+                ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . bin2hex(random_bytes(12))])))
+                ->and($this->testedInstance->setDebug(true))
+
+                ->if($client = new mock\GuzzleHttp\Client)
+                ->and($response = new mock\GuzzleHttp\Psr7\Response)
+                ->and($body = uniqid())
+                ->and($this->calling($response)->getBody = $body)
+                ->and($this->calling($client)->request = $response)
+
+                ->and($this->testedInstance->setHttpClient($client))
+
+                ->if($object = new ild78\Stub\Core\StubObject)
+                ->and($req = new ild78\Core\Request)
+                ->then
+                    ->array($this->testedInstance->getCalls())
+                        ->isEmpty
+
+                ->if($req->get($object))
+                ->then
+                    ->array($calls = $this->testedInstance->getCalls())
+                        ->hasSize(1)
+
+                    ->object($calls[0])
+                        ->isInstanceOf(ild78\Core\Request\Call::class)
+
+                    ->variable($calls[0]->getException())
+                        ->isNull
+
+                    ->object($calls[0]->getRequest())
+                        ->isInstanceOf(GuzzleHttp\Psr7\Request::class)
+
+                    ->object($calls[0]->getResponse())
+                        ->isInstanceOf(GuzzleHttp\Psr7\Response::class)
+
+                    ->string($calls[0]->getResponse()->getBody())
+                        ->isIdenticalTo($body)
+
+            ->assert('With debug mode activated / Guzzle / With exception')
+                ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . bin2hex(random_bytes(12))])))
+                ->and($this->testedInstance->setDebug(true))
+
+                ->if($body = uniqid())
+                ->and($response = new GuzzleHttp\Psr7\Response(401, [], $body))
+                ->and($mock = new GuzzleHttp\Handler\MockHandler([$response]))
+                ->and($handler = GuzzleHttp\HandlerStack::create($mock))
+                ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
+
+                ->and($this->testedInstance->setHttpClient($client))
+
+                ->if($object = new ild78\Stub\Core\StubObject)
+                ->and($req = new ild78\Core\Request)
+                ->then
+                    ->array($this->testedInstance->getCalls())
+                        ->isEmpty
+
+                    ->exception(function () use ($req, $object) {
+                        $req->get($object);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\NotAuthorizedException::class)
+
+                    ->array($calls = $this->testedInstance->getCalls())
+                        ->hasSize(1)
+
+                    ->object($calls[0])
+                        ->isInstanceOf(ild78\Core\Request\Call::class)
+
+                    ->object($calls[0]->getException())
+                        ->isInstanceOf(ild78\Exceptions\NotAuthorizedException::class)
+                        ->isIdenticalTo($this->exception)
+
+                    ->object($calls[0]->getRequest())
+                        ->isInstanceOf(GuzzleHttp\Psr7\Request::class)
+
+                    ->object($calls[0]->getResponse())
+                        ->isInstanceOf(GuzzleHttp\Psr7\Response::class)
+
+                    ->castToString($calls[0]->getResponse()->getBody())
+                        ->isIdenticalTo($body)
+
+            ->assert('Without debug mode activated')
+                ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . bin2hex(random_bytes(12))])))
+                ->and($this->testedInstance->setDebug(false))
+
+                ->if($body = uniqid())
+                ->and($this->function->curl_exec = $body)
+                ->and($this->function->curl_getinfo = 200)
+                ->and($this->function->curl_errno = 0)
+
+                ->if($client = new mock\ild78\Http\Client)
+                ->and($this->testedInstance->setHttpClient($client))
+
+                ->if($object = new ild78\Stub\Core\StubObject)
+                ->and($req = new ild78\Core\Request)
+                ->then
+                    ->array($this->testedInstance->getCalls())
+                        ->isEmpty
+
+                ->if($req->get($object))
+                ->then
+                    ->array($this->testedInstance->getCalls())
+                        ->isEmpty
+        ;
+    }
+
     public function testGetDebug_SetDebug()
     {
         $this

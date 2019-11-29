@@ -152,6 +152,7 @@ class Request
         $logMessage = null;
         $excepClass = null;
         $excepParams = [];
+        $response = null;
 
         try {
             $location = $object->getUri();
@@ -165,6 +166,15 @@ class Request
 
         // Bypass for internal exceptions.
         } catch (ild78\Exceptions\Exception $exception) {
+            $params = [
+                'exception' => $exception,
+                'request' => $client->getLastRequest(),
+                'response' => $client->getLastResponse(),
+            ];
+
+            $call = new ild78\Core\Request\Call($params);
+            $config->addCall($call);
+
             throw $exception;
 
         // HTTP 5**.
@@ -273,8 +283,42 @@ class Request
             $logger->$logMethod($logMessage);
         }
 
+        $exception = null;
+
         if ($excepClass) {
-            throw $excepClass::create($excepParams);
+            $exception = $excepClass::create($excepParams);
+        }
+
+        $params = [];
+
+        if ($config->getDebug()) {
+            if ($client instanceof ild78\Http\Client) {
+                $params = [
+                    'exception' => $exception,
+                    'request' => $client->getLastRequest(),
+                    'response' => $client->getLastResponse(),
+                ];
+            } else {
+                $body = array_key_exists('body', $options) ? $options['body'] : null;
+                $request = new GuzzleHttp\Psr7\Request((string) $verb, $location, $options['headers'], $body);
+
+                if (!$response && $exception instanceof ild78\Exceptions\HttpException) {
+                    $response = $exception->getResponse();
+                }
+
+                $params = [
+                    'exception' => $exception,
+                    'request' => $request,
+                    'response' => $response,
+                ];
+            }
+
+            $call = new ild78\Core\Request\Call($params);
+            $config->addCall($call);
+        }
+
+        if ($exception) {
+            throw $exception;
         }
 
         return (string) $response->getBody();

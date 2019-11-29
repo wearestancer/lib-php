@@ -17,6 +17,9 @@ class Config
     public const TEST_MODE = 'test';
     public const VERSION = '0.0.2';
 
+    /** @var ild78\Core\Request\Call[] */
+    protected $calls = [];
+
     /** @var boolean */
     protected $debug;
 
@@ -71,6 +74,19 @@ class Config
     }
 
     /**
+     * Add a call to the list.
+     *
+     * @param ild78\Core\Request\Call $call New call to add.
+     * @return self
+     */
+    public function addCall(ild78\Core\Request\Call $call): self
+    {
+        $this->calls[] = $call;
+
+        return $this;
+    }
+
+    /**
      * Return HTTP "basic" authentication header's value
      *
      * @return string
@@ -78,6 +94,16 @@ class Config
     public function getBasicAuthHeader(): string
     {
         return 'Basic ' . base64_encode($this->getSecretKey() . ':');
+    }
+
+    /**
+     * Return call list recorded on debug mode.
+     *
+     * @return ild78\Core\Request\Call[]
+     */
+    public function getCalls(): array
+    {
+        return $this->calls;
     }
 
     /**
