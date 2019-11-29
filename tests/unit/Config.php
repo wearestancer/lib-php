@@ -12,6 +12,8 @@ use Psr;
 
 class Config extends ild78\Tests\atoum
 {
+    use ild78\Tests\Provider\Banks;
+    use ild78\Tests\Provider\Cards;
     use ild78\Tests\Provider\Dates;
 
     public function testClass()
@@ -61,13 +63,16 @@ class Config extends ild78\Tests\atoum
                 ->if($client = new mock\ild78\Http\Client)
                 ->and($this->testedInstance->setHttpClient($client))
 
-                ->if($object = new ild78\Stub\Core\StubObject)
+                ->if($number = $this->cardNumberDataProvider(true))
+                ->and($obfuscated = str_pad('', strlen($number) - 4, 'x') . substr($number, -4))
+                ->and($card = new ild78\Card(['number' => $number]))
+                ->and($payment = new ild78\Payment(['card' => $card]))
                 ->and($req = new ild78\Core\Request)
                 ->then
                     ->array($this->testedInstance->getCalls())
                         ->isEmpty
 
-                ->if($req->get($object))
+                ->if($req->post($payment))
                 ->then
                     ->array($calls = $this->testedInstance->getCalls())
                         ->hasSize(1)
@@ -80,6 +85,10 @@ class Config extends ild78\Tests\atoum
 
                     ->object($calls[0]->getRequest())
                         ->isInstanceOf(ild78\Http\Request::class)
+
+                    ->string($calls[0]->getRequest()->getBody())
+                        ->notContains($number)
+                        ->contains($obfuscated)
 
                     ->object($calls[0]->getResponse())
                         ->isInstanceOf(ild78\Http\Response::class)
@@ -96,14 +105,17 @@ class Config extends ild78\Tests\atoum
                 ->if($client = new mock\ild78\Http\Client)
                 ->and($this->testedInstance->setHttpClient($client))
 
-                ->if($object = new ild78\Stub\Core\StubObject)
+                ->if($iban = $this->ibanDataProvider(true))
+                ->and($sepa = new ild78\Sepa(['iban' => $iban]))
+                ->and($obfuscated = str_pad($sepa->getLast4(), strlen($sepa->getIban()), 'x', STR_PAD_LEFT))
+                ->and($payment = new ild78\Payment(['sepa' => $sepa]))
                 ->and($req = new ild78\Core\Request)
                 ->then
                     ->array($this->testedInstance->getCalls())
                         ->isEmpty
 
-                    ->exception(function () use ($req, $object) {
-                        $req->get($object);
+                    ->exception(function () use ($req, $payment) {
+                        $req->post($payment);
                     })
                         ->isInstanceOf(ild78\Exceptions\NotAuthorizedException::class)
 
@@ -119,6 +131,10 @@ class Config extends ild78\Tests\atoum
 
                     ->object($calls[0]->getRequest())
                         ->isInstanceOf(ild78\Http\Request::class)
+
+                    ->string($calls[0]->getRequest()->getBody())
+                        ->notContains($iban)
+                        ->contains($obfuscated)
 
                     ->object($calls[0]->getResponse())
                         ->isInstanceOf(ild78\Http\Response::class)
@@ -138,13 +154,16 @@ class Config extends ild78\Tests\atoum
 
                 ->and($this->testedInstance->setHttpClient($client))
 
-                ->if($object = new ild78\Stub\Core\StubObject)
+                ->if($iban = $this->ibanDataProvider(true))
+                ->and($sepa = new ild78\Sepa(['iban' => $iban]))
+                ->and($obfuscated = str_pad($sepa->getLast4(), strlen($sepa->getIban()), 'x', STR_PAD_LEFT))
+                ->and($payment = new ild78\Payment(['sepa' => $sepa]))
                 ->and($req = new ild78\Core\Request)
                 ->then
                     ->array($this->testedInstance->getCalls())
                         ->isEmpty
 
-                ->if($req->get($object))
+                ->if($req->patch($payment))
                 ->then
                     ->array($calls = $this->testedInstance->getCalls())
                         ->hasSize(1)
@@ -157,6 +176,10 @@ class Config extends ild78\Tests\atoum
 
                     ->object($calls[0]->getRequest())
                         ->isInstanceOf(GuzzleHttp\Psr7\Request::class)
+
+                    ->castToString($calls[0]->getRequest()->getBody())
+                        ->notContains($iban)
+                        ->contains($obfuscated)
 
                     ->object($calls[0]->getResponse())
                         ->isInstanceOf(GuzzleHttp\Psr7\Response::class)
@@ -176,14 +199,17 @@ class Config extends ild78\Tests\atoum
 
                 ->and($this->testedInstance->setHttpClient($client))
 
-                ->if($object = new ild78\Stub\Core\StubObject)
+                ->if($number = $this->cardNumberDataProvider(true))
+                ->and($obfuscated = str_pad(substr($number, -4), strlen($number), 'x', STR_PAD_LEFT))
+                ->and($card = new ild78\Card(['number' => $number]))
+                ->and($payment = new ild78\Payment(['card' => $card]))
                 ->and($req = new ild78\Core\Request)
                 ->then
                     ->array($this->testedInstance->getCalls())
                         ->isEmpty
 
-                    ->exception(function () use ($req, $object) {
-                        $req->get($object);
+                    ->exception(function () use ($req, $payment) {
+                        $req->patch($payment);
                     })
                         ->isInstanceOf(ild78\Exceptions\NotAuthorizedException::class)
 
@@ -199,6 +225,10 @@ class Config extends ild78\Tests\atoum
 
                     ->object($calls[0]->getRequest())
                         ->isInstanceOf(GuzzleHttp\Psr7\Request::class)
+
+                    ->castToString($calls[0]->getRequest()->getBody())
+                        ->notContains($iban)
+                        ->contains($obfuscated)
 
                     ->object($calls[0]->getResponse())
                         ->isInstanceOf(GuzzleHttp\Psr7\Response::class)

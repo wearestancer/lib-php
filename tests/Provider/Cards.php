@@ -24,7 +24,7 @@ trait Cards
         return $data;
     }
 
-    public function cardNumberDataProvider()
+    public function cardNumberDataProvider($one = false)
     {
         // Card number found on https://www.freeformatter.com/credit-card-number-generator-validator.html
         $data = [];
@@ -90,6 +90,10 @@ trait Cards
         $data[] = '4444333322221111';
 
         shuffle($data);
+
+        if ($one) {
+            return $data[0];
+        }
 
         return $data;
     }

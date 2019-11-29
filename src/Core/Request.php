@@ -8,6 +8,7 @@ namespace ild78\Core;
 use GuzzleHttp;
 use Exception;
 use ild78;
+use Psr;
 
 /**
  * Handle request on API
@@ -106,6 +107,115 @@ class Request
         return $this->patch($object);
     }
 
+    /**
+     * Add a new call made with default client
+     *
+     * @param ild78\Core\AbstractObject $object Object used during call.
+     * @param ild78\Exceptions\HttpException $exception Exception thrown during call.
+     * @return self
+     */
+    private function addCallWithDefaultClient(
+        AbstractObject $object,
+        ild78\Exceptions\HttpException $exception = null
+    ): self {
+        $config = ild78\Config::getGlobal();
+        $client = $config->getHttpClient();
+
+        if (!$config->getDebug()) {
+            return $this;
+        }
+
+        $in = null;
+        $out = null;
+
+        if ($object instanceof ild78\Payment) {
+            $card = $object->getCard();
+            $sepa = $object->getSepa();
+
+            if ($card) {
+                $in = $card->getNumber();
+                $out = str_pad($card->getLast4(), strlen($card->getNumber()), 'x', STR_PAD_LEFT);
+            }
+
+            if ($sepa) {
+                $in = $sepa->getIban();
+                $out = str_pad($sepa->getLast4(), strlen($sepa->getIban()), 'x', STR_PAD_LEFT);
+            }
+        }
+
+        $params = [
+            'exception' => $exception,
+            'request' => $client->getLastRequest()->withModifiedBody($in, $out),
+            'response' => $client->getLastResponse()->withModifiedBody(),
+        ];
+
+        $call = new ild78\Core\Request\Call($params);
+        $config->addCall($call);
+
+        return $this;
+    }
+
+    /**
+     * Add a new call made with other client
+     *
+     * @param Psr\Http\Message\RequestInterface $request Request.
+     * @param Psr\Http\Message\ResponseInterface $response Response.
+     * @param ild78\Core\AbstractObject $object Object used during call.
+     * @param ild78\Exceptions\HttpException $exception Exception thrown during call.
+     * @return self
+     */
+    private function addCallWithOtherClient(
+        Psr\Http\Message\RequestInterface $request,
+        Psr\Http\Message\ResponseInterface $response,
+        AbstractObject $object,
+        ild78\Exceptions\HttpException $exception = null
+    ): self {
+        $config = ild78\Config::getGlobal();
+        $client = $config->getHttpClient();
+
+        if (!$config->getDebug()) {
+            return $this;
+        }
+
+        $params = [
+            'exception' => $exception,
+            'request' => $request,
+            'response' => $response,
+        ];
+
+        if ($object instanceof ild78\Payment) {
+            $in = null;
+            $out = null;
+
+            $card = $object->getCard();
+            $sepa = $object->getSepa();
+
+            if ($card) {
+                $in = $card->getNumber();
+                $out = str_pad($card->getLast4(), strlen($card->getNumber()), 'x', STR_PAD_LEFT);
+            }
+
+            if ($sepa) {
+                $in = $sepa->getIban();
+                $out = str_pad($sepa->getLast4(), strlen($sepa->getIban()), 'x', STR_PAD_LEFT);
+            }
+
+            if ($in) {
+                $params['request'] = new GuzzleHttp\Psr7\Request(
+                    $request->getMethod(),
+                    $request->getUri(),
+                    $request->getHeaders(),
+                    str_replace($in, $out, $request->getBody())
+                );
+            }
+        }
+
+        $call = new ild78\Core\Request\Call($params);
+        $config->addCall($call);
+
+        return $this;
+    }
+
     // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
     // Prevent PHPCS warning due to `thrown new $class`.
 
@@ -166,14 +276,7 @@ class Request
 
         // Bypass for internal exceptions.
         } catch (ild78\Exceptions\Exception $exception) {
-            $params = [
-                'exception' => $exception,
-                'request' => $client->getLastRequest(),
-                'response' => $client->getLastResponse(),
-            ];
-
-            $call = new ild78\Core\Request\Call($params);
-            $config->addCall($call);
+            $this->addCallWithDefaultClient($object, $exception);
 
             throw $exception;
 
@@ -293,11 +396,7 @@ class Request
 
         if ($config->getDebug()) {
             if ($client instanceof ild78\Http\Client) {
-                $params = [
-                    'exception' => $exception,
-                    'request' => $client->getLastRequest(),
-                    'response' => $client->getLastResponse(),
-                ];
+                $this->addCallWithDefaultClient($object, $exception);
             } else {
                 $body = array_key_exists('body', $options) ? $options['body'] : null;
                 $request = new GuzzleHttp\Psr7\Request((string) $verb, $location, $options['headers'], $body);
@@ -306,15 +405,8 @@ class Request
                     $response = $exception->getResponse();
                 }
 
-                $params = [
-                    'exception' => $exception,
-                    'request' => $request,
-                    'response' => $response,
-                ];
+                $this->addCallWithOtherClient($request, $response, $object, $exception);
             }
-
-            $call = new ild78\Core\Request\Call($params);
-            $config->addCall($call);
         }
 
         if ($exception) {
