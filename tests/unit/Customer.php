@@ -66,6 +66,7 @@ class Customer extends ild78\Tests\atoum
             ->and($this->calling($client)->request = $response)
             ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
 
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setEmail(uniqid()))
@@ -165,6 +166,7 @@ class Customer extends ild78\Tests\atoum
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($client = new mock\ild78\Http\Client)
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
 
             ->then
                 ->assert('Modify a fresh and not populated instance, will send only known data')

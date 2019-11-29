@@ -14,6 +14,7 @@ class Request extends ild78\Tests\atoum
     {
         $this
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -72,6 +73,7 @@ class Request extends ild78\Tests\atoum
         $this
             ->given($this->function->setDefaultNamespace('ild78\\Http'))
             ->if($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
 
             ->assert('With bad credential')
                 ->given($content = file_get_contents(__DIR__ . '/../fixtures/auth/not-authorized.json'))
@@ -143,6 +145,7 @@ class Request extends ild78\Tests\atoum
     {
         $this
             ->if($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
 
             ->assert('Use test of client')
                 ->given($client = new mock\GuzzleHttp\Client)

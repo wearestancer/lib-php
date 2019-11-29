@@ -34,6 +34,7 @@ class Refund extends ild78\Tests\atoum
                 ->and($this->calling($client)->request = $response)
                 ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($config->setHttpClient($client))
+                ->and($config->setDebug(false))
 
                 ->and($body = file_get_contents(__DIR__ . '/../fixtures/refund/read.json'))
                 ->and($this->calling($response)->getBody = $body)
@@ -90,6 +91,7 @@ class Refund extends ild78\Tests\atoum
                 ->and($this->calling($client)->request = $response)
                 ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($config->setHttpClient($client))
+                ->and($config->setDebug(false))
 
                 ->and($body = file_get_contents(__DIR__ . '/../fixtures/refund/read.json'))
                 ->and($this->calling($response)->getBody = $body)

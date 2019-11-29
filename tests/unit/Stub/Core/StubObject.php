@@ -505,7 +505,9 @@ class StubObject extends ild78\Tests\atoum
             ->and($body = '{"id":"' . $id . '","created":' . $timestamp . ',"string1":"' . $string1 . '"}')
             ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
             ->and($this->calling($client)->request = $response)
-            ->and(ild78\Config::init(['stest_' . bin2hex(random_bytes(12))])->setHttpClient($client))
+            ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
 
             ->assert('No call without id')
                 ->if($this->newTestedInstance)
@@ -600,6 +602,7 @@ class StubObject extends ild78\Tests\atoum
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
 
             ->if($response = new mock\ild78\Http\Response(200))
             ->and($this->calling($client)->request = $response)
@@ -1159,6 +1162,7 @@ class StubObject extends ild78\Tests\atoum
                 ->and($handler = GuzzleHttp\HandlerStack::create($mock))
                 ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
                 ->and($config->setHttpClient($client))
+                ->and($config->setDebug(false))
 
                 ->if($this->newTestedInstance($id))
                 ->then
@@ -1177,6 +1181,7 @@ class StubObject extends ild78\Tests\atoum
 
             ->assert('Only one request with two consecutive call')
                 ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->and($config->setDebug(false))
 
                 ->if($client = new mock\GuzzleHttp\Client)
                 ->and($id = uniqid())
@@ -1197,6 +1202,7 @@ class StubObject extends ild78\Tests\atoum
 
             ->assert('Send blocks populate')
                 ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->and($config->setDebug(false))
                 ->and($id = uniqid())
                 ->and($created = time())
                 ->and($string1 = $this->makeStringBetween(10, 20))
@@ -1225,6 +1231,7 @@ class StubObject extends ild78\Tests\atoum
 
             ->assert('Populate blocks send')
                 ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->and($config->setDebug(false))
                 ->and($id = uniqid())
                 ->and($created = time())
                 ->and($string1 = $this->makeStringBetween(10, 20))
@@ -1253,6 +1260,7 @@ class StubObject extends ild78\Tests\atoum
 
             ->assert('Inner object are marked as populated too')
                 ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->and($config->setDebug(false))
 
                 ->if($client = new mock\GuzzleHttp\Client)
                 ->and($id = uniqid())
@@ -1281,6 +1289,7 @@ class StubObject extends ild78\Tests\atoum
 
             ->assert('Populate working normally')
                 ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->and($config->setDebug(false))
                 ->and($id = uniqid())
                 ->and($created = time())
 
@@ -1353,6 +1362,7 @@ class StubObject extends ild78\Tests\atoum
 
             ->assert('Inner object are not marked as modified')
                 ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->and($config->setDebug(false))
 
                 ->if($client = new mock\GuzzleHttp\Client)
                 ->and($id = uniqid())
@@ -1437,6 +1447,7 @@ class StubObject extends ild78\Tests\atoum
                 ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
                 ->and($this->calling($client)->request = $response)
                 ->and($config->setHttpClient($client))
+                ->and($config->setDebug(false))
 
                 ->and($logger = new mock\ild78\Core\Logger)
                 ->and($config->setLogger($logger))
@@ -1486,6 +1497,7 @@ class StubObject extends ild78\Tests\atoum
                 ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
                 ->and($this->calling($client)->request = $response)
                 ->and($config->setHttpClient($client))
+                ->and($config->setDebug(false))
 
                 ->and($logger = new mock\ild78\Core\Logger)
                 ->and($config->setLogger($logger))
@@ -1527,6 +1539,7 @@ class StubObject extends ild78\Tests\atoum
                 ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($client = new mock\ild78\Http\Client)
                 ->and($config->setHttpClient($client))
+                ->and($config->setDebug(false))
 
                 ->if($response = new mock\ild78\Http\Response(200))
                 ->and($this->calling($client)->request = $response)

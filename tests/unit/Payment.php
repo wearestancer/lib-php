@@ -44,6 +44,7 @@ class Payment extends ild78\Tests\atoum
             ->and($this->calling($client)->request = $response)
             ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
 
             ->assert('Test with a card token')
                 ->given($options = [
@@ -251,6 +252,7 @@ class Payment extends ild78\Tests\atoum
             ->given($secret = 'stest_' . bin2hex(random_bytes(12)))
             ->and($public = 'ptest_' . bin2hex(random_bytes(12)))
             ->and($config = ild78\Config::init([$secret]))
+            ->and($config->setDebug(false))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -323,6 +325,7 @@ class Payment extends ild78\Tests\atoum
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($client = new mock\ild78\Http\Client)
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
 
             ->if($body = file_get_contents(__DIR__ . '/fixtures/payment/read.json'))
             ->and($responsePayment = new ild78\Http\Response(200, $body))
@@ -437,6 +440,7 @@ class Payment extends ild78\Tests\atoum
             ->and($this->calling($client)->request = $response)
             ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
 
             ->and($options = [
                 'headers' => [
@@ -677,6 +681,7 @@ class Payment extends ild78\Tests\atoum
             ->and($this->calling($client)->request = $response)
             ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
 
             ->then
                 ->assert('Pay with card')
@@ -724,6 +729,7 @@ class Payment extends ild78\Tests\atoum
             ->and($this->calling($client)->request = $response)
             ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
             // Behavior modification are done in assert part to prevent confusion on multiple calls mocking
 
             ->and($logger = new mock\ild78\Core\Logger)
@@ -860,6 +866,7 @@ class Payment extends ild78\Tests\atoum
     {
         $this
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -897,6 +904,7 @@ class Payment extends ild78\Tests\atoum
             ->and($this->calling($client)->request = $response)
             ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
 
             ->if($card = new ild78\Card)
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
@@ -1013,6 +1021,7 @@ class Payment extends ild78\Tests\atoum
             ->and($this->calling($client)->request = $response)
             ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
 
             ->if($sepa = new ild78\Sepa)
             ->and($sepa->setBic('DEUTDEFF')) // Thx Wikipedia
@@ -1099,6 +1108,7 @@ class Payment extends ild78\Tests\atoum
 
         $this
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -1238,6 +1248,7 @@ class Payment extends ild78\Tests\atoum
     {
         $this
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -1385,6 +1396,7 @@ class Payment extends ild78\Tests\atoum
     {
         $this
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -1475,6 +1487,7 @@ class Payment extends ild78\Tests\atoum
     {
         $this
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -1569,6 +1582,7 @@ class Payment extends ild78\Tests\atoum
     {
         $this
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -1627,6 +1641,7 @@ class Payment extends ild78\Tests\atoum
     {
         $this
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
             ->and($port = rand(1, 65535))
             ->and($addr = $this->ipDataProvider()[0])
             ->and($url = 'https://www.example.org?' . uniqid())

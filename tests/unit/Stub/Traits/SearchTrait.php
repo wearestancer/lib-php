@@ -20,6 +20,7 @@ class SearchTrait extends ild78\Tests\atoum
             ->and($this->calling($client)->request = $response)
             ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
 
             ->and($options = [
                 'headers' => [

@@ -209,6 +209,7 @@ class AbstractObject extends ild78\Tests\atoum
     {
         $this
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
             ->and($client = new mock\ild78\Http\Client)
             ->and($logger = new mock\ild78\Core\Logger)
             ->and($config->setHttpClient($client))
