@@ -261,10 +261,11 @@ abstract class AbstractObject implements JsonSerializable
      * This was initialy in `self::__call()` method, I removed it for simplicity.
      *
      * @param string $property Property to get.
+     * @param boolean $autoPopulate Auto populate the property.
      * @return mixed
      * @throws ild78\Exceptions\InvalidArgumentException When asking an unknown property.
      */
-    public function dataModelGetter(string $property)
+    public function dataModelGetter(string $property, bool $autoPopulate = true)
     {
         if (!array_key_exists($property, $this->dataModel)) {
             throw new ild78\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
@@ -272,7 +273,7 @@ abstract class AbstractObject implements JsonSerializable
 
         $value = $this->dataModel[$property]['value'];
 
-        if (is_null($value) && $this->isNotModified()) {
+        if (is_null($value) && $autoPopulate && $this->isNotModified()) {
             $value = $this->populate()->dataModel[$property]['value'];
         }
 

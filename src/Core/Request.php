@@ -129,17 +129,17 @@ class Request
         $out = null;
 
         if ($object instanceof ild78\Payment) {
-            $card = $object->getCard();
-            $sepa = $object->getSepa();
+            $card = $object->dataModelGetter('card', false);
+            $sepa = $object->dataModelGetter('sepa', false);
 
             if ($card) {
-                $in = $card->getNumber();
-                $out = str_pad($card->getLast4(), strlen($card->getNumber()), 'x', STR_PAD_LEFT);
+                $in = $card->dataModelGetter('number', false);
+                $out = str_pad($card->dataModelGetter('last4', false), strlen($in), 'x', STR_PAD_LEFT);
             }
 
             if ($sepa) {
-                $in = $sepa->getIban();
-                $out = str_pad($sepa->getLast4(), strlen($sepa->getIban()), 'x', STR_PAD_LEFT);
+                $in = $sepa->dataModelGetter('iban', false);
+                $out = str_pad($sepa->dataModelGetter('last4', false), strlen($in), 'x', STR_PAD_LEFT);
             }
         }
 
@@ -187,17 +187,17 @@ class Request
             $in = null;
             $out = null;
 
-            $card = $object->getCard();
-            $sepa = $object->getSepa();
+            $card = $object->dataModelGetter('card', false);
+            $sepa = $object->dataModelGetter('sepa', false);
 
             if ($card) {
-                $in = $card->getNumber();
-                $out = str_pad($card->getLast4(), strlen($card->getNumber()), 'x', STR_PAD_LEFT);
+                $in = $card->dataModelGetter('number', false);
+                $out = str_pad($card->dataModelGetter('last4', false), strlen($in), 'x', STR_PAD_LEFT);
             }
 
             if ($sepa) {
-                $in = $sepa->getIban();
-                $out = str_pad($sepa->getLast4(), strlen($sepa->getIban()), 'x', STR_PAD_LEFT);
+                $in = $sepa->dataModelGetter('iban', false);
+                $out = str_pad($sepa->dataModelGetter('last4', false), strlen($in), 'x', STR_PAD_LEFT);
             }
 
             if ($in) {
