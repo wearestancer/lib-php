@@ -6,7 +6,6 @@ stages:
 
 include:
   - local: .gitlab/ci/templates.yml
-  - local: .gitlab/ci/php-7.1.yml
   - local: .gitlab/ci/php-7.2.yml
   - local: .gitlab/ci/php-7.3.yml
   - local: .gitlab/ci/php-7.4.yml
