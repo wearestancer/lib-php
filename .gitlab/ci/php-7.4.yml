@@ -1,7 +1,5 @@
 
 .php7.4:
-  allow_failure: true
-
   variables:
     PHP_VERSION: '7.4'
 
