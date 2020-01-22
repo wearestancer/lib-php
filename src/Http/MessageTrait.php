@@ -207,6 +207,24 @@ trait MessageTrait
     }
 
     /**
+     * Return an instance with obfuscated message body.
+     *
+     * @param string|string[] $in Text to search.
+     * @param string|string[] $out Text for replacement.
+     * @return self
+     */
+    public function withModifiedBody(?string $in = '', ?string $out = ''): self
+    {
+        $obj = clone $this;
+
+        if ($in) {
+            $obj->body = str_replace($in, $out, $this->body);
+        }
+
+        return $obj;
+    }
+
+    /**
      * Return an instance without the specified header.
      *
      * @param string $name Case-insensitive header field name to remove.

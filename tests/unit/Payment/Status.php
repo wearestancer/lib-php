@@ -20,6 +20,11 @@ class Status extends ild78\Tests\atoum
                     ->isEqualTo('authorized')
 
             ->currentlyTestedClass
+                ->hasConstant('CANCELED')
+                ->constant('CANCELED')
+                    ->isEqualTo('canceled')
+
+            ->currentlyTestedClass
                 ->hasConstant('CAPTURE')
                 ->constant('CAPTURE')
                     ->isEqualTo('capture')
@@ -43,11 +48,6 @@ class Status extends ild78\Tests\atoum
                 ->hasConstant('FAILED')
                 ->constant('FAILED')
                     ->isEqualTo('failed')
-
-            ->currentlyTestedClass
-                ->hasConstant('REFUSED')
-                ->constant('REFUSED')
-                    ->isEqualTo('refused')
 
             ->currentlyTestedClass
                 ->hasConstant('TO_CAPTURE')

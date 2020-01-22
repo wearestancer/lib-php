@@ -22,7 +22,7 @@ class InvalidEmailException extends ild78\Tests\atoum
             ->if($class = $this->testedClass->getClass())
             ->then
                 ->string($class::getDefaultMessage())
-                    ->isIdenticalTo('Invalid email')
+                    ->isIdenticalTo('Invalid email address.')
         ;
     }
 

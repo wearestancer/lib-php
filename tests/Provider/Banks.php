@@ -24,7 +24,7 @@ trait Banks
         return $data;
     }
 
-    public function ibanDataProvider()
+    public function ibanDataProvider($one = false)
     {
         // Thanks Wikipedia
         $data = [
@@ -41,6 +41,10 @@ trait Banks
         ];
 
         shuffle($data);
+
+        if ($one) {
+            return $data[0];
+        }
 
         return $data;
     }

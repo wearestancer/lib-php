@@ -25,15 +25,16 @@ class Refund extends ild78\Tests\atoum
         ;
     }
 
-    public function testSave()
+    public function testSend()
     {
         $this
             ->assert('With amount')
                 ->given($client = new mock\ild78\Http\Client)
                 ->and($response = new mock\ild78\Http\Response(200))
                 ->and($this->calling($client)->request = $response)
-                ->and($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($config->setHttpClient($client))
+                ->and($config->setDebug(false))
 
                 ->and($body = file_get_contents(__DIR__ . '/../fixtures/refund/read.json'))
                 ->and($this->calling($response)->getBody = $body)
@@ -63,7 +64,7 @@ class Refund extends ild78\Tests\atoum
                 ]))
 
                 ->then
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
                         ->isTestedInstance
 
                     ->mock($client)
@@ -88,8 +89,9 @@ class Refund extends ild78\Tests\atoum
                 ->given($client = new mock\ild78\Http\Client)
                 ->and($response = new mock\ild78\Http\Response(200))
                 ->and($this->calling($client)->request = $response)
-                ->and($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($config->setHttpClient($client))
+                ->and($config->setDebug(false))
 
                 ->and($body = file_get_contents(__DIR__ . '/../fixtures/refund/read.json'))
                 ->and($this->calling($response)->getBody = $body)
@@ -115,7 +117,7 @@ class Refund extends ild78\Tests\atoum
                 ]))
 
                 ->then
-                    ->object($this->testedInstance->save())
+                    ->object($this->testedInstance->send())
                         ->isTestedInstance
 
                     ->mock($client)

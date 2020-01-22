@@ -11,6 +11,7 @@ class InvalidExpirationYearException extends ild78\Tests\atoum
     {
         $this
             ->currentlyTestedClass
+                ->extends(ild78\Exceptions\InvalidExpirationException::class)
                 ->extends(ild78\Exceptions\InvalidArgumentException::class)
                 ->implements(ild78\Interfaces\ExceptionInterface::class)
         ;

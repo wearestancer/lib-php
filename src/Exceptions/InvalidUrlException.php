@@ -23,6 +23,6 @@ class InvalidUrlException extends InvalidArgumentException implements ExceptionI
      */
     public static function getDefaultMessage(): string
     {
-        return 'Invalid URL';
+        return 'Invalid URL.';
     }
 }

@@ -144,7 +144,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
      */
     public function request(string $method, string $uri, array $options = []): Psr\Http\Message\ResponseInterface
     {
-        $config = ild78\Api\Config::getGlobal();
+        $config = ild78\Config::getGlobal();
         $logger = $config->getLogger();
 
         // Set URL.
@@ -232,6 +232,20 @@ class Client implements ild78\Interfaces\HttpClientInterface
 
                     if (is_array($json['error']['message'])) {
                         $params['message'] = current($json['error']['message']);
+                        $id = '';
+
+                        if (array_key_exists('id', $json['error']['message'])) {
+                            $id = $json['error']['message']['id'];
+                            $params['message'] = $json['error']['message']['id'];
+                        }
+
+                        if (array_key_exists('error', $json['error']['message'])) {
+                            $params['message'] = $json['error']['message']['error'];
+
+                            if ($id) {
+                                $params['message'] .= ' (' . $id . ')';
+                            }
+                        }
                     }
                 }
             }

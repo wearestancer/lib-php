@@ -21,6 +21,6 @@ class InvalidNameException extends InvalidArgumentException implements Exception
      */
     public static function getDefaultMessage(): string
     {
-        return 'Invalid name';
+        return 'Invalid name.';
     }
 }

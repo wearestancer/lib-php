@@ -21,6 +21,6 @@ class InvalidBicException extends InvalidArgumentException implements ExceptionI
      */
     public static function getDefaultMessage(): string
     {
-        return 'Invalid BIC';
+        return 'Invalid BIC.';
     }
 }

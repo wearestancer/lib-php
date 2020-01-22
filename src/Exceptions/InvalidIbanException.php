@@ -21,6 +21,6 @@ class InvalidIbanException extends InvalidArgumentException implements Exception
      */
     public static function getDefaultMessage(): string
     {
-        return 'Invalid IBAN';
+        return 'Invalid IBAN.';
     }
 }

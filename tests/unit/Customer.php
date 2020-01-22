@@ -8,10 +8,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use ild78;
-use ild78\Api;
-use ild78\Exceptions;
 use ild78\Customer as testedClass;
-use ild78\Exceptions\NotFoundException;
 use mock;
 
 class Customer extends ild78\Tests\atoum
@@ -20,7 +17,7 @@ class Customer extends ild78\Tests\atoum
     {
         $this
             ->class(testedClass::class)
-                ->isSubclassOf(Api\AbstractObject::class)
+                ->isSubclassOf(ild78\Core\AbstractObject::class)
         ;
     }
 
@@ -59,7 +56,7 @@ class Customer extends ild78\Tests\atoum
         ;
     }
 
-    public function testSave()
+    public function testSend()
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client)
@@ -67,8 +64,9 @@ class Customer extends ild78\Tests\atoum
             ->and($body = file_get_contents(__DIR__ . '/fixtures/customers/create.json'))
             ->and($this->calling($response)->getBody = $body)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
 
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setEmail(uniqid()))
@@ -90,7 +88,7 @@ class Customer extends ild78\Tests\atoum
                 ->variable($this->testedInstance->getId())
                     ->isNull
 
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
 
                 ->mock($client)
@@ -114,9 +112,9 @@ class Customer extends ild78\Tests\atoum
                     ->isIdenticalTo('David Coaster')
 
                 // Check it was not called twice
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
-                    ->isInstanceOf($this->testedInstance->save())
+                    ->isInstanceOf($this->testedInstance->send())
 
                 ->mock($client)
                     ->call('request')
@@ -125,17 +123,17 @@ class Customer extends ild78\Tests\atoum
 
                 ->assert('Update a property allow new request')
                     ->if($this->testedInstance->setName(uniqid()))
-                    ->and($this->testedInstance->save())
+                    ->and($this->testedInstance->send())
                     ->then
                         ->mock($client)
                             ->call('request')
                                 ->once
 
-                ->assert('Populate block save')
+                ->assert('Populate block send')
                     ->if($this->newTestedInstance(uniqid()))
                     ->and($this->testedInstance->setName(uniqid()))
                     ->and($this->testedInstance->populate())
-                    ->and($this->testedInstance->save())
+                    ->and($this->testedInstance->send())
                     ->then
                         ->mock($client)
                             ->call('request')
@@ -150,9 +148,9 @@ class Customer extends ild78\Tests\atoum
                     ->given($this->newTestedInstance)
                     ->then
                         ->exception(function () {
-                            $this->testedInstance->save();
+                            $this->testedInstance->send();
                         })
-                            ->isInstanceOf(Exceptions\BadMethodCallException::class)
+                            ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
                             ->message
                                 ->isIdenticalTo('You must provide an email or a phone number to create a customer.')
 
@@ -162,12 +160,13 @@ class Customer extends ild78\Tests\atoum
         ;
     }
 
-    public function testSave_forUpdate()
+    public function testSend_forUpdate()
     {
         $this
-            ->given($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($client = new mock\ild78\Http\Client)
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
 
             ->then
                 ->assert('Modify a fresh and not populated instance, will send only known data')
@@ -190,7 +189,7 @@ class Customer extends ild78\Tests\atoum
                     ])
 
                     ->then
-                        ->object($this->testedInstance->save())
+                        ->object($this->testedInstance->send())
                             ->isTestedInstance
 
                         ->mock($client)
@@ -222,7 +221,7 @@ class Customer extends ild78\Tests\atoum
                     ])
 
                     ->then
-                        ->object($this->testedInstance->save())
+                        ->object($this->testedInstance->send())
                             ->isTestedInstance
 
                         ->mock($client)
@@ -233,7 +232,7 @@ class Customer extends ild78\Tests\atoum
                 ->assert('Unmodified instance will not trigger an update')
                     ->if($this->newTestedInstance(uniqid()))
                     ->then
-                        ->object($this->testedInstance->save())
+                        ->object($this->testedInstance->send())
                             ->isTestedInstance
 
                         ->mock($client)
@@ -250,7 +249,7 @@ class Customer extends ild78\Tests\atoum
                 ->exception(function () {
                     $this->testedInstance->setEmail('');
                 })
-                    ->isInstanceOf(Exceptions\InvalidEmailException::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidEmailException::class)
                     ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid email must be between 5 and 64 characters.')
@@ -268,7 +267,7 @@ class Customer extends ild78\Tests\atoum
                 ->exception(function () {
                     $this->testedInstance->setMobile('');
                 })
-                    ->isInstanceOf(Exceptions\InvalidMobileException::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidMobileException::class)
                     ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid mobile must be between 8 and 16 characters.')
@@ -286,7 +285,7 @@ class Customer extends ild78\Tests\atoum
                 ->exception(function () {
                     $this->testedInstance->setName('');
                 })
-                    ->isInstanceOf(Exceptions\InvalidNameException::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidNameException::class)
                     ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid name must be between 4 and 64 characters.')

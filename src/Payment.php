@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace ild78;
 
+use DateTime;
 use Generator;
 use ild78;
 
@@ -23,12 +24,13 @@ use ild78;
  * @method string|null getReturnUrl()
  * @method ild78\\Sepa getSepa()
  * @method string getStatus()
+ * @method string getUniqueId()
  * @method Generator list(array $terms)
  * @method self setDevice(ild78\\Device $device)
  * @method self setReturnUrl(string $https)
  * @method self setStatus(string $status)
  */
-class Payment extends Api\AbstractObject
+class Payment extends ild78\Core\AbstractObject
 {
     use ild78\Traits\AmountTrait;
     use ild78\Traits\SearchTrait;
@@ -81,7 +83,7 @@ class Payment extends Api\AbstractObject
         'orderId' => [
             'size' => [
                 'min' => 1,
-                'max' => 24,
+                'max' => 36,
             ],
             'type' => self::STRING,
         ],
@@ -90,7 +92,7 @@ class Payment extends Api\AbstractObject
             'list' => true,
             'type' => ild78\Refund::class,
         ],
-        'responseCode' => [
+        'response' => [
             'restricted' => true,
             'size' => [
                 'fixed' => 2,
@@ -108,6 +110,13 @@ class Payment extends Api\AbstractObject
             'type' => ild78\Sepa::class,
         ],
         'status' => [
+            'type' => self::STRING,
+        ],
+        'uniqueId' => [
+            'size' => [
+                'min' => 1,
+                'max' => 36,
+            ],
             'type' => self::STRING,
         ],
     ];
@@ -156,7 +165,7 @@ class Payment extends Api\AbstractObject
 
         $means = new $class($id);
 
-        return $obj->hydrate($options)->$method($means->hydrate($data))->save();
+        return $obj->hydrate($options)->$method($means->hydrate($data))->send();
     }
 
     /**
@@ -166,11 +175,61 @@ class Payment extends Api\AbstractObject
      * @return void No return possible
      * @throws ild78\Exceptions\BadMethodCallException On every call, this method is not allowed in this context.
      */
-    public function delete(): ild78\Api\AbstractObject
+    public function delete(): ild78\Core\AbstractObject
     {
         $message = 'You are not allowed to delete a payment, you need to refund it instead.';
 
         throw new ild78\Exceptions\BadMethodCallException($message);
+    }
+
+    /**
+     * Filter for list method
+     *
+     * `$terms` must be an associative array with one of the following key : `order_id`, `unique_id`.
+     *
+     * `order_id` and `unique_id` will be treated as a string and will filter payments corresponding to the data
+     * you specified in your initial payment request.
+     *
+     * @param array $terms Search terms. May have `order_id` or `unique_id` key.
+     * @return array
+     * @throws ild78\Exceptions\InvalidSearchOrderIdFilterException When `order_id` is invalid.
+     * @throws ild78\Exceptions\InvalidSearchUniqueIdFilterException When `unique_id` is invalid.
+     */
+    public static function filterListParams(array $terms): array
+    {
+        $params = [];
+
+        if (array_key_exists('order_id', $terms)) {
+            $params['order_id'] = $terms['order_id'];
+            $type = gettype($terms['order_id']);
+
+            if ($type !== 'string') {
+                throw new ild78\Exceptions\InvalidSearchOrderIdFilterException('Order ID must be a string.');
+            }
+
+            if (strlen($terms['order_id']) > 36 || !$terms['order_id']) {
+                $message = 'A valid order ID must be between 1 and 36 characters.';
+
+                throw new ild78\Exceptions\InvalidSearchOrderIdFilterException($message);
+            }
+        }
+
+        if (array_key_exists('unique_id', $terms)) {
+            $params['unique_id'] = $terms['unique_id'];
+            $type = gettype($terms['unique_id']);
+
+            if ($type !== 'string') {
+                throw new ild78\Exceptions\InvalidSearchUniqueIdFilterException('Unique ID must be a string.');
+            }
+
+            if (strlen($terms['unique_id']) > 36 || !$terms['unique_id']) {
+                $message = 'A valid unique ID must be between 1 and 36 characters.';
+
+                throw new ild78\Exceptions\InvalidSearchUniqueIdFilterException($message);
+            }
+        }
+
+        return $params;
     }
 
     // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
@@ -180,16 +239,17 @@ class Payment extends Api\AbstractObject
      *
      * Maybe used as an iframe or a redirection page if you needed it.
      *
+     * @param array $params Parameters to add to the URL.
      * @return string
      * @throws ild78\Exceptions\MissingApiKeyException When no public key was given in configuration.
      * @throws ild78\Exceptions\MissingReturnUrlException When no return URL was given to payment data.
      * @throws ild78\Exceptions\MissingPaymentIdException When no payment has no ID.
      */
-    public function getPaymentPageUrl(): string
+    public function getPaymentPageUrl(array $params = []): string
     {
-        $config = ild78\Api\Config::getGlobal();
+        $config = ild78\Config::getGlobal();
 
-        $params = [
+        $data = [
             str_replace('api', 'payment', $config->getHost()),
             $config->getPublicKey(),
         ];
@@ -201,24 +261,41 @@ class Payment extends Api\AbstractObject
         }
 
         if (!$this->getId()) {
-            $message = 'A payment ID is mandatory to obtain a payment page URL. Maybe you forgot to save the payment.';
+            $message = 'A payment ID is mandatory to obtain a payment page URL. Maybe you forgot to send the payment.';
 
             throw new ild78\Exceptions\MissingPaymentIdException($message);
         }
 
-        $params[] = $this->getId();
+        $data[] = $this->getId();
 
-        return vsprintf('https://%s/%s/%s', $params);
+        $params = array_intersect_key($params, ['lang' => 1]);
+        $query = http_build_query($params);
+
+        if ($query) {
+            $query = '?' . $query;
+        }
+
+        return vsprintf('https://%s/%s/%s', $data) . $query;
     }
 
     // phpcs:enable
 
     /**
-     * Refund the refundable amount
+     * Return the refundable amount
      *
      * @return integer
      */
     public function getRefundableAmount(): int
+    {
+        return $this->getAmount() - $this->getRefundedAmount();
+    }
+
+    /**
+     * Return the already refunded amount
+     *
+     * @return integer
+     */
+    public function getRefundedAmount(): int
     {
         $getAmounts = function ($refund) {
             return $refund->getAmount();
@@ -227,7 +304,7 @@ class Payment extends Api\AbstractObject
         $refunds = $this->getRefunds();
         $refunded = array_map($getAmounts, $refunds);
 
-        return $this->getAmount() - array_sum($refunded);
+        return array_sum($refunded);
     }
 
     /**
@@ -245,7 +322,7 @@ class Payment extends Api\AbstractObject
             '51' => 'Insufficient funds',
         ];
 
-        $code = $this->getResponseCode();
+        $code = $this->getResponse();
 
         if (array_key_exists($code, $messages)) {
             return $messages[$code];
@@ -261,6 +338,10 @@ class Payment extends Api\AbstractObject
      */
     public function isNotSuccess(): bool
     {
+        if (is_null($this->getResponse())) {
+            return false;
+        }
+
         return !$this->isSuccess();
     }
 
@@ -271,35 +352,7 @@ class Payment extends Api\AbstractObject
      */
     public function isSuccess(): bool
     {
-        return $this->getResponseCode() === '00';
-    }
-
-    /**
-     * Filter for list method
-     *
-     * `$terms` must be an associative array with one of the following key : `order_id`.
-     *
-     * `order_id` will be treated as a string, will filter payments corresponding to the `order_id` you specified
-     * in your initial payment request.
-     *
-     * @param array $terms Search terms. May have `order_id` key.
-     * @return array
-     * @throws ild78\Exceptions\InvalidSearchOrderIdFilter When `order_id` is invalid.
-     */
-    public static function filterListFilter(array $terms): array
-    {
-        $params = [];
-
-        if (array_key_exists('order_id', $terms)) {
-            $params['order_id'] = $terms['order_id'];
-            $type = gettype($terms['order_id']);
-
-            if (!$terms['order_id'] || $type !== 'string') {
-                throw new ild78\Exceptions\InvalidSearchOrderIdFilter();
-            }
-        }
-
-        return $params;
+        return $this->getResponse() === '00';
     }
 
     /**
@@ -320,7 +373,7 @@ class Payment extends Api\AbstractObject
             $this->setSepa($means);
         }
 
-        return $this->setAmount($amount)->setCurrency($currency)->save();
+        return $this->setAmount($amount)->setCurrency($currency)->send();
     }
 
     /**
@@ -330,23 +383,38 @@ class Payment extends Api\AbstractObject
      * @return self
      * @throws ild78\Exceptions\InvalidAmountException When trying to refund more than paid.
      * @throws ild78\Exceptions\InvalidAmountException When the amount is invalid.
+     * @throws ild78\Exceptions\MissingPaymentIdException When the payment has no ID.
      */
     public function refund(int $amount = null): self
     {
+        if (!$this->getId()) {
+            throw new ild78\Exceptions\MissingPaymentIdException();
+        }
+
         $refund = new Refund();
         $refund->setPayment($this);
 
         if ($amount) {
-            if ($amount > $this->getAmount()) {
-                $params = [
-                    $amount / 100,
-                    strtoupper($this->getCurrency()),
-                    $this->getAmount() / 100,
-                    strtoupper($this->getCurrency()),
-                ];
-                $message = vsprintf('You are trying to refund (%.02f %s) more than paid (%.02f %s).', $params);
+            $params = [
+                $amount / 100,
+                strtoupper($this->getCurrency()),
+                $this->getAmount() / 100,
+                $this->getRefundedAmount() / 100,
+            ];
+            $message = '';
 
-                throw new ild78\Exceptions\InvalidAmountException($message);
+            if ($amount > $this->getRefundableAmount()) {
+                $message = 'You are trying to refund (%1$.02f %2$s) more than paid';
+                $message .= ' (%3$.02f %2$s with %4$.02f %2$s already refunded).';
+            }
+
+            if ($amount > $this->getAmount()) {
+                $message = 'You are trying to refund (%1$.02f %2$s) more than paid';
+                $message .= ' (%3$.02f %2$s).';
+            }
+
+            if ($message) {
+                throw new ild78\Exceptions\InvalidAmountException(vsprintf($message, $params));
             }
 
             $refund->setAmount($amount);
@@ -354,25 +422,55 @@ class Payment extends Api\AbstractObject
 
         $modified = $this->modified;
 
-        $this->addRefunds($refund->save());
+        $this->addRefunds($refund->send());
 
         $this->modified = $modified;
+
+        $params = [
+            $refund->getAmount() / 100,
+            strtoupper($refund->getCurrency()),
+            $this->getId(),
+        ];
+        $message = vsprintf('Refund of %.02f %s on payment "%s"', $params);
+
+        ild78\Config::getGlobal()->getLogger()->info($message);
+
+        if ($refund->getStatus() !== ild78\Refund\Status::TO_REFUND) {
+            $this->populated = false;
+            $this->populate();
+
+            foreach ($this->getRefunds() as $ref) {
+                $ref->setPayment($this);
+                $ref->modified = [];
+            }
+        }
 
         return $this;
     }
 
     /**
-     * Save the current object.
+     * Send the current object.
      *
      * @uses Request::post()
      * @return self
+     * @throws ild78\Exceptions\InvalidAmountException When no amount was given.
+     * @throws ild78\Exceptions\InvalidCurrencyException When no currency was given.
      * @throws ild78\Exceptions\InvalidIpAddressException When no device was already given, authenticated payment
      *   was asked and an error occur during device creation.
      * @throws ild78\Exceptions\InvalidPortException When no device was already given, authenticated payment
      *   was asked and an error occur during device creation.
+     * @throws ild78\Exceptions\InvalidExpirationException When card's expiration is invalid.
      */
-    public function save(): ild78\Api\AbstractObject
+    public function send(): ild78\Core\AbstractObject
     {
+        if (!$this->getAmount()) {
+            throw new ild78\Exceptions\InvalidAmountException();
+        }
+
+        if (!$this->getCurrency()) {
+            throw new ild78\Exceptions\InvalidCurrencyException();
+        }
+
         $auth = $this->getAuth();
         $card = $this->getCard();
         $sepa = $this->getSepa();
@@ -396,7 +494,16 @@ class Payment extends Api\AbstractObject
             }
         }
 
-        parent::save();
+        if ($card && !$card->getId()) {
+            $expiration = $card->getExpirationDate();
+            $now = new DateTime();
+
+            if ($expiration < $now) {
+                throw new ild78\Exceptions\InvalidExpirationException('Card expiration is invalid.');
+            }
+        }
+
+        parent::send();
 
         $params = [
             $this->getAmount() / 100,
@@ -416,7 +523,7 @@ class Payment extends Api\AbstractObject
             $message = vsprintf('Payment of %.02f %s with IBAN "%s" / BIC "%s"', $params);
         }
 
-        Api\Config::getGlobal()->getLogger()->info($message);
+        ild78\Config::getGlobal()->getLogger()->info($message);
 
         return $this;
     }
@@ -450,6 +557,20 @@ class Payment extends Api\AbstractObject
         }
 
         return parent::setAuth($obj);
+    }
+
+    /**
+     * Set a card.
+     *
+     * @param ild78\Card $card New card instance.
+     * @return self
+     */
+    public function setCard(Card $card): self
+    {
+        parent::setCard($card);
+        $this->dataModel['method']['value'] = 'card';
+
+        return $this;
     }
 
     /**
@@ -531,5 +652,35 @@ class Payment extends Api\AbstractObject
         }
 
         return parent::setReturnUrl($url);
+    }
+
+    /**
+     * Set a sepa account.
+     *
+     * @param ild78\Sepa $sepa New sepa instance.
+     * @return self
+     */
+    public function setSepa(Sepa $sepa): self
+    {
+        parent::setSepa($sepa);
+        $this->dataModel['method']['value'] = 'sepa';
+
+        return $this;
+    }
+
+    /**
+     * Update unique ID
+     *
+     * @param string $uniqueId New unique ID.
+     * @return self
+     * @throws ild78\Exceptions\InvalidUniqueIdException When the unique ID is invalid.
+     */
+    public function setUniqueId(string $uniqueId): self
+    {
+        try {
+            return parent::setUniqueId($uniqueId);
+        } catch (ild78\Exceptions\InvalidArgumentException $excep) {
+            throw new ild78\Exceptions\InvalidUniqueIdException($excep->getMessage(), $excep->getCode(), $excep);
+        }
     }
 }

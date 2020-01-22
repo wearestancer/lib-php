@@ -10,16 +10,13 @@ use ild78;
 /**
  * Representation of a card
  */
-class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterface
+class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\PaymentMeansInterface
 {
     /** @var array */
     protected $dataModel = [
         'brand' => [
             'restricted' => true,
             'type' => self::STRING,
-        ],
-        'capture' => [
-            'type' => self::BOOLEAN,
         ],
         'country' => [
             'type' => self::STRING,
@@ -257,27 +254,6 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
 
         $this->dataModel['expMonth']['value'] = $month;
         $this->modified[] = 'exp_month';
-
-        return $this;
-    }
-
-    /**
-     * Update the expiration year.
-     *
-     * @param integer $year The expiration year.
-     * @return self
-     * @throws ild78\Exceptions\InvalidExpirationYearException When expiration is invalid (in past).
-     */
-    public function setExpYear(int $year): self
-    {
-        if ($year < date('Y')) {
-            $message = sprintf('Invalid expiration year "%d"', $year);
-
-            throw new ild78\Exceptions\InvalidExpirationYearException($message);
-        }
-
-        $this->dataModel['expYear']['value'] = $year;
-        $this->modified[] = 'exp_year';
 
         return $this;
     }

@@ -1,0 +1,21 @@
+
+.php7.4:
+  allow_failure: true
+
+  variables:
+    PHP_VERSION: '7.4'
+
+atoum:PHP7.4:
+  extends:
+    - .atoum
+    - .php7.4
+
+lint:PHP7.4:
+  extends:
+    - .lint
+    - .php7.4
+
+coverage-check:PHP 7.4:
+  extends:
+    - .coverage-check
+    - .php7.4

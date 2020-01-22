@@ -21,7 +21,7 @@ use ild78;
  * @method self setLanguages(string $languages)
  * @method self setUserAgent(string $userAgent)
  */
-class Device extends Api\AbstractObject
+class Device extends ild78\Core\AbstractObject
 {
     /** @var array */
     protected $dataModel = [
@@ -32,18 +32,12 @@ class Device extends Api\AbstractObject
             'type' => self::STRING,
         ],
         'httpAccept' => [
-            'size' => [
-                'max' => 2048,
-            ],
             'type' => self::STRING,
         ],
         'ip' => [
             'type' => self::STRING,
         ],
         'languages' => [
-            'size' => [
-                'max' => 32,
-            ],
             'type' => self::STRING,
         ],
         'port' => [
@@ -54,9 +48,6 @@ class Device extends Api\AbstractObject
             'type' => self::INTEGER,
         ],
         'userAgent' => [
-            'size' => [
-                'max' => 256,
-            ],
             'type' => self::STRING,
         ],
     ];
@@ -71,25 +62,11 @@ class Device extends Api\AbstractObject
      */
     public function __construct(array $data = [])
     {
-        if (empty($data['http_accept'])) {
-            $data['http_accept'] = $_SERVER['HTTP_ACCEPT'] ?? null;
-        }
-
-        if (empty($data['languages'])) {
-            $data['languages'] = $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
-        }
-
-        if (empty($data['ip'])) {
-            $data['ip'] = $_SERVER['SERVER_ADDR'] ?? null;
-        }
-
-        if (empty($data['port'])) {
-            $data['port'] = $_SERVER['SERVER_PORT'] ?? 0;
-        }
-
-        if (empty($data['user_agent'])) {
-            $data['user_agent'] = $_SERVER['HTTP_USER_AGENT'] ?? null;
-        }
+        $data['http_accept'] = $data['http_accept'] ?? $_SERVER['HTTP_ACCEPT'] ?? null;
+        $data['languages'] = $data['languages'] ?? $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
+        $data['ip'] = $data['ip'] ?? $_SERVER['SERVER_ADDR'] ?? null;
+        $data['port'] = $data['port'] ?? $_SERVER['SERVER_PORT'] ?? 0;
+        $data['user_agent'] = $data['user_agent'] ?? $_SERVER['HTTP_USER_AGENT'] ?? null;
 
         if (!$data['ip']) {
             throw new ild78\Exceptions\InvalidIpAddressException('You must provide an IP address.');

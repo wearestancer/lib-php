@@ -3,8 +3,6 @@
 namespace ild78\tests\unit;
 
 use ild78;
-use ild78\Api;
-use ild78\Exceptions;
 use ild78\Sepa as testedClass;
 
 class Sepa extends ild78\Tests\atoum
@@ -15,7 +13,7 @@ class Sepa extends ild78\Tests\atoum
     {
         $this
             ->currentlyTestedClass
-                ->extends(ild78\Api\AbstractObject::class)
+                ->extends(ild78\Core\AbstractObject::class)
                 ->implements(ild78\Interfaces\PaymentMeansInterface::class)
         ;
     }
@@ -79,7 +77,7 @@ class Sepa extends ild78\Tests\atoum
                     ->exception(function () use ($bic) {
                         $this->testedInstance->setBic($bic);
                     })
-                        ->isInstanceOf(Exceptions\InvalidBicException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidBicException::class)
                         ->message
                             ->contains($bic)
 
@@ -248,7 +246,7 @@ class Sepa extends ild78\Tests\atoum
                     ->exception(function () use ($iban) {
                         $this->testedInstance->setIban($iban);
                     })
-                        ->isInstanceOf(Exceptions\InvalidIbanException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidIbanException::class)
                         ->message
                             ->contains($iban)
 
@@ -265,7 +263,7 @@ class Sepa extends ild78\Tests\atoum
                 ->exception(function () {
                     $this->testedInstance->setName('');
                 })
-                    ->isInstanceOf(Exceptions\InvalidNameException::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidNameException::class)
                     ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid name must be between 4 and 64 characters.')

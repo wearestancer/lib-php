@@ -15,7 +15,7 @@ use ild78;
  * @method string getResponseCode()
  * @method Generator list(array $terms)
  */
-class Dispute extends Api\AbstractObject
+class Dispute extends ild78\Core\AbstractObject
 {
     use ild78\Traits\AmountTrait;
     use ild78\Traits\SearchTrait;
@@ -29,7 +29,7 @@ class Dispute extends Api\AbstractObject
             'restricted' => true,
             'size' => [
                 'min' => 1,
-                'max' => 24,
+                'max' => 36,
             ],
             'type' => self::STRING,
         ],
@@ -37,7 +37,7 @@ class Dispute extends Api\AbstractObject
             'restricted' => true,
             'type' => ild78\Payment::class,
         ],
-        'responseCode' => [
+        'response' => [
             'restricted' => true,
             'size' => [
                 'fixed' => 2,

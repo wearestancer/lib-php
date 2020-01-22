@@ -9,11 +9,8 @@ use Psr;
 /**
  * Exception thrown on miss-validation with expiration month.
  */
-class InvalidExpirationMonthException extends InvalidArgumentException implements ExceptionInterface
+class InvalidExpirationMonthException extends InvalidExpirationException implements ExceptionInterface
 {
-    /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::DEBUG;
-
     /**
      * Return default message for that kind of exception
      *

@@ -25,24 +25,24 @@ trait SearchTrait
      *
      * @param array $terms Search terms. May have `created`, `limit` or `start` key.
      * @return Generator
-     * @throws ild78\Exceptions\InvalidSearchFilter When `$terms` is invalid.
-     * @throws ild78\Exceptions\InvalidSearchCreationFilter When `created` is invalid.
-     * @throws ild78\Exceptions\InvalidSearchLimit When `limit` is invalid.
-     * @throws ild78\Exceptions\InvalidSearchStart When `start` is invalid.
+     * @throws ild78\Exceptions\InvalidSearchFilterException When `$terms` is invalid.
+     * @throws ild78\Exceptions\InvalidSearchCreationFilterException When `created` is invalid.
+     * @throws ild78\Exceptions\InvalidSearchLimitException When `limit` is invalid.
+     * @throws ild78\Exceptions\InvalidSearchStartException When `start` is invalid.
      */
     public static function list(array $terms): Generator
     {
         $allowed = array_flip(['created', 'limit', 'start']);
         $others = [];
 
-        if (method_exists(static::class, 'filterListFilter')) {
-            $others = static::filterListFilter($terms);
+        if (method_exists(static::class, 'filterListParams')) {
+            $others = static::filterListParams($terms);
         }
 
         $params = array_merge(array_intersect_key($terms, $allowed), $others);
 
         if (!$params) {
-            throw new ild78\Exceptions\InvalidSearchFilter();
+            throw new ild78\Exceptions\InvalidSearchFilterException();
         }
 
         if (array_key_exists('created', $terms)) {
@@ -59,13 +59,13 @@ trait SearchTrait
             if (!$created || $type !== 'integer') {
                 $message = 'Created must be a position integer or a DateTime object.';
 
-                throw new ild78\Exceptions\InvalidSearchCreationFilter($message);
+                throw new ild78\Exceptions\InvalidSearchCreationFilterException($message);
             }
 
             if ($created > time()) {
                 $message = 'Created must be in the past.';
 
-                throw new ild78\Exceptions\InvalidSearchCreationFilter($message);
+                throw new ild78\Exceptions\InvalidSearchCreationFilterException($message);
             }
         }
 
@@ -74,7 +74,7 @@ trait SearchTrait
             $type = gettype($terms['limit']);
 
             if ($type !== 'integer' || $terms['limit'] < 1 || $terms['limit'] > 100) {
-                throw new ild78\Exceptions\InvalidSearchLimit();
+                throw new ild78\Exceptions\InvalidSearchLimitException();
             }
         }
 
@@ -85,37 +85,47 @@ trait SearchTrait
             $type = gettype($terms['start']);
 
             if ($type !== 'integer' || $terms['start'] < 0) {
-                throw new ild78\Exceptions\InvalidSearchStart();
+                throw new ild78\Exceptions\InvalidSearchStartException();
             }
         }
 
-        $request = new ild78\Api\Request();
+        $request = new ild78\Core\Request();
         $element = new static(); // Mandatory for requests.
+        $property = strtolower($element->getEntityName() . 's');
 
-        $gen = function () use ($request, $element, $params) {
+        $gen = function () use ($request, $element, $params, $property) {
             $more = true;
             $start = 0;
 
             do {
                 $params['start'] += $start;
 
-                $tmp = $request->get($element, $params);
+                try {
+                    $tmp = $request->get($element, $params);
 
-                if (!$tmp) {
-                    $more = false;
-                } else {
-                    $results = json_decode($tmp, true);
-                    $more = $results['range']['has_more'];
-                    $start += $results['range']['limit'];
+                    if (!$tmp) {
+                        $more = false;
+                    } else {
+                        $results = json_decode($tmp, true);
 
-                    foreach ($results['payments'] as $data) {
-                        $obj = new static($data['id']);
+                        if (!array_key_exists($property, $results)) {
+                            $more = false;
+                        } else {
+                            $more = $results['range']['has_more'];
+                            $start += $results['range']['limit'];
 
-                        $obj->cleanModified = true;
-                        $obj->hydrate($data);
+                            foreach ($results[$property] as $data) {
+                                $obj = new static($data['id']);
 
-                        yield $obj;
+                                $obj->cleanModified = true;
+                                $obj->hydrate($data);
+
+                                yield $obj;
+                            }
+                        }
                     }
+                } catch (ild78\Exceptions\NotFoundException $exception) {
+                    $more = false;
                 }
             } while ($more);
         };

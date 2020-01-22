@@ -12,7 +12,7 @@ use ild78;
  * @method string getReturnUrl()
  * @method string getStatus()
  */
-class Auth extends Api\AbstractObject
+class Auth extends ild78\Core\AbstractObject
 {
     /** @var array */
     protected $dataModel = [

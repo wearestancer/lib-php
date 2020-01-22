@@ -22,7 +22,7 @@ class InvalidUrlException extends ild78\Tests\atoum
             ->if($class = $this->testedClass->getClass())
             ->then
                 ->string($class::getDefaultMessage())
-                    ->isIdenticalTo('Invalid URL')
+                    ->isIdenticalTo('Invalid URL.')
         ;
     }
 

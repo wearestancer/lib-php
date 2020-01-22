@@ -22,7 +22,7 @@ class InvalidMobileException extends ild78\Tests\atoum
             ->if($class = $this->testedClass->getClass())
             ->then
                 ->string($class::getDefaultMessage())
-                    ->isIdenticalTo('Invalid mobile phone number')
+                    ->isIdenticalTo('Invalid mobile phone number.')
         ;
     }
 

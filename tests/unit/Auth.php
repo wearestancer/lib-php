@@ -10,7 +10,7 @@ class Auth extends ild78\Tests\atoum
     {
         $this
             ->currentlyTestedClass
-                ->extends(ild78\Api\AbstractObject::class)
+                ->extends(ild78\Core\AbstractObject::class)
 
             ->string($this->newTestedInstance->getStatus())
                 ->isIdenticalTo(ild78\Auth\Status::REQUEST)

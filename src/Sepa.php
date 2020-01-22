@@ -8,7 +8,7 @@ use ild78;
 /**
  * Representation of a SEPA account
  */
-class Sepa extends Api\AbstractObject implements Interfaces\PaymentMeansInterface
+class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\PaymentMeansInterface
 {
     /** @var array */
     protected $dataModel = [

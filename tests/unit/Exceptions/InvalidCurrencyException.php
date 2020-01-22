@@ -22,7 +22,7 @@ class InvalidCurrencyException extends ild78\Tests\atoum
             ->if($class = $this->testedClass->getClass())
             ->then
                 ->string($class::getDefaultMessage())
-                    ->isIdenticalTo('Invalid currency')
+                    ->isIdenticalTo('You must provide a valid currency.')
         ;
     }
 

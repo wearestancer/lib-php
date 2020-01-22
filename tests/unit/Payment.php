@@ -9,12 +9,7 @@ use GuzzleHttp\Handler\MockHandler;
 use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use ild78;
-use ild78\Api;
-use ild78\Card;
-use ild78\Customer;
-use ild78\Exceptions;
 use ild78\Payment as testedClass;
-use ild78\Sepa;
 use mock;
 
 class Payment extends ild78\Tests\atoum
@@ -47,8 +42,9 @@ class Payment extends ild78\Tests\atoum
             ->if($client = new mock\GuzzleHttp\Client)
             ->and($response = new mock\GuzzleHttp\Psr7\Response)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
 
             ->assert('Test with a card token')
                 ->given($options = [
@@ -161,7 +157,7 @@ class Payment extends ild78\Tests\atoum
     {
         $this
             ->currentlyTestedClass()
-                ->isSubclassOf(Api\AbstractObject::class)
+                ->isSubclassOf(ild78\Core\AbstractObject::class)
                 ->hasTrait(ild78\Traits\AmountTrait::class)
                 ->hasTrait(ild78\Traits\SearchTrait::class)
         ;
@@ -173,9 +169,70 @@ class Payment extends ild78\Tests\atoum
             ->exception(function () {
                 $this->newTestedInstance(uniqid())->delete();
             })
-                ->isInstanceOf(Exceptions\BadMethodCallException::class)
+                ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
                 ->message
                     ->isIdenticalTo('You are not allowed to delete a payment, you need to refund it instead.')
+        ;
+    }
+
+    public function testFilterListParams()
+    {
+        $gen = function ($length) {
+            $text = '';
+
+            for ($i = 0; $i < $length; $i++) {
+                $text .= chr(rand(65, 122));
+            }
+
+            return $text;
+        };
+
+        $this
+            ->given($this->newTestedInstance)
+            ->and($order = ['order_id' => uniqid()])
+            ->and($unique = ['unique_id' => uniqid()])
+            ->then
+                ->assert('Remove unknown')
+                    ->array($this->testedInstance->filterListParams([uniqid() => uniqid()]))
+                        ->isEmpty
+
+                ->assert('Allow order_id')
+                    ->array($this->testedInstance->filterListParams($order))
+                        ->isIdenticalTo($order)
+
+                ->assert('Validate order_id')
+                    ->exception(function () {
+                        $this->testedInstance->filterListParams(['order_id' => rand(1, PHP_INT_MAX)]);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidSearchOrderIdFilterException::class)
+                        ->message
+                            ->isIdenticalTo('Order ID must be a string.')
+
+                    ->exception(function () use ($gen) {
+                        $this->testedInstance->filterListParams(['order_id' => $gen(37)]);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidSearchOrderIdFilterException::class)
+                        ->message
+                            ->isIdenticalTo('A valid order ID must be between 1 and 36 characters.')
+
+                ->assert('Allow unique_id')
+                    ->array($this->testedInstance->filterListParams($unique))
+                        ->isIdenticalTo($unique)
+
+                ->assert('Validate unique_id')
+                    ->exception(function () {
+                        $this->testedInstance->filterListParams(['unique_id' => rand(1, PHP_INT_MAX)]);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidSearchUniqueIdFilterException::class)
+                        ->message
+                            ->isIdenticalTo('Unique ID must be a string.')
+
+                    ->exception(function () use ($gen) {
+                        $this->testedInstance->filterListParams(['unique_id' => $gen(37)]);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidSearchUniqueIdFilterException::class)
+                        ->message
+                            ->isIdenticalTo('A valid unique ID must be between 1 and 36 characters.')
         ;
     }
 
@@ -194,7 +251,8 @@ class Payment extends ild78\Tests\atoum
         $this
             ->given($secret = 'stest_' . bin2hex(random_bytes(12)))
             ->and($public = 'ptest_' . bin2hex(random_bytes(12)))
-            ->and($config = ild78\Api\Config::init([$secret]))
+            ->and($config = ild78\Config::init([$secret]))
+            ->and($config->setDebug(false))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -217,11 +275,17 @@ class Payment extends ild78\Tests\atoum
                 $public
             ]))
 
+            ->if($lang = uniqid())
+            ->and($params = [
+                'lang' => $lang,
+                uniqid() => uniqid(),
+            ])
+
             ->then
                 ->exception(function () {
                     $this->testedInstance->getPaymentPageUrl();
                 })
-                    ->isInstanceOf(Exceptions\MissingApiKeyException::class)
+                    ->isInstanceOf(ild78\Exceptions\MissingApiKeyException::class)
                     ->message
                         ->isIdenticalTo('You did not provide valid public API key for development.')
 
@@ -230,7 +294,7 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     $this->testedInstance->getPaymentPageUrl();
                 })
-                    ->isInstanceOf(Exceptions\MissingReturnUrlException::class)
+                    ->isInstanceOf(ild78\Exceptions\MissingReturnUrlException::class)
                     ->message
                         ->isIdenticalTo('You must provide a return URL before asking for the payment page.')
 
@@ -240,24 +304,28 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     $this->testedInstance->getPaymentPageUrl();
                 })
-                    ->isInstanceOf(Exceptions\MissingPaymentIdException::class)
+                    ->isInstanceOf(ild78\Exceptions\MissingPaymentIdException::class)
                     ->message
-                        ->isIdenticalTo('A payment ID is mandatory to obtain a payment page URL. Maybe you forgot to save the payment.')
+                        ->isIdenticalTo('A payment ID is mandatory to obtain a payment page URL. Maybe you forgot to send the payment.')
 
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
 
                 ->string($this->testedInstance->getPaymentPageUrl())
                     ->isIdenticalTo($url . $this->testedInstance->getId())
+
+                ->string($this->testedInstance->getPaymentPageUrl($params))
+                    ->isIdenticalTo($url . $this->testedInstance->getId() . '?lang=' . $lang)
         ;
     }
 
     public function testGetRefundableAmount()
     {
         $this
-            ->given($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($client = new mock\ild78\Http\Client)
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
 
             ->if($body = file_get_contents(__DIR__ . '/fixtures/payment/read.json'))
             ->and($responsePayment = new ild78\Http\Response(200, $body))
@@ -279,13 +347,22 @@ class Payment extends ild78\Tests\atoum
                     ->integer($this->newTestedInstance($id)->getRefundableAmount())
                         ->isIdenticalTo($paid)
 
+                    ->integer($this->testedInstance->getRefundedAmount())
+                        ->isZero
+
                 ->assert('When all was refunded, no more refund is possible')
                     ->integer($this->newTestedInstance($id)->addRefunds($completeRefund)->getRefundableAmount())
                         ->isZero
 
+                    ->integer($this->testedInstance->getRefundedAmount())
+                        ->isIdenticalTo($paid)
+
                 ->assert('When one refund was done (' . $amount . ' / ' . $paid . ')')
                     ->integer($this->newTestedInstance($id)->addRefunds($partialRefund)->getRefundableAmount())
                         ->isIdenticalTo($paid - $amount)
+
+                    ->integer($this->testedInstance->getRefundedAmount())
+                        ->isIdenticalTo($amount)
         ;
     }
 
@@ -297,7 +374,7 @@ class Payment extends ild78\Tests\atoum
         $this
             ->assert($code . ' / ' . $message)
                 ->given($this->newTestedInstance)
-                ->and($this->testedInstance->hydrate(['response_code' => $code]))
+                ->and($this->testedInstance->hydrate(['response' => $code]))
                 ->then
                     ->string($this->testedInstance->getResponseMessage())
                         ->isIdenticalTo($message)
@@ -324,7 +401,7 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () use ($http) {
                     $this->testedInstance->setReturnUrl($http);
                 })
-                    ->isInstanceOf(Exceptions\InvalidUrlException::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidUrlException::class)
                     ->message
                         ->isIdenticalTo('You must provide an HTTPS URL.')
         ;
@@ -338,7 +415,14 @@ class Payment extends ild78\Tests\atoum
         $this
             ->assert($code . ' / ' . $message)
                 ->given($this->newTestedInstance)
-                ->and($this->testedInstance->hydrate(['response_code' => $code]))
+                ->then
+                    ->boolean($this->testedInstance->isSuccess())
+                        ->isFalse
+
+                    ->boolean($this->testedInstance->isNotSuccess())
+                        ->isFalse
+
+                ->if($this->testedInstance->hydrate(['response' => $code]))
                 ->then
                     ->boolean($this->testedInstance->isSuccess())
                         ->isIdenticalTo($code === '00')
@@ -354,8 +438,9 @@ class Payment extends ild78\Tests\atoum
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/list.json'))
             ->and($this->calling($response)->getBody = $body)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
 
             ->and($options = [
                 'headers' => [
@@ -370,21 +455,21 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     testedClass::list(['limit' => 0]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchLimit::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchLimitException::class)
                     ->message
                         ->isIdenticalTo('Limit must be between 1 and 100.')
 
                 ->exception(function () {
                     testedClass::list(['limit' => 101]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchLimit::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchLimitException::class)
                     ->message
                         ->isIdenticalTo('Limit must be between 1 and 100.')
 
                 ->exception(function () {
                     testedClass::list(['limit' => uniqid()]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchLimit::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchLimitException::class)
                     ->message
                         ->isIdenticalTo('Limit must be between 1 and 100.')
 
@@ -392,14 +477,14 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     testedClass::list(['start' => -1]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchStart::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchStartException::class)
                     ->message
                         ->isIdenticalTo('Start must be a positive integer.')
 
                 ->exception(function () {
                     testedClass::list(['start' => uniqid()]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchStart::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchStartException::class)
                     ->message
                         ->isIdenticalTo('Start must be a positive integer.')
 
@@ -407,14 +492,14 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     testedClass::list([]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchFilterException::class)
                     ->message
                         ->isIdenticalTo('Invalid search filters.')
 
                 ->exception(function () {
                     testedClass::list(['foo' => 'bar']);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchFilterException::class)
                     ->message
                         ->isIdenticalTo('Invalid search filters.')
 
@@ -422,7 +507,7 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     testedClass::list(['created' => time() + 100]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchCreationFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilterException::class)
                     ->message
                         ->isIdenticalTo('Created must be in the past.')
 
@@ -432,21 +517,21 @@ class Payment extends ild78\Tests\atoum
 
                     testedClass::list(['created' => $date]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchCreationFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilterException::class)
                     ->message
                         ->isIdenticalTo('Created must be in the past.')
 
                 ->exception(function () {
                     testedClass::list(['created' => 0]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchCreationFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilterException::class)
                     ->message
                         ->isIdenticalTo('Created must be a position integer or a DateTime object.')
 
                 ->exception(function () {
                     testedClass::list(['created' => uniqid()]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchCreationFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilterException::class)
                     ->message
                         ->isIdenticalTo('Created must be a position integer or a DateTime object.')
 
@@ -454,22 +539,38 @@ class Payment extends ild78\Tests\atoum
                 ->exception(function () {
                     testedClass::list(['order_id' => '']);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchOrderIdFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchOrderIdFilterException::class)
                     ->message
-                        ->isIdenticalTo('Invalid order ID.')
+                        ->isIdenticalTo('A valid order ID must be between 1 and 36 characters.')
 
                 ->exception(function () {
                     testedClass::list(['order_id' => rand(0, PHP_INT_MAX)]);
                 })
-                    ->isInstanceOf(Exceptions\InvalidSearchOrderIdFilter::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchOrderIdFilterException::class)
                     ->message
-                        ->isIdenticalTo('Invalid order ID.')
+                        ->isIdenticalTo('Order ID must be a string.')
+
+            ->assert('Invalid unique id filter')
+                ->exception(function () {
+                    testedClass::list(['unique_id' => '']);
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchUniqueIdFilterException::class)
+                    ->message
+                        ->isIdenticalTo('A valid unique ID must be between 1 and 36 characters.')
+
+                ->exception(function () {
+                    testedClass::list(['unique_id' => rand(0, PHP_INT_MAX)]);
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchUniqueIdFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Unique ID must be a string.')
 
             ->assert('Make request')
                 ->if($limit = rand(1, 100))
                 ->and($start = rand(0, PHP_INT_MAX))
                 ->and($orderId = uniqid())
                 ->and($created = time() - rand(10, 1000000))
+                ->and($uniqueId = uniqid())
 
                 ->and($location = $this->newTestedInstance->getUri())
                 ->and($terms1 = [
@@ -477,6 +578,7 @@ class Payment extends ild78\Tests\atoum
                     'limit' => $limit,
                     'start' => $start,
                     'order_id' => $orderId,
+                    'unique_id' => $uniqueId,
                 ])
                 ->and($location1 = $location . '?' . http_build_query($terms1))
 
@@ -485,6 +587,7 @@ class Payment extends ild78\Tests\atoum
                     'limit' => $limit,
                     'start' => $start + 2, // Forced in json sample
                     'order_id' => $orderId,
+                    'unique_id' => $uniqueId,
                 ])
                 ->and($location2 = $location . '?' . http_build_query($terms2))
                 ->then
@@ -576,12 +679,13 @@ class Payment extends ild78\Tests\atoum
             ->given($client = new mock\GuzzleHttp\Client)
             ->and($response = new mock\GuzzleHttp\Psr7\Response)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
 
             ->then
                 ->assert('Pay with card')
-                    ->if($card = new Card)
+                    ->if($card = new ild78\Card)
                     ->and($card->setCvc(substr(uniqid(), 0, 3)))
                     ->and($card->setExpMonth(rand(1, 12)))
                     ->and($card->setExpYear(date('Y') + rand(1, 10)))
@@ -600,7 +704,7 @@ class Payment extends ild78\Tests\atoum
                                 ->once
 
                 ->assert('Pay with SEPA')
-                    ->if($sepa = new Sepa)
+                    ->if($sepa = new ild78\Sepa)
                     ->and($sepa->setBic('DEUTDEFF')) // Thx Wikipedia
                     ->and($sepa->setIban('DE91 1000 0000 0123 4567 89')) // Thx Wikipedia
                     ->and($sepa->setName(uniqid()))
@@ -623,9 +727,13 @@ class Payment extends ild78\Tests\atoum
             ->given($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
             // Behavior modification are done in assert part to prevent confusion on multiple calls mocking
+
+            ->and($logger = new mock\ild78\Core\Logger)
+            ->and($config->setLogger($logger))
 
             ->if($body = file_get_contents(__DIR__ . '/fixtures/payment/read.json'))
             ->and($paymentData = json_decode($body, true))
@@ -639,8 +747,10 @@ class Payment extends ild78\Tests\atoum
             ->if($lastPart = $paid - $amount)
             ->and($refund2Data = json_decode($body, true))
             ->and($refund2Data['amount'] = $lastPart)
+            ->and($refund2Data['status'] = 'refunded')
 
-            ->given($this->newTestedInstance(uniqid()))
+            ->given($id = 'paym_SKMLflt8NBATuiUzgvTYqsw5') // from fixtures
+            ->and($this->newTestedInstance($id))
             ->and($tooMuch = rand($paid + 1, 9999))
             ->and($notEnough = rand(1, 49))
             ->then
@@ -654,7 +764,7 @@ class Payment extends ild78\Tests\atoum
                     ->exception(function () use ($tooMuch) {
                         $this->testedInstance->refund($tooMuch);
                     })
-                        ->isInstanceOf(Exceptions\InvalidAmountException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidAmountException::class)
                         ->message
                             ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $tooMuch / 100) . ' EUR) more than paid (34.06 EUR).')
 
@@ -662,7 +772,7 @@ class Payment extends ild78\Tests\atoum
                     ->exception(function () use ($notEnough) {
                         $this->testedInstance->refund($notEnough);
                     })
-                        ->isInstanceOf(Exceptions\InvalidAmountException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidAmountException::class)
                         ->hasNestedException
                         ->message
                             ->isIdenticalTo('Amount must be greater than or equal to 50.')
@@ -691,8 +801,27 @@ class Payment extends ild78\Tests\atoum
                         ->boolean($refunds[0]->isModified())
                             ->isFalse
 
+                        ->mock($logger)
+                            ->call('info')
+                                ->withArguments(sprintf('Refund of %.02f EUR on payment "%s"', $amount / 100, $id))
+                                    ->once
+
+                        ->mock($client)
+                            ->call('request')
+                                ->withArguments('GET', $this->testedInstance->getUri())
+                                    ->never
+
+                ->assert('We can not refund more than refundable')
+                    ->exception(function () use ($paid) {
+                        $this->testedInstance->refund($paid);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidAmountException::class)
+                        ->message
+                            ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $paid / 100) . ' EUR) more than paid (34.06 EUR with ' . sprintf('%.02f', $amount / 100) . ' EUR already refunded).')
+
                 ->assert('Without amount we will refund all')
                     ->if($this->calling($response)->getBody = json_encode($refund2Data))
+                    ->and($location = $this->testedInstance->getUri())
                     ->then
                         ->object($this->testedInstance->refund())
                             ->isTestedInstance
@@ -724,10 +853,60 @@ class Payment extends ild78\Tests\atoum
 
                         ->boolean($refunds[1]->isModified())
                             ->isFalse
+
+                        ->mock($logger)
+                            ->call('info')
+                                ->withArguments(sprintf('Refund of %.02f EUR on payment "%s"', $lastPart / 100, $id))
+                                    ->once
+
+                        ->mock($client)
+                            ->call('request')
+                                ->withArguments('GET', $location)
+                                    ->once
+
+                ->assert('We can not refund on unsent payment')
+                    ->exception(function () {
+                        $this->newTestedInstance->refund();
+                    })
+                        ->isInstanceOf(ild78\Exceptions\MissingPaymentIdException::class)
+                        ->message
+                            ->isIdenticalTo('A payment ID is mandatory. Maybe you forgot to send the payment.')
         ;
     }
 
-    public function testSave_withCard()
+    public function testSend_exceptions()
+    {
+        $this
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
+
+            ->if($client = new mock\ild78\Http\Client)
+            ->and($response = new mock\ild78\Http\Response(200))
+            ->and($this->calling($client)->request = $response)
+            ->and($config->setHttpClient($client))
+
+            ->if($this->newTestedInstance)
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->send();
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidAmountException::class)
+
+            ->if($this->testedInstance->setAmount(rand(100, 999999)))
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->send();
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidCurrencyException::class)
+
+            ->if($this->testedInstance->setCurrency($this->currencyDataProvider(true)))
+            ->then
+                ->object($this->testedInstance->send())
+                    ->isTestedInstance
+        ;
+    }
+
+    public function testSend_withCard()
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client)
@@ -735,18 +914,19 @@ class Payment extends ild78\Tests\atoum
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-card.json'))
             ->and($this->calling($response)->getBody = $body)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
 
-            ->if($card = new Card)
+            ->if($card = new ild78\Card)
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
             ->and($card->setExpMonth(rand(1, 12)))
-            ->and($card->setExpYear(rand(date('Y'), 3000)))
+            ->and($card->setExpYear(date('Y') - rand(1, 10)))
             ->and($card->setName(uniqid()))
             ->and($card->setNumber($number = '4111111111111111'))
             ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
 
-            ->if($customer = new Customer)
+            ->if($customer = new ild78\Customer)
             ->and($customer->setName(uniqid()))
             ->and($customer->setEmail(uniqid() . '@example.org'))
             ->and($customer->setMobile(uniqid()))
@@ -759,10 +939,20 @@ class Payment extends ild78\Tests\atoum
             ->and($this->testedInstance->setDescription(uniqid()))
             ->and($this->testedInstance->setOrderId(uniqid()))
 
-            ->if($logger = new mock\ild78\Api\Logger)
+            ->if($logger = new mock\ild78\Core\Logger)
             ->and($config->setLogger($logger))
             ->and($logMessage = 'Payment of 1.00 eur with mastercard "4444"')
 
+            ->and($location = $this->testedInstance->getUri())
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->send();
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidExpirationException::class)
+                    ->message
+                        ->isIdenticalTo('Card expiration is invalid.')
+
+            ->if($card->setExpYear(date('Y') + rand(1, 10)))
             ->and($json = json_encode($this->testedInstance))
             ->and($options = [
                 'body' => $json,
@@ -773,11 +963,10 @@ class Payment extends ild78\Tests\atoum
                 ],
                 'timeout' => $config->getTimeout(),
             ])
-            ->and($location = $this->testedInstance->getUri())
             ->then
                 ->variable($this->testedInstance->getId())
                     ->isNull
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
 
                 ->mock($client)
@@ -836,14 +1025,14 @@ class Payment extends ild78\Tests\atoum
                     ->isNull
 
                 ->string($card->getNumber())
-                    ->isIdenticalTo($number) // Number is unchanged in save process
+                    ->isIdenticalTo($number) // Number is unchanged in send process
 
                 ->variable($card->getZipCode())
                     ->isNull
         ;
     }
 
-    public function testSave_withSepa()
+    public function testSend_withSepa()
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client)
@@ -851,10 +1040,11 @@ class Payment extends ild78\Tests\atoum
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-sepa.json'))
             ->and($this->calling($response)->getBody = $body)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
 
-            ->if($sepa = new Sepa)
+            ->if($sepa = new ild78\Sepa)
             ->and($sepa->setBic('DEUTDEFF')) // Thx Wikipedia
             ->and($sepa->setIban('DE91 1000 0000 0123 4567 89')) // Thx Wikipedia
             ->and($sepa->setName(uniqid()))
@@ -866,7 +1056,7 @@ class Payment extends ild78\Tests\atoum
             ->and($this->testedInstance->setDescription(uniqid()))
             ->and($this->testedInstance->setOrderId(uniqid()))
 
-            ->if($logger = new mock\ild78\Api\Logger)
+            ->if($logger = new mock\ild78\Core\Logger)
             ->and($config->setLogger($logger))
             ->and($logMessage = 'Payment of 1.00 eur with IBAN "2606" / BIC "ILADFRPP"')
 
@@ -884,7 +1074,7 @@ class Payment extends ild78\Tests\atoum
             ->then
                 ->variable($this->testedInstance->getId())
                     ->isNull
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
 
                 ->mock($client)
@@ -932,13 +1122,14 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
-    public function testSave_authenticatedPayment()
+    public function testSend_authenticatedPayment()
     {
         $_SERVER['SERVER_ADDR'] = $ip = $this->ipDataProvider()[0];
         $_SERVER['SERVER_PORT'] = $port = rand(1, 65535);
 
         $this
-            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -953,7 +1144,7 @@ class Payment extends ild78\Tests\atoum
             ->and($description = uniqid())
             ->and($url = 'https://www.example.org?' . uniqid())
 
-            ->if($card = new Card)
+            ->if($card = new ild78\Card)
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
             ->and($card->setExpMonth(rand(1, 12)))
             ->and($card->setExpYear(rand(date('Y'), 3000)))
@@ -1000,7 +1191,7 @@ class Payment extends ild78\Tests\atoum
                 ->variable($this->testedInstance->getId())
                     ->isNull
 
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
 
                 ->mock($client)
@@ -1047,7 +1238,7 @@ class Payment extends ild78\Tests\atoum
                     ->isIdenticalTo('4444')
 
                 ->string($card->getNumber())
-                    ->isIdenticalTo($number) // Number is unchanged in save process
+                    ->isIdenticalTo($number) // Number is unchanged in send process
 
                 // Auth object
                 ->object($auth = $this->testedInstance->getAuth())
@@ -1074,10 +1265,11 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
-    public function testSave_fullyCustomAuthenticatedPayment()
+    public function testSend_fullyCustomAuthenticatedPayment()
     {
         $this
-            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -1147,7 +1339,7 @@ class Payment extends ild78\Tests\atoum
                 ->variable($this->testedInstance->getId())
                     ->isNull
 
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
 
                 ->mock($client)
@@ -1194,7 +1386,7 @@ class Payment extends ild78\Tests\atoum
                     ->isIdenticalTo('4444')
 
                 ->string($card->getNumber())
-                    ->isIdenticalTo($number) // Number is unchanged in save process
+                    ->isIdenticalTo($number) // Number is unchanged in send process
 
                 // Auth object
                 ->object($this->testedInstance->getAuth())
@@ -1221,10 +1413,11 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
-    public function testSave_withoutCardOrSepa()
+    public function testSend_withoutCardOrSepa()
     {
         $this
-            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -1234,7 +1427,7 @@ class Payment extends ild78\Tests\atoum
 
             ->and($config->setHttpClient($client))
 
-            ->if($customer = new Customer)
+            ->if($customer = new ild78\Customer)
             ->and($customer->setName(uniqid()))
             ->and($customer->setEmail(uniqid() . '@example.org'))
             ->and($customer->setMobile(uniqid()))
@@ -1249,7 +1442,7 @@ class Payment extends ild78\Tests\atoum
             ->and($this->testedInstance->setDescription(uniqid()))
             ->and($this->testedInstance->setOrderId(uniqid()))
 
-            ->if($logger = new mock\ild78\Api\Logger)
+            ->if($logger = new mock\ild78\Core\Logger)
             ->and($config->setLogger($logger))
             ->and($logMessage = 'Payment of 100.00 eur without payment method')
 
@@ -1267,7 +1460,7 @@ class Payment extends ild78\Tests\atoum
             ->then
                 ->variable($this->testedInstance->getId())
                     ->isNull
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
 
                 ->mock($client)
@@ -1311,10 +1504,11 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
-    public function testSave_authenticationAndPaymentPage()
+    public function testSend_authenticationAndPaymentPage()
     {
         $this
-            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -1355,7 +1549,7 @@ class Payment extends ild78\Tests\atoum
             ->then
                 ->variable($this->testedInstance->getId())
                     ->isNull
-                ->object($this->testedInstance->save())
+                ->object($this->testedInstance->send())
                     ->isTestedInstance
 
                 ->mock($client)
@@ -1405,10 +1599,11 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
-    public function testSave_status()
+    public function testSend_status()
     {
         $this
-            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
@@ -1418,7 +1613,7 @@ class Payment extends ild78\Tests\atoum
 
             ->and($config->setHttpClient($client))
 
-            ->if($customer = new Customer)
+            ->if($customer = new ild78\Customer)
             ->and($customer->setName(uniqid()))
             ->and($customer->setEmail(uniqid() . '@example.org'))
             ->and($customer->setMobile(uniqid()))
@@ -1426,7 +1621,7 @@ class Payment extends ild78\Tests\atoum
             ->if($amount = rand(100, 999999))
             ->and($currency = $this->currencyDataProvider()[0])
 
-            ->if($card = new Card)
+            ->if($card = new ild78\Card)
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
             ->and($card->setExpMonth(rand(1, 12)))
             ->and($card->setExpYear(rand(date('Y'), 3000)))
@@ -1438,7 +1633,7 @@ class Payment extends ild78\Tests\atoum
             ->and($this->testedInstance->setCustomer($customer))
             ->and($this->testedInstance->setDescription(uniqid()))
             ->and($this->testedInstance->setOrderId(uniqid()))
-            ->and($this->testedInstance->save())
+            ->and($this->testedInstance->send())
 
             ->if($status = ild78\Payment\Status::AUTHORIZE)
 
@@ -1453,7 +1648,7 @@ class Payment extends ild78\Tests\atoum
             ])
             ->and($location = $this->testedInstance->getUri())
             ->then
-                ->object($this->testedInstance->setStatus($status)->save())
+                ->object($this->testedInstance->setStatus($status)->send())
                     ->isTestedInstance
 
                 ->mock($client)
@@ -1463,10 +1658,11 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
-    public function testSave_device()
+    public function testSend_device()
     {
         $this
-            ->given($config = ild78\Api\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
             ->and($port = rand(1, 65535))
             ->and($addr = $this->ipDataProvider()[0])
             ->and($url = 'https://www.example.org?' . uniqid())
@@ -1479,7 +1675,7 @@ class Payment extends ild78\Tests\atoum
 
             ->and($config->setHttpClient($client))
 
-            ->if($card = new Card)
+            ->if($card = new ild78\Card)
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
             ->and($card->setExpMonth(rand(1, 12)))
             ->and($card->setExpYear(rand(date('Y'), 3000)))
@@ -1487,7 +1683,7 @@ class Payment extends ild78\Tests\atoum
             ->and($card->setNumber($number = '4111111111111111'))
             ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
 
-            ->if($customer = new Customer)
+            ->if($customer = new ild78\Customer)
             ->and($customer->setName(uniqid()))
             ->and($customer->setEmail(uniqid() . '@example.org'))
             ->and($customer->setMobile(uniqid()))
@@ -1519,7 +1715,7 @@ class Payment extends ild78\Tests\atoum
             ->then
                 ->assert('Must have an IP address in env')
                     ->exception(function () {
-                        $this->testedInstance->save();
+                        $this->testedInstance->send();
                     })
                         ->isInstanceOf(ild78\Exceptions\InvalidIpAddressException::class)
 
@@ -1527,7 +1723,7 @@ class Payment extends ild78\Tests\atoum
                     ->if($_SERVER['SERVER_ADDR'] = $addr)
                     ->then
                         ->exception(function () {
-                            $this->testedInstance->save();
+                            $this->testedInstance->send();
                         })
                             ->isInstanceOf(ild78\Exceptions\InvalidPortException::class)
 
@@ -1536,7 +1732,7 @@ class Payment extends ild78\Tests\atoum
                     ->then
                         ->variable($this->testedInstance->getId())
                             ->isNull
-                        ->object($this->testedInstance->save())
+                        ->object($this->testedInstance->send())
                             ->isTestedInstance
 
                         ->mock($client)
@@ -1558,7 +1754,7 @@ class Payment extends ild78\Tests\atoum
                     ->exception(function () {
                         $this->testedInstance->setAmount(0);
                     })
-                        ->isInstanceOf(Exceptions\InvalidAmountException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidAmountException::class)
                         ->hasNestedException
                         ->message
                             ->isIdenticalTo('Amount must be greater than or equal to 50.')
@@ -1570,7 +1766,7 @@ class Payment extends ild78\Tests\atoum
                     ->exception(function () {
                         $this->testedInstance->setAmount(49);
                     })
-                        ->isInstanceOf(Exceptions\InvalidAmountException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidAmountException::class)
                         ->hasNestedException
                         ->message
                             ->isIdenticalTo('Amount must be greater than or equal to 50.')
@@ -1685,6 +1881,29 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
+    public function testSetCard()
+    {
+        $this
+            ->if($card = new ild78\Card)
+            ->and($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getCard())
+                    ->isNull
+
+                ->variable($this->testedInstance->getMethod())
+                    ->isNull
+
+                ->object($this->testedInstance->setCard($card))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getCard())
+                    ->isIdenticalTo($card)
+
+                ->string($this->testedInstance->getMethod())
+                    ->isIdenticalTo('card')
+        ;
+    }
+
     /**
      * @dataProvider currencyDataProvider
      */
@@ -1734,7 +1953,7 @@ class Payment extends ild78\Tests\atoum
                     ->exception(function () use ($fakeCurrency) {
                         $this->newTestedInstance->setCurrency($fakeCurrency);
                     })
-                        ->isInstanceOf(Exceptions\InvalidCurrencyException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidCurrencyException::class)
                         ->message
                             ->contains('"' . $fakeCurrency . '" is not a valid currency')
                             ->contains('please use one of the following :')
@@ -1758,7 +1977,7 @@ class Payment extends ild78\Tests\atoum
                         ->exception(function () use ($description) {
                             $this->newTestedInstance->setDescription($description);
                         })
-                            ->isInstanceOf(Exceptions\InvalidDescriptionException::class)
+                            ->isInstanceOf(ild78\Exceptions\InvalidDescriptionException::class)
                             ->hasNestedException
                             ->message
                                 ->isIdenticalTo('A valid description must be between 3 and 64 characters.')
@@ -1790,23 +2009,46 @@ class Payment extends ild78\Tests\atoum
         }
     }
 
+    public function testSetSepa()
+    {
+        $this
+            ->if($sepa = new ild78\Sepa)
+            ->and($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getSepa())
+                    ->isNull
+
+                ->variable($this->testedInstance->getMethod())
+                    ->isNull
+
+                ->object($this->testedInstance->setSepa($sepa))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getSepa())
+                    ->isIdenticalTo($sepa)
+
+                ->string($this->testedInstance->getMethod())
+                    ->isIdenticalTo('sepa')
+        ;
+    }
+
     public function testSetOrderId()
     {
         $orderId = '';
 
-        for ($idx = 0; $idx < 30; $idx++) {
+        for ($idx = 0; $idx < 40; $idx++) {
             $length = strlen($orderId);
 
-            if ($length < 1 || $length > 24) {
+            if ($length < 1 || $length > 36) {
                 $this
                     ->assert($length . ' characters => Not valid')
                         ->exception(function () use ($orderId) {
                             $this->newTestedInstance->setOrderId($orderId);
                         })
-                            ->isInstanceOf(Exceptions\InvalidOrderIdException::class)
+                            ->isInstanceOf(ild78\Exceptions\InvalidOrderIdException::class)
                             ->hasNestedException
                             ->message
-                                ->isIdenticalTo('A valid order ID must be between 1 and 24 characters.')
+                                ->isIdenticalTo('A valid order ID must be between 1 and 36 characters.')
 
                         ->boolean($this->testedInstance->isModified())
                             ->isFalse
@@ -1832,6 +2074,54 @@ class Payment extends ild78\Tests\atoum
             }
 
             $orderId .= chr(rand(65, 90));
+        }
+    }
+
+    public function testSetUniqueId()
+    {
+        $uniqueId = '';
+
+        for ($idx = 0; $idx < 40; $idx++) {
+            $length = strlen($uniqueId);
+
+            if ($length < 1 || $length > 36) {
+                $this
+                    ->assert($length . ' characters => Not valid')
+                        ->exception(function () use ($uniqueId) {
+                            $this->newTestedInstance->setUniqueId($uniqueId);
+                        })
+                            ->isInstanceOf(ild78\Exceptions\InvalidUniqueIdException::class)
+                            ->hasNestedException
+                            ->message
+                                ->isIdenticalTo('A valid unique ID must be between 1 and 36 characters.')
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isFalse
+                ;
+            } else {
+                $this
+                    ->assert($length . ' characters => Valid')
+                        ->object($this->newTestedInstance->setUniqueId($uniqueId))
+                            ->isTestedInstance
+
+                        ->string($this->testedInstance->getUniqueId())
+                            ->isIdenticalTo($this->testedInstance->uniqueId)
+                            ->isIdenticalTo($this->testedInstance->unique_id)
+                            ->isIdenticalTo($uniqueId)
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isTrue
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->notHasKey('uniqueId')
+                            ->hasKey('unique_id')
+                            ->string['unique_id']
+                                ->isEqualTo($uniqueId)
+                ;
+            }
+
+            $uniqueId .= chr(rand(65, 90));
         }
     }
 }
