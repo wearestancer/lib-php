@@ -281,6 +281,27 @@ class Card extends ild78\Tests\atoum
         ;
     }
 
+    public function testGetNature()
+    {
+        $this
+            ->if($this->newTestedInstance)
+            ->and($value = uniqid())
+            ->then
+                ->variable($this->testedInstance->getNature())
+                    ->isNull
+
+                ->exception(function () use ($value) {
+                    $this->testedInstance->setNature($value);
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+
+            ->if($this->testedInstance->hydrate(['nature' => $value]))
+            ->then
+                ->string($this->testedInstance->getNature())
+                    ->isIdenticalTo($value)
+        ;
+    }
+
     public function testGetTokenize_SetTokenize()
     {
         $this

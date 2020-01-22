@@ -51,6 +51,10 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
             ],
             'type' => self::STRING,
         ],
+        'nature' => [
+            'restricted' => true,
+            'type' => self::STRING,
+        ],
         'number' => [
             'required' => true,
             'size' => [
