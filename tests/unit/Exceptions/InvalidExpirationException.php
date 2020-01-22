@@ -5,13 +5,12 @@ namespace ild78\tests\unit\Exceptions;
 use ild78;
 use Psr;
 
-class InvalidExpirationMonthException extends ild78\Tests\atoum
+class InvalidExpirationException extends ild78\Tests\atoum
 {
     public function testClass()
     {
         $this
             ->currentlyTestedClass
-                ->extends(ild78\Exceptions\InvalidExpirationException::class)
                 ->extends(ild78\Exceptions\InvalidArgumentException::class)
                 ->implements(ild78\Interfaces\ExceptionInterface::class)
         ;
@@ -23,7 +22,7 @@ class InvalidExpirationMonthException extends ild78\Tests\atoum
             ->if($class = $this->testedClass->getClass())
             ->then
                 ->string($class::getDefaultMessage())
-                    ->isIdenticalTo('Expiration month is invalid.')
+                    ->isIdenticalTo('Expiration is invalid.')
         ;
     }
 
