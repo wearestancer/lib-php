@@ -435,6 +435,15 @@ class Payment extends ild78\Core\AbstractObject
 
         ild78\Config::getGlobal()->getLogger()->info($message);
 
+        if ($refund->getStatus() !== ild78\Refund\Status::TO_REFUND) {
+            $this->populated = false;
+            $this->populate();
+
+            foreach ($this->getRefunds() as $ref) {
+                $ref->setPayment($this);
+            }
+        }
+
         return $this;
     }
 

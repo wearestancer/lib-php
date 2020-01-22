@@ -4,5 +4,6 @@
   "currency": "eur",
   "id": "refd_J0r3rHzPaaXU2lBLkDFxpqpw",
   "live_mode": false,
-  "id_payment": "paym_SKMLflt8NBATuiUzgvTYqsw5"
+  "status": "to_refund",
+  "payment": "paym_SKMLflt8NBATuiUzgvTYqsw5"
 }

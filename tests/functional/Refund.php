@@ -32,6 +32,9 @@ class Refund extends TestCase
             ->and($payment->send())
             ->if($this->newTestedInstance) // Needed to use "isInstanceOfTestedClass" asserter
             ->then
+                ->string($payment->getStatus())
+                    ->isIdenticalTo(ild78\Payment\Status::TO_CAPTURE)
+
                 ->object($payment->refund())
                     ->isIdenticalTo($payment)
 
@@ -49,6 +52,12 @@ class Refund extends TestCase
 
                 ->object($refund->getPayment())
                     ->isIdenticalTo($payment)
+
+                ->string($refund->getStatus())
+                    ->isIdenticalTo(ild78\Refund\Status::REFUNDED)
+
+                ->string($payment->getStatus())
+                    ->isIdenticalTo(ild78\Payment\Status::CANCELED)
         ;
     }
 
