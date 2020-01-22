@@ -441,6 +441,7 @@ class Payment extends ild78\Core\AbstractObject
 
             foreach ($this->getRefunds() as $ref) {
                 $ref->setPayment($this);
+                $ref->modified = [];
             }
         }
 

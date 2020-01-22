@@ -747,6 +747,7 @@ class Payment extends ild78\Tests\atoum
             ->if($lastPart = $paid - $amount)
             ->and($refund2Data = json_decode($body, true))
             ->and($refund2Data['amount'] = $lastPart)
+            ->and($refund2Data['status'] = 'refunded')
 
             ->given($id = 'paym_SKMLflt8NBATuiUzgvTYqsw5') // from fixtures
             ->and($this->newTestedInstance($id))
@@ -805,6 +806,11 @@ class Payment extends ild78\Tests\atoum
                                 ->withArguments(sprintf('Refund of %.02f EUR on payment "%s"', $amount / 100, $id))
                                     ->once
 
+                        ->mock($client)
+                            ->call('request')
+                                ->withArguments('GET', $this->testedInstance->getUri())
+                                    ->never
+
                 ->assert('We can not refund more than refundable')
                     ->exception(function () use ($paid) {
                         $this->testedInstance->refund($paid);
@@ -815,6 +821,7 @@ class Payment extends ild78\Tests\atoum
 
                 ->assert('Without amount we will refund all')
                     ->if($this->calling($response)->getBody = json_encode($refund2Data))
+                    ->and($location = $this->testedInstance->getUri())
                     ->then
                         ->object($this->testedInstance->refund())
                             ->isTestedInstance
@@ -850,6 +857,11 @@ class Payment extends ild78\Tests\atoum
                         ->mock($logger)
                             ->call('info')
                                 ->withArguments(sprintf('Refund of %.02f EUR on payment "%s"', $lastPart / 100, $id))
+                                    ->once
+
+                        ->mock($client)
+                            ->call('request')
+                                ->withArguments('GET', $location)
                                     ->once
 
                 ->assert('We can not refund on unsent payment')
