@@ -909,7 +909,7 @@ class Payment extends ild78\Tests\atoum
             ->if($card = new ild78\Card)
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
             ->and($card->setExpMonth(rand(1, 12)))
-            ->and($card->setExpYear(rand(date('Y'), 3000)))
+            ->and($card->setExpYear(date('Y') - rand(1, 10)))
             ->and($card->setName(uniqid()))
             ->and($card->setNumber($number = '4111111111111111'))
             ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
@@ -931,6 +931,16 @@ class Payment extends ild78\Tests\atoum
             ->and($config->setLogger($logger))
             ->and($logMessage = 'Payment of 1.00 eur with mastercard "4444"')
 
+            ->and($location = $this->testedInstance->getUri())
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->send();
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidExpirationException::class)
+                    ->message
+                        ->isIdenticalTo('Card expiration is invalid.')
+
+            ->if($card->setExpYear(date('Y') + rand(1, 10)))
             ->and($json = json_encode($this->testedInstance))
             ->and($options = [
                 'body' => $json,
@@ -941,7 +951,6 @@ class Payment extends ild78\Tests\atoum
                 ],
                 'timeout' => $config->getTimeout(),
             ])
-            ->and($location = $this->testedInstance->getUri())
             ->then
                 ->variable($this->testedInstance->getId())
                     ->isNull

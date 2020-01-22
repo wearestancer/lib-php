@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace ild78;
 
+use DateTime;
 use Generator;
 use ild78;
 
@@ -448,6 +449,7 @@ class Payment extends ild78\Core\AbstractObject
      *   was asked and an error occur during device creation.
      * @throws ild78\Exceptions\InvalidPortException When no device was already given, authenticated payment
      *   was asked and an error occur during device creation.
+     * @throws ild78\Exceptions\InvalidExpirationException When card's expiration is invalid.
      */
     public function send(): ild78\Core\AbstractObject
     {
@@ -479,6 +481,15 @@ class Payment extends ild78\Core\AbstractObject
                 if ($mandatoryDevice) {
                     throw $exception;
                 }
+            }
+        }
+
+        if ($card && !$card->getId()) {
+            $expiration = $card->getExpirationDate();
+            $now = new DateTime();
+
+            if ($expiration < $now) {
+                throw new ild78\Exceptions\InvalidExpirationException('Card expiration is invalid.');
             }
         }
 
