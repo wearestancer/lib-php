@@ -234,6 +234,27 @@ class Card extends ild78\Tests\atoum
         }
     }
 
+    public function testGetFunding()
+    {
+        $this
+            ->if($this->newTestedInstance)
+            ->and($value = uniqid())
+            ->then
+                ->variable($this->testedInstance->getFunding())
+                    ->isNull
+
+                ->exception(function () use ($value) {
+                    $this->testedInstance->setFunding($value);
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+
+            ->if($this->testedInstance->hydrate(['funding' => $value]))
+            ->then
+                ->string($this->testedInstance->getFunding())
+                    ->isIdenticalTo($value)
+        ;
+    }
+
     public function testGetName_SetName()
     {
         $this
