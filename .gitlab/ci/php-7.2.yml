@@ -3,17 +3,22 @@
   variables:
     PHP_VERSION: '7.2'
 
-atoum:PHP7.2:
+atoum PHP 7.2:
   extends:
     - .atoum
     - .php7.2
 
-lint:PHP7.2:
+lint PHP 7.2:
   extends:
     - .lint
     - .php7.2
 
-coverage-check:PHP 7.2:
+coverage-check PHP 7.2:
   extends:
     - .coverage-check
+    - .php7.2
+
+coverage-update PHP 7.2:
+  extends:
+    - .coverage-update
     - .php7.2
