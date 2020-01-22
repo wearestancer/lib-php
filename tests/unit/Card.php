@@ -302,6 +302,27 @@ class Card extends ild78\Tests\atoum
         ;
     }
 
+    public function testGetNetwork()
+    {
+        $this
+            ->if($this->newTestedInstance)
+            ->and($value = uniqid())
+            ->then
+                ->variable($this->testedInstance->getNetwork())
+                    ->isNull
+
+                ->exception(function () use ($value) {
+                    $this->testedInstance->setNetwork($value);
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+
+            ->if($this->testedInstance->hydrate(['network' => $value]))
+            ->then
+                ->string($this->testedInstance->getNetwork())
+                    ->isIdenticalTo($value)
+        ;
+    }
+
     public function testGetTokenize_SetTokenize()
     {
         $this
