@@ -18,9 +18,6 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
             'restricted' => true,
             'type' => self::STRING,
         ],
-        'capture' => [
-            'type' => self::BOOLEAN,
-        ],
         'country' => [
             'type' => self::STRING,
         ],
