@@ -77,7 +77,7 @@ class Refund extends TestCase
             ->and($payment->setDescription(sprintf('Refund test, %.02f %s', $total / 100, $currency)))
             ->and($payment->setCurrency($currency))
             ->and($payment->setCard($card = new ild78\Card))
-            ->and($card->setNumber($this->getValidCardNumber()))
+            ->and($card->setNumber('4000000000000077'))
             ->and($card->setExpirationMonth(rand(1, 12)))
             ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
             ->and($card->setCvc((string) rand(100, 999)))
@@ -107,6 +107,9 @@ class Refund extends TestCase
                     ->object($refund1->getPayment())
                         ->isIdenticalTo($payment)
 
+                    ->string($refund1->getStatus())
+                        ->isIdenticalTo(ild78\Refund\Status::TO_REFUND)
+
                 ->assert('Second refund')
                     ->object($payment->refund($amount2))
                         ->isIdenticalTo($payment)
@@ -129,6 +132,9 @@ class Refund extends TestCase
 
                     ->object($refund2->getPayment())
                         ->isIdenticalTo($payment)
+
+                    ->string($refund2->getStatus())
+                        ->isIdenticalTo(ild78\Refund\Status::TO_REFUND)
 
                 ->assert('Without amount, we are going to full refund')
                     ->object($payment->refund())
@@ -156,6 +162,9 @@ class Refund extends TestCase
 
                     ->object($refund3->getPayment())
                         ->isIdenticalTo($payment)
+
+                    ->string($refund3->getStatus())
+                        ->isIdenticalTo(ild78\Refund\Status::TO_REFUND)
         ;
     }
 }
