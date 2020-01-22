@@ -12,6 +12,9 @@ use ild78;
  */
 class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\PaymentMeansInterface
 {
+    /** @var string */
+    protected $endpoint = 'cards';
+
     /** @var array */
     protected $dataModel = [
         'brand' => [

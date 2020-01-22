@@ -62,6 +62,16 @@ class Card extends ild78\Tests\atoum
         ;
     }
 
+    public function testGetEndpoint()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->string($this->testedInstance->getEndpoint())
+                    ->isIdenticalTo('cards')
+        ;
+    }
+
     public function testGetExpDate()
     {
         $this
