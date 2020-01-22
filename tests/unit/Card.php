@@ -164,7 +164,7 @@ class Card extends ild78\Tests\atoum
     {
         $currentYear = (int) date('Y');
 
-        for ($year = $currentYear; $year < $currentYear + 20; $year++) {
+        for ($year = $currentYear - 50; $year < $currentYear + 25; $year++) {
             $this
                 ->assert('Test year ' . $year)
                     ->given($this->newTestedInstance)
@@ -207,23 +207,6 @@ class Card extends ild78\Tests\atoum
                             ->hasKey('exp_year')
                             ->integer['exp_year']
                                 ->isEqualTo($year)
-            ;
-        }
-
-        for ($year = $currentYear - 10; $year < $currentYear; $year++) {
-            $this
-                ->assert('Test year ' . $year)
-                    ->given($this->newTestedInstance)
-                    ->then
-                        ->exception(function () use ($year) {
-                            $this->testedInstance->setExpYear($year);
-                        })
-                            ->isInstanceOf(ild78\Exceptions\InvalidExpirationYearException::class)
-                            ->message
-                                ->isIdenticalTo('Invalid expiration year "' . $year . '"')
-
-                        ->boolean($this->testedInstance->isModified())
-                            ->isFalse
             ;
         }
     }
