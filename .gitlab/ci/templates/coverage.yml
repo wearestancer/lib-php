@@ -1,8 +1,17 @@
 
-.coverage-check:
-  extends: .bases
-
+.coverage-bases:
   stage: coverage
+
+  cache:
+    key: "$PHP_VERSION"
+    paths:
+      - coverage
+
+
+.coverage-check:
+  extends:
+    - .bases
+    - .coverage-bases
 
   script:
     - echo '0' >> coverage
@@ -12,10 +21,21 @@
     - if [ "$coverage" -lt $saved ]; then exit 1; fi
 
   cache:
-    key: "$PHP_VERSION"
-    paths:
-      - coverage
+    policy: pull
 
   except:
     - tags
+    - develop
     - master
+
+
+.coverage-update:
+  extends:
+    - .bases
+    - .coverage-bases
+
+  script:
+    - ./vendor/bin/atoum | grep '> Code coverage value:' | sed -E -e 's/\%$//' | awk -F':' '{ print $2 * 100 }' > coverage
+
+  only:
+    - develop

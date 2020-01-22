@@ -17,3 +17,8 @@ coverage-check PHP 7.1:
   extends:
     - .coverage-check
     - .php7.1
+
+coverage-update PHP 7.1:
+  extends:
+    - .coverage-update
+    - .php7.1

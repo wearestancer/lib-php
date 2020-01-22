@@ -2,5 +2,5 @@
 include:
   - local: .gitlab/ci/templates/atoum.yml
   - local: .gitlab/ci/templates/bases.yml
-  - local: .gitlab/ci/templates/coverage-check.yml
+  - local: .gitlab/ci/templates/coverage.yml
   - local: .gitlab/ci/templates/lint.yml
