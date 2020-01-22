@@ -15,4 +15,35 @@ class atoum extends \atoum\test
 
         $this->getAsserterGenerator()->addNamespace('ild78\Tests\asserters');
     }
+
+    public function getRandomNumber()
+    {
+        // Simulate a french mobile phone number
+        $first = rand(0, 1) + 6;
+        $loop = 4;
+
+        $number = '+33' . $first;
+
+        if ($first === 7) {
+            $number .= str_pad(rand(30, 99), 2, '0');
+            $loop--;
+        }
+
+        for ($idx = 0; $idx < $loop; $idx++) {
+            $number .= str_pad(rand(0, 99), 2, '0');
+        }
+
+        return $number;
+    }
+
+    public function getRandomString($min, $max = null)
+    {
+        if (!$max) {
+            $max = $min;
+        }
+
+        $len = random_int($min, $max);
+
+        return bin2hex(random_bytes($len / 2));
+    }
 }

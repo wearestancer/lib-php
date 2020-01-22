@@ -22,6 +22,29 @@ class Card extends ild78\Tests\atoum
     /**
      * @dataProvider brandDataProvider
      */
+    public function testGetBrand($tag, $name)
+    {
+        $this
+            ->if($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getBrand())
+                    ->isNull
+
+                ->exception(function () use ($tag) {
+                    $this->testedInstance->setBrand($tag);
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+
+            ->if($this->testedInstance->hydrate(['brand' => $tag]))
+            ->then
+                ->string($this->testedInstance->getBrand())
+                    ->isIdenticalTo($tag)
+        ;
+    }
+
+    /**
+     * @dataProvider brandDataProvider
+     */
     public function testGetBrandName($tag, $name)
     {
         $this
@@ -211,6 +234,32 @@ class Card extends ild78\Tests\atoum
         }
     }
 
+    public function testGetName_SetName()
+    {
+        $this
+            ->if($this->newTestedInstance)
+            ->and($name = $this->getRandomString(4, 64))
+            ->then
+                ->variable($this->testedInstance->getName())
+                    ->isNull
+
+                ->object($this->testedInstance->setName($name))
+                    ->isTestedInstance
+
+                ->string($this->testedInstance->getName())
+                    ->isIdenticalTo($name)
+
+                ->boolean($this->testedInstance->isModified())
+                    ->isTrue
+
+                ->array($this->testedInstance->jsonSerialize())
+                    ->hasSize(1)
+                    ->hasKey('name')
+                    ->string['name']
+                        ->isEqualTo($name)
+        ;
+    }
+
     public function testGetTokenize_SetTokenize()
     {
         $this
@@ -268,6 +317,32 @@ class Card extends ild78\Tests\atoum
                         ->isIdenticalTo($this->testedInstance->tokenize)
                         ->isIdenticalTo($this->testedInstance->isTokenized())
                         ->isIdenticalTo($this->testedInstance->isTokenized)
+        ;
+    }
+
+    public function testGetZipCode_SetZipCode()
+    {
+        $this
+            ->if($this->newTestedInstance)
+            ->and($zip = $this->getRandomString(2, 8))
+            ->then
+                ->variable($this->testedInstance->getZipCode())
+                    ->isNull
+
+                ->object($this->testedInstance->setZipCode($zip))
+                    ->isTestedInstance
+
+                ->string($this->testedInstance->getZipCode())
+                    ->isIdenticalTo($zip)
+
+                ->boolean($this->testedInstance->isModified())
+                    ->isTrue
+
+                ->array($this->testedInstance->jsonSerialize())
+                    ->hasSize(1)
+                    ->hasKey('zip_code')
+                    ->string['zip_code']
+                        ->isEqualTo($zip)
         ;
     }
 
