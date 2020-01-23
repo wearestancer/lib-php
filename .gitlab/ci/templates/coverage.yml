@@ -35,7 +35,7 @@
     - .coverage-bases
 
   script:
-    - ./vendor/bin/atoum | grep '> Code coverage value:' | sed -E -e 's/\%$//' | awk -F':' '{ print $2 * 100 }' > coverage
+    - ./vendor/bin/atoum | grep '> Code coverage value:' | sed -E -e 's/\%$//' | awk -F':' '{ print $2 * 100 }' | tee coverage
 
   only:
     - develop
