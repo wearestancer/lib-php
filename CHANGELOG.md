@@ -10,6 +10,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - 3DS support
 - Refunds
 - Disputes
+- New `ild78\Card::$funding`, `ild78\Card::$nature` and `ild78\Card::$network` attributes
+- `ild78\Card` can be sent, retrieved or deleted to the API
 - Add `Device` on every payment
 - Allow payment without card or sepa
 - Add `ild78\Payment::getReturnUrl()` and `ild78\Payment::setReturnUrl()` methods
