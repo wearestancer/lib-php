@@ -482,7 +482,7 @@ class Payment extends ild78\Core\AbstractObject
 
             try {
                 $device = new ild78\Device();
-                $this->setDevice($device);
+                $this->setDevice($device->hydrateFromEnvironment());
             } catch (ild78\Exceptions\InvalidIpAddressException $exception) {
                 if ($mandatoryDevice) {
                     throw $exception;
