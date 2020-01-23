@@ -91,6 +91,70 @@ class Card extends TestCase
                         ->message
                             ->isIdenticalTo('Card already exists, you may want to update it instead creating a new one (' . $id . ')')
 
+            ->assert('Update')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->variable($this->testedInstance->getName())
+                        ->isNull
+
+                    ->object($this->testedInstance->setName($name)->send())
+                        ->isTestedInstance
+
+                    ->string($this->newTestedInstance($id)->getName())
+                        ->isIdenticalTo($name)
+
+            ->assert('Read data / Name')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->string($this->testedInstance->getName())
+                        ->isIdenticalTo($name)
+
+            ->assert('Read data / Expiration month')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->integer($this->testedInstance->getExpMonth())
+                        ->isIdenticalTo($month)
+
+            ->assert('Read data / Expiration year')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->integer($this->testedInstance->getExpYear())
+                        ->isIdenticalTo($year)
+
+            ->assert('Read data / Other field')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    // Could not be return by the API
+                    ->variable($this->testedInstance->getCvc())
+                        ->isNull
+
+                    // Could not be return by the API
+                    ->variable($this->testedInstance->getNumber())
+                        ->isNull
+
+                    // We could not validate the value
+                    ->string($this->testedInstance->getFunding())
+                    ->string($this->testedInstance->getNature())
+                    ->string($this->testedInstance->getNetwork())
+
+            ->assert('Delete card')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->object($this->testedInstance->delete())
+                        ->isTestedInstance
+
+                    ->variable($this->testedInstance->getId())
+                        ->isNull
+
+            ->assert('No more data')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->exception(function () {
+                        $this->testedInstance->getName();
+                    })
+                        ->isInstanceOf(ild78\Exceptions\NotFoundException::class)
+                        ->message
+                            ->isIdenticalTo('No such card ' . $id)
         ;
     }
 }
