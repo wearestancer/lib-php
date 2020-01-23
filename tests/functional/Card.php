@@ -53,7 +53,7 @@ class Card extends TestCase
         ;
     }
 
-    public function testSend()
+    public function testCrud()
     {
         $this
             ->given($cvc = random_int(100, 999))
@@ -64,17 +64,33 @@ class Card extends TestCase
             ->and($month = random_int(1, 12))
             ->and($year = date('Y') + random_int(20, 30))
 
-            ->if($this->newTestedInstance)
-            ->and($this->testedInstance->setCvc($cvc))
-            ->and($this->testedInstance->setExpMonth($month))
-            ->and($this->testedInstance->setExpYear($year))
-            ->and($this->testedInstance->setNumber($number))
-            ->then
-                ->object($this->testedInstance->send())
-                    ->isTestedInstance
+            ->assert('Create card')
+                ->if($this->newTestedInstance)
+                ->and($this->testedInstance->setCvc($cvc))
+                ->and($this->testedInstance->setExpMonth($month))
+                ->and($this->testedInstance->setExpYear($year))
+                ->and($this->testedInstance->setNumber($number))
+                ->then
+                    ->object($this->testedInstance->send())
+                        ->isTestedInstance
 
-                ->string($this->testedInstance->getId())
-                    ->startWith('card_')
+                    ->string($id = $this->testedInstance->getId())
+                        ->startWith('card_')
+
+            ->assert('No duplication allowed')
+                ->if($this->newTestedInstance)
+                ->and($this->testedInstance->setCvc($cvc))
+                ->and($this->testedInstance->setExpMonth($month))
+                ->and($this->testedInstance->setExpYear($year))
+                ->and($this->testedInstance->setNumber($number))
+                ->then
+                    ->exception(function () {
+                        $this->testedInstance->send();
+                    })
+                        ->isInstanceOf(ild78\Exceptions\ConflictException::class)
+                        ->message
+                            ->isIdenticalTo('Card already exists, you may want to update it instead creating a new one (' . $id . ')')
+
         ;
     }
 }
