@@ -53,6 +53,46 @@ class Device extends ild78\Core\AbstractObject
     ];
 
     /**
+     * Hydrate from environment
+     *
+     * @return self
+     * @throws ild78\Exceptions\InvalidIpAddressException When no IP address was given.
+     * @throws ild78\Exceptions\InvalidPortException When no port was given.
+     */
+    public function hydrateFromEnvironment()
+    {
+        if (!$this->getHttpAccept() && array_key_exists('HTTP_ACCEPT', $_SERVER)) {
+            $this->setHttpAccept($_SERVER['HTTP_ACCEPT']);
+        }
+
+        if (!$this->getLanguages() && array_key_exists('HTTP_ACCEPT_LANGUAGE', $_SERVER)) {
+            $this->setLanguages($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+        }
+
+        if (!$this->getIp() && array_key_exists('SERVER_ADDR', $_SERVER)) {
+            $this->setIp($_SERVER['SERVER_ADDR']);
+        }
+
+        if (!$this->getPort() && array_key_exists('SERVER_PORT', $_SERVER)) {
+            $this->setPort($_SERVER['SERVER_PORT']);
+        }
+
+        if (!$this->getUserAgent() && array_key_exists('HTTP_USER_AGENT', $_SERVER)) {
+            $this->setUserAgent($_SERVER['HTTP_USER_AGENT']);
+        }
+
+        if (!$this->getIp()) {
+            throw new ild78\Exceptions\InvalidIpAddressException('You must provide an IP address.');
+        }
+
+        if (!$this->getPort()) {
+            throw new ild78\Exceptions\InvalidPortException('You must provide a port.');
+        }
+
+        return $this;
+    }
+
+    /**
      * Update customer's IP address
      *
      * We allow IPv4 and IPv6 addresses.

@@ -216,4 +216,90 @@ class Device extends ild78\Tests\atoum
                         ->isIdenticalTo($agent)
         ;
     }
+
+    public function testHydrateFromEnvironment()
+    {
+        $this
+            ->given($accept = uniqid())
+            ->and($agent = uniqid())
+            ->and($ip = rand(1, 254) . '.' . rand(1, 254) . '.' . rand(1, 254) . '.' . rand(1, 254))
+            ->and($languages = uniqid())
+            ->and($port = rand(1, 65535))
+
+            ->and($_SERVER['HTTP_ACCEPT'] = $accept)
+            ->and($_SERVER['HTTP_ACCEPT_LANGUAGE'] = $languages)
+            ->and($_SERVER['HTTP_USER_AGENT'] = $agent)
+
+            ->assert('No IP')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->exception(function () {
+                        $this->testedInstance->hydrateFromEnvironment();
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidIpAddressException::class)
+                        ->message
+                            ->isIdenticalTo('You must provide an IP address.')
+
+            ->assert('No port')
+                ->if($this->newTestedInstance)
+                ->and($_SERVER['SERVER_ADDR'] = $ip)
+                ->then
+                    ->exception(function () {
+                        $this->testedInstance->hydrateFromEnvironment();
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidPortException::class)
+                        ->message
+                            ->isIdenticalTo('You must provide a port.')
+
+            ->assert('Got IP and port')
+                ->if($this->newTestedInstance)
+                ->and($_SERVER['SERVER_ADDR'] = $ip)
+                ->and($_SERVER['SERVER_PORT'] = $port)
+                ->then
+                    ->variable($this->testedInstance->getCity())
+                        ->isNull
+
+                    ->variable($this->testedInstance->getCountry())
+                        ->isNull
+
+                    ->variable($this->testedInstance->getHttpAccept())
+                        ->isNull
+
+                    ->variable($this->testedInstance->getIp())
+                        ->isNull
+
+                    ->variable($this->testedInstance->getLanguages())
+                        ->isNull
+
+                    ->variable($this->testedInstance->getPort())
+                        ->isNull
+
+                    ->variable($this->testedInstance->getUserAgent())
+                        ->isNull
+
+                    ->object($this->testedInstance->hydrateFromEnvironment())
+                        ->isTestedInstance
+
+                    ->variable($this->testedInstance->getCity())
+                        ->isNull
+
+                    ->variable($this->testedInstance->getCountry())
+                        ->isNull
+
+                    ->string($this->testedInstance->getHttpAccept())
+                        ->isIdenticalTo($accept)
+
+                    ->string($this->testedInstance->getIp())
+                        ->isIdenticalTo($ip)
+
+                    ->string($this->testedInstance->getLanguages())
+                        ->isIdenticalTo($languages)
+
+                    ->integer($this->testedInstance->getPort())
+                        ->isIdenticalTo($port)
+
+                    ->string($this->testedInstance->getUserAgent())
+                        ->isIdenticalTo($agent)
+        ;
+    }
 }
