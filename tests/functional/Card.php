@@ -52,4 +52,29 @@ class Card extends TestCase
                         ->isEqualTo(new DateTime('@1579024205'))
         ;
     }
+
+    public function testSend()
+    {
+        $this
+            ->given($cvc = random_int(100, 999))
+            ->and($name = $this->getRandomString(10))
+            ->and($number = $this->getValidCardNumber())
+            ->and($last4 = substr($number, -4))
+
+            ->and($month = random_int(1, 12))
+            ->and($year = date('Y') + random_int(20, 30))
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setCvc($cvc))
+            ->and($this->testedInstance->setExpMonth($month))
+            ->and($this->testedInstance->setExpYear($year))
+            ->and($this->testedInstance->setNumber($number))
+            ->then
+                ->object($this->testedInstance->send())
+                    ->isTestedInstance
+
+                ->string($this->testedInstance->getId())
+                    ->startWith('card_')
+        ;
+    }
 }
