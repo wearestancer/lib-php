@@ -12,6 +12,9 @@ use ild78;
  */
 class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\PaymentMeansInterface
 {
+    /** @var string */
+    protected $endpoint = 'cards';
+
     /** @var array */
     protected $dataModel = [
         'brand' => [
@@ -36,6 +39,10 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
             'required' => true,
             'type' => self::INTEGER,
         ],
+        'funding' => [
+            'restricted' => true,
+            'type' => self::STRING,
+        ],
         'last4' => [
             'restricted' => true,
             'type' => self::STRING,
@@ -45,6 +52,14 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
                 'min' => 4,
                 'max' => 64,
             ],
+            'type' => self::STRING,
+        ],
+        'nature' => [
+            'restricted' => true,
+            'type' => self::STRING,
+        ],
+        'network' => [
+            'restricted' => true,
             'type' => self::STRING,
         ],
         'number' => [
