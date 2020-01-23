@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changes
 - `ild78\Payment::$status` is now editable
+- No automatic hydratation on `ild78\Device->new()`
 - Getters and setters handles snake_case and camelCase property correctly
 - Exception message will return API error message when possible
 - `Config` handle multiple keys
