@@ -53,33 +53,6 @@ class Device extends ild78\Core\AbstractObject
     ];
 
     /**
-     * Create a new device
-     *
-     * @param array $data Data for instant hydratation.
-     * @return self
-     * @throws ild78\Exceptions\InvalidIpAddressException When no IP address was given.
-     * @throws ild78\Exceptions\InvalidPortException When no port was given.
-     */
-    public function __construct(array $data = [])
-    {
-        $data['http_accept'] = $data['http_accept'] ?? $_SERVER['HTTP_ACCEPT'] ?? null;
-        $data['languages'] = $data['languages'] ?? $_SERVER['HTTP_ACCEPT_LANGUAGE'] ?? null;
-        $data['ip'] = $data['ip'] ?? $_SERVER['SERVER_ADDR'] ?? null;
-        $data['port'] = $data['port'] ?? $_SERVER['SERVER_PORT'] ?? 0;
-        $data['user_agent'] = $data['user_agent'] ?? $_SERVER['HTTP_USER_AGENT'] ?? null;
-
-        if (!$data['ip']) {
-            throw new ild78\Exceptions\InvalidIpAddressException('You must provide an IP address.');
-        }
-
-        if (!$data['port']) {
-            throw new ild78\Exceptions\InvalidPortException('You must provide a port.');
-        }
-
-        parent::__construct($data);
-    }
-
-    /**
      * Update customer's IP address
      *
      * We allow IPv4 and IPv6 addresses.
