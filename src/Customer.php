@@ -26,6 +26,12 @@ class Customer extends ild78\Core\AbstractObject
             ],
             'type' => self::STRING,
         ],
+        'externalId' => [
+            'size' => [
+                'max' => 36,
+            ],
+            'type' => self::STRING,
+        ],
         'mobile' => [
             'size' => [
                 'min' => 8,
@@ -74,6 +80,22 @@ class Customer extends ild78\Core\AbstractObject
             return parent::setEmail($email);
         } catch (ild78\Exceptions\InvalidArgumentException $excep) {
             throw new ild78\Exceptions\InvalidEmailException($excep->getMessage(), $excep->getCode(), $excep);
+        }
+    }
+
+    /**
+     * Update customer's external id
+     *
+     * @param string $externalId New external ID.
+     * @return self
+     * @throws ild78\Exceptions\InvalidExternalIdException When the external ID is invalid.
+     */
+    public function setExternalId(string $externalId): self
+    {
+        try {
+            return parent::setExternalId($externalId);
+        } catch (ild78\Exceptions\InvalidArgumentException $excep) {
+            throw new ild78\Exceptions\InvalidExternalIdException($excep->getMessage(), $excep->getCode(), $excep);
         }
     }
 
