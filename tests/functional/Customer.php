@@ -58,6 +58,9 @@ class Customer extends TestCase
 
                     ->string($this->testedInstance->getMobile())
                         ->isIdenticalTo('+33666172730') // Random generated number
+
+                    ->string($this->testedInstance->getExternalId())
+                        ->isIdenticalTo('6d378a8b-0849-4ab6-96a7-c107bd613852')
         ;
     }
 
