@@ -101,6 +101,35 @@ class Customer extends TestCase
                         ->message
                             ->isIdenticalTo('Customer already exists, you may want to update it instead creating a new one (' . $id . ')')
 
+            ->assert('External ID are used in conflicts resolver')
+                ->given($externalId = Uuid::uuid4()->toString())
+
+                ->if($this->newTestedInstance)
+                ->and($this->testedInstance->setName($name))
+                ->and($this->testedInstance->setEmail($email))
+                ->and($this->testedInstance->setMobile($mobile))
+                ->and($this->testedInstance->setExternalId($externalId))
+                ->then
+                    ->object($this->testedInstance->send())
+                        ->isTestedInstance
+
+                    ->string($withUuid = $this->testedInstance->getId())
+                        ->startWith('cust_')
+                        ->isNotEqualTo($id)
+
+                ->if($this->newTestedInstance)
+                ->and($this->testedInstance->setName($name))
+                ->and($this->testedInstance->setEmail($email))
+                ->and($this->testedInstance->setMobile($mobile))
+                ->and($this->testedInstance->setExternalId($externalId))
+                ->then
+                    ->exception(function () {
+                        $this->testedInstance->send();
+                    })
+                        ->isInstanceOf(ild78\Exceptions\ConflictException::class)
+                        ->message
+                            ->isIdenticalTo('Customer already exists, you may want to update it instead creating a new one (' . $withUuid . ')')
+
             ->assert('Only email is good')
                 ->given($this->newTestedInstance)
                 ->and($key = uniqid())
