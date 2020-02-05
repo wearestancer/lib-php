@@ -54,7 +54,7 @@ class Refund extends TestCase
                     ->isIdenticalTo($payment)
 
                 ->string($refund->getStatus())
-                    ->isIdenticalTo(ild78\Refund\Status::REFUNDED)
+                    ->isIdenticalTo(ild78\Refund\Status::PAYMENT_CANCELED)
 
                 ->string($payment->getStatus())
                     ->isIdenticalTo(ild78\Payment\Status::CANCELED)
