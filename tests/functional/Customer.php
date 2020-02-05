@@ -3,6 +3,7 @@
 namespace ild78\Tests\functional;
 
 use ild78;
+use Ramsey\Uuid\Uuid;
 
 /**
  * @namespace \Tests\functional
@@ -142,6 +143,7 @@ class Customer extends TestCase
             ->and($newName = 'John Doe (' . $rand . ')')
             ->and($newEmail = 'john.doe+' . $rand . '@example.com')
             ->and($newMobile = $this->getRandomNumber())
+            ->and($newExternalId = Uuid::uuid4()->toString())
             ->then
                 ->assert('Change name')
                     ->object($this->testedInstance->setName($newName)->send())
@@ -163,6 +165,13 @@ class Customer extends TestCase
 
                     ->string($this->newTestedInstance($id)->getMobile())
                         ->isIdenticalTo($newMobile)
+
+                ->assert('Change external ID')
+                    ->object($this->testedInstance->setExternalId($newExternalId)->send())
+                        ->isTestedInstance
+
+                    ->string($this->newTestedInstance($id)->getExternalId())
+                        ->isIdenticalTo($newExternalId)
         ;
     }
 }
