@@ -3,7 +3,6 @@
 namespace ild78\Tests\functional;
 
 use ild78;
-use Ramsey\Uuid\Uuid;
 
 /**
  * @namespace \Tests\functional
@@ -102,7 +101,7 @@ class Customer extends TestCase
                             ->isIdenticalTo('Customer already exists, you may want to update it instead creating a new one (' . $id . ')')
 
             ->assert('External ID are used in conflicts resolver')
-                ->given($externalId = Uuid::uuid4()->toString())
+                ->given($externalId = $this->getUuid())
 
                 ->if($this->newTestedInstance)
                 ->and($this->testedInstance->setName($name))
@@ -172,7 +171,7 @@ class Customer extends TestCase
             ->and($newName = 'John Doe (' . $rand . ')')
             ->and($newEmail = 'john.doe+' . $rand . '@example.com')
             ->and($newMobile = $this->getRandomNumber())
-            ->and($newExternalId = Uuid::uuid4()->toString())
+            ->and($newExternalId = $this->getUuid())
             ->then
                 ->assert('Change name')
                     ->object($this->testedInstance->setName($newName)->send())

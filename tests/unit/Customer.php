@@ -10,7 +10,6 @@ use GuzzleHttp\Psr7\Response;
 use ild78;
 use ild78\Customer as testedClass;
 use mock;
-use Ramsey\Uuid\Uuid;
 
 class Customer extends ild78\Tests\atoum
 {
@@ -264,8 +263,8 @@ class Customer extends ild78\Tests\atoum
     {
         $this
             ->given($this->newTestedInstance)
-            ->and($externalId = Uuid::uuid4()->toString())
-            ->and($tooLong = Uuid::uuid4()->toString() . substr(uniqid(), 0, 1))
+            ->and($externalId = $this->getUuid())
+            ->and($tooLong = $this->getUuid() . substr(uniqid(), 0, 1))
             ->then
                 ->variable($this->testedInstance->getExternalId())
                     ->isNull

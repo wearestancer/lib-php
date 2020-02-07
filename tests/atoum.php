@@ -2,6 +2,8 @@
 
 namespace ild78\Tests;
 
+use Ramsey\Uuid\Uuid;
+
 class atoum extends \atoum\test
 {
     public function __construct(
@@ -45,5 +47,10 @@ class atoum extends \atoum\test
         $len = random_int($min, $max);
 
         return bin2hex(random_bytes($len / 2));
+    }
+
+    public function getUuid()
+    {
+        return Uuid::uuid4()->toString();
     }
 }
