@@ -415,5 +415,6 @@ class Request
 
         return (string) $response->getBody();
     }
+
     // phpcs:enable
 }
