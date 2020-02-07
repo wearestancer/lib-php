@@ -20,6 +20,11 @@ class Status extends ild78\Tests\atoum
                     ->isEqualTo('refund_sent')
 
             ->currentlyTestedClass
+                ->hasConstant('PAYMENT_CANCELED')
+                ->constant('PAYMENT_CANCELED')
+                    ->isEqualTo('payment_canceled')
+
+            ->currentlyTestedClass
                 ->hasConstant('REFUNDED')
                 ->constant('REFUNDED')
                     ->isEqualTo('refunded')
