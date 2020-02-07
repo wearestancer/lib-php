@@ -259,6 +259,37 @@ class Customer extends ild78\Tests\atoum
         ;
     }
 
+    public function testSetExternalId()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($externalId = $this->getUuid())
+            ->and($tooLong = $this->getUuid() . substr(uniqid(), 0, 1))
+            ->then
+                ->variable($this->testedInstance->getExternalId())
+                    ->isNull
+
+                ->object($this->testedInstance->setExternalId($externalId))
+                    ->isTestedInstance
+
+                ->string($this->testedInstance->getExternalId())
+                    ->isIdenticalTo($externalId)
+
+                ->array($this->testedInstance->jsonSerialize())
+                    ->hasSize(1)
+                    ->hasKey('external_id')
+                    ->string['external_id']
+                        ->isEqualTo($externalId)
+
+                ->exception(function () use ($tooLong) {
+                    $this->testedInstance->setExternalId($tooLong);
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidExternalIdException::class)
+                    ->message
+                        ->isIdenticalTo('A valid external ID must have less than 36 characters.')
+        ;
+    }
+
     public function testSetMobile()
     {
         $this

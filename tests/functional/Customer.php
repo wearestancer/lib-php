@@ -58,6 +58,9 @@ class Customer extends TestCase
 
                     ->string($this->testedInstance->getMobile())
                         ->isIdenticalTo('+33666172730') // Random generated number
+
+                    ->string($this->testedInstance->getExternalId())
+                        ->isIdenticalTo('6d378a8b-0849-4ab6-96a7-c107bd613852')
         ;
     }
 
@@ -96,6 +99,35 @@ class Customer extends TestCase
                         ->isInstanceOf(ild78\Exceptions\ConflictException::class)
                         ->message
                             ->isIdenticalTo('Customer already exists, you may want to update it instead creating a new one (' . $id . ')')
+
+            ->assert('External ID are used in conflicts resolver')
+                ->given($externalId = $this->getUuid())
+
+                ->if($this->newTestedInstance)
+                ->and($this->testedInstance->setName($name))
+                ->and($this->testedInstance->setEmail($email))
+                ->and($this->testedInstance->setMobile($mobile))
+                ->and($this->testedInstance->setExternalId($externalId))
+                ->then
+                    ->object($this->testedInstance->send())
+                        ->isTestedInstance
+
+                    ->string($withUuid = $this->testedInstance->getId())
+                        ->startWith('cust_')
+                        ->isNotEqualTo($id)
+
+                ->if($this->newTestedInstance)
+                ->and($this->testedInstance->setName($name))
+                ->and($this->testedInstance->setEmail($email))
+                ->and($this->testedInstance->setMobile($mobile))
+                ->and($this->testedInstance->setExternalId($externalId))
+                ->then
+                    ->exception(function () {
+                        $this->testedInstance->send();
+                    })
+                        ->isInstanceOf(ild78\Exceptions\ConflictException::class)
+                        ->message
+                            ->isIdenticalTo('Customer already exists, you may want to update it instead creating a new one (' . $withUuid . ')')
 
             ->assert('Only email is good')
                 ->given($this->newTestedInstance)
@@ -139,6 +171,7 @@ class Customer extends TestCase
             ->and($newName = 'John Doe (' . $rand . ')')
             ->and($newEmail = 'john.doe+' . $rand . '@example.com')
             ->and($newMobile = $this->getRandomNumber())
+            ->and($newExternalId = $this->getUuid())
             ->then
                 ->assert('Change name')
                     ->object($this->testedInstance->setName($newName)->send())
@@ -160,6 +193,13 @@ class Customer extends TestCase
 
                     ->string($this->newTestedInstance($id)->getMobile())
                         ->isIdenticalTo($newMobile)
+
+                ->assert('Change external ID')
+                    ->object($this->testedInstance->setExternalId($newExternalId)->send())
+                        ->isTestedInstance
+
+                    ->string($this->newTestedInstance($id)->getExternalId())
+                        ->isIdenticalTo($newExternalId)
         ;
     }
 }
