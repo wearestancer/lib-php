@@ -74,7 +74,7 @@ class Device extends ild78\Core\AbstractObject
         }
 
         if (!$this->getPort() && array_key_exists('SERVER_PORT', $_SERVER)) {
-            $this->setPort($_SERVER['SERVER_PORT']);
+            $this->setPort((int) $_SERVER['SERVER_PORT']);
         }
 
         if (!$this->getUserAgent() && array_key_exists('HTTP_USER_AGENT', $_SERVER)) {
