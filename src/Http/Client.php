@@ -148,15 +148,15 @@ class Client implements ild78\Interfaces\HttpClientInterface
         $logger = $config->getLogger();
 
         // Set URL.
-        curl_setopt($this->curl, CURLOPT_URL, $uri);
+        curl_setopt($this->curl, CURLOPT_URL, trim($uri));
 
         // Set HTTP method.
-        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, trim($method));
 
         // Timeout.
         if (array_key_exists('timeout', $options)) {
-            curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT, $options['timeout']);
-            curl_setopt($this->curl, CURLOPT_TIMEOUT, $options['timeout']);
+            curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT, (int) $options['timeout']);
+            curl_setopt($this->curl, CURLOPT_TIMEOUT, (int) $options['timeout']);
         }
 
         // Headers.
