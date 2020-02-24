@@ -1803,6 +1803,13 @@ class Payment extends ild78\Tests\atoum
                         ->hasKey('amount')
                         ->integer['amount']
                             ->isEqualTo($amount)
+
+                ->assert('Beware of the unexpected floating number')
+                    ->object($this->newTestedInstance->setAmount(34.8 * 100))
+                        ->isTestedInstance
+
+                    ->integer($this->testedInstance->getAmount())
+                        ->isEqualTo(3480)
         ;
     }
 
