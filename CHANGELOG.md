@@ -35,6 +35,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Formatted IBAN may have one space at end
+- Amount casted to integer may lose 1 cts
 
 
 ## [0.0.2] - 2019-04-29
