@@ -258,6 +258,68 @@ class Config extends ild78\Tests\atoum
                 ->then
                     ->array($this->testedInstance->getCalls())
                         ->isEmpty
+
+            ->assert('With debug mode activated / Default client / Without card number')
+                ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . bin2hex(random_bytes(12))])))
+                ->and($this->testedInstance->setDebug(true))
+
+                ->if($body = uniqid())
+                ->and($this->function->curl_exec = $body)
+                ->and($this->function->curl_getinfo = 200)
+                ->and($this->function->curl_errno = 0)
+
+                ->if($client = new mock\ild78\Http\Client)
+                ->and($this->testedInstance->setHttpClient($client))
+
+                ->if($card = new ild78\Card('card_' . bin2hex(random_bytes(12))))
+                ->and($payment = new ild78\Payment(['card' => $card]))
+                ->and($req = new ild78\Core\Request)
+                ->then
+                    ->array($this->testedInstance->getCalls())
+                        ->isEmpty
+
+                    ->when(function () use ($req, $payment) {
+                        $req->post($payment);
+                    })
+                        ->error
+                            ->notExists
+
+                    ->array($calls = $this->testedInstance->getCalls())
+                        ->hasSize(1)
+
+                    ->object($calls[0])
+                        ->isInstanceOf(ild78\Core\Request\Call::class)
+
+            ->assert('With debug mode activated / Default client / Without sepa number')
+                ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . bin2hex(random_bytes(12))])))
+                ->and($this->testedInstance->setDebug(true))
+
+                ->if($body = uniqid())
+                ->and($this->function->curl_exec = $body)
+                ->and($this->function->curl_getinfo = 200)
+                ->and($this->function->curl_errno = 0)
+
+                ->if($client = new mock\ild78\Http\Client)
+                ->and($this->testedInstance->setHttpClient($client))
+
+                ->if($sepa = new ild78\Sepa('sepa_' . bin2hex(random_bytes(12))))
+                ->and($payment = new ild78\Payment(['sepa' => $sepa]))
+                ->and($req = new ild78\Core\Request)
+                ->then
+                    ->array($this->testedInstance->getCalls())
+                        ->isEmpty
+
+                    ->when(function () use ($req, $payment) {
+                        $req->post($payment);
+                    })
+                        ->error
+                            ->notExists
+
+                    ->array($calls = $this->testedInstance->getCalls())
+                        ->hasSize(1)
+
+                    ->object($calls[0])
+                        ->isInstanceOf(ild78\Core\Request\Call::class)
         ;
     }
 
