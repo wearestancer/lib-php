@@ -10,6 +10,398 @@ use mock;
 
 class Request extends ild78\Tests\atoum
 {
+    use ild78\Tests\Provider\Banks;
+    use ild78\Tests\Provider\Cards;
+    use ild78\Tests\Provider\Http;
+
+    public function testAddCallWithDefaultClient()
+    {
+        $this
+            ->assert('With card')
+                ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->and($config->setDebug(true))
+
+                ->if($number = $this->cardNumberDataProvider(true))
+                ->and($card = new ild78\Card(['number' => $number]))
+                ->and($payment = new ild78\Payment(['card' => $card]))
+                ->and($obfuscated = str_pad($card->getLast4(), strlen($number), 'x', STR_PAD_LEFT))
+
+                ->if($request = new ild78\Http\Request($this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
+                ->and($response = new mock\ild78\Http\Response(200))
+
+                ->if($client = new mock\ild78\Http\Client)
+                ->and($this->calling($client)->getLastRequest = $request)
+                ->and($this->calling($client)->getLastResponse = $response)
+                ->and($config->setHttpClient($client))
+                ->then
+                    ->object($this->invoke($this->newTestedInstance)->addCallWithDefaultClient($payment))
+                        ->isTestedInstance
+
+                    ->array($calls = $config->getCalls())
+                        ->hasSize(1)
+
+                    ->object($calls[0])
+                        ->isInstanceOf(ild78\Core\Request\Call::class)
+
+                    ->variable($calls[0]->getException())
+                        ->isNull
+
+                    ->object($calls[0]->getRequest())
+                        ->isInstanceOf(ild78\Http\Request::class)
+                        ->isNotIdenticalTo($request) // Returns clone
+
+                    ->string($calls[0]->getRequest()->getBody())
+                        ->notContains($number)
+                        ->contains($obfuscated)
+
+                    ->object($calls[0]->getResponse())
+                        ->isInstanceOf(ild78\Http\Response::class)
+                        ->isNotIdenticalTo($response) // Returns clone
+
+            ->assert('With SEPA')
+                ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->and($config->setDebug(true))
+
+                ->if($iban = $this->ibanDataProvider(true))
+                ->and($sepa = new ild78\Sepa(['iban' => $iban]))
+                ->and($payment = new ild78\Payment(['sepa' => $sepa]))
+                ->and($obfuscated = str_pad($sepa->getLast4(), strlen($sepa->getIban()), 'x', STR_PAD_LEFT))
+
+                ->if($request = new ild78\Http\Request($this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
+                ->and($response = new mock\ild78\Http\Response(200))
+
+                ->if($client = new mock\ild78\Http\Client)
+                ->and($this->calling($client)->getLastRequest = $request)
+                ->and($this->calling($client)->getLastResponse = $response)
+                ->and($config->setHttpClient($client))
+                ->then
+                    ->object($this->invoke($this->newTestedInstance)->addCallWithDefaultClient($payment))
+                        ->isTestedInstance
+
+                    ->array($calls = $config->getCalls())
+                        ->hasSize(1)
+
+                    ->object($calls[0])
+                        ->isInstanceOf(ild78\Core\Request\Call::class)
+
+                    ->variable($calls[0]->getException())
+                        ->isNull
+
+                    ->object($calls[0]->getRequest())
+                        ->isInstanceOf(ild78\Http\Request::class)
+                        ->isNotIdenticalTo($request) // Returns clone
+
+                    ->string($calls[0]->getRequest()->getBody())
+                        ->notContains($iban)
+                        ->contains($obfuscated)
+
+                    ->object($calls[0]->getResponse())
+                        ->isInstanceOf(ild78\Http\Response::class)
+                        ->isNotIdenticalTo($response) // Returns clone
+
+            ->assert('With card but without number')
+                ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->and($config->setDebug(true))
+
+                ->if($id = 'card_' . bin2hex(random_bytes(12)))
+                ->and($card = new ild78\Card($id))
+                ->and($payment = new ild78\Payment(['card' => $card]))
+
+                ->if($request = new ild78\Http\Request($this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
+                ->and($response = new mock\ild78\Http\Response(200))
+
+                ->if($client = new mock\ild78\Http\Client)
+                ->and($this->calling($client)->getLastRequest = $request)
+                ->and($this->calling($client)->getLastResponse = $response)
+                ->and($config->setHttpClient($client))
+                ->then
+                    ->when(function () use ($payment) {
+                        $this
+                            ->object($this->invoke($this->newTestedInstance)->addCallWithDefaultClient($payment))
+                                ->isTestedInstance
+                        ;
+                    })
+                        ->error
+                            ->notExists
+
+                    ->array($calls = $config->getCalls())
+                        ->hasSize(1)
+
+                    ->object($calls[0])
+                        ->isInstanceOf(ild78\Core\Request\Call::class)
+
+                    ->variable($calls[0]->getException())
+                        ->isNull
+
+                    ->object($calls[0]->getRequest())
+                        ->isInstanceOf(ild78\Http\Request::class)
+                        ->isNotIdenticalTo($request) // Returns clone
+
+                    ->string($calls[0]->getRequest()->getBody())
+                        ->isIdenticalTo(sprintf('{"card":"%s"}', $id))
+
+                    ->object($calls[0]->getResponse())
+                        ->isInstanceOf(ild78\Http\Response::class)
+                        ->isNotIdenticalTo($response) // Returns clone
+
+            ->assert('With SEPA but without IBAN')
+                ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->and($config->setDebug(true))
+
+                ->if($id = 'sepa_' . bin2hex(random_bytes(12)))
+                ->and($sepa = new ild78\Sepa($id))
+                ->and($payment = new ild78\Payment(['sepa' => $sepa]))
+
+                ->if($request = new ild78\Http\Request($this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
+                ->and($response = new mock\ild78\Http\Response(200))
+
+                ->if($client = new mock\ild78\Http\Client)
+                ->and($this->calling($client)->getLastRequest = $request)
+                ->and($this->calling($client)->getLastResponse = $response)
+                ->and($config->setHttpClient($client))
+                ->then
+                    ->when(function () use ($payment) {
+                        $this
+                            ->object($this->invoke($this->newTestedInstance)->addCallWithDefaultClient($payment))
+                                ->isTestedInstance
+                        ;
+                    })
+                        ->error
+                            ->notExists
+
+                    ->array($calls = $config->getCalls())
+                        ->hasSize(1)
+
+                    ->object($calls[0])
+                        ->isInstanceOf(ild78\Core\Request\Call::class)
+
+                    ->variable($calls[0]->getException())
+                        ->isNull
+
+                    ->object($calls[0]->getRequest())
+                        ->isInstanceOf(ild78\Http\Request::class)
+                        ->isNotIdenticalTo($request) // Returns clone
+
+                    ->string($calls[0]->getRequest()->getBody())
+                        ->isIdenticalTo(sprintf('{"sepa":"%s"}', $id))
+
+                    ->object($calls[0]->getResponse())
+                        ->isInstanceOf(ild78\Http\Response::class)
+                        ->isNotIdenticalTo($response) // Returns clone
+
+            ->assert('With card')
+                ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->and($config->setDebug(false))
+
+                ->if($number = $this->cardNumberDataProvider(true))
+                ->and($card = new ild78\Card(['number' => $number]))
+                ->and($payment = new ild78\Payment(['card' => $card]))
+
+                ->if($request = new ild78\Http\Request($this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
+                ->and($response = new mock\ild78\Http\Response(200))
+
+                ->if($client = new mock\ild78\Http\Client)
+                ->and($this->calling($client)->getLastRequest = $request)
+                ->and($this->calling($client)->getLastResponse = $response)
+                ->and($config->setHttpClient($client))
+                ->then
+                    ->object($this->invoke($this->newTestedInstance)->addCallWithDefaultClient($payment))
+                        ->isTestedInstance
+
+                    ->array($calls = $config->getCalls())
+                        ->isEmpty
+        ;
+    }
+
+    public function testAddCallWithOtherClient()
+    {
+        $this
+            ->assert('With card')
+                ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->and($config->setDebug(true))
+
+                ->if($number = $this->cardNumberDataProvider(true))
+                ->and($card = new ild78\Card(['number' => $number]))
+                ->and($payment = new ild78\Payment(['card' => $card]))
+                ->and($obfuscated = str_pad($card->getLast4(), strlen($number), 'x', STR_PAD_LEFT))
+
+                ->if($request = new GuzzleHttp\Psr7\Request((string) $this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
+                ->and($response = new mock\GuzzleHttp\Psr7\Response)
+
+                ->if($client = new mock\GuzzleHttp\Client)
+                ->and($config->setHttpClient($client))
+                ->then
+                    ->object($this->invoke($this->newTestedInstance)->addCallWithOtherClient($request, $response, $payment))
+                        ->isTestedInstance
+
+                    ->array($calls = $config->getCalls())
+                        ->hasSize(1)
+
+                    ->object($calls[0])
+                        ->isInstanceOf(ild78\Core\Request\Call::class)
+
+                    ->variable($calls[0]->getException())
+                        ->isNull
+
+                    ->object($calls[0]->getRequest())
+                        ->isInstanceOf(GuzzleHttp\Psr7\Request::class)
+                        ->isNotIdenticalTo($request) // Returns clone
+
+                    ->castToString($calls[0]->getRequest()->getBody())
+                        ->notContains($number)
+                        ->contains($obfuscated)
+
+                    ->object($calls[0]->getResponse())
+                        ->isInstanceOf(GuzzleHttp\Psr7\Response::class)
+                        ->isIdenticalTo($response)
+
+            ->assert('With SEPA')
+                ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->and($config->setDebug(true))
+
+                ->if($iban = $this->ibanDataProvider(true))
+                ->and($sepa = new ild78\Sepa(['iban' => $iban]))
+                ->and($payment = new ild78\Payment(['sepa' => $sepa]))
+                ->and($obfuscated = str_pad($sepa->getLast4(), strlen($sepa->getIban()), 'x', STR_PAD_LEFT))
+
+                ->if($request = new GuzzleHttp\Psr7\Request((string) $this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
+                ->and($response = new mock\GuzzleHttp\Psr7\Response)
+
+                ->if($client = new mock\GuzzleHttp\Client)
+                ->and($config->setHttpClient($client))
+                ->then
+                    ->object($this->invoke($this->newTestedInstance)->addCallWithOtherClient($request, $response, $payment))
+                        ->isTestedInstance
+
+                    ->array($calls = $config->getCalls())
+                        ->hasSize(1)
+
+                    ->object($calls[0])
+                        ->isInstanceOf(ild78\Core\Request\Call::class)
+
+                    ->variable($calls[0]->getException())
+                        ->isNull
+
+                    ->object($calls[0]->getRequest())
+                        ->isInstanceOf(GuzzleHttp\Psr7\Request::class)
+                        ->isNotIdenticalTo($request) // Returns clone
+
+                    ->castToString($calls[0]->getRequest()->getBody())
+                        ->notContains($number)
+                        ->contains($obfuscated)
+
+                    ->object($calls[0]->getResponse())
+                        ->isInstanceOf(GuzzleHttp\Psr7\Response::class)
+                        ->isIdenticalTo($response)
+
+            ->assert('With card but without number')
+                ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->and($config->setDebug(true))
+
+                ->if($id = 'card_' . bin2hex(random_bytes(12)))
+                ->and($card = new ild78\Card($id))
+                ->and($payment = new ild78\Payment(['card' => $card]))
+
+                ->if($request = new GuzzleHttp\Psr7\Request((string) $this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
+                ->and($response = new mock\GuzzleHttp\Psr7\Response)
+
+                ->if($client = new mock\GuzzleHttp\Client)
+                ->and($config->setHttpClient($client))
+                ->then
+                    ->when(function () use ($request, $response, $payment) {
+                        $this
+                            ->object($this->invoke($this->newTestedInstance)->addCallWithOtherClient($request, $response, $payment))
+                                ->isTestedInstance
+                        ;
+                    })
+                        ->error
+                            ->notExists
+
+                    ->array($calls = $config->getCalls())
+                        ->hasSize(1)
+
+                    ->object($calls[0])
+                        ->isInstanceOf(ild78\Core\Request\Call::class)
+
+                    ->variable($calls[0]->getException())
+                        ->isNull
+
+                    ->object($calls[0]->getRequest())
+                        ->isInstanceOf(GuzzleHttp\Psr7\Request::class)
+                        ->isIdenticalTo($request)
+
+                    ->castToString($calls[0]->getRequest()->getBody())
+                        ->isIdenticalTo(sprintf('{"card":"%s"}', $id))
+
+                    ->object($calls[0]->getResponse())
+                        ->isInstanceOf(GuzzleHttp\Psr7\Response::class)
+                        ->isIdenticalTo($response)
+
+            ->assert('With SEPA but without IBAN')
+                ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->and($config->setDebug(true))
+
+                ->if($id = 'sepa_' . bin2hex(random_bytes(12)))
+                ->and($sepa = new ild78\Sepa($id))
+                ->and($payment = new ild78\Payment(['sepa' => $sepa]))
+
+                ->if($request = new GuzzleHttp\Psr7\Request((string) $this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
+                ->and($response = new mock\GuzzleHttp\Psr7\Response)
+
+                ->if($client = new mock\GuzzleHttp\Client)
+                ->and($config->setHttpClient($client))
+                ->then
+                    ->when(function () use ($request, $response, $payment) {
+                        $this
+                            ->object($this->invoke($this->newTestedInstance)->addCallWithOtherClient($request, $response, $payment))
+                                ->isTestedInstance
+                        ;
+                    })
+                        ->error
+                            ->notExists
+
+                    ->array($calls = $config->getCalls())
+                        ->hasSize(1)
+
+                    ->object($calls[0])
+                        ->isInstanceOf(ild78\Core\Request\Call::class)
+
+                    ->variable($calls[0]->getException())
+                        ->isNull
+
+                    ->object($calls[0]->getRequest())
+                        ->isInstanceOf(GuzzleHttp\Psr7\Request::class)
+                        ->isIdenticalTo($request)
+
+                    ->castToString($calls[0]->getRequest()->getBody())
+                        ->isIdenticalTo(sprintf('{"sepa":"%s"}', $id))
+
+                    ->object($calls[0]->getResponse())
+                        ->isInstanceOf(GuzzleHttp\Psr7\Response::class)
+                        ->isIdenticalTo($response)
+
+            ->assert('Without debug mode')
+                ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->and($config->setDebug(false))
+
+                ->if($number = $this->cardNumberDataProvider(true))
+                ->and($card = new ild78\Card(['number' => $number]))
+                ->and($payment = new ild78\Payment(['card' => $card]))
+
+                ->if($request = new GuzzleHttp\Psr7\Request((string) $this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
+                ->and($response = new mock\GuzzleHttp\Psr7\Response)
+
+                ->if($client = new mock\GuzzleHttp\Client)
+                ->and($config->setHttpClient($client))
+                ->then
+                    ->object($this->invoke($this->newTestedInstance)->addCallWithOtherClient($request, $response, $payment))
+                        ->isTestedInstance
+
+                    ->array($calls = $config->getCalls())
+                        ->isEmpty
+        ;
+    }
+
     public function testRequest_workingWithDefaultClient()
     {
         $this

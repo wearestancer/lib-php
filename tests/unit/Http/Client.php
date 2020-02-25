@@ -648,7 +648,7 @@ class Client extends ild78\Tests\atoum
             ->assert($code . ' should throw ' . $class)
                 ->given($this->newTestedInstance)
                 ->if($this->function->curl_setopt = true)
-                ->and($this->function->curl_exec = $body = uniqid())
+                ->and($this->function->curl_exec = $body = sprintf('"%s"', uniqid()))
                 ->and($this->function->curl_getinfo = $code)
                 ->and($this->function->curl_errno = $error)
                 ->and($this->function->curl_error = uniqid())
