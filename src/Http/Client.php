@@ -224,6 +224,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
 
                 if (
                     json_last_error() === JSON_ERROR_NONE
+                    && is_array($json)
                     && array_key_exists('error', $json)
                     && array_key_exists('message', $json['error'])
                     && $json['error']['message']
