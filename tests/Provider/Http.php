@@ -85,6 +85,26 @@ trait Http
         return $data;
     }
 
+    public function httpVerbProvider($one = false)
+    {
+        $data = [];
+        $data[] = new ild78\Http\Verb\Delete();
+        $data[] = new ild78\Http\Verb\Get();
+        $data[] = new ild78\Http\Verb\Head();
+        $data[] = new ild78\Http\Verb\Options();
+        $data[] = new ild78\Http\Verb\Patch();
+        $data[] = new ild78\Http\Verb\Post();
+        $data[] = new ild78\Http\Verb\Put();
+
+        shuffle($data);
+
+        if ($one) {
+            return $data[0];
+        }
+
+        return $data;
+    }
+
     public function statusDataProvider()
     {
         $data = [];
