@@ -198,12 +198,18 @@ class Request
 
             if ($card) {
                 $in = $card->dataModelGetter('number', false);
-                $out = str_pad($card->dataModelGetter('last4', false), strlen($in), 'x', STR_PAD_LEFT);
+
+                if ($in) {
+                    $out = str_pad($card->dataModelGetter('last4', false), strlen($in), 'x', STR_PAD_LEFT);
+                }
             }
 
             if ($sepa) {
                 $in = $sepa->dataModelGetter('iban', false);
-                $out = str_pad($sepa->dataModelGetter('last4', false), strlen($in), 'x', STR_PAD_LEFT);
+
+                if ($in) {
+                    $out = str_pad($sepa->dataModelGetter('last4', false), strlen($in), 'x', STR_PAD_LEFT);
+                }
             }
 
             if ($in) {
