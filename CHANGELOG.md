@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Custom user agent
 - First issue/MR templates
 - Setter aliases
+- Tests on PHP 7.4
 
 ### Changes
 - `ild78\Payment::$status` is now editable
@@ -37,6 +38,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Formatted IBAN may have one space at end
 - Amount casted to integer may lose 1 cts
 - Warning during obfuscation
+
+### Removed
+- Support on PHP 7.1
 
 
 ## [0.0.2] - 2019-04-29
