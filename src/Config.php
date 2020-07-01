@@ -15,7 +15,7 @@ class Config
 {
     public const LIVE_MODE = 'live';
     public const TEST_MODE = 'test';
-    public const VERSION = '0.0.2';
+    public const VERSION = '0.0.3';
 
     /** @var ild78\Core\Request\Call[] */
     protected $calls = [];
