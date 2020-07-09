@@ -2,36 +2,18 @@
 
 namespace ild78\tests\unit;
 
-use atoum;
 use ild78;
-use ild78\Api;
-use ild78\Exceptions;
 use ild78\Sepa as testedClass;
 
-class Sepa extends atoum
+class Sepa extends ild78\Tests\atoum
 {
-    public function ibanDataProvider()
-    {
-        // Thanks Wikipedia
-        return [
-            'BE71 0961 2345 6769',
-            'FR76 3000 6000 0112 3456 7890 189',
-            'DE91 1000 0000 0123 4567 89',
-            'GR9608100010000001234567890',
-            'RO09 BCYP 0000 0012 3456 7890',
-            'SA4420000001234567891234',
-            'ES79 2100 0813 6101 2345 6789',
-            'CH56 0483 5012 3456 7800 9 ',
-            'GB98 MIDL 0700 9312 3456 78',
-            'GB82WEST12345698765432',
-        ];
-    }
+    use ild78\Tests\Provider\Banks;
 
     public function testClass()
     {
         $this
-            ->testedClass
-                ->extends(ild78\Api\AbstractObject::class)
+            ->currentlyTestedClass
+                ->extends(ild78\Core\AbstractObject::class)
                 ->implements(ild78\Interfaces\PaymentMeansInterface::class)
         ;
     }
@@ -44,7 +26,7 @@ class Sepa extends atoum
         $this
             ->given($this->newTestedInstance)
             ->and($withoutSpaces = str_replace(' ', '', $iban))
-            ->and($withSpaces = chunk_split($withoutSpaces, 4, ' '))
+            ->and($withSpaces = trim(chunk_split($withoutSpaces, 4, ' ')))
             ->and($this->testedInstance->setIban($iban))
             ->then
                 ->string($this->testedInstance->getIban())
@@ -80,15 +62,27 @@ class Sepa extends atoum
 
                     ->string($this->testedInstance->getBic())
                         ->isIdenticalTo($bic)
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasSize(1)
+                        ->hasKey('bic')
+                        ->string['bic']
+                            ->isEqualTo($bic)
                 ;
             } else {
                 $this
                     ->exception(function () use ($bic) {
                         $this->testedInstance->setBic($bic);
                     })
-                        ->isInstanceOf(Exceptions\InvalidBicException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidBicException::class)
                         ->message
                             ->contains($bic)
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
                 ;
             }
         }
@@ -128,6 +122,15 @@ class Sepa extends atoum
                     ->string($this->testedInstance->getLast4())
                         ->isIdenticalTo($last)
 
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasSize(1)
+                        ->hasKey('iban')
+                        ->string['iban']
+                            ->isEqualTo($iban)
+
             ->assert('Add a valid BE IBAN from wikipedia')
                 ->given($iban = 'BE71096123456769')
                 ->and($last = '6769')
@@ -154,6 +157,15 @@ class Sepa extends atoum
 
                     ->string($this->testedInstance->getLast4())
                         ->isIdenticalTo($last)
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasSize(1)
+                        ->hasKey('iban')
+                        ->string['iban']
+                            ->isEqualTo($iban)
 
             ->assert('Add a valid GB IBAN from wikipedia')
                 ->given($iban = 'GB82WEST12345698765432')
@@ -182,6 +194,15 @@ class Sepa extends atoum
                     ->string($this->testedInstance->getLast4())
                         ->isIdenticalTo($last)
 
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasSize(1)
+                        ->hasKey('iban')
+                        ->string['iban']
+                            ->isEqualTo($iban)
+
             ->assert('It should accept space for readeability')
                 ->given($iban = 'GR96 0810 0010 0000 0123 4567 890')
                 ->and($last = '7890')
@@ -209,6 +230,15 @@ class Sepa extends atoum
                     ->string($this->testedInstance->getLast4())
                         ->isIdenticalTo($last)
 
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasSize(1)
+                        ->hasKey('iban')
+                        ->string['iban']
+                            ->isEqualTo(str_replace(' ', '', $iban))
+
             ->assert('Add an invalid IBAN')
                 ->given($iban = 'FR87BARC20658244971655')
                 ->and($this->newTestedInstance)
@@ -216,9 +246,12 @@ class Sepa extends atoum
                     ->exception(function () use ($iban) {
                         $this->testedInstance->setIban($iban);
                     })
-                        ->isInstanceOf(Exceptions\InvalidIbanException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidIbanException::class)
                         ->message
                             ->contains($iban)
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
         ;
     }
 
@@ -230,10 +263,13 @@ class Sepa extends atoum
                 ->exception(function () {
                     $this->testedInstance->setName('');
                 })
-                    ->isInstanceOf(Exceptions\InvalidNameException::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidNameException::class)
                     ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid name must be between 4 and 64 characters.')
+
+                ->boolean($this->testedInstance->isModified())
+                    ->isFalse
         ;
     }
 }

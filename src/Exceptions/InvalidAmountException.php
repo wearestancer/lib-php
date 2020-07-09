@@ -19,7 +19,7 @@ class InvalidAmountException extends InvalidArgumentException implements Excepti
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         return 'Amount must be greater than or equal to 50.';
     }

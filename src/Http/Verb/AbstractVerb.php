@@ -16,7 +16,7 @@ abstract class AbstractVerb
      *
      * @return string
      */
-    public function __toString() : string
+    public function __toString(): string
     {
         $class = static::class;
         $namespace = __NAMESPACE__ . '\\';
@@ -29,7 +29,7 @@ abstract class AbstractVerb
      *
      * @return boolean
      */
-    public function isAllowed() : bool
+    public function isAllowed(): bool
     {
         return $this->isAllowed;
     }
@@ -39,7 +39,7 @@ abstract class AbstractVerb
      *
      * @return boolean
      */
-    public function isNotAllowed() : bool
+    public function isNotAllowed(): bool
     {
         return !$this->isAllowed();
     }

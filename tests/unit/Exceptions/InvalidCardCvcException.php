@@ -2,16 +2,15 @@
 
 namespace ild78\tests\unit\Exceptions;
 
-use atoum;
 use ild78;
 use Psr;
 
-class InvalidCardCvcException extends atoum
+class InvalidCardCvcException extends ild78\Tests\atoum
 {
     public function testClass()
     {
         $this
-            ->testedClass
+            ->currentlyTestedClass
                 ->extends(ild78\Exceptions\InvalidArgumentException::class)
                 ->implements(ild78\Interfaces\ExceptionInterface::class)
         ;
@@ -23,7 +22,7 @@ class InvalidCardCvcException extends atoum
             ->if($class = $this->testedClass->getClass())
             ->then
                 ->string($class::getDefaultMessage())
-                    ->isIdenticalTo('Invalid CVC')
+                    ->isIdenticalTo('Invalid CVC.')
         ;
     }
 

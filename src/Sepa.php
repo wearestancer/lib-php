@@ -8,7 +8,7 @@ use ild78;
 /**
  * Representation of a SEPA account
  */
-class Sepa extends Api\AbstractObject implements Interfaces\PaymentMeansInterface
+class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\PaymentMeansInterface
 {
     /** @var array */
     protected $dataModel = [
@@ -42,9 +42,9 @@ class Sepa extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      *
      * @return string
      */
-    public function getFormattedIban() : string
+    public function getFormattedIban(): string
     {
-        return chunk_split($this->getIban(), 4, ' ');
+        return trim(chunk_split($this->getIban(), 4, ' '));
     }
 
     /**
@@ -54,7 +54,7 @@ class Sepa extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @return self
      * @throws ild78\Exceptions\InvalidBicException When BIC seems invalid.
      */
-    public function setBic(string $bic) : self
+    public function setBic(string $bic): self
     {
         $length = strlen($bic);
 
@@ -63,6 +63,7 @@ class Sepa extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
         }
 
         $this->dataModel['bic']['value'] = $bic;
+        $this->modified[] = 'bic';
 
         return $this;
     }
@@ -74,7 +75,7 @@ class Sepa extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @return self
      * @throws ild78\Exceptions\InvalidIbanException When IBAN is invalid.
      */
-    public function setIban(string $iban) : self
+    public function setIban(string $iban): self
     {
         $iban = str_replace(' ', '', $iban);
         $country = substr($iban, 0, 2);
@@ -106,6 +107,7 @@ class Sepa extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
         $this->dataModel['country']['value'] = $country;
         $this->dataModel['iban']['value'] = $iban;
         $this->dataModel['last4']['value'] = substr($iban, -4);
+        $this->modified[] = 'iban';
 
         return $this;
     }
@@ -117,7 +119,7 @@ class Sepa extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @return self
      * @throws ild78\Exceptions\InvalidNameException When the name is invalid.
      */
-    public function setName(string $name) : self
+    public function setName(string $name): self
     {
         try {
             return parent::setName($name);

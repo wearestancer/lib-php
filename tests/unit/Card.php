@@ -2,103 +2,43 @@
 
 namespace ild78\tests\unit;
 
-use atoum;
 use DateTime;
 use ild78;
-use ild78\Api;
 use ild78\Card as testedClass;
-use ild78\Exceptions;
 
-class Card extends atoum
+class Card extends ild78\Tests\atoum
 {
-    public function brandDataProvider()
-    {
-        $random = uniqid();
-
-        return [
-            ['visa', 'VISA'],
-            ['mastercard', 'MasterCard'],
-            ['amex', 'American Express'],
-            ['jcb', 'JCB'],
-            ['maestro', 'Maestro'],
-            ['discover', 'Discover'],
-            ['dankort', 'Dankort'],
-            [$random, $random],
-        ];
-    }
-
-    public function cardNumberDataProvider()
-    {
-        // Card number found on https://www.freeformatter.com/credit-card-number-generator-validator.html
-        return [
-            // VISA
-            4532160583905253,
-            4103344114503410,
-            4716929813250776300,
-
-            // MasterCard
-            5312580044202748,
-            2720995588028031,
-            5217849688268117,
-
-            // American Express (AMEX)
-            370301138747716,
-            340563568138644,
-            371461161518951,
-
-            // Discover
-            6011651456571367,
-            6011170656779399,
-            6011693048292929421,
-
-            // JCB
-            3532433013111566,
-            3544337258139297,
-            3535502591342895821,
-
-            // Diners Club - North America
-            5480649643931654,
-            5519243149714783,
-            5509141180527803,
-
-            // Diners Club - Carte Blanche
-            30267133988393,
-            30089013015810,
-            30109478108973,
-
-            // Diners Club - International
-            36052879958170,
-            36049904526204,
-            36768208048819,
-
-            // Maestro
-            5893433915020244,
-            6759761854174320,
-            6759998953884124,
-
-            // Visa Electron
-            4026291468019846,
-            4844059039871494,
-            4913054050962393,
-
-            // InstaPayment
-            6385037148943057,
-            6380659492219803,
-            6381454097795863,
-
-            // Classic one
-            4111111111111111,
-            4242424242424242,
-            4444333322221111,
-        ];
-    }
+    use ild78\Tests\Provider\Cards;
 
     public function testClass()
     {
         $this
-            ->testedClass
-                ->extends(ild78\Api\AbstractObject::class)
+            ->currentlyTestedClass
+                ->extends(ild78\Core\AbstractObject::class)
                 ->implements(ild78\Interfaces\PaymentMeansInterface::class)
+        ;
+    }
+
+    /**
+     * @dataProvider brandDataProvider
+     */
+    public function testGetBrand($tag, $name)
+    {
+        $this
+            ->if($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getBrand())
+                    ->isNull
+
+                ->exception(function () use ($tag) {
+                    $this->testedInstance->setBrand($tag);
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+
+            ->if($this->testedInstance->hydrate(['brand' => $tag]))
+            ->then
+                ->string($this->testedInstance->getBrand())
+                    ->isIdenticalTo($tag)
         ;
     }
 
@@ -119,6 +59,16 @@ class Card extends atoum
 
                 ->string($this->testedInstance->getBrandName())
                     ->isIdenticalTo($name)
+        ;
+    }
+
+    public function testGetEndpoint()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->string($this->testedInstance->getEndpoint())
+                    ->isIdenticalTo('cards')
         ;
     }
 
@@ -152,7 +102,7 @@ class Card extends atoum
                     ->exception(function () {
                         $this->testedInstance->getExpDate();
                     })
-                        ->isInstanceOf(Exceptions\InvalidExpirationMonthException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidExpirationMonthException::class)
                         ->message
                             ->isIdenticalTo('You must set an expiration month before asking for a date.')
 
@@ -165,7 +115,7 @@ class Card extends atoum
                     ->exception(function () {
                         $this->testedInstance->getExpDate();
                     })
-                        ->isInstanceOf(Exceptions\InvalidExpirationYearException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidExpirationYearException::class)
                         ->message
                             ->isIdenticalTo('You must set an expiration year before asking for a date.')
         ;
@@ -187,6 +137,15 @@ class Card extends atoum
                         ->integer($this->testedInstance->getExpMonth())
                             ->isIdenticalTo($month)
 
+                        ->boolean($this->testedInstance->isModified())
+                            ->isTrue
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('exp_month')
+                            ->integer['exp_month']
+                                ->isEqualTo($month)
+
                 ->assert('Test month ' . $month . ' : alias')
                     ->given($this->newTestedInstance)
                     ->then
@@ -198,6 +157,15 @@ class Card extends atoum
 
                         ->integer($this->testedInstance->getExpirationMonth())
                             ->isIdenticalTo($month)
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isTrue
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('exp_month')
+                            ->integer['exp_month']
+                                ->isEqualTo($month)
             ;
         }
 
@@ -215,9 +183,12 @@ class Card extends atoum
                         ->exception(function () use ($month) {
                             $this->testedInstance->setExpMonth($month);
                         })
-                            ->isInstanceOf(Exceptions\InvalidExpirationMonthException::class)
+                            ->isInstanceOf(ild78\Exceptions\InvalidExpirationMonthException::class)
                             ->message
                                 ->isIdenticalTo('Invalid expiration month "' . $month . '"')
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isFalse
             ;
         }
     }
@@ -226,7 +197,7 @@ class Card extends atoum
     {
         $currentYear = (int) date('Y');
 
-        for ($year = $currentYear; $year < $currentYear + 20; $year++) {
+        for ($year = $currentYear - 50; $year < $currentYear + 25; $year++) {
             $this
                 ->assert('Test year ' . $year)
                     ->given($this->newTestedInstance)
@@ -240,6 +211,15 @@ class Card extends atoum
                         ->integer($this->testedInstance->getExpYear())
                             ->isIdenticalTo($year)
 
+                        ->boolean($this->testedInstance->isModified())
+                            ->isTrue
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('exp_year')
+                            ->integer['exp_year']
+                                ->isEqualTo($year)
+
                 ->assert('Test year ' . $year . ' : alias')
                     ->given($this->newTestedInstance)
                     ->then
@@ -251,22 +231,106 @@ class Card extends atoum
 
                         ->integer($this->testedInstance->getExpirationYear())
                             ->isIdenticalTo($year)
-            ;
-        }
 
-        for ($year = $currentYear - 10; $year < $currentYear; $year++) {
-            $this
-                ->assert('Test year ' . $year)
-                    ->given($this->newTestedInstance)
-                    ->then
-                        ->exception(function () use ($year) {
-                            $this->testedInstance->setExpYear($year);
-                        })
-                            ->isInstanceOf(Exceptions\InvalidExpirationYearException::class)
-                            ->message
-                                ->isIdenticalTo('Invalid expiration year "' . $year . '"')
+                        ->boolean($this->testedInstance->isModified())
+                            ->isTrue
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('exp_year')
+                            ->integer['exp_year']
+                                ->isEqualTo($year)
             ;
         }
+    }
+
+    public function testGetFunding()
+    {
+        $this
+            ->if($this->newTestedInstance)
+            ->and($value = uniqid())
+            ->then
+                ->variable($this->testedInstance->getFunding())
+                    ->isNull
+
+                ->exception(function () use ($value) {
+                    $this->testedInstance->setFunding($value);
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+
+            ->if($this->testedInstance->hydrate(['funding' => $value]))
+            ->then
+                ->string($this->testedInstance->getFunding())
+                    ->isIdenticalTo($value)
+        ;
+    }
+
+    public function testGetName_SetName()
+    {
+        $this
+            ->if($this->newTestedInstance)
+            ->and($name = $this->getRandomString(4, 64))
+            ->then
+                ->variable($this->testedInstance->getName())
+                    ->isNull
+
+                ->object($this->testedInstance->setName($name))
+                    ->isTestedInstance
+
+                ->string($this->testedInstance->getName())
+                    ->isIdenticalTo($name)
+
+                ->boolean($this->testedInstance->isModified())
+                    ->isTrue
+
+                ->array($this->testedInstance->jsonSerialize())
+                    ->hasSize(1)
+                    ->hasKey('name')
+                    ->string['name']
+                        ->isEqualTo($name)
+        ;
+    }
+
+    public function testGetNature()
+    {
+        $this
+            ->if($this->newTestedInstance)
+            ->and($value = uniqid())
+            ->then
+                ->variable($this->testedInstance->getNature())
+                    ->isNull
+
+                ->exception(function () use ($value) {
+                    $this->testedInstance->setNature($value);
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+
+            ->if($this->testedInstance->hydrate(['nature' => $value]))
+            ->then
+                ->string($this->testedInstance->getNature())
+                    ->isIdenticalTo($value)
+        ;
+    }
+
+    public function testGetNetwork()
+    {
+        $this
+            ->if($this->newTestedInstance)
+            ->and($value = uniqid())
+            ->then
+                ->variable($this->testedInstance->getNetwork())
+                    ->isNull
+
+                ->exception(function () use ($value) {
+                    $this->testedInstance->setNetwork($value);
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+
+            ->if($this->testedInstance->hydrate(['network' => $value]))
+            ->then
+                ->string($this->testedInstance->getNetwork())
+                    ->isIdenticalTo($value)
+        ;
     }
 
     public function testGetTokenize_SetTokenize()
@@ -290,12 +354,22 @@ class Card extends atoum
                     ->boolean($this->testedInstance->getTokenize())
                         ->isTrue
 
-                    ->array($this->testedInstance->toArray())
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
+                    ->array($data = $this->testedInstance->jsonSerialize())
+                        ->hasSize(1)
                         ->hasKey('tokenize')
+
+                    ->boolean($data['tokenize'])
+                        ->isTrue
 
                 ->assert('Visible when forced to false')
                     ->object($this->testedInstance->setTokenize(false))
                         ->isTestedInstance
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
 
                     ->boolean($this->testedInstance->getTokenize())
                         ->isFalse
@@ -303,12 +377,45 @@ class Card extends atoum
                     ->array($this->testedInstance->toArray())
                         ->hasKey('tokenize')
 
+                    ->array($data = $this->testedInstance->jsonSerialize())
+                        ->hasSize(1)
+                        ->hasKey('tokenize')
+
+                    ->boolean($data['tokenize'])
+                        ->isFalse
+
                 ->assert('Aliases')
                     ->boolean($this->testedInstance->getTokenize())
                         ->isIdenticalTo($this->testedInstance->getTokenize)
                         ->isIdenticalTo($this->testedInstance->tokenize)
                         ->isIdenticalTo($this->testedInstance->isTokenized())
                         ->isIdenticalTo($this->testedInstance->isTokenized)
+        ;
+    }
+
+    public function testGetZipCode_SetZipCode()
+    {
+        $this
+            ->if($this->newTestedInstance)
+            ->and($zip = $this->getRandomString(2, 8))
+            ->then
+                ->variable($this->testedInstance->getZipCode())
+                    ->isNull
+
+                ->object($this->testedInstance->setZipCode($zip))
+                    ->isTestedInstance
+
+                ->string($this->testedInstance->getZipCode())
+                    ->isIdenticalTo($zip)
+
+                ->boolean($this->testedInstance->isModified())
+                    ->isTrue
+
+                ->array($this->testedInstance->jsonSerialize())
+                    ->hasSize(1)
+                    ->hasKey('zip_code')
+                    ->string['zip_code']
+                        ->isEqualTo($zip)
         ;
     }
 
@@ -326,10 +433,13 @@ class Card extends atoum
                     ->exception(function () use ($cvc) {
                         $this->testedInstance->setCvc($cvc);
                     })
-                        ->isInstanceOf(Exceptions\InvalidCardCvcException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidCardCvcException::class)
                         ->hasNestedException
                         ->message
                             ->isIdenticalTo('A valid cvc must have 3 characters.')
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
             ;
         }
     }
@@ -342,10 +452,13 @@ class Card extends atoum
                 ->exception(function () {
                     $this->testedInstance->setName('');
                 })
-                    ->isInstanceOf(Exceptions\InvalidNameException::class)
+                    ->isInstanceOf(ild78\Exceptions\InvalidNameException::class)
                     ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid name must be between 4 and 64 characters.')
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
         ;
     }
 
@@ -374,6 +487,9 @@ class Card extends atoum
                     ->string($this->testedInstance->getLast4())
                         ->isIdenticalTo($last)
 
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
             ->assert('Throw exception if invalid')
                 ->given($this->newTestedInstance)
                 ->and($badNumber = $number + 1)
@@ -381,9 +497,12 @@ class Card extends atoum
                     ->exception(function () use ($badNumber) {
                         $this->testedInstance->setNumber((string) $badNumber);
                     })
-                        ->isInstanceOf(Exceptions\InvalidCardNumberException::class)
+                        ->isInstanceOf(ild78\Exceptions\InvalidCardNumberException::class)
                         ->message
                             ->isIdenticalTo('"' . $badNumber . '" is not a valid credit card number.')
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isFalse
         ;
     }
 

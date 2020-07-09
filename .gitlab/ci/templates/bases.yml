@@ -1,0 +1,10 @@
+
+.bases:
+  before_script:
+    - php-version $PHP_VERSION
+    - php -v
+    - composer --version
+    - composer install
+
+  tags:
+    - php

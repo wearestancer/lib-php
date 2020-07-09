@@ -12,7 +12,7 @@ use ild78;
  * @method string getMobile()
  * @method string getName()
  */
-class Customer extends Api\AbstractObject
+class Customer extends ild78\Core\AbstractObject
 {
     /** @var string */
     protected $endpoint = 'customers';
@@ -23,6 +23,12 @@ class Customer extends Api\AbstractObject
             'size' => [
                 'min' => 5,
                 'max' => 64,
+            ],
+            'type' => self::STRING,
+        ],
+        'externalId' => [
+            'size' => [
+                'max' => 36,
             ],
             'type' => self::STRING,
         ],
@@ -43,14 +49,14 @@ class Customer extends Api\AbstractObject
     ];
 
     /**
-     * Save a customer.
+     * Send a customer.
      *
      * @uses Request::post()
      * @return self
-     * @throws ild78\Exceptions\BadMethodCallException When trying to save a customer without an email
+     * @throws ild78\Exceptions\BadMethodCallException When trying to send a customer without an email
      *    or a phone number.
      */
-    public function save() : ild78\Api\AbstractObject
+    public function send(): ild78\Core\AbstractObject
     {
         if (!$this->getId() && !$this->getEmail() && !$this->getMobile()) {
             $message = 'You must provide an email or a phone number to create a customer.';
@@ -58,7 +64,7 @@ class Customer extends Api\AbstractObject
             throw new ild78\Exceptions\BadMethodCallException($message);
         }
 
-        return parent::save();
+        return parent::send();
     }
 
     /**
@@ -68,12 +74,28 @@ class Customer extends Api\AbstractObject
      * @return self
      * @throws ild78\Exceptions\InvalidEmailException When the email is invalid.
      */
-    public function setEmail(string $email) : self
+    public function setEmail(string $email): self
     {
         try {
             return parent::setEmail($email);
         } catch (ild78\Exceptions\InvalidArgumentException $excep) {
             throw new ild78\Exceptions\InvalidEmailException($excep->getMessage(), $excep->getCode(), $excep);
+        }
+    }
+
+    /**
+     * Update customer's external id
+     *
+     * @param string $externalId New external ID.
+     * @return self
+     * @throws ild78\Exceptions\InvalidExternalIdException When the external ID is invalid.
+     */
+    public function setExternalId(string $externalId): self
+    {
+        try {
+            return parent::setExternalId($externalId);
+        } catch (ild78\Exceptions\InvalidArgumentException $excep) {
+            throw new ild78\Exceptions\InvalidExternalIdException($excep->getMessage(), $excep->getCode(), $excep);
         }
     }
 
@@ -84,7 +106,7 @@ class Customer extends Api\AbstractObject
      * @return self
      * @throws ild78\Exceptions\InvalidMobileException When the mobile phone number is invalid.
      */
-    public function setMobile(string $mobile) : self
+    public function setMobile(string $mobile): self
     {
         try {
             return parent::setMobile($mobile);
@@ -100,7 +122,7 @@ class Customer extends Api\AbstractObject
      * @return self
      * @throws ild78\Exceptions\InvalidNameException When the name is invalid.
      */
-    public function setName(string $name) : self
+    public function setName(string $name): self
     {
         try {
             return parent::setName($name);

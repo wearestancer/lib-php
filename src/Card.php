@@ -10,16 +10,16 @@ use ild78;
 /**
  * Representation of a card
  */
-class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterface
+class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\PaymentMeansInterface
 {
+    /** @var string */
+    protected $endpoint = 'cards';
+
     /** @var array */
     protected $dataModel = [
         'brand' => [
             'restricted' => true,
             'type' => self::STRING,
-        ],
-        'capture' => [
-            'type' => self::BOOLEAN,
         ],
         'country' => [
             'type' => self::STRING,
@@ -39,6 +39,10 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
             'required' => true,
             'type' => self::INTEGER,
         ],
+        'funding' => [
+            'restricted' => true,
+            'type' => self::STRING,
+        ],
         'last4' => [
             'restricted' => true,
             'type' => self::STRING,
@@ -48,6 +52,14 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
                 'min' => 4,
                 'max' => 64,
             ],
+            'type' => self::STRING,
+        ],
+        'nature' => [
+            'restricted' => true,
+            'type' => self::STRING,
+        ],
+        'network' => [
+            'restricted' => true,
             'type' => self::STRING,
         ],
         'number' => [
@@ -72,7 +84,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
 
     /** @var array */
     protected $aliases = [
-        'istokenized' => 'gettokenize',
+        'isTokenized' => 'getTokenize',
     ];
 
     /**
@@ -83,7 +95,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      *
      * @return string
      */
-    public function getBrandName() : string
+    public function getBrandName(): string
     {
         $names = [
             'amex' => 'American Express',
@@ -113,7 +125,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @throws ild78\Exceptions\InvalidExpirationMonthException When month is not set.
      * @throws ild78\Exceptions\InvalidExpirationYearException When year is not set.
      */
-    public function getExpDate() : DateTime
+    public function getExpDate(): DateTime
     {
         $month = $this->getExpMonth();
         $year = $this->getExpYear();
@@ -147,7 +159,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @see self::getExpDate() Return the expiration date.
      * @return DateTime
      */
-    public function getExpirationDate() : DateTime
+    public function getExpirationDate(): DateTime
     {
         return $this->getExpDate();
     }
@@ -187,7 +199,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      *
      * @return boolean
      */
-    public function getTokenize() : bool
+    public function getTokenize(): bool
     {
         $tokenize = parent::getTokenize();
 
@@ -207,7 +219,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @return self
      * @throws ild78\Exceptions\InvalidCardCvcException When CVC is not valid.
      */
-    public function setCvc(string $cvc) : self
+    public function setCvc(string $cvc): self
     {
         try {
             return parent::setCvc($cvc);
@@ -223,7 +235,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @param integer $month The expiration month.
      * @return self
      */
-    public function setExpirationMonth(int $month) : self
+    public function setExpirationMonth(int $month): self
     {
         return $this->setExpMonth($month);
     }
@@ -235,7 +247,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @param integer $year The expiration year.
      * @return integer|null
      */
-    public function setExpirationYear(int $year) : self
+    public function setExpirationYear(int $year): self
     {
         return $this->setExpYear($year);
     }
@@ -247,7 +259,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @return self
      * @throws ild78\Exceptions\InvalidExpirationMonthException When expiration is invalid (not between 1 and 12).
      */
-    public function setExpMonth(int $month) : self
+    public function setExpMonth(int $month): self
     {
         if ($month < 1 || $month > 12) {
             $message = sprintf('Invalid expiration month "%d"', $month);
@@ -256,26 +268,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
         }
 
         $this->dataModel['expMonth']['value'] = $month;
-
-        return $this;
-    }
-
-    /**
-     * Update the expiration year.
-     *
-     * @param integer $year The expiration year.
-     * @return self
-     * @throws ild78\Exceptions\InvalidExpirationYearException When expiration is invalid (in past).
-     */
-    public function setExpYear(int $year) : self
-    {
-        if ($year < date('Y')) {
-            $message = sprintf('Invalid expiration year "%d"', $year);
-
-            throw new ild78\Exceptions\InvalidExpirationYearException($message);
-        }
-
-        $this->dataModel['expYear']['value'] = $year;
+        $this->modified[] = 'exp_month';
 
         return $this;
     }
@@ -287,7 +280,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @return self
      * @throws ild78\Exceptions\InvalidNameException When the name is invalid.
      */
-    public function setName(string $name) : self
+    public function setName(string $name): self
     {
         try {
             return parent::setName($name);
@@ -303,7 +296,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
      * @return self
      * @throws ild78\Exceptions\InvalidCardNumberException When the card number is invalid.
      */
-    public function setNumber(string $number) : self
+    public function setNumber(string $number): self
     {
         $number = preg_replace('`\s*`', '', $number);
         $parts = str_split($number);
@@ -336,6 +329,7 @@ class Card extends Api\AbstractObject implements Interfaces\PaymentMeansInterfac
 
         $this->dataModel['last4']['value'] = substr((string) $number, -4);
         $this->dataModel['number']['value'] = $number;
+        $this->modified[] = 'number';
 
         return $this;
     }

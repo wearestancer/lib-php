@@ -19,8 +19,8 @@ class InvalidCardNumberException extends InvalidArgumentException implements Exc
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
-        return 'Invalid card number';
+        return 'Invalid card number.';
     }
 }

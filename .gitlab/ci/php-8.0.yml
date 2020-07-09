@@ -1,0 +1,26 @@
+
+.php8.0:
+  allow_failure: true
+
+  variables:
+    PHP_VERSION: '8.0'
+
+atoum PHP 8.0:
+  extends:
+    - .atoum
+    - .php8.0
+
+lint PHP 8.0:
+  extends:
+    - .lint
+    - .php8.0
+
+coverage-check PHP 8.0:
+  extends:
+    - .coverage-check
+    - .php8.0
+
+coverage-update PHP 8.0:
+  extends:
+    - .coverage-update
+    - .php8.0

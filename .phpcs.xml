@@ -9,6 +9,10 @@
   <rule ref="PSR2" />
   <rule ref="PSR12" />
 
+  <rule ref="PSR12">
+    <exclude name="PSR12.Files.FileHeader.SpacingAfterBlock" /> <!-- Space between `<?php` and `declare` -->
+  </rule>
+
   <rule ref="Squiz">
     <exclude name="Generic.Commenting.DocComment.ContentAfterOpen" />
     <exclude name="Generic.Commenting.DocComment.ContentBeforeClose" />
@@ -19,6 +23,11 @@
     <exclude name="Generic.Formatting.MultipleStatementAlignment.NotSame" />
 
     <exclude name="Generic.PHP.LowerCaseType.ParamTypeFound" />
+
+    <!-- Remove for multiline condition -->
+    <exclude name="PEAR.ControlStructures.MultiLineCondition.SpacingAfterOpenBrace" />
+    <exclude name="PEAR.ControlStructures.MultiLineCondition.StartWithBoolean" />
+    <exclude name="PSR2.ControlStructures.ControlStructureSpacing.SpacingAfterOpenBrace" />
 
     <exclude name="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned" />
     <exclude name="Squiz.Arrays.ArrayDeclaration.MultiLineNotAllowed" />
@@ -39,6 +48,7 @@
 
     <exclude name="Squiz.Formatting.OperatorBracket.MissingBrackets" />
 
+    <exclude name="Squiz.PHP.DisallowComparisonAssignment.AssignedBool" />
     <exclude name="Squiz.PHP.DisallowComparisonAssignment.AssignedComparison" />
     <exclude name="Squiz.PHP.DisallowInlineIf.Found" />
 

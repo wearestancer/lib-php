@@ -1,19 +1,18 @@
 <?php
 
-namespace ild78\tests\functional;
+namespace ild78\Tests\functional;
 
-use atoum;
 use ild78;
 
-class TestCase extends atoum
+class TestCase extends ild78\Tests\atoum
 {
     protected $config;
 
     public function beforeTestMethod($testMethod)
     {
         $env = [
-            'ILD_API_HOST' => '',
-            'ILD_API_KEY' => '',
+            'API_HOST' => '',
+            'API_KEY' => '',
         ];
 
         foreach ($env as $key => &$value) {
@@ -25,39 +24,23 @@ class TestCase extends atoum
         }
 
         if (!$this->config) {
-            $this->config = ild78\Api\Config::init($env['ILD_API_KEY']);
+            $this->config = ild78\Config::setGlobal(new ild78\Config([$env['API_KEY']]));
         }
 
-        $this->config->setHost($env['ILD_API_HOST']);
+        $this->config->setHost($env['API_HOST']);
     }
 
-    public function currencyDataProvider()
+    public function getDisputedCardNumber()
     {
-        return [
-            'EUR',
-            'USD',
-            'GBP',
+        $cards = [
+            '4000000000000259',
+            '4000000000001976',
+            '4000000000005423',
         ];
-    }
 
-    public function getRandomNumber()
-    {
-        // Simulate a french mobile phone number
-        $first = rand(0, 1) + 6;
-        $loop = 4;
+        shuffle($cards);
 
-        $number = '+33' . $first;
-
-        if ($first === 7) {
-            $number .= str_pad(rand(30, 99), 2, '0');
-            $loop--;
-        }
-
-        for ($idx = 0; $idx < $loop; $idx++) {
-            $number .= str_pad(rand(0, 99), 2, '0');
-        }
-
-        return $number;
+        return array_shift($cards);
     }
 
     public function getValidCardNumber()

@@ -9,17 +9,14 @@ use Psr;
 /**
  * Exception thrown on miss-validation with expiration year.
  */
-class InvalidExpirationYearException extends InvalidArgumentException implements ExceptionInterface
+class InvalidExpirationYearException extends InvalidExpirationException implements ExceptionInterface
 {
-    /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::DEBUG;
-
     /**
      * Return default message for that kind of exception
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         return 'Expiration year is invalid.';
     }

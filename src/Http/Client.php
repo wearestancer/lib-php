@@ -61,7 +61,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
      *
      * @return ild78\Http\Response|null
      */
-    public function getLastResponse() : ?ild78\Http\Response
+    public function getLastResponse(): ?ild78\Http\Response
     {
         return $this->lastResponse;
     }
@@ -71,7 +71,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
      *
      * @return ild78\Http\Request|null
      */
-    public function getLastRequest() : ?ild78\Http\Request
+    public function getLastRequest(): ?ild78\Http\Request
     {
         return $this->lastRequest;
     }
@@ -81,7 +81,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
      *
      * @return array
      */
-    public function getResponseHeaders() : array
+    public function getResponseHeaders(): array
     {
         return $this->headers;
     }
@@ -95,7 +95,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
      * @param string $line One header line.
      * @return integer
      */
-    public function parseHeaderLine($curl, string $line) : int
+    public function parseHeaderLine($curl, string $line): int
     {
         if (!trim($line)) {
             return strlen($line);
@@ -142,21 +142,21 @@ class Client implements ild78\Interfaces\HttpClientInterface
      * @throws ild78\Exceptions\ClientException On over 400 level HTTP error.
      * @throws ild78\Exceptions\ServerException On over 500 level HTTP error.
      */
-    public function request(string $method, string $uri, array $options = []) : Psr\Http\Message\ResponseInterface
+    public function request(string $method, string $uri, array $options = []): Psr\Http\Message\ResponseInterface
     {
-        $config = ild78\Api\Config::getGlobal();
+        $config = ild78\Config::getGlobal();
         $logger = $config->getLogger();
 
         // Set URL.
-        curl_setopt($this->curl, CURLOPT_URL, $uri);
+        curl_setopt($this->curl, CURLOPT_URL, trim($uri));
 
         // Set HTTP method.
-        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, $method);
+        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, trim($method));
 
         // Timeout.
         if (array_key_exists('timeout', $options)) {
-            curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT, $options['timeout']);
-            curl_setopt($this->curl, CURLOPT_TIMEOUT, $options['timeout']);
+            curl_setopt($this->curl, CURLOPT_CONNECTTIMEOUT, (int) $options['timeout']);
+            curl_setopt($this->curl, CURLOPT_TIMEOUT, (int) $options['timeout']);
         }
 
         // Headers.
@@ -191,6 +191,9 @@ class Client implements ild78\Interfaces\HttpClientInterface
         // Get response headers.
         curl_setopt($this->curl, CURLOPT_HEADERFUNCTION, [$this, 'parseHeaderLine']);
 
+        // Add user agent.
+        curl_setopt($this->curl, CURLOPT_USERAGENT, $config->getDefaultUserAgent());
+
         $body = curl_exec($this->curl);
         $error = curl_errno($this->curl);
         $code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
@@ -216,12 +219,44 @@ class Client implements ild78\Interfaces\HttpClientInterface
                 $params['message'] = curl_error($this->curl);
             }
 
+            if ($this->lastResponse instanceof Response) {
+                $json = json_decode((string) $this->lastResponse->getBody(), true);
+
+                if (
+                    json_last_error() === JSON_ERROR_NONE
+                    && is_array($json)
+                    && array_key_exists('error', $json)
+                    && array_key_exists('message', $json['error'])
+                    && $json['error']['message']
+                ) {
+                    $params['message'] = $json['error']['message'];
+
+                    if (is_array($json['error']['message'])) {
+                        $params['message'] = current($json['error']['message']);
+                        $id = '';
+
+                        if (array_key_exists('id', $json['error']['message'])) {
+                            $id = $json['error']['message']['id'];
+                            $params['message'] = $json['error']['message']['id'];
+                        }
+
+                        if (array_key_exists('error', $json['error']['message'])) {
+                            $params['message'] = $json['error']['message']['error'];
+
+                            if ($id) {
+                                $params['message'] .= ' (' . $id . ')';
+                            }
+                        }
+                    }
+                }
+            }
+
             $logMethod = $class::getLogLevel();
             $logMessage = null;
 
             switch ($code) {
                 case 401:
-                    $logMessage = 'HTTP 401 - Invalid credential : ' . $config->getKey();
+                    $logMessage = 'HTTP 401 - Invalid credential : ' . $config->getSecretKey();
                     break;
 
                 case 404:

@@ -2,16 +2,16 @@
 
 namespace ild78\tests\unit\Exceptions;
 
-use atoum;
 use ild78;
 use Psr;
 
-class InvalidExpirationYearException extends atoum
+class InvalidExpirationYearException extends ild78\Tests\atoum
 {
     public function testClass()
     {
         $this
-            ->testedClass
+            ->currentlyTestedClass
+                ->extends(ild78\Exceptions\InvalidExpirationException::class)
                 ->extends(ild78\Exceptions\InvalidArgumentException::class)
                 ->implements(ild78\Interfaces\ExceptionInterface::class)
         ;

@@ -2,11 +2,10 @@
 
 namespace ild78\tests\unit\Stub\Http;
 
-use atoum;
 use ild78;
 use mock;
 
-class Message extends atoum
+class Message extends ild78\Tests\atoum
 {
     public function testAddHeader()
     {
@@ -310,6 +309,64 @@ class Message extends atoum
                     ->string($this->testedInstance->getBody())
                         ->isIdenticalTo($obj->getBody())
                         ->isIdenticalTo($body)
+
+                    ->string($this->testedInstance->getProtocolVersion())
+                        ->isIdenticalTo($obj->getProtocolVersion())
+                        ->isIdenticalTo($protocol)
+        ;
+    }
+
+    public function testWithModifiedBody()
+    {
+        $this
+            ->given($host = uniqid())
+            ->and($body = uniqid())
+            ->and($key = uniqid())
+            ->and($value = uniqid())
+            ->and($headers = [
+                $key => [$value],
+                'Host' => [$host],
+            ])
+            ->and($protocol = uniqid())
+            ->and($this->newTestedInstance($body, $headers, $protocol))
+
+            ->if($changes = uniqid())
+            ->then
+                ->assert('With two arguments')
+                    ->object($obj = $this->testedInstance->withModifiedBody($body, $changes))
+                        ->isInstanceOfTestedClass
+                        ->isNotTestedInstance
+
+                    ->string($obj->getBody())
+                        ->isIdenticalTo($changes)
+
+                    ->string($this->testedInstance->getBody())
+                        ->isIdenticalTo($body)
+
+                    // Check no diff on other properties
+                    ->array($this->testedInstance->getHeaders())
+                        ->isIdenticalTo($obj->getHeaders())
+                        ->isIdenticalTo($headers)
+
+                    ->string($this->testedInstance->getProtocolVersion())
+                        ->isIdenticalTo($obj->getProtocolVersion())
+                        ->isIdenticalTo($protocol)
+
+                ->assert('With one argument')
+                    ->object($obj = $this->testedInstance->withModifiedBody($body))
+                        ->isInstanceOfTestedClass
+                        ->isNotTestedInstance
+
+                    ->string($obj->getBody())
+                        ->isIdenticalTo('')
+
+                    ->string($this->testedInstance->getBody())
+                        ->isIdenticalTo($body)
+
+                    // Check no diff on other properties
+                    ->array($this->testedInstance->getHeaders())
+                        ->isIdenticalTo($obj->getHeaders())
+                        ->isIdenticalTo($headers)
 
                     ->string($this->testedInstance->getProtocolVersion())
                         ->isIdenticalTo($obj->getProtocolVersion())

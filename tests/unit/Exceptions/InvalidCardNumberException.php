@@ -2,16 +2,15 @@
 
 namespace ild78\tests\unit\Exceptions;
 
-use atoum;
 use ild78;
 use Psr;
 
-class InvalidCardNumberException extends atoum
+class InvalidCardNumberException extends ild78\Tests\atoum
 {
     public function testClass()
     {
         $this
-            ->testedClass
+            ->currentlyTestedClass
                 ->extends(ild78\Exceptions\InvalidArgumentException::class)
                 ->implements(ild78\Interfaces\ExceptionInterface::class)
         ;
@@ -23,7 +22,7 @@ class InvalidCardNumberException extends atoum
             ->if($class = $this->testedClass->getClass())
             ->then
                 ->string($class::getDefaultMessage())
-                    ->isIdenticalTo('Invalid card number')
+                    ->isIdenticalTo('Invalid card number.')
         ;
     }
 

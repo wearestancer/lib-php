@@ -2,16 +2,15 @@
 
 namespace ild78\tests\unit\Exceptions;
 
-use atoum;
 use ild78;
 use Psr;
 
-class InternalServerErrorException extends atoum
+class InternalServerErrorException extends ild78\Tests\atoum
 {
     public function testClass()
     {
         $this
-            ->testedClass
+            ->currentlyTestedClass
                 ->extends(ild78\Exceptions\ServerException::class)
                 ->implements(ild78\Interfaces\ExceptionInterface::class)
         ;

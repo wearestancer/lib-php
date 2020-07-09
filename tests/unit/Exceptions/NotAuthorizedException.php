@@ -2,16 +2,15 @@
 
 namespace ild78\tests\unit\Exceptions;
 
-use atoum;
 use ild78;
 use Psr;
 
-class NotAuthorizedException extends atoum
+class NotAuthorizedException extends ild78\Tests\atoum
 {
     public function testClass()
     {
         $this
-            ->testedClass
+            ->currentlyTestedClass
                 ->extends(ild78\Exceptions\ClientException::class)
                 ->implements(ild78\Interfaces\ExceptionInterface::class)
         ;
@@ -33,7 +32,7 @@ class NotAuthorizedException extends atoum
             ->if($class = $this->testedClass->getClass())
             ->then
                 ->string($class::getLogLevel())
-                    ->isIdenticalTo(Psr\Log\logLevel::NOTICE)
+                    ->isIdenticalTo(Psr\Log\logLevel::CRITICAL)
         ;
     }
 

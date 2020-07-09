@@ -2,11 +2,10 @@
 
 namespace ild78\Http\tests\unit;
 
-use atoum;
 use ild78;
 use mock;
 
-class Client extends atoum
+class Client extends ild78\Tests\atoum
 {
     public function errorDataProvider()
     {
@@ -35,7 +34,7 @@ class Client extends atoum
             401,
             ild78\Exceptions\NotAuthorizedException::class,
             ild78\Exceptions\NotAuthorizedException::getDefaultMessage(),
-            'notice',
+            'critical',
             'HTTP 401 - Invalid credential : %s',
         ];
 
@@ -198,7 +197,7 @@ class Client extends atoum
     public function testClass()
     {
         $this
-            ->testedClass
+            ->currentlyTestedClass
                 ->implements(ild78\Interfaces\HttpClientInterface::class)
         ;
     }
@@ -234,7 +233,7 @@ class Client extends atoum
     public function testGetLastRequest_LastResponse()
     {
         $this
-            ->given($config = ild78\Api\Config::init(uniqid()))
+            ->given($config = ild78\Config::init([]))
 
             ->if($this->newTestedInstance)
             ->and($curl = $this->testedInstance->getCurlResource())
@@ -325,7 +324,7 @@ class Client extends atoum
     public function testRequest()
     {
         $this
-            ->given($config = ild78\Api\Config::init(uniqid()))
+            ->given($config = ild78\Config::init([]))
 
             ->assert('Basic request')
                 ->given($this->newTestedInstance)
@@ -349,6 +348,9 @@ class Client extends atoum
                             ->once
 
                         ->wasCalledWithIdenticalArguments($curl, CURLOPT_CUSTOMREQUEST, $method)
+                            ->once
+
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_USERAGENT, $config->getDefaultUserAgent())
                             ->once
 
                         ->wasCalledWithArguments($curl, CURLOPT_CONNECTTIMEOUT)
@@ -459,6 +461,179 @@ class Client extends atoum
                     ->function('curl_exec')
                         ->wasCalled
                             ->once
+
+            ->assert('Error in response')
+                ->given($this->newTestedInstance)
+                ->and($curl = $this->testedInstance->getCurlResource())
+                ->if($message = uniqid())
+                ->and($body = json_encode(['error' => ['message' => $message]]))
+                ->if($this->function->curl_setopt = true)
+                ->and($this->function->curl_exec = $body)
+                ->and($this->function->curl_getinfo = $code = rand(400, 599))
+                ->and($this->function->curl_errno = 0)
+                ->and($this->function->curl_error = '')
+                ->and($method = 'GET')
+                ->and($host = uniqid())
+                ->then
+                    ->exception(function () use ($method, $host) {
+                        $this->testedInstance->request($method, $host);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\HttpException::class)
+                        ->hasCode($code)
+                        ->message
+                            ->isIdenticalTo($message)
+
+                    ->object($this->exception->getRequest())
+                        ->isInstanceOf(ild78\Http\Request::class)
+
+                    ->object($response = $this->exception->getResponse())
+                        ->isInstanceOf(ild78\Http\Response::class)
+
+                    ->string($response->getBody())
+                        ->isIdenticalTo($body)
+
+                    ->function('curl_setopt')
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_URL, $host)
+                            ->once
+
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_CUSTOMREQUEST, $method)
+                            ->once
+
+                    ->function('curl_exec')
+                        ->wasCalled
+                            ->once
+
+            ->assert('Error as an array in response')
+                ->given($this->newTestedInstance)
+                ->and($curl = $this->testedInstance->getCurlResource())
+                ->if($message = uniqid())
+                ->and($body = json_encode(['error' => ['message' => [uniqid() => $message]]]))
+                ->if($this->function->curl_setopt = true)
+                ->and($this->function->curl_exec = $body)
+                ->and($this->function->curl_getinfo = $code = rand(400, 599))
+                ->and($this->function->curl_errno = 0)
+                ->and($this->function->curl_error = '')
+                ->and($method = 'GET')
+                ->and($host = uniqid())
+                ->then
+                    ->exception(function () use ($method, $host) {
+                        $this->testedInstance->request($method, $host);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\HttpException::class)
+                        ->hasCode($code)
+                        ->message
+                            ->isIdenticalTo($message)
+
+                    ->object($this->exception->getRequest())
+                        ->isInstanceOf(ild78\Http\Request::class)
+
+                    ->object($response = $this->exception->getResponse())
+                        ->isInstanceOf(ild78\Http\Response::class)
+
+                    ->string($response->getBody())
+                        ->isIdenticalTo($body)
+
+                    ->function('curl_setopt')
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_URL, $host)
+                            ->once
+
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_CUSTOMREQUEST, $method)
+                            ->once
+
+                    ->function('curl_exec')
+                        ->wasCalled
+                            ->once
+
+            ->assert('Use error.message.error as message')
+                ->given($body = [
+                    'error' => [
+                        'message' => [
+                            'error' => uniqid(),
+                        ],
+                    ],
+                ])
+
+                ->if($this->newTestedInstance)
+                ->and($this->function->curl_exec = json_encode($body))
+                ->and($this->function->curl_getinfo = 400)
+
+                ->if($object = new mock\ild78\Core\AbstractObject)
+                ->and($method = new ild78\Http\Verb\Post)
+                ->then
+                    ->exception(function () use ($method, $object) {
+                        $this->testedInstance->request($method, $object);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\BadRequestException::class)
+                        ->message
+                            ->isIdenticalTo($body['error']['message']['error'])
+
+            ->assert('Same with error.message.id')
+                ->given($body = [
+                    'error' => [
+                        'message' => [
+                            'id' => uniqid(),
+                        ],
+                    ],
+                ])
+
+                ->if($this->newTestedInstance)
+                ->and($this->function->curl_exec = json_encode($body))
+                ->and($this->function->curl_getinfo = 400)
+
+                ->if($object = new mock\ild78\Core\AbstractObject)
+                ->and($method = new ild78\Http\Verb\Post)
+                ->then
+                    ->exception(function () use ($method, $object) {
+                        $this->testedInstance->request($method, $object);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\BadRequestException::class)
+                        ->message
+                            ->isIdenticalTo($body['error']['message']['id'])
+
+            ->assert('Same with error.message.error and error.message.id')
+                ->given($body = [
+                    'error' => [
+                        'message' => [
+                            'error' => uniqid(),
+                            'id' => uniqid(),
+                        ],
+                    ],
+                ])
+
+                ->if($this->newTestedInstance)
+                ->and($this->function->curl_exec = json_encode($body))
+                ->and($this->function->curl_getinfo = 400)
+
+                ->if($object = new mock\ild78\Core\AbstractObject)
+                ->and($method = new ild78\Http\Verb\Post)
+                ->then
+                    ->exception(function () use ($method, $object) {
+                        $this->testedInstance->request($method, $object);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\BadRequestException::class)
+                        ->message
+                            ->isIdenticalTo($body['error']['message']['error'] . ' (' . $body['error']['message']['id'] . ')')
+
+            ->assert('Same with error.message')
+                ->given($body = [
+                    'error' => [
+                        'message' => uniqid(),
+                    ],
+                ])
+
+                ->if($this->newTestedInstance)
+                ->and($this->function->curl_exec = json_encode($body))
+                ->and($this->function->curl_getinfo = 400)
+
+                ->if($object = new mock\ild78\Core\AbstractObject)
+                ->and($method = new ild78\Http\Verb\Post)
+                ->then
+                    ->exception(function () use ($method, $object) {
+                        $this->testedInstance->request($method, $object);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\BadRequestException::class)
+                        ->message
+                            ->isIdenticalTo($body['error']['message'])
         ;
     }
 
@@ -468,23 +643,23 @@ class Client extends atoum
     public function testRequest_exceptions($error, $code, $class, $message, $logLevel, $logMessage)
     {
         $this
-            ->given($config = ild78\Api\Config::init(uniqid()))
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
             ->assert($code . ' should throw ' . $class)
                 ->given($this->newTestedInstance)
                 ->if($this->function->curl_setopt = true)
-                ->and($this->function->curl_exec = $body = uniqid())
+                ->and($this->function->curl_exec = $body = sprintf('"%s"', uniqid()))
                 ->and($this->function->curl_getinfo = $code)
                 ->and($this->function->curl_errno = $error)
                 ->and($this->function->curl_error = uniqid())
 
                 ->when(function () use ($code, &$logMessage, $config) {
                     if ($code === 401) {
-                        $logMessage = sprintf($logMessage, $config->getKey());
+                        $logMessage = sprintf($logMessage, $config->getSecretKey());
                     }
                 })
 
-                ->if($logger = new mock\ild78\Api\Logger)
+                ->if($logger = new mock\ild78\Core\Logger)
                 ->and($config->setLogger($logger))
                 ->then
                     ->exception(function () {

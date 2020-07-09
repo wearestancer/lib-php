@@ -51,7 +51,7 @@ class HttpException extends Exception implements ExceptionInterface
      * @param array $params Parameters, keys must correspond to exception properties.
      * @return self
      */
-    public static function create(array $params = []) : Exception
+    public static function create(array $params = []): Exception
     {
         if (array_key_exists('status', $params)) {
             $class = static::getClassFromStatus($params['status']);
@@ -83,7 +83,7 @@ class HttpException extends Exception implements ExceptionInterface
      * @param integer $status HTTP status.
      * @return string
      */
-    public static function getClassFromStatus(int $status) : string
+    public static function getClassFromStatus(int $status): string
     {
         $list = [
             310 => TooManyRedirectsException::class,
@@ -125,7 +125,7 @@ class HttpException extends Exception implements ExceptionInterface
      *
      * @return string
      */
-    public static function getDefaultMessage() : string
+    public static function getDefaultMessage(): string
     {
         $message = '';
 
@@ -141,7 +141,7 @@ class HttpException extends Exception implements ExceptionInterface
      *
      * @return Psr\Http\Message\RequestInterface|null
      */
-    public function getRequest() : ?Psr\Http\Message\RequestInterface
+    public function getRequest(): ?Psr\Http\Message\RequestInterface
     {
         return $this->request;
     }
@@ -151,7 +151,7 @@ class HttpException extends Exception implements ExceptionInterface
      *
      * @return Psr\Http\Message\ResponseInterface|null
      */
-    public function getResponse() : ?Psr\Http\Message\ResponseInterface
+    public function getResponse(): ?Psr\Http\Message\ResponseInterface
     {
         return $this->response;
     }
@@ -161,7 +161,7 @@ class HttpException extends Exception implements ExceptionInterface
      *
      * @return string|null
      */
-    public static function getStatus() : ?string
+    public static function getStatus(): ?string
     {
         return static::$status;
     }
