@@ -463,6 +463,10 @@ class Payment extends ild78\Core\AbstractObject
      */
     public function send(): ild78\Core\AbstractObject
     {
+        if ($this->getId() && $this->isModified()) {
+            return parent::send();
+        }
+
         if (!$this->getAmount()) {
             throw new ild78\Exceptions\InvalidAmountException();
         }

@@ -430,6 +430,30 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
+    public function testIssue7()
+    {
+        $this
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
+
+            ->if($client = new mock\ild78\Http\Client)
+            ->and($response = new mock\ild78\Http\Response(200))
+            ->and($body = file_get_contents(__DIR__ . '/fixtures/issue/7.json'))
+            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($client)->request = $response)
+
+            ->and($config->setHttpClient($client))
+
+            ->if($this->newTestedInstance('paym_T3xKVkOq17DCjBEHsAefovuJ'))
+            ->then
+                ->object($this->testedInstance->setStatus(ild78\Payment\Status::CAPTURE))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->send())
+                    ->isTestedInstance
+        ;
+    }
+
     public function testList()
     {
         $this
