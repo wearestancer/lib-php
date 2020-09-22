@@ -1,0 +1,10 @@
+
+publish:branches:
+  extends:
+    - .publish
+
+  variables:
+    PUBLISH_OPTIONS: branch=$CI_COMMIT_BRANCH
+
+  only:
+    - branches

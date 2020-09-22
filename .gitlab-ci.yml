@@ -9,3 +9,5 @@ include:
   - local: .gitlab/ci/php-7.2.yml
   - local: .gitlab/ci/php-7.3.yml
   - local: .gitlab/ci/php-7.4.yml
+  - local: .gitlab/ci/publish/branches.yml
+  - local: .gitlab/ci/publish/tags.yml
