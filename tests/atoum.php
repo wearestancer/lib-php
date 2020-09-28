@@ -26,7 +26,7 @@ class atoum extends \atoum\test
         }
     }
 
-    public function getRandomNumber()
+    public function getRandomNumber(): string
     {
         // Simulate a french mobile phone number
         $first = rand(0, 1) + 6;
@@ -46,7 +46,7 @@ class atoum extends \atoum\test
         return $number;
     }
 
-    public function getRandomString($min, $max = null)
+    public function getRandomString(int $min, int $max = null): string
     {
         if (!$max) {
             $max = $min;
@@ -57,7 +57,7 @@ class atoum extends \atoum\test
         return bin2hex(random_bytes($len / 2));
     }
 
-    public function getUuid()
+    public function getUuid(): string
     {
         return Uuid::uuid4()->toString();
     }
