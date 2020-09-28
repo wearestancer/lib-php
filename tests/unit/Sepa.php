@@ -18,6 +18,34 @@ class Sepa extends ild78\Tests\atoum
         ;
     }
 
+    public function testDateMandate()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($dateMandate = rand(946681200, 1893452400))
+            ->then
+                ->variable($this->testedInstance->getDateMandate())
+                    ->isNull
+
+                ->object($this->testedInstance->setDateMandate($dateMandate))
+                    ->isTestedInstance
+
+                ->dateTime($date = $this->testedInstance->getDateMandate())
+
+                ->variable($date->format('U'))
+                    ->isEqualTo($dateMandate)
+
+                ->boolean($this->testedInstance->isModified())
+                    ->isTrue
+
+                ->array($this->testedInstance->jsonSerialize())
+                    ->hasSize(1)
+                    ->hasKey('date_mandate')
+                    ->integer['date_mandate']
+                        ->isEqualTo($dateMandate)
+        ;
+    }
+
     public function testGetEndpoint()
     {
         $this

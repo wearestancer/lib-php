@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ild78;
 
 use ild78;
+use DateTime;
 
 /**
  * Representation of a SEPA account
@@ -24,6 +25,9 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
         'country' => [
             'restricted' => true,
             'type' => self::STRING,
+        ],
+        'dateMandate' => [
+            'type' => DateTime::class,
         ],
         'iban' => [
             'required' => true,
