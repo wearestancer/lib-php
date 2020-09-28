@@ -444,7 +444,7 @@ class Payment extends TestCase
                 ->and($card->setNumber($this->getValidCardNumber()))
                 ->and($card->setExpirationMonth(rand(1, 12)))
                 ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
-                ->and($card->setCvc(rand(100, 999)))
+                ->and($card->setCvc((string) rand(100, 999)))
 
                 ->then
                     ->object($this->testedInstance->send())
@@ -514,7 +514,7 @@ class Payment extends TestCase
                 ->and($card->setNumber($this->getValidCardNumber()))
                 ->and($card->setExpirationMonth(rand(1, 12)))
                 ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
-                ->and($card->setCvc(rand(100, 999)))
+                ->and($card->setCvc((string) rand(100, 999)))
 
                 ->if($customer = new ild78\Customer)
                 ->and($customer->setName($name))
@@ -579,7 +579,7 @@ class Payment extends TestCase
                 ->and($card->setNumber($this->getValidCardNumber()))
                 ->and($card->setExpirationMonth(rand(1, 12)))
                 ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
-                ->and($card->setCvc(rand(100, 999)))
+                ->and($card->setCvc((string) rand(100, 999)))
 
                 ->if($customer = new ild78\Customer)
                 ->and($customer->setName($name)) // From previous test
