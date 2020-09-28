@@ -28,7 +28,7 @@ class Dispute extends TestCase
             ->and($card->setCvc((string) rand(100, 999)))
             ->and($payment->setCustomer($customer = new ild78\Customer))
             ->and($customer->setName('John Doe'))
-            ->and($customer->setEMail('john.doe@example.com'))
+            ->and($customer->setEmail('john.doe@example.com'))
             ->and($payment->send())
 
             ->if($this->newTestedInstance) // Needed to use "isInstanceOfTestedClass" asserter

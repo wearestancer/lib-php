@@ -99,7 +99,7 @@ class Payment extends TestCase
                 ->and($card->setCvc((string) rand(100, 999)))
                 ->and($this->testedInstance->setCustomer($customer = new ild78\Customer))
                 ->and($customer->setName('John Doe'))
-                ->and($customer->setEMail('john.doe@example.com'))
+                ->and($customer->setEmail('john.doe@example.com'))
                 ->and($this->testedInstance->send())
                 ->and(array_push($this->paymentList, $this->testedInstance))
                 ->then
@@ -190,7 +190,7 @@ class Payment extends TestCase
                 ->object($customer->setName('John Doe'))
                     ->isInstanceOf(ild78\Customer::class)
 
-                ->object($customer->setEMail('john.doe@example.com'))
+                ->object($customer->setEmail('john.doe@example.com'))
                     ->isInstanceOf(ild78\Customer::class)
 
                 ->object($this->testedInstance->send())
