@@ -208,7 +208,7 @@ class Payment extends TestCase
         $this
             ->assert('With a card')
                 ->given($amount = rand(50, 99999))
-                ->and($description = vsprintf('Automatic test, %.02f %s', [
+                ->and($description = vsprintf('Automatic test, with card, %.02f %s', [
                     $amount / 100,
                     $currency,
                 ]))
@@ -250,6 +250,59 @@ class Payment extends TestCase
 
                     ->dateTime($card->getCreationDate())
                         ->hasDay(date('d'))
+
+                    ->string($customer->getId())
+                        ->startWith('cust_')
+                        ->hasLength(29)
+
+                    ->dateTime($customer->getCreationDate())
+                        ->hasDay(date('d'))
+
+            ->assert('With a sepa account')
+                ->given($amount = rand(50, 99999))
+                ->and($description = vsprintf('Automatic test, with SEPA, %.02f %s', [
+                    $amount / 100,
+                    $currency,
+                ]))
+
+                ->if($sepa = new ild78\Sepa)
+                ->and($sepa->setIban($this->getValidIban()))
+                ->and($sepa->setName($this->fake()->name))
+
+                ->if($customer = new ild78\Customer)
+                ->and($customer->setName('John Doe'))
+                ->and($customer->setEmail('john.doe@example.com'))
+
+                ->if($this->newTestedInstance)
+                ->and($this->testedInstance->setAmount($amount))
+                ->and($this->testedInstance->setCurrency($currency))
+                ->and($this->testedInstance->setCustomer($customer))
+                ->and($this->testedInstance->setDescription($description))
+                ->and($this->testedInstance->setSepa($sepa))
+
+                ->then
+                    ->object($this->testedInstance->send())
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getId())
+                        ->startWith('paym_')
+                        ->hasLength(29)
+
+                    ->dateTime($this->testedInstance->getCreationDate())
+                        ->hasDay(date('d'))
+
+                    ->string($this->testedInstance->getMethod())
+                        ->isIdenticalTo('sepa')
+
+                    ->string($sepa->getId())
+                        ->startWith('sepa_')
+                        ->hasLength(29)
+
+                    ->dateTime($sepa->getCreationDate())
+                        ->hasDay(date('d'))
+
+                    ->string($sepa->getBic())
+                        ->startWith('TEST')
 
                     ->string($customer->getId())
                         ->startWith('cust_')
