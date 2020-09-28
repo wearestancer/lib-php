@@ -45,6 +45,7 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
             'type' => self::STRING,
         ],
         'name' => [
+            'required' => true,
             'size' => [
                 'min' => 4,
                 'max' => 64,
