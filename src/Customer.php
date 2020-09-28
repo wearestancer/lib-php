@@ -12,7 +12,14 @@ use ild78;
  * @method string getMobile()
  * @method string getName()
  *
+ * @method self setEmail(string $email)
+ * @method self setMobile(string $mobile)
+ * @method self setName(string $name)
+ *
  * @property DateTime|null $created
+ * @property string $email
+ * @property string $mobile
+ * @property string $name
  */
 class Customer extends ild78\Core\AbstractObject
 {

@@ -12,25 +12,52 @@ use ild78;
  *
  * @method integer getAmount()
  * @method ild78\\Auth getAuth()
+ * @method boolean getCapture()
  * @method ild78\\Card getCard()
- * @method string getCountry()
+ * @method string|null getCountry()
  * @method string getCurrency()
  * @method ild78\\Customer getCustomer()
  * @method string|null getDescription()
  * @method ild78\\Device getDevice()
- * @method string getMethod()
- * @method string getOrderId()
+ * @method string|null getMethod()
+ * @method string|null getOrderId()
+ * @method ild78\\Refund[] getRefunds()
  * @method string getResponse()
  * @method string|null getReturnUrl()
  * @method ild78\\Sepa getSepa()
- * @method string getStatus()
- * @method string getUniqueId()
- * @method Generator list(array $terms)
- * @method self setDevice(ild78\\Device $device)
- * @method self setReturnUrl(string $https)
- * @method self setStatus(string $status)
+ * @method string|null getStatus()
+ * @method string|null getUniqueId()
  *
+ * @method Generator list(array $terms)
+ *
+ * @method self setAmount(integer $amount)
+ * @method self setCapture(boolean $capture)
+ * @method self setCountry(string $country)
+ * @method self setCustomer(ild78\\Customer $customer)
+ * @method self setDescription(string $description)
+ * @method self setDevice(ild78\\Device $device)
+ * @method self setOrderId(string $orderId)
+ * @method self setStatus(string $status)
+ * @method self setUniqueId(string $uniqueId)
+ *
+ * @property integer $amount
+ * @property ild78\\Auth $auth
+ * @property boolean $capture
+ * @property ild78\\Card $card
+ * @property string|null $country
  * @property DateTime|null $created
+ * @property string $currency
+ * @property ild78\\Customer $customer
+ * @property string|null $description
+ * @property ild78\\Device $device
+ * @property string|null $method
+ * @property string|null $orderId
+ * @property ild78\\Refund[] $refunds
+ * @property string $response
+ * @property string|null $returnUrl
+ * @property ild78\\Sepa $sepa
+ * @property string|null $status
+ * @property string|null $uniqueId
  */
 class Payment extends ild78\Core\AbstractObject
 {

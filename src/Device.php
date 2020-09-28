@@ -15,13 +15,21 @@ use ild78;
  * @method string getLanguages()
  * @method integer getPort()
  * @method string getUserAgent()
+ *
  * @method self setCity(string $city)
  * @method self setCountry(string $country)
  * @method self setHttpAccept(string $httpAccept)
  * @method self setLanguages(string $languages)
  * @method self setUserAgent(string $userAgent)
  *
+ * @property string $city
+ * @property string $country
  * @property DateTime|null $created
+ * @property string $httpAccept
+ * @property string $ip
+ * @property string $languages
+ * @property integer $port
+ * @property string $userAgent
  */
 class Device extends ild78\Core\AbstractObject
 {

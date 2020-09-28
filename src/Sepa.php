@@ -9,7 +9,24 @@ use DateTime;
 /**
  * Representation of a SEPA account
  *
+ * @method string getBic()
+ * @method string|null getCountry()
+ * @method DateTime|null getDateMandate()
+ * @method string getLast4()
+ * @method string|null getMandate()
+ * @method string getName()
+ *
+ * @method self setDateMandate(DateTime $dateMandate)
+ * @method self setMandate(string $mandate)
+ * @method self setName(string $name)
+ *
+ * @property string $bic
+ * @property string|null $country
  * @property DateTime|null $created
+ * @property DateTime|null $dateMandate
+ * @property string $last4
+ * @property string|null $mandate
+ * @property string $name
  */
 class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\PaymentMeansInterface
 {
