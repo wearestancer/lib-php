@@ -12,6 +12,9 @@ use ild78;
  */
 class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\PaymentMeansInterface
 {
+    /** @var string */
+    protected $endpoint = 'sepa';
+
     /** @var array */
     protected $dataModel = [
         'bic' => [
