@@ -3,6 +3,7 @@
 namespace ild78\Tests;
 
 use ild78;
+use Faker;
 use Ramsey\Uuid\Uuid;
 
 class atoum extends \atoum\test
@@ -24,6 +25,11 @@ class atoum extends \atoum\test
         if ($method !== 'testGetGlobal_SetGlobal') {
             ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]);
         }
+    }
+
+    public function fake(): Faker\Generator
+    {
+        return Faker\Factory::create();
     }
 
     public function getRandomNumber(): string
