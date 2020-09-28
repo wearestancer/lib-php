@@ -47,6 +47,53 @@ class Sepa extends ild78\Tests\atoum
         ;
     }
 
+    public function testMandate()
+    {
+        $mandate = '';
+
+        for ($idx = 0; $idx < 40; $idx++) {
+            $length = strlen($mandate);
+
+            if ($length < 3 || $length > 35) {
+                $this
+                    ->assert($length . ' characters => Not valid')
+                        ->exception(function () use ($mandate) {
+                            $this->newTestedInstance->setMandate($mandate);
+                        })
+                            ->isInstanceOf(ild78\Exceptions\InvalidMandateException::class)
+                            ->message
+                                ->isIdenticalTo('A valid mandate must be between 3 and 35 characters.')
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isFalse
+                ;
+            } else {
+                $this
+                    ->assert($length . ' characters => Valid')
+                        ->variable($this->newTestedInstance->getMandate())
+                            ->isNull
+
+                        ->object($this->testedInstance->setMandate($mandate))
+                            ->isTestedInstance
+
+                        ->string($this->testedInstance->getMandate())
+                            ->isIdenticalTo($mandate)
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isTrue
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('mandate')
+                            ->string['mandate']
+                                ->isEqualTo($mandate)
+                ;
+            }
+
+            $mandate .= chr(rand(65, 90));
+        }
+    }
+
     public function testSetBic()
     {
         $range = range(1, 20);

@@ -33,6 +33,13 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
             'restricted' => true,
             'type' => self::STRING,
         ],
+        'mandate' => [
+            'size' => [
+                'min' => 3,
+                'max' => 35,
+            ],
+            'type' => self::STRING,
+        ],
         'name' => [
             'size' => [
                 'min' => 4,
