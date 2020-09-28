@@ -52,6 +52,7 @@ abstract class AbstractObject implements JsonSerializable
     public function __construct($id = null)
     {
         $defaults = [
+            'coerce' => null,
             'exportable' => null,
             'list' => false,
             'size' => [
@@ -70,6 +71,16 @@ abstract class AbstractObject implements JsonSerializable
 
             if (is_null($data['exportable'])) {
                 $data['exportable'] = !$data['restricted'];
+            }
+
+            if ($data['type'] === DateTime::class) {
+                $data['coerce'] = function ($value) {
+                    if ($value instanceof DateTime) {
+                        return $value;
+                    }
+
+                    return new DateTime('@' . $value);
+                };
             }
         }
 
@@ -281,6 +292,14 @@ abstract class AbstractObject implements JsonSerializable
             return [];
         }
 
+        if (!is_null($value) && $this->dataModel[$property]['type'] === DateTime::class) {
+            $tz = ild78\Config::getGlobal()->getDefaultTimeZone();
+
+            if ($tz) {
+                $value->setTimezone($tz);
+            }
+        }
+
         return $value;
     }
 
@@ -303,15 +322,25 @@ abstract class AbstractObject implements JsonSerializable
             throw new ild78\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
         }
 
-        if ($this->dataModel[$property]['restricted']) {
+        $model = $this->dataModel[$property];
+
+        if ($model['restricted']) {
             $message = sprintf('You are not allowed to modify "%s".', $property);
 
             throw new ild78\Exceptions\BadMethodCallException($message);
         }
 
         $type = gettype($value);
+        $coerce = function ($v) {
+            return $v;
+        };
+        $coercedValues = [];
 
-        if ($this->dataModel[$property]['list']) {
+        if (is_callable($model['coerce'])) {
+            $coerce = $model['coerce'];
+        }
+
+        if ($model['list']) {
             if ($type !== 'array') {
                 $message = sprintf('Type mismatch, given "%s" expected "array".', $type);
 
@@ -319,13 +348,15 @@ abstract class AbstractObject implements JsonSerializable
             }
 
             foreach ($value as $val) {
-                $this->validateDataModel($property, $val);
+                $coercedValues[] = $coerce($val);
+                $this->validateDataModel($property, $coerce($val));
             }
         } else {
-            $this->validateDataModel($property, $value);
+            $coercedValues = $coerce($value);
+            $this->validateDataModel($property, $coerce($value));
         }
 
-        $this->dataModel[$property]['value'] = $value;
+        $this->dataModel[$property]['value'] = $coercedValues;
         $this->modified[] = $this->camelCaseToSnakeCase($property);
 
         return $this;
@@ -515,28 +546,32 @@ abstract class AbstractObject implements JsonSerializable
 
                         $this->$property = $list;
                     } else {
-                        $id = null;
+                        $class = $this->dataModel[$property]['type'];
 
-                        if (is_string($value)) {
-                            $id = $value;
-                            $value = [
-                                'id' => $id,
-                            ];
-                        }
+                        if (is_subclass_of($class, self::class)) {
+                            $id = null;
 
-                        if (!$this->dataModel[$property]['value']) {
-                            $class = $this->dataModel[$property]['type'];
-
-                            if (is_null($id)) {
-                                $this->dataModel[$property]['value'] = new $class();
-                            } else {
-                                $this->dataModel[$property]['value'] = new $class($id);
+                            if (is_string($value)) {
+                                $id = $value;
+                                $value = [
+                                    'id' => $id,
+                                ];
                             }
-                        }
 
-                        if (is_array($value)) {
-                            $this->dataModel[$property]['value']->cleanModified = $this->cleanModified;
-                            $this->dataModel[$property]['value']->hydrate($value);
+                            if (!$this->dataModel[$property]['value']) {
+                                if (is_null($id)) {
+                                    $this->dataModel[$property]['value'] = new $class();
+                                } else {
+                                    $this->dataModel[$property]['value'] = new $class($id);
+                                }
+                            }
+
+                            if (is_array($value)) {
+                                $this->dataModel[$property]['value']->cleanModified = $this->cleanModified;
+                                $this->dataModel[$property]['value']->hydrate($value);
+                            }
+                        } else {
+                            $this->$property = $value;
                         }
                     }
                 } else {
@@ -636,7 +671,12 @@ abstract class AbstractObject implements JsonSerializable
             if ($type === 'object') {
                 if (in_array($prop, $this->modified) || $value->isModified()) {
                     $supp = false;
-                    $value = $value->jsonSerialize();
+
+                    if (method_exists($value, 'jsonSerialize')) {
+                        $value = $value->jsonSerialize();
+                    } elseif ($value instanceof DateTime) {
+                        $value = $value->getTimestamp();
+                    }
                 }
             }
 
@@ -645,8 +685,12 @@ abstract class AbstractObject implements JsonSerializable
 
                 foreach ($value as &$val) {
                     if (gettype($val) === 'object') {
-                        $keepIt |= $val->isModified();
-                        $val = $val->jsonSerialize();
+                        if ($val instanceof self) {
+                            $keepIt |= $val->isModified();
+                            $val = $val->jsonSerialize();
+                        } elseif ($val instanceof DateTime) {
+                            $val = $val->getTimestamp();
+                        }
                     }
                 }
 

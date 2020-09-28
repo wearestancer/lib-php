@@ -2,6 +2,7 @@
 
 namespace ild78\Stub\Core;
 
+use DateTime;
 use ild78;
 
 class StubObject extends ild78\Core\AbstractObject
@@ -11,6 +12,9 @@ class StubObject extends ild78\Core\AbstractObject
     protected $endpoint = 'objects'; // invalid but must be not empty
 
     protected $dataModel = [
+        'date1' => [
+            'type' => DateTime::class,
+        ],
         'string1' => [
             'required' => true,
             'type' => self::STRING,

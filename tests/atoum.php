@@ -2,6 +2,7 @@
 
 namespace ild78\Tests;
 
+use ild78;
 use Ramsey\Uuid\Uuid;
 
 class atoum extends \atoum\test
@@ -16,6 +17,13 @@ class atoum extends \atoum\test
         parent::__construct($adapter, $annotationExtractor, $asserterGenerator, $assertionManager, $reflectionClassFactory);
 
         $this->getAsserterGenerator()->addNamespace('ild78\Tests\asserters');
+    }
+
+    public function beforeTestMethod($method)
+    {
+        if ($method !== 'testGetGlobal_SetGlobal') {
+            ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]);
+        }
     }
 
     public function getRandomNumber()
