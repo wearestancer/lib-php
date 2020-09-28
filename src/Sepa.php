@@ -116,20 +116,4 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
 
         return $this;
     }
-
-    /**
-     * Add an account holder name
-     *
-     * @param string $name New holder name.
-     * @return self
-     * @throws ild78\Exceptions\InvalidNameException When the name is invalid.
-     */
-    public function setName(string $name): self
-    {
-        try {
-            return parent::setName($name);
-        } catch (ild78\Exceptions\InvalidArgumentException $excep) {
-            throw new ild78\Exceptions\InvalidNameException($excep->getMessage(), $excep->getCode(), $excep);
-        }
-    }
 }

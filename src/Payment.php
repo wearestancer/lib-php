@@ -613,38 +613,6 @@ class Payment extends ild78\Core\AbstractObject
     }
 
     /**
-     * Update description
-     *
-     * @param string $description New description.
-     * @return self
-     * @throws ild78\Exceptions\InvalidDescriptionException When the description is invalid.
-     */
-    public function setDescription(string $description): self
-    {
-        try {
-            return parent::setDescription($description);
-        } catch (ild78\Exceptions\InvalidArgumentException $excep) {
-            throw new ild78\Exceptions\InvalidDescriptionException($excep->getMessage(), $excep->getCode(), $excep);
-        }
-    }
-
-    /**
-     * Update order ID
-     *
-     * @param string $orderId New order ID.
-     * @return self
-     * @throws ild78\Exceptions\InvalidOrderIdException When the order ID is invalid.
-     */
-    public function setOrderId(string $orderId): self
-    {
-        try {
-            return parent::setOrderId($orderId);
-        } catch (ild78\Exceptions\InvalidArgumentException $excep) {
-            throw new ild78\Exceptions\InvalidOrderIdException($excep->getMessage(), $excep->getCode(), $excep);
-        }
-    }
-
-    /**
      * Update return URL
      *
      * @param string $url New HTTPS URL.
@@ -672,21 +640,5 @@ class Payment extends ild78\Core\AbstractObject
         $this->dataModel['method']['value'] = 'sepa';
 
         return $this;
-    }
-
-    /**
-     * Update unique ID
-     *
-     * @param string $uniqueId New unique ID.
-     * @return self
-     * @throws ild78\Exceptions\InvalidUniqueIdException When the unique ID is invalid.
-     */
-    public function setUniqueId(string $uniqueId): self
-    {
-        try {
-            return parent::setUniqueId($uniqueId);
-        } catch (ild78\Exceptions\InvalidArgumentException $excep) {
-            throw new ild78\Exceptions\InvalidUniqueIdException($excep->getMessage(), $excep->getCode(), $excep);
-        }
     }
 }

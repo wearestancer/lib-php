@@ -115,20 +115,4 @@ class Device extends ild78\Core\AbstractObject
 
         return $this;
     }
-
-    /**
-     * Update customer's port
-     *
-     * @param integer $port New port.
-     * @return self
-     * @throws ild78\Exceptions\InvalidPortException When $port is not a correct port.
-     */
-    public function setPort(int $port): self
-    {
-        try {
-            return parent::setPort($port);
-        } catch (ild78\Exceptions\InvalidArgumentException $excep) {
-            throw new ild78\Exceptions\InvalidPortException($excep->getMessage(), $excep->getCode(), $excep);
-        }
-    }
 }

@@ -21,10 +21,6 @@ trait AmountTrait
      */
     public function setAmount(float $amount): self
     {
-        try {
-            return parent::setAmount(intval(strval($amount)));
-        } catch (ild78\Exceptions\InvalidArgumentException $excep) {
-            throw new ild78\Exceptions\InvalidAmountException($excep->getMessage(), $excep->getCode(), $excep);
-        }
+        return parent::setAmount(intval(strval($amount)));
     }
 }

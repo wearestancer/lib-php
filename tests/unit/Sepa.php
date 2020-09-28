@@ -274,7 +274,6 @@ class Sepa extends ild78\Tests\atoum
                     $this->testedInstance->setName('');
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidNameException::class)
-                    ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid name must be between 4 and 64 characters.')
 
