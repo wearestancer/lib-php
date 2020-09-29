@@ -403,6 +403,18 @@ class Config
     }
 
     /**
+     * Reset default time zone
+     *
+     * @return self
+     */
+    public function resetDefaultTimeZone(): self
+    {
+        $this->timezone = null;
+
+        return $this;
+    }
+
+    /**
      * Change debug mode.
      *
      * @param boolean $value New value for the mode.

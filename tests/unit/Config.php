@@ -337,6 +337,12 @@ class Config extends ild78\Tests\atoum
                     ->string($this->testedInstance->getDefaultTimeZone()->getName())
                         ->isIdenticalTo($zone)
 
+                    ->object($this->testedInstance->resetDefaultTimeZone())
+                        ->isTestedInstance
+
+                    ->variable($this->testedInstance->getDefaultTimeZone())
+                        ->isNull
+
             ->assert('Update with an instance')
                 ->if($this->newTestedInstance([]))
                 ->and($tz = new DateTimeZone($zone))
@@ -349,6 +355,12 @@ class Config extends ild78\Tests\atoum
 
                     ->string($this->testedInstance->getDefaultTimeZone()->getName())
                         ->isIdenticalTo($zone)
+
+                    ->object($this->testedInstance->resetDefaultTimeZone())
+                        ->isTestedInstance
+
+                    ->variable($this->testedInstance->getDefaultTimeZone())
+                        ->isNull
         ;
     }
 
