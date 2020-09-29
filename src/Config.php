@@ -428,6 +428,28 @@ class Config
     }
 
     /**
+     * Update default time zone
+     *
+     * @param string|DateTimeZone $tz New time zone.
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When `$tz` is not a string or a DateTimeZone instance.
+     */
+    public function setDefaultTimeZone($tz): self
+    {
+        if (is_string($tz)) {
+            $tz = new DateTimeZone($tz);
+        }
+
+        if (!($tz instanceof DateTimeZone)) {
+            throw new ild78\Exceptions\InvalidArgumentException('Invalid "$tz" argument.');
+        }
+
+        $this->timezone = $tz;
+
+        return $this;
+    }
+
+    /**
      * Register a configuration for deferred API call
      *
      * @param self $instance Current API instance.
@@ -583,28 +605,6 @@ class Config
         }
 
         $this->timeout = $timeout;
-
-        return $this;
-    }
-
-    /**
-     * Update default time zone
-     *
-     * @param string|DateTimeZone $tz New time zone.
-     * @return self
-     * @throws ild78\Exceptions\InvalidArgumentException When `$tz` is not a string or a DateTimeZone instance.
-     */
-    public function setDefaultTimeZone($tz): self
-    {
-        if (is_string($tz)) {
-            $tz = new DateTimeZone($tz);
-        }
-
-        if (!($tz instanceof DateTimeZone)) {
-            throw new ild78\Exceptions\InvalidArgumentException('Invalid "$tz" argument.');
-        }
-
-        $this->timezone = $tz;
 
         return $this;
     }
