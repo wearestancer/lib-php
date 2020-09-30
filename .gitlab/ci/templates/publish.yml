@@ -1,9 +1,0 @@
-
-.publish:
-  stage: deploy
-
-  script:
-    - curl --data $PUBLISH_OPTIONS 'https://__token__:${CI_JOB_TOKEN}@git.priv.iliad78.net/api/v4/projects/${CI_PROJECT_ID}/packages/composer'
-
-  tags:
-    - php

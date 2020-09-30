@@ -4,4 +4,3 @@ include:
   - local: .gitlab/ci/templates/bases.yml
   - local: .gitlab/ci/templates/coverage.yml
   - local: .gitlab/ci/templates/lint.yml
-  - local: .gitlab/ci/templates/publish.yml
