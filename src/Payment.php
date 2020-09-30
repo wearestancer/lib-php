@@ -29,6 +29,8 @@ use ild78;
  * @method self setDevice(ild78\\Device $device)
  * @method self setReturnUrl(string $https)
  * @method self setStatus(string $status)
+ *
+ * @property DateTime|null $created
  */
 class Payment extends ild78\Core\AbstractObject
 {

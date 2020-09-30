@@ -14,6 +14,8 @@ use ild78;
  * @method string getPayment()
  * @method string getResponseCode()
  * @method Generator list(array $terms)
+ *
+ * @property DateTime|null $created
  */
 class Dispute extends ild78\Core\AbstractObject
 {

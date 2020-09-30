@@ -12,6 +12,8 @@ use ild78;
  * @method string getCurrency()
  * @method ild78\\Payment getPayment()
  * @method string getStatus()
+ *
+ * @property DateTime|null $created
  */
 class Refund extends ild78\Core\AbstractObject
 {

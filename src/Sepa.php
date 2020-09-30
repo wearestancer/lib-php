@@ -7,6 +7,8 @@ use ild78;
 
 /**
  * Representation of a SEPA account
+ *
+ * @property DateTime|null $created
  */
 class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\PaymentMeansInterface
 {
