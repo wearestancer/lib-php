@@ -125,10 +125,6 @@ abstract class AbstractObject implements JsonSerializable
         if ($action === 'set' && property_exists($this, $property)) {
             $tmp = $property;
 
-            if ($property === 'created') {
-                $tmp = 'creation date';
-            }
-
             if ($property === 'dataModel') {
                 $tmp = 'data model';
             }
