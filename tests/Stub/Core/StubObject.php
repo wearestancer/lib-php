@@ -15,6 +15,10 @@ class StubObject extends ild78\Core\AbstractObject
         'date1' => [
             'type' => DateTime::class,
         ],
+        'date2' => [
+            'list' => true,
+            'type' => DateTime::class,
+        ],
         'string1' => [
             'required' => true,
             'type' => self::STRING,

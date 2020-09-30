@@ -300,7 +300,13 @@ abstract class AbstractObject implements JsonSerializable
             $tz = ild78\Config::getGlobal()->getDefaultTimeZone();
 
             if ($tz) {
-                $value->setTimezone($tz);
+                if ($this->dataModel[$property]['list']) {
+                    foreach ($value as $val) {
+                        $val->setTimezone($tz);
+                    }
+                } else {
+                    $value->setTimezone($tz);
+                }
             }
         }
 
@@ -502,52 +508,50 @@ abstract class AbstractObject implements JsonSerializable
                 }
 
                 if ($value && !in_array($this->dataModel[$property]['type'], $types, true) && !is_object($value)) {
+                    $class = $this->dataModel[$property]['type'];
+
                     if ($this->dataModel[$property]['list']) {
                         $list = [];
 
                         foreach ($value as $val) {
-                            $id = null;
+                            if (is_subclass_of($class, self::class)) {
+                                $id = null;
 
-                            if (is_string($val)) {
-                                $id = $val;
-                                $val = [];
-                            }
+                                if (is_string($val)) {
+                                    $id = $val;
+                                    $val = [];
+                                }
 
-                            $missing = true;
+                                $missing = true;
 
-                            if (!is_array($this->dataModel[$property]['value'])) {
-                                $this->dataModel[$property]['value'] = [];
-                            }
+                                if (!is_array($this->dataModel[$property]['value'])) {
+                                    $this->dataModel[$property]['value'] = [];
+                                }
 
-                            foreach ($this->dataModel[$property]['value'] as $obj) {
-                                if ($obj->getId() === $id) {
+                                foreach ($this->dataModel[$property]['value'] as $obj) {
+                                    if ($obj->getId() === $id) {
+                                        $obj->hydrate($val);
+
+                                        $missing = false;
+                                        $list[] = $obj;
+                                    }
+                                }
+
+                                if ($missing) {
+                                    $obj = new $class($id);
+
+                                    $obj->cleanModified = $this->cleanModified;
                                     $obj->hydrate($val);
 
-                                    $missing = false;
                                     $list[] = $obj;
                                 }
-                            }
-
-                            if ($missing) {
-                                $class = $this->dataModel[$property]['type'];
-
-                                if (is_null($id)) {
-                                    $obj = new $class($id);
-                                } else {
-                                    $obj = new $class($id);
-                                }
-
-                                $obj->cleanModified = $this->cleanModified;
-                                $obj->hydrate($val);
-
-                                $list[] = $obj;
+                            } else {
+                                $list[] = $coerce($val);
                             }
                         }
 
                         $this->$property = $list;
                     } else {
-                        $class = $this->dataModel[$property]['type'];
-
                         if (is_subclass_of($class, self::class)) {
                             $id = null;
 
