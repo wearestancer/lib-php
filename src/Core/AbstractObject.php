@@ -88,6 +88,10 @@ abstract class AbstractObject implements JsonSerializable
                         return $value;
                     }
 
+                    if (!$value) {
+                        return null;
+                    }
+
                     return new DateTime('@' . $value);
                 };
             }
