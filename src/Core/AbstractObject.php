@@ -12,6 +12,8 @@ use JsonSerializable;
  * Manage common code between API object
  *
  * @throws ild78\Exceptions\BadMethodCallException when calling unknown method
+ *
+ * @property DateTime|null $created
  */
 abstract class AbstractObject implements JsonSerializable
 {
@@ -27,9 +29,6 @@ abstract class AbstractObject implements JsonSerializable
 
     /** @var string */
     protected $id;
-
-    /** @var DateTime */
-    protected $created;
 
     /** @var boolean */
     protected $populated = false;
@@ -51,7 +50,7 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function __construct($id = null)
     {
-        $defaults = [
+        $defaultModel = [
             'coerce' => null,
             'exportable' => null,
             'list' => false,
@@ -65,9 +64,18 @@ abstract class AbstractObject implements JsonSerializable
             'value' => null,
         ];
 
+        $defaultValues = [
+            'created' => [
+                'restricted' => true,
+                'type' => DateTime::class,
+            ],
+        ];
+
+        $this->dataModel = array_merge($this->dataModel, $defaultValues);
+
         foreach ($this->dataModel as &$data) {
-            $data = array_merge($defaults, $data);
-            $data['size'] = array_merge($defaults['size'], $data['size']);
+            $data = array_merge($defaultModel, $data);
+            $data['size'] = array_merge($defaultModel['size'], $data['size']);
 
             if (is_null($data['exportable'])) {
                 $data['exportable'] = !$data['restricted'];
@@ -327,6 +335,10 @@ abstract class AbstractObject implements JsonSerializable
         if ($model['restricted']) {
             $message = sprintf('You are not allowed to modify "%s".', $property);
 
+            if ($property === 'created') {
+                $message = 'You are not allowed to modify the creation date.';
+            }
+
             throw new ild78\Exceptions\BadMethodCallException($message);
         }
 
@@ -386,21 +398,7 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function getCreationDate(): ?DateTime
     {
-        $date = $this->created;
-
-        if (is_null($date) && $this->id && !$this->populated) {
-            $date = $this->populate()->created;
-        }
-
-        if ($date) {
-            $tz = ild78\Config::getGlobal()->getDefaultTimeZone();
-
-            if ($tz) {
-                $date->setTimezone($tz);
-            }
-        }
-
-        return $date;
+        return $this->created;
     }
 
     /**
@@ -492,14 +490,20 @@ abstract class AbstractObject implements JsonSerializable
 
             if ($property === 'id') {
                 $this->id = $value;
-            } elseif ($property === 'created') {
-                $this->created = new DateTime('@' . $value);
             } elseif (array_key_exists($property, $this->dataModel)) {
                 $types = [
                     static::BOOLEAN,
                     static::INTEGER,
                     static::STRING,
                 ];
+
+                $coerce = function ($v) {
+                    return $v;
+                };
+
+                if (is_callable($this->dataModel[$property]['coerce'])) {
+                    $coerce = $this->dataModel[$property]['coerce'];
+                }
 
                 if ($value && !in_array($this->dataModel[$property]['type'], $types, true) && !is_object($value)) {
                     if ($this->dataModel[$property]['list']) {
@@ -571,12 +575,16 @@ abstract class AbstractObject implements JsonSerializable
                                 $this->dataModel[$property]['value']->hydrate($value);
                             }
                         } else {
-                            $this->$property = $value;
+                            if ($this->dataModel[$property]['restricted']) {
+                                $this->dataModel[$property]['value'] = $coerce($value);
+                            } else {
+                                $this->$property = $value;
+                            }
                         }
                     }
                 } else {
                     if ($this->dataModel[$property]['restricted'] || is_null($value) || is_array($value)) {
-                        $this->dataModel[$property]['value'] = $value;
+                        $this->dataModel[$property]['value'] = $coerce($value);
                     } else {
                         $this->$property = $value;
                     }

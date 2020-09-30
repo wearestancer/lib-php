@@ -11,6 +11,8 @@ use ild78;
  * @method string getEmail()
  * @method string getMobile()
  * @method string getName()
+ *
+ * @property DateTime|null $created
  */
 class Customer extends ild78\Core\AbstractObject
 {

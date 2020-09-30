@@ -11,6 +11,8 @@ use ild78;
  * @method string getRedirectUrl()
  * @method string getReturnUrl()
  * @method string getStatus()
+ *
+ * @property DateTime|null $created
  */
 class Auth extends ild78\Core\AbstractObject
 {

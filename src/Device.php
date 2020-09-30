@@ -20,6 +20,8 @@ use ild78;
  * @method self setHttpAccept(string $httpAccept)
  * @method self setLanguages(string $languages)
  * @method self setUserAgent(string $userAgent)
+ *
+ * @property DateTime|null $created
  */
 class Device extends ild78\Core\AbstractObject
 {

@@ -9,6 +9,8 @@ use ild78;
 
 /**
  * Representation of a card
+ *
+ * @property DateTime|null $created
  */
 class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\PaymentMeansInterface
 {
