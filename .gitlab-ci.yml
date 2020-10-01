@@ -6,9 +6,7 @@ stages:
   - publish
 
 include:
-  - local: .gitlab/ci/templates.yml
-  - local: .gitlab/ci/php-7.2.yml
-  - local: .gitlab/ci/php-7.3.yml
-  - local: .gitlab/ci/php-7.4.yml
+  - project: 'stancer/ci-template'
+    file: '/php.yml'
   - project: 'stancer/ci-template'
     file: '/registry/composer.yml'
