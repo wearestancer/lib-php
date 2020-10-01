@@ -328,7 +328,7 @@ class Payment extends TestCase
                 ->and($customer->setName('John Doe'))
                 ->and($customer->setEmail('john.doe@example.com'))
 
-                ->if($url = 'https://www.example.org?' . uniqid())
+                ->if($url = 'https://www.example.org/?' . uniqid())
 
                 ->if($this->newTestedInstance)
                 ->and($this->testedInstance->setAmount($amount))
