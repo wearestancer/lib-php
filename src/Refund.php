@@ -13,7 +13,11 @@ use ild78;
  * @method ild78\\Payment getPayment()
  * @method string getStatus()
  *
+ * @property integer $amount
  * @property DateTime|null $created
+ * @property string $currency
+ * @property ild78\\Payment $payment
+ * @property string $status
  */
 class Refund extends ild78\Core\AbstractObject
 {

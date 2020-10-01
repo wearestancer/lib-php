@@ -3,6 +3,7 @@
 namespace ild78\Tests;
 
 use ild78;
+use Faker;
 use Ramsey\Uuid\Uuid;
 
 class atoum extends \atoum\test
@@ -26,7 +27,12 @@ class atoum extends \atoum\test
         }
     }
 
-    public function getRandomNumber()
+    public function fake(): Faker\Generator
+    {
+        return Faker\Factory::create();
+    }
+
+    public function getRandomNumber(): string
     {
         // Simulate a french mobile phone number
         $first = rand(0, 1) + 6;
@@ -46,7 +52,7 @@ class atoum extends \atoum\test
         return $number;
     }
 
-    public function getRandomString($min, $max = null)
+    public function getRandomString(int $min, int $max = null): string
     {
         if (!$max) {
             $max = $min;
@@ -57,7 +63,7 @@ class atoum extends \atoum\test
         return bin2hex(random_bytes($len / 2));
     }
 
-    public function getUuid()
+    public function getUuid(): string
     {
         return Uuid::uuid4()->toString();
     }

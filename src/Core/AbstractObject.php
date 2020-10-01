@@ -52,6 +52,7 @@ abstract class AbstractObject implements JsonSerializable
     {
         $defaultModel = [
             'coerce' => null,
+            'exception' => null,
             'exportable' => null,
             'list' => false,
             'size' => [
@@ -85,6 +86,10 @@ abstract class AbstractObject implements JsonSerializable
                 $data['coerce'] = function ($value) {
                     if ($value instanceof DateTime) {
                         return $value;
+                    }
+
+                    if (!$value) {
+                        return null;
                     }
 
                     return new DateTime('@' . $value);
@@ -889,6 +894,18 @@ abstract class AbstractObject implements JsonSerializable
     {
         $model = $this->dataModel[$property];
 
+        $exceptionList = [
+            'ild78\\Exceptions\\Invalid' . ucfirst($property) . 'Exception',
+            $model['exception'],
+        ];
+        $exceptionClass = ild78\Exceptions\InvalidArgumentException::class;
+
+        foreach ($exceptionList as $except) {
+            if (is_string($except) && class_exists($except)) {
+                $exceptionClass = $except;
+            }
+        }
+
         $type = gettype($value);
         $length = $value;
 
@@ -906,7 +923,7 @@ abstract class AbstractObject implements JsonSerializable
 
             $message = vsprintf('Type mismatch, given "%s" expected "%s".', $params);
 
-            throw new ild78\Exceptions\InvalidArgumentException($message);
+            throw new $exceptionClass($message);
         }
 
         if ($type === 'string') {
@@ -921,7 +938,7 @@ abstract class AbstractObject implements JsonSerializable
         if (!is_null($model['size']['fixed']) && $model['size']['fixed'] !== $length) {
             $message = sprintf('A valid %s must have %d characters.', $property, $model['size']['fixed']);
 
-            throw new ild78\Exceptions\InvalidArgumentException($message);
+            throw new $exceptionClass($message);
         }
 
         if (!is_null($model['size']['max'])) {
@@ -973,7 +990,7 @@ abstract class AbstractObject implements JsonSerializable
                 }
             }
 
-            throw new ild78\Exceptions\InvalidArgumentException($message);
+            throw new $exceptionClass($message);
         }
 
         return $this;

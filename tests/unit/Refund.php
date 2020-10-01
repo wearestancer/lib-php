@@ -69,7 +69,6 @@ class Refund extends ild78\Tests\atoum
                     $this->newTestedInstance->setAmount(0);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidAmountException::class)
-                    ->hasNestedException
                     ->message
                         ->isIdenticalTo('Amount must be greater than or equal to 50.')
 
@@ -81,7 +80,6 @@ class Refund extends ild78\Tests\atoum
                     $this->newTestedInstance->setAmount(49);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidAmountException::class)
-                    ->hasNestedException
                     ->message
                         ->isIdenticalTo('Amount must be greater than or equal to 50.')
 

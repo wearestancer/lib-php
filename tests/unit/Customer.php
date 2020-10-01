@@ -250,7 +250,6 @@ class Customer extends ild78\Tests\atoum
                     $this->testedInstance->setEmail('');
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidEmailException::class)
-                    ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid email must be between 5 and 64 characters.')
 
@@ -299,7 +298,6 @@ class Customer extends ild78\Tests\atoum
                     $this->testedInstance->setMobile('');
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidMobileException::class)
-                    ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid mobile must be between 8 and 16 characters.')
 
@@ -317,7 +315,6 @@ class Customer extends ild78\Tests\atoum
                     $this->testedInstance->setName('');
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidNameException::class)
-                    ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid name must be between 4 and 64 characters.')
 

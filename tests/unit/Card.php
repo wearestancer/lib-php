@@ -434,7 +434,6 @@ class Card extends ild78\Tests\atoum
                         $this->testedInstance->setCvc($cvc);
                     })
                         ->isInstanceOf(ild78\Exceptions\InvalidCardCvcException::class)
-                        ->hasNestedException
                         ->message
                             ->isIdenticalTo('A valid cvc must have 3 characters.')
 
@@ -453,7 +452,6 @@ class Card extends ild78\Tests\atoum
                     $this->testedInstance->setName('');
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidNameException::class)
-                    ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid name must be between 4 and 64 characters.')
 
