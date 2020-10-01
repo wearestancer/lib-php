@@ -3,6 +3,7 @@ stages:
   - lint
   - test
   - coverage
+  - build
   - publish
 
 include:
