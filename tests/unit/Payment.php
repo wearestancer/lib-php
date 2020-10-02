@@ -236,6 +236,29 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
+    public function testGetDateBank()
+    {
+        $this
+            ->if($this->newTestedInstance)
+            ->and($date = new DateTime)
+            ->then
+                ->variable($this->testedInstance->getDateBank())
+                    ->isNull
+
+                ->exception(function () use ($date) {
+                    $this->testedInstance->setDateBank($date);
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify "dateBank".')
+
+            ->if($this->testedInstance->hydrate(['dateBank' => $date]))
+            ->then
+                ->dateTime($this->testedInstance->getDateBank())
+                    ->isEqualTo($date)
+        ;
+    }
+
     public function testGetEndpoint()
     {
         $this
