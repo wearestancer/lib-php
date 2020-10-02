@@ -10,10 +10,18 @@ use ild78;
  *
  * @method integer getAmount()
  * @method string getCurrency()
- * @method integer getOrderId()
- * @method string getPayment()
- * @method string getResponseCode()
+ * @method string getOrderId()
+ * @method ild78\\Payment getPayment()
+ * @method string getResponse()
+ *
  * @method Generator list(array $terms)
+ *
+ * @property integer $amount
+ * @property DateTime|null $created
+ * @property string $currency
+ * @property string $orderId
+ * @property ild78\\Payment $payment
+ * @property string $response
  */
 class Dispute extends ild78\Core\AbstractObject
 {

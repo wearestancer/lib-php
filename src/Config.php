@@ -15,7 +15,7 @@ class Config
 {
     public const LIVE_MODE = 'live';
     public const TEST_MODE = 'test';
-    public const VERSION = '0.0.4';
+    public const VERSION = '0.0.5';
 
     /** @var ild78\Core\Request\Call[] */
     protected $calls = [];
@@ -403,6 +403,18 @@ class Config
     }
 
     /**
+     * Reset default time zone
+     *
+     * @return self
+     */
+    public function resetDefaultTimeZone(): self
+    {
+        $this->timezone = null;
+
+        return $this;
+    }
+
+    /**
      * Change debug mode.
      *
      * @param boolean $value New value for the mode.
@@ -411,6 +423,28 @@ class Config
     public function setDebug(bool $value): self
     {
         $this->debug = $value;
+
+        return $this;
+    }
+
+    /**
+     * Update default time zone
+     *
+     * @param string|DateTimeZone $tz New time zone.
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When `$tz` is not a string or a DateTimeZone instance.
+     */
+    public function setDefaultTimeZone($tz): self
+    {
+        if (is_string($tz)) {
+            $tz = new DateTimeZone($tz);
+        }
+
+        if (!($tz instanceof DateTimeZone)) {
+            throw new ild78\Exceptions\InvalidArgumentException('Invalid "$tz" argument.');
+        }
+
+        $this->timezone = $tz;
 
         return $this;
     }
@@ -571,28 +605,6 @@ class Config
         }
 
         $this->timeout = $timeout;
-
-        return $this;
-    }
-
-    /**
-     * Update default time zone
-     *
-     * @param string|DateTimeZone $tz New time zone.
-     * @return self
-     * @throws ild78\Exceptions\InvalidArgumentException When `$tz` is not a string or a DateTimeZone instance.
-     */
-    public function setDefaultTimeZone($tz): self
-    {
-        if (is_string($tz)) {
-            $tz = new DateTimeZone($tz);
-        }
-
-        if (!($tz instanceof DateTimeZone)) {
-            throw new ild78\Exceptions\InvalidArgumentException('Invalid "$tz" argument.');
-        }
-
-        $this->timezone = $tz;
 
         return $this;
     }

@@ -66,7 +66,7 @@ class Card extends TestCase
 
             ->assert('Create card')
                 ->if($this->newTestedInstance)
-                ->and($this->testedInstance->setCvc($cvc))
+                ->and($this->testedInstance->setCvc((string) $cvc))
                 ->and($this->testedInstance->setExpMonth($month))
                 ->and($this->testedInstance->setExpYear($year))
                 ->and($this->testedInstance->setNumber($number))
@@ -79,7 +79,7 @@ class Card extends TestCase
 
             ->assert('No duplication allowed')
                 ->if($this->newTestedInstance)
-                ->and($this->testedInstance->setCvc($cvc))
+                ->and($this->testedInstance->setCvc((string) $cvc))
                 ->and($this->testedInstance->setExpMonth($month))
                 ->and($this->testedInstance->setExpYear($year))
                 ->and($this->testedInstance->setNumber($number))

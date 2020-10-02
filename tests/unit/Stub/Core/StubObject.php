@@ -2,12 +2,16 @@
 
 namespace ild78\tests\unit\Stub\Core;
 
+use DateTime;
+use DateTimeZone;
 use GuzzleHttp;
 use ild78;
 use mock;
 
 class StubObject extends ild78\Tests\atoum
 {
+    use ild78\Tests\Provider\Dates;
+
     public function invalidDataProvider()
     {
         $datas = [];
@@ -595,6 +599,355 @@ class StubObject extends ild78\Tests\atoum
         ;
     }
 
+    /**
+     * @dataProvider timeZoneProvider
+     */
+    public function testDateProperty_hydratation($zone)
+    {
+        $this
+            ->given($config = ild78\Config::getGlobal())
+
+            ->if($timestamp = rand(946681200, 1893452400))
+            ->and($datetime = new DateTime('@' . $timestamp))
+            ->and($timezone = new DateTimeZone($zone))
+            ->and($defaultTimezone = new DateTimeZone('+00:00'))
+
+            ->if($data = [
+                'date1' => $timestamp,
+            ])
+            ->and($this->newTestedInstance->hydrate($data))
+            ->then
+                ->assert('Without default timezone')
+                    ->if($config->resetDefaultTimeZone())
+                    ->then
+                        ->dateTime($this->testedInstance->getDate1())
+                            ->isEqualTo($datetime)
+                            ->hasTimeZone($defaultTimezone)
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+
+                            ->hasKey('date1')
+                            ->integer['date1']
+                                ->isEqualTo($timestamp)
+
+                ->assert('With default timezone')
+                    ->if($config->setDefaultTimezone($timezone))
+                    ->then
+                        ->dateTime($this->testedInstance->getDate1())
+                            ->isEqualTo($datetime)
+                            ->hasTimeZone($timezone)
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+
+                            ->hasKey('date1')
+                            ->integer['date1']
+                                ->isEqualTo($timestamp)
+        ;
+    }
+
+    /**
+     * @dataProvider timeZoneProvider
+     */
+    public function testDateProperty_withAnInteger($zone)
+    {
+        $this
+            ->given($config = ild78\Config::getGlobal())
+
+            ->if($timestamp = rand(946681200, 1893452400))
+            ->and($datetime = new DateTime('@' . $timestamp))
+            ->and($timezone = new DateTimeZone($zone))
+            ->and($defaultTimezone = new DateTimeZone('+00:00'))
+            ->then
+                ->variable($this->newTestedInstance->getDate1())
+                    ->isNull
+
+                ->object($this->testedInstance->setDate1($timestamp))
+                    ->isTestedInstance
+
+                ->boolean($this->testedInstance->isModified())
+                    ->isTrue
+
+                ->assert('Without default timezone')
+                    ->if($config->resetDefaultTimeZone())
+                    ->then
+                        ->dateTime($this->testedInstance->getDate1())
+                            ->isEqualTo($datetime)
+                            ->hasTimezone($defaultTimezone)
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('date1')
+                            ->integer['date1']
+                                ->isEqualTo($timestamp)
+
+                ->assert('With default timezone')
+                    ->if($config->setDefaultTimezone($timezone))
+                    ->then
+                        ->dateTime($this->testedInstance->getDate1())
+                            ->isEqualTo($datetime)
+                            ->hasTimezone($timezone)
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('date1')
+                            ->integer['date1']
+                                ->isEqualTo($timestamp)
+        ;
+    }
+
+    /**
+     * @dataProvider timeZoneProvider
+     */
+    public function testDateProperty_withAnObject($zone)
+    {
+        $this
+            ->given($config = ild78\Config::getGlobal())
+
+            ->if($timestamp = rand(946681200, 1893452400))
+            ->and($datetime = new DateTime('@' . $timestamp))
+            ->and($timezone = new DateTimeZone($zone))
+            ->and($defaultTimezone = new DateTimeZone('+00:00'))
+            ->then
+                ->variable($this->newTestedInstance->getDate1())
+                    ->isNull
+
+                ->object($this->testedInstance->setDate1($datetime))
+                    ->isTestedInstance
+
+                ->boolean($this->testedInstance->isModified())
+                    ->isTrue
+
+                ->assert('Without default timezone')
+                    ->if($config->resetDefaultTimeZone())
+                    ->then
+                        ->dateTime($this->testedInstance->getDate1())
+                            ->isEqualTo($datetime)
+                            ->hasTimezone($defaultTimezone)
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('date1')
+                            ->integer['date1']
+                                ->isEqualTo($timestamp)
+
+                ->assert('With default timezone')
+                    ->if($config->setDefaultTimezone($timezone))
+                    ->then
+                        ->dateTime($this->testedInstance->getDate1())
+                            ->isEqualTo($datetime)
+                            ->hasTimezone($timezone)
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('date1')
+                            ->integer['date1']
+                                ->isEqualTo($timestamp)
+        ;
+    }
+
+    /**
+     * @dataProvider timeZoneProvider
+     */
+    public function testDatePropertyList_hydratation($zone)
+    {
+        $this
+            ->given($config = ild78\Config::getGlobal())
+
+            ->if($timestamp = rand(946681200, 1893452400))
+            ->and($datetime = new DateTime('@' . $timestamp))
+            ->and($timezone = new DateTimeZone($zone))
+            ->and($defaultTimezone = new DateTimeZone('+00:00'))
+
+            ->if($data = [
+                'date2' => [
+                    $datetime,
+                    $timestamp,
+                ],
+            ])
+            ->and($this->newTestedInstance->hydrate($data))
+            ->then
+                ->assert('Without default timezone')
+                    ->if($config->resetDefaultTimeZone())
+                    ->then
+                        ->array($this->testedInstance->getDate2())
+                            ->hasSize(2)
+                            ->dateTime[0]
+                                ->isEqualTo($datetime)
+                                ->hasTimeZone($defaultTimezone)
+                            ->dateTime[1]
+                                ->isEqualTo($datetime)
+                                ->hasTimeZone($defaultTimezone)
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('date2')
+                            ->child['date2'](function ($date2) use ($timestamp) {
+                                $date2
+                                    ->hasSize(2)
+                                    ->integer[0]
+                                        ->isEqualTo($timestamp)
+                                    ->integer[1]
+                                        ->isEqualTo($timestamp)
+                                ;
+                            })
+
+                ->assert('With default timezone')
+                    ->if($config->setDefaultTimezone($timezone))
+                    ->then
+                        ->array($this->testedInstance->getDate2())
+                            ->hasSize(2)
+                            ->dateTime[0]
+                                ->isEqualTo($datetime)
+                                ->hasTimeZone($timezone)
+                            ->dateTime[1]
+                                ->isEqualTo($datetime)
+                                ->hasTimeZone($timezone)
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('date2')
+                            ->child['date2'](function ($date2) use ($timestamp) {
+                                $date2
+                                    ->hasSize(2)
+                                    ->integer[0]
+                                        ->isEqualTo($timestamp)
+                                    ->integer[1]
+                                        ->isEqualTo($timestamp)
+                                ;
+                            })
+        ;
+    }
+
+    /**
+     * @dataProvider timeZoneProvider
+     */
+    public function testDatePropertyList_withAnInteger($zone)
+    {
+        $this
+            ->given($config = ild78\Config::getGlobal())
+
+            ->if($timestamp = rand(946681200, 1893452400))
+            ->and($datetime = new DateTime('@' . $timestamp))
+            ->and($timezone = new DateTimeZone($zone))
+            ->and($defaultTimezone = new DateTimeZone('+00:00'))
+            ->then
+                ->array($this->newTestedInstance->getDate2())
+                    ->isEmpty
+
+                ->object($this->testedInstance->addDate2($timestamp))
+                    ->isTestedInstance
+
+                ->boolean($this->testedInstance->isModified())
+                    ->isTrue
+
+                ->assert('Without default timezone')
+                    ->if($config->resetDefaultTimeZone())
+                    ->then
+                        ->array($this->testedInstance->getDate2())
+                            ->hasSize(1)
+                            ->dateTime[0]
+                                ->isEqualTo($datetime)
+                                ->hasTimezone($defaultTimezone)
+
+                        ->array($exported = $this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('date2')
+                            ->child['date2'](function ($date2) use ($timestamp) {
+                                $date2
+                                    ->hasSize(1)
+                                    ->integer[0]
+                                        ->isEqualTo($timestamp)
+                                ;
+                            })
+
+                ->assert('With default timezone')
+                    ->if($config->setDefaultTimezone($timezone))
+                    ->then
+                        ->array($this->testedInstance->getDate2())
+                            ->hasSize(1)
+                            ->dateTime[0]
+                                ->isEqualTo($datetime)
+                                ->hasTimezone($timezone)
+
+                        ->array($exported = $this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('date2')
+                            ->child['date2'](function ($date2) use ($timestamp) {
+                                $date2
+                                    ->hasSize(1)
+                                    ->integer[0]
+                                        ->isEqualTo($timestamp)
+                                ;
+                            })
+        ;
+    }
+
+    /**
+     * @dataProvider timeZoneProvider
+     */
+    public function testDatePropertyList_withAnObject($zone)
+    {
+        $this
+            ->given($config = ild78\Config::getGlobal())
+
+            ->if($timestamp = rand(946681200, 1893452400))
+            ->and($datetime = new DateTime('@' . $timestamp))
+            ->and($timezone = new DateTimeZone($zone))
+            ->and($defaultTimezone = new DateTimeZone('+00:00'))
+            ->then
+                ->array($this->newTestedInstance->getDate2())
+                    ->isEmpty
+
+                ->object($this->testedInstance->addDate2($datetime))
+                    ->isTestedInstance
+
+                ->boolean($this->testedInstance->isModified())
+                    ->isTrue
+
+                ->assert('Without default timezone')
+                    ->if($config->resetDefaultTimeZone())
+                    ->then
+                        ->array($this->testedInstance->getDate2())
+                            ->hasSize(1)
+                            ->dateTime[0]
+                                ->isEqualTo($datetime)
+                                ->hasTimezone($defaultTimezone)
+
+                        ->array($exported = $this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('date2')
+                            ->child['date2'](function ($date2) use ($timestamp) {
+                                $date2
+                                    ->hasSize(1)
+                                    ->integer[0]
+                                        ->isEqualTo($timestamp)
+                                ;
+                            })
+
+                ->assert('With default timezone')
+                    ->if($config->setDefaultTimezone($timezone))
+                    ->then
+                        ->array($this->testedInstance->getDate2())
+                            ->hasSize(1)
+                            ->dateTime[0]
+                                ->isEqualTo($datetime)
+                                ->hasTimezone($timezone)
+
+                        ->array($exported = $this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('date2')
+                            ->child['date2'](function ($date2) use ($timestamp) {
+                                $date2
+                                    ->hasSize(1)
+                                    ->integer[0]
+                                        ->isEqualTo($timestamp)
+                                ;
+                            })
+        ;
+    }
+
     public function testGetCreationDate()
     {
         $this
@@ -622,7 +975,7 @@ class StubObject extends ild78\Tests\atoum
                 ->if($this->newTestedInstance(uniqid()))
                 ->then
                     ->dateTime($this->testedInstance->getCreationDate())
-                        ->isEqualTo(new \DateTime('@' . $created))
+                        ->isEqualTo(new DateTime('@' . $created))
         ;
     }
 
@@ -1413,8 +1766,7 @@ class StubObject extends ild78\Tests\atoum
             ->and($class = (string) $this->testedClass)
             ->then
                 ->object($obj = $class::retrieve($id))
-                    ->isInstanceOf($class)
-                    ->isEqualTo($this->newTestedInstance($id))
+                    ->isInstanceOf($this->newTestedInstance)
 
                 ->string($obj->getId())
                     ->isIdenticalTo($id)

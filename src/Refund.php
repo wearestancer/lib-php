@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace ild78;
 
+use DateTime;
 use ild78;
 
 /**
@@ -10,8 +11,18 @@ use ild78;
  *
  * @method integer getAmount()
  * @method string getCurrency()
+ * @method string getDateBank()
+ * @method string getDateRefund()
  * @method ild78\\Payment getPayment()
  * @method string getStatus()
+ *
+ * @property integer $amount
+ * @property DateTime|null $created
+ * @property string $currency
+ * @property string $dateBank
+ * @property string $dateRefund
+ * @property ild78\\Payment $payment
+ * @property string $status
  */
 class Refund extends ild78\Core\AbstractObject
 {
@@ -31,6 +42,14 @@ class Refund extends ild78\Core\AbstractObject
         'currency' => [
             'restricted' => true,
             'type' => self::STRING,
+        ],
+        'dateBank' => [
+            'restricted' => true,
+            'type' => DateTime::class,
+        ],
+        'dateRefund' => [
+            'restricted' => true,
+            'type' => DateTime::class,
         ],
         'payment' => [
             'required' => true,

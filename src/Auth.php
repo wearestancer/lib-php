@@ -8,9 +8,14 @@ use ild78;
 /**
  * Data for authenticated payment
  *
- * @method string getRedirectUrl()
+ * @method string|null getRedirectUrl()
  * @method string getReturnUrl()
  * @method string getStatus()
+ *
+ * @property DateTime|null $created
+ * @property string|null $redirectUrl
+ * @property string $returnUrl
+ * @property string $status
  */
 class Auth extends ild78\Core\AbstractObject
 {

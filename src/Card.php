@@ -9,6 +9,45 @@ use ild78;
 
 /**
  * Representation of a card
+ *
+ * @method string getBrand()
+ * @method string getCountry()
+ * @method string getCvc()
+ * @method integer getExpMonth()
+ * @method integer getExpYear()
+ * @method string|null getFunding()
+ * @method string getLast4()
+ * @method string|null getName()
+ * @method string|null getNature()
+ * @method string|null getNetwork()
+ * @method string|null getZipCode()
+ *
+ * @method boolean isTokenized()
+ *
+ * @method self setBrand(string $brand)
+ * @method self setCountry(string $country)
+ * @method self setCvc(string $cvc)
+ * @method self setExpYear(integer $expYear)
+ * @method self setFunding(string $funding)
+ * @method self setLast4(string $last4)
+ * @method self setName(string $name)
+ * @method self setNature(string $nature)
+ * @method self setNetwork(string $network)
+ * @method self setTokenize(boolean $tokenize)
+ * @method self setZipCode(string $zipCode)
+ *
+ * @property string $brand
+ * @property string $country
+ * @property DateTime|null $created
+ * @property string $cvc
+ * @property integer $expMonth
+ * @property integer $expYear
+ * @property string|null $funding
+ * @property string $last4
+ * @property string|null $name
+ * @property string|null $nature
+ * @property string|null $network
+ * @property string|null $zipCode
  */
 class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\PaymentMeansInterface
 {
@@ -25,6 +64,7 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
             'type' => self::STRING,
         ],
         'cvc' => [
+            'exception' => ild78\Exceptions\InvalidCardCvcException::class,
             'required' => true,
             'size' => [
                 'fixed' => 3,
@@ -211,24 +251,6 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
     }
 
     /**
-     * Update CVC.
-     *
-     * We use string for CVC to prevent errors with leading zeros.
-     *
-     * @param string $cvc New CVC.
-     * @return self
-     * @throws ild78\Exceptions\InvalidCardCvcException When CVC is not valid.
-     */
-    public function setCvc(string $cvc): self
-    {
-        try {
-            return parent::setCvc($cvc);
-        } catch (ild78\Exceptions\InvalidArgumentException $excep) {
-            throw new ild78\Exceptions\InvalidCardCvcException($excep->getMessage(), $excep->getCode(), $excep);
-        }
-    }
-
-    /**
      * Alias for `self::setExpMonth()`
      *
      * @see self::setExpMonth() Return the expiration month.
@@ -271,22 +293,6 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
         $this->modified[] = 'exp_month';
 
         return $this;
-    }
-
-    /**
-     * Add a card holder name
-     *
-     * @param string $name New holder name.
-     * @return self
-     * @throws ild78\Exceptions\InvalidNameException When the name is invalid.
-     */
-    public function setName(string $name): self
-    {
-        try {
-            return parent::setName($name);
-        } catch (ild78\Exceptions\InvalidArgumentException $excep) {
-            throw new ild78\Exceptions\InvalidNameException($excep->getMessage(), $excep->getCode(), $excep);
-        }
     }
 
     /**

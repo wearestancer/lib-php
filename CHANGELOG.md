@@ -4,6 +4,27 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.5] - 2020-10-02
+
+### Added
+- `ild78\Payment::$dateBank`
+- `ild78\Refund::$dateBank`
+- `ild78\Refund::$dateRefund`
+- `ild78\Sepa::$mandate`
+- `ild78\Sepa::$dateMandate`
+- `ild78\Sepa` can be sent, retrieved or deleted to the API
+- Date properties
+- Allow to reset default timezone
+
+### Changes
+- `created` uses date property mecanism
+- Magic setter can throw better exceptions
+
+### Fixed
+- Magic method in PHPDoc
+- Misstype in tests
+
+
 ## [0.0.4] - 2020-09-15
 
 ### Fixed

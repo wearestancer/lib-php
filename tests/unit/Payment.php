@@ -236,6 +236,29 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
+    public function testGetDateBank()
+    {
+        $this
+            ->if($this->newTestedInstance)
+            ->and($date = new DateTime)
+            ->then
+                ->variable($this->testedInstance->getDateBank())
+                    ->isNull
+
+                ->exception(function () use ($date) {
+                    $this->testedInstance->setDateBank($date);
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify "dateBank".')
+
+            ->if($this->testedInstance->hydrate(['dateBank' => $date]))
+            ->then
+                ->dateTime($this->testedInstance->getDateBank())
+                    ->isEqualTo($date)
+        ;
+    }
+
     public function testGetEndpoint()
     {
         $this
@@ -797,7 +820,6 @@ class Payment extends ild78\Tests\atoum
                         $this->testedInstance->refund($notEnough);
                     })
                         ->isInstanceOf(ild78\Exceptions\InvalidAmountException::class)
-                        ->hasNestedException
                         ->message
                             ->isIdenticalTo('Amount must be greater than or equal to 50.')
 
@@ -1779,7 +1801,6 @@ class Payment extends ild78\Tests\atoum
                         $this->testedInstance->setAmount(0);
                     })
                         ->isInstanceOf(ild78\Exceptions\InvalidAmountException::class)
-                        ->hasNestedException
                         ->message
                             ->isIdenticalTo('Amount must be greater than or equal to 50.')
 
@@ -1791,7 +1812,6 @@ class Payment extends ild78\Tests\atoum
                         $this->testedInstance->setAmount(49);
                     })
                         ->isInstanceOf(ild78\Exceptions\InvalidAmountException::class)
-                        ->hasNestedException
                         ->message
                             ->isIdenticalTo('Amount must be greater than or equal to 50.')
 
@@ -2009,7 +2029,6 @@ class Payment extends ild78\Tests\atoum
                             $this->newTestedInstance->setDescription($description);
                         })
                             ->isInstanceOf(ild78\Exceptions\InvalidDescriptionException::class)
-                            ->hasNestedException
                             ->message
                                 ->isIdenticalTo('A valid description must be between 3 and 64 characters.')
 
@@ -2077,7 +2096,6 @@ class Payment extends ild78\Tests\atoum
                             $this->newTestedInstance->setOrderId($orderId);
                         })
                             ->isInstanceOf(ild78\Exceptions\InvalidOrderIdException::class)
-                            ->hasNestedException
                             ->message
                                 ->isIdenticalTo('A valid order ID must be between 1 and 36 characters.')
 
@@ -2122,7 +2140,6 @@ class Payment extends ild78\Tests\atoum
                             $this->newTestedInstance->setUniqueId($uniqueId);
                         })
                             ->isInstanceOf(ild78\Exceptions\InvalidUniqueIdException::class)
-                            ->hasNestedException
                             ->message
                                 ->isIdenticalTo('A valid unique ID must be between 1 and 36 characters.')
 

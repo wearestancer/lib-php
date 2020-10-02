@@ -18,6 +18,44 @@ class Sepa extends ild78\Tests\atoum
         ;
     }
 
+    public function testDateMandate()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($dateMandate = rand(946681200, 1893452400))
+            ->then
+                ->variable($this->testedInstance->getDateMandate())
+                    ->isNull
+
+                ->object($this->testedInstance->setDateMandate($dateMandate))
+                    ->isTestedInstance
+
+                ->dateTime($date = $this->testedInstance->getDateMandate())
+
+                ->variable($date->format('U'))
+                    ->isEqualTo($dateMandate)
+
+                ->boolean($this->testedInstance->isModified())
+                    ->isTrue
+
+                ->array($this->testedInstance->jsonSerialize())
+                    ->hasSize(1)
+                    ->hasKey('date_mandate')
+                    ->integer['date_mandate']
+                        ->isEqualTo($dateMandate)
+        ;
+    }
+
+    public function testGetEndpoint()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->string($this->testedInstance->getEndpoint())
+                    ->isIdenticalTo('sepa')
+        ;
+    }
+
     /**
      * @dataProvider ibanDataProvider
      */
@@ -35,6 +73,53 @@ class Sepa extends ild78\Tests\atoum
                 ->string($this->testedInstance->getFormattedIban())
                     ->isIdenticalTo($withSpaces)
         ;
+    }
+
+    public function testMandate()
+    {
+        $mandate = '';
+
+        for ($idx = 0; $idx < 40; $idx++) {
+            $length = strlen($mandate);
+
+            if ($length < 3 || $length > 35) {
+                $this
+                    ->assert($length . ' characters => Not valid')
+                        ->exception(function () use ($mandate) {
+                            $this->newTestedInstance->setMandate($mandate);
+                        })
+                            ->isInstanceOf(ild78\Exceptions\InvalidMandateException::class)
+                            ->message
+                                ->isIdenticalTo('A valid mandate must be between 3 and 35 characters.')
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isFalse
+                ;
+            } else {
+                $this
+                    ->assert($length . ' characters => Valid')
+                        ->variable($this->newTestedInstance->getMandate())
+                            ->isNull
+
+                        ->object($this->testedInstance->setMandate($mandate))
+                            ->isTestedInstance
+
+                        ->string($this->testedInstance->getMandate())
+                            ->isIdenticalTo($mandate)
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isTrue
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('mandate')
+                            ->string['mandate']
+                                ->isEqualTo($mandate)
+                ;
+            }
+
+            $mandate .= chr(rand(65, 90));
+        }
     }
 
     public function testSetBic()
@@ -264,7 +349,6 @@ class Sepa extends ild78\Tests\atoum
                     $this->testedInstance->setName('');
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidNameException::class)
-                    ->hasNestedException
                     ->message
                         ->isIdenticalTo('A valid name must be between 4 and 64 characters.')
 

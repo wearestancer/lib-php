@@ -1,10 +1,10 @@
 
 # composer
-vendor/
+vendor
 composer.lock
 
 # Tests report
-reports/
+reports
 
 # macOS files
 .DS_Store

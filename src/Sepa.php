@@ -4,12 +4,35 @@ declare(strict_types=1);
 namespace ild78;
 
 use ild78;
+use DateTime;
 
 /**
  * Representation of a SEPA account
+ *
+ * @method string getBic()
+ * @method string|null getCountry()
+ * @method DateTime|null getDateMandate()
+ * @method string getLast4()
+ * @method string|null getMandate()
+ * @method string getName()
+ *
+ * @method self setDateMandate(DateTime $dateMandate)
+ * @method self setMandate(string $mandate)
+ * @method self setName(string $name)
+ *
+ * @property string $bic
+ * @property string|null $country
+ * @property DateTime|null $created
+ * @property DateTime|null $dateMandate
+ * @property string $last4
+ * @property string|null $mandate
+ * @property string $name
  */
 class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\PaymentMeansInterface
 {
+    /** @var string */
+    protected $endpoint = 'sepa';
+
     /** @var array */
     protected $dataModel = [
         'bic' => [
@@ -20,6 +43,9 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
             'restricted' => true,
             'type' => self::STRING,
         ],
+        'dateMandate' => [
+            'type' => DateTime::class,
+        ],
         'iban' => [
             'required' => true,
             'type' => self::STRING,
@@ -28,7 +54,15 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
             'restricted' => true,
             'type' => self::STRING,
         ],
+        'mandate' => [
+            'size' => [
+                'min' => 3,
+                'max' => 35,
+            ],
+            'type' => self::STRING,
+        ],
         'name' => [
+            'required' => true,
             'size' => [
                 'min' => 4,
                 'max' => 64,
@@ -110,21 +144,5 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
         $this->modified[] = 'iban';
 
         return $this;
-    }
-
-    /**
-     * Add an account holder name
-     *
-     * @param string $name New holder name.
-     * @return self
-     * @throws ild78\Exceptions\InvalidNameException When the name is invalid.
-     */
-    public function setName(string $name): self
-    {
-        try {
-            return parent::setName($name);
-        } catch (ild78\Exceptions\InvalidArgumentException $excep) {
-            throw new ild78\Exceptions\InvalidNameException($excep->getMessage(), $excep->getCode(), $excep);
-        }
     }
 }

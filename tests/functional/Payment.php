@@ -99,7 +99,7 @@ class Payment extends TestCase
                 ->and($card->setCvc((string) rand(100, 999)))
                 ->and($this->testedInstance->setCustomer($customer = new ild78\Customer))
                 ->and($customer->setName('John Doe'))
-                ->and($customer->setEMail('john.doe@example.com'))
+                ->and($customer->setEmail('john.doe@example.com'))
                 ->and($this->testedInstance->send())
                 ->and(array_push($this->paymentList, $this->testedInstance))
                 ->then
@@ -190,7 +190,7 @@ class Payment extends TestCase
                 ->object($customer->setName('John Doe'))
                     ->isInstanceOf(ild78\Customer::class)
 
-                ->object($customer->setEMail('john.doe@example.com'))
+                ->object($customer->setEmail('john.doe@example.com'))
                     ->isInstanceOf(ild78\Customer::class)
 
                 ->object($this->testedInstance->send())
@@ -208,7 +208,7 @@ class Payment extends TestCase
         $this
             ->assert('With a card')
                 ->given($amount = rand(50, 99999))
-                ->and($description = vsprintf('Automatic test, %.02f %s', [
+                ->and($description = vsprintf('Automatic test, with card, %.02f %s', [
                     $amount / 100,
                     $currency,
                 ]))
@@ -258,6 +258,59 @@ class Payment extends TestCase
                     ->dateTime($customer->getCreationDate())
                         ->hasDay(date('d'))
 
+            ->assert('With a sepa account')
+                ->given($amount = rand(50, 99999))
+                ->and($description = vsprintf('Automatic test, with SEPA, %.02f %s', [
+                    $amount / 100,
+                    $currency,
+                ]))
+
+                ->if($sepa = new ild78\Sepa)
+                ->and($sepa->setIban($this->getValidIban()))
+                ->and($sepa->setName($this->fake()->name))
+
+                ->if($customer = new ild78\Customer)
+                ->and($customer->setName('John Doe'))
+                ->and($customer->setEmail('john.doe@example.com'))
+
+                ->if($this->newTestedInstance)
+                ->and($this->testedInstance->setAmount($amount))
+                ->and($this->testedInstance->setCurrency($currency))
+                ->and($this->testedInstance->setCustomer($customer))
+                ->and($this->testedInstance->setDescription($description))
+                ->and($this->testedInstance->setSepa($sepa))
+
+                ->then
+                    ->object($this->testedInstance->send())
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getId())
+                        ->startWith('paym_')
+                        ->hasLength(29)
+
+                    ->dateTime($this->testedInstance->getCreationDate())
+                        ->hasDay(date('d'))
+
+                    ->string($this->testedInstance->getMethod())
+                        ->isIdenticalTo('sepa')
+
+                    ->string($sepa->getId())
+                        ->startWith('sepa_')
+                        ->hasLength(29)
+
+                    ->dateTime($sepa->getCreationDate())
+                        ->hasDay(date('d'))
+
+                    ->string($sepa->getBic())
+                        ->startWith('TEST')
+
+                    ->string($customer->getId())
+                        ->startWith('cust_')
+                        ->hasLength(29)
+
+                    ->dateTime($customer->getCreationDate())
+                        ->hasDay(date('d'))
+
             ->assert('With authentication')
                 ->given($amount = rand(50, 99999))
                 ->and($description = vsprintf('Automatic auth test, %.02f %s', [
@@ -275,7 +328,7 @@ class Payment extends TestCase
                 ->and($customer->setName('John Doe'))
                 ->and($customer->setEmail('john.doe@example.com'))
 
-                ->if($url = 'https://www.example.org?' . uniqid())
+                ->if($url = 'https://www.example.org/?' . uniqid())
 
                 ->if($this->newTestedInstance)
                 ->and($this->testedInstance->setAmount($amount))
@@ -444,7 +497,7 @@ class Payment extends TestCase
                 ->and($card->setNumber($this->getValidCardNumber()))
                 ->and($card->setExpirationMonth(rand(1, 12)))
                 ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
-                ->and($card->setCvc(rand(100, 999)))
+                ->and($card->setCvc((string) rand(100, 999)))
 
                 ->then
                     ->object($this->testedInstance->send())
@@ -514,7 +567,7 @@ class Payment extends TestCase
                 ->and($card->setNumber($this->getValidCardNumber()))
                 ->and($card->setExpirationMonth(rand(1, 12)))
                 ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
-                ->and($card->setCvc(rand(100, 999)))
+                ->and($card->setCvc((string) rand(100, 999)))
 
                 ->if($customer = new ild78\Customer)
                 ->and($customer->setName($name))
@@ -579,7 +632,7 @@ class Payment extends TestCase
                 ->and($card->setNumber($this->getValidCardNumber()))
                 ->and($card->setExpirationMonth(rand(1, 12)))
                 ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
-                ->and($card->setCvc(rand(100, 999)))
+                ->and($card->setCvc((string) rand(100, 999)))
 
                 ->if($customer = new ild78\Customer)
                 ->and($customer->setName($name)) // From previous test

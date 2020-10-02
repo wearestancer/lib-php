@@ -12,6 +12,8 @@ use JsonSerializable;
  * Manage common code between API object
  *
  * @throws ild78\Exceptions\BadMethodCallException when calling unknown method
+ *
+ * @property DateTime|null $created
  */
 abstract class AbstractObject implements JsonSerializable
 {
@@ -27,9 +29,6 @@ abstract class AbstractObject implements JsonSerializable
 
     /** @var string */
     protected $id;
-
-    /** @var DateTime */
-    protected $created;
 
     /** @var boolean */
     protected $populated = false;
@@ -51,7 +50,9 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function __construct($id = null)
     {
-        $defaults = [
+        $defaultModel = [
+            'coerce' => null,
+            'exception' => null,
             'exportable' => null,
             'list' => false,
             'size' => [
@@ -64,12 +65,35 @@ abstract class AbstractObject implements JsonSerializable
             'value' => null,
         ];
 
+        $defaultValues = [
+            'created' => [
+                'restricted' => true,
+                'type' => DateTime::class,
+            ],
+        ];
+
+        $this->dataModel = array_merge($this->dataModel, $defaultValues);
+
         foreach ($this->dataModel as &$data) {
-            $data = array_merge($defaults, $data);
-            $data['size'] = array_merge($defaults['size'], $data['size']);
+            $data = array_merge($defaultModel, $data);
+            $data['size'] = array_merge($defaultModel['size'], $data['size']);
 
             if (is_null($data['exportable'])) {
                 $data['exportable'] = !$data['restricted'];
+            }
+
+            if ($data['type'] === DateTime::class) {
+                $data['coerce'] = function ($value) {
+                    if ($value instanceof DateTime) {
+                        return $value;
+                    }
+
+                    if (!$value) {
+                        return null;
+                    }
+
+                    return new DateTime('@' . $value);
+                };
             }
         }
 
@@ -105,10 +129,6 @@ abstract class AbstractObject implements JsonSerializable
 
         if ($action === 'set' && property_exists($this, $property)) {
             $tmp = $property;
-
-            if ($property === 'created') {
-                $tmp = 'creation date';
-            }
 
             if ($property === 'dataModel') {
                 $tmp = 'data model';
@@ -281,6 +301,20 @@ abstract class AbstractObject implements JsonSerializable
             return [];
         }
 
+        if (!is_null($value) && $this->dataModel[$property]['type'] === DateTime::class) {
+            $tz = ild78\Config::getGlobal()->getDefaultTimeZone();
+
+            if ($tz) {
+                if ($this->dataModel[$property]['list']) {
+                    foreach ($value as $val) {
+                        $val->setTimezone($tz);
+                    }
+                } else {
+                    $value->setTimezone($tz);
+                }
+            }
+        }
+
         return $value;
     }
 
@@ -303,15 +337,29 @@ abstract class AbstractObject implements JsonSerializable
             throw new ild78\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
         }
 
-        if ($this->dataModel[$property]['restricted']) {
+        $model = $this->dataModel[$property];
+
+        if ($model['restricted']) {
             $message = sprintf('You are not allowed to modify "%s".', $property);
+
+            if ($property === 'created') {
+                $message = 'You are not allowed to modify the creation date.';
+            }
 
             throw new ild78\Exceptions\BadMethodCallException($message);
         }
 
         $type = gettype($value);
+        $coerce = function ($v) {
+            return $v;
+        };
+        $coercedValues = [];
 
-        if ($this->dataModel[$property]['list']) {
+        if (is_callable($model['coerce'])) {
+            $coerce = $model['coerce'];
+        }
+
+        if ($model['list']) {
             if ($type !== 'array') {
                 $message = sprintf('Type mismatch, given "%s" expected "array".', $type);
 
@@ -319,13 +367,15 @@ abstract class AbstractObject implements JsonSerializable
             }
 
             foreach ($value as $val) {
-                $this->validateDataModel($property, $val);
+                $coercedValues[] = $coerce($val);
+                $this->validateDataModel($property, $coerce($val));
             }
         } else {
-            $this->validateDataModel($property, $value);
+            $coercedValues = $coerce($value);
+            $this->validateDataModel($property, $coerce($value));
         }
 
-        $this->dataModel[$property]['value'] = $value;
+        $this->dataModel[$property]['value'] = $coercedValues;
         $this->modified[] = $this->camelCaseToSnakeCase($property);
 
         return $this;
@@ -355,21 +405,7 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function getCreationDate(): ?DateTime
     {
-        $date = $this->created;
-
-        if (is_null($date) && $this->id && !$this->populated) {
-            $date = $this->populate()->created;
-        }
-
-        if ($date) {
-            $tz = ild78\Config::getGlobal()->getDefaultTimeZone();
-
-            if ($tz) {
-                $date->setTimezone($tz);
-            }
-        }
-
-        return $date;
+        return $this->created;
     }
 
     /**
@@ -461,8 +497,6 @@ abstract class AbstractObject implements JsonSerializable
 
             if ($property === 'id') {
                 $this->id = $value;
-            } elseif ($property === 'created') {
-                $this->created = new DateTime('@' . $value);
             } elseif (array_key_exists($property, $this->dataModel)) {
                 $types = [
                     static::BOOLEAN,
@@ -470,78 +504,92 @@ abstract class AbstractObject implements JsonSerializable
                     static::STRING,
                 ];
 
+                $coerce = function ($v) {
+                    return $v;
+                };
+
+                if (is_callable($this->dataModel[$property]['coerce'])) {
+                    $coerce = $this->dataModel[$property]['coerce'];
+                }
+
                 if ($value && !in_array($this->dataModel[$property]['type'], $types, true) && !is_object($value)) {
+                    $class = $this->dataModel[$property]['type'];
+
                     if ($this->dataModel[$property]['list']) {
                         $list = [];
 
                         foreach ($value as $val) {
-                            $id = null;
+                            if (is_subclass_of($class, self::class)) {
+                                $id = null;
 
-                            if (is_string($val)) {
-                                $id = $val;
-                                $val = [];
-                            }
+                                if (is_string($val)) {
+                                    $id = $val;
+                                    $val = [];
+                                }
 
-                            $missing = true;
+                                $missing = true;
 
-                            if (!is_array($this->dataModel[$property]['value'])) {
-                                $this->dataModel[$property]['value'] = [];
-                            }
+                                if (!is_array($this->dataModel[$property]['value'])) {
+                                    $this->dataModel[$property]['value'] = [];
+                                }
 
-                            foreach ($this->dataModel[$property]['value'] as $obj) {
-                                if ($obj->getId() === $id) {
+                                foreach ($this->dataModel[$property]['value'] as $obj) {
+                                    if ($obj->getId() === $id) {
+                                        $obj->hydrate($val);
+
+                                        $missing = false;
+                                        $list[] = $obj;
+                                    }
+                                }
+
+                                if ($missing) {
+                                    $obj = new $class($id);
+
+                                    $obj->cleanModified = $this->cleanModified;
                                     $obj->hydrate($val);
 
-                                    $missing = false;
                                     $list[] = $obj;
                                 }
-                            }
-
-                            if ($missing) {
-                                $class = $this->dataModel[$property]['type'];
-
-                                if (is_null($id)) {
-                                    $obj = new $class($id);
-                                } else {
-                                    $obj = new $class($id);
-                                }
-
-                                $obj->cleanModified = $this->cleanModified;
-                                $obj->hydrate($val);
-
-                                $list[] = $obj;
+                            } else {
+                                $list[] = $coerce($val);
                             }
                         }
 
                         $this->$property = $list;
                     } else {
-                        $id = null;
+                        if (is_subclass_of($class, self::class)) {
+                            $id = null;
 
-                        if (is_string($value)) {
-                            $id = $value;
-                            $value = [
-                                'id' => $id,
-                            ];
-                        }
-
-                        if (!$this->dataModel[$property]['value']) {
-                            $class = $this->dataModel[$property]['type'];
-
-                            if (is_null($id)) {
-                                $this->dataModel[$property]['value'] = new $class();
-                            } else {
-                                $this->dataModel[$property]['value'] = new $class($id);
+                            if (is_string($value)) {
+                                $id = $value;
+                                $value = [
+                                    'id' => $id,
+                                ];
                             }
-                        }
 
-                        if (is_array($value)) {
-                            $this->dataModel[$property]['value']->cleanModified = $this->cleanModified;
-                            $this->dataModel[$property]['value']->hydrate($value);
+                            if (!$this->dataModel[$property]['value']) {
+                                if (is_null($id)) {
+                                    $this->dataModel[$property]['value'] = new $class();
+                                } else {
+                                    $this->dataModel[$property]['value'] = new $class($id);
+                                }
+                            }
+
+                            if (is_array($value)) {
+                                $this->dataModel[$property]['value']->cleanModified = $this->cleanModified;
+                                $this->dataModel[$property]['value']->hydrate($value);
+                            }
+                        } else {
+                            if ($this->dataModel[$property]['restricted']) {
+                                $this->dataModel[$property]['value'] = $coerce($value);
+                            } else {
+                                $this->$property = $value;
+                            }
                         }
                     }
                 } else {
                     if ($this->dataModel[$property]['restricted'] || is_null($value) || is_array($value)) {
-                        $this->dataModel[$property]['value'] = $value;
+                        $this->dataModel[$property]['value'] = $coerce($value);
                     } else {
                         $this->$property = $value;
                     }
@@ -636,7 +684,12 @@ abstract class AbstractObject implements JsonSerializable
             if ($type === 'object') {
                 if (in_array($prop, $this->modified) || $value->isModified()) {
                     $supp = false;
-                    $value = $value->jsonSerialize();
+
+                    if (method_exists($value, 'jsonSerialize')) {
+                        $value = $value->jsonSerialize();
+                    } elseif ($value instanceof DateTime) {
+                        $value = $value->getTimestamp();
+                    }
                 }
             }
 
@@ -645,8 +698,12 @@ abstract class AbstractObject implements JsonSerializable
 
                 foreach ($value as &$val) {
                     if (gettype($val) === 'object') {
-                        $keepIt |= $val->isModified();
-                        $val = $val->jsonSerialize();
+                        if ($val instanceof self) {
+                            $keepIt |= $val->isModified();
+                            $val = $val->jsonSerialize();
+                        } elseif ($val instanceof DateTime) {
+                            $val = $val->getTimestamp();
+                        }
                     }
                 }
 
@@ -837,6 +894,18 @@ abstract class AbstractObject implements JsonSerializable
     {
         $model = $this->dataModel[$property];
 
+        $exceptionList = [
+            'ild78\\Exceptions\\Invalid' . ucfirst($property) . 'Exception',
+            $model['exception'],
+        ];
+        $exceptionClass = ild78\Exceptions\InvalidArgumentException::class;
+
+        foreach ($exceptionList as $except) {
+            if (is_string($except) && class_exists($except)) {
+                $exceptionClass = $except;
+            }
+        }
+
         $type = gettype($value);
         $length = $value;
 
@@ -854,7 +923,7 @@ abstract class AbstractObject implements JsonSerializable
 
             $message = vsprintf('Type mismatch, given "%s" expected "%s".', $params);
 
-            throw new ild78\Exceptions\InvalidArgumentException($message);
+            throw new $exceptionClass($message);
         }
 
         if ($type === 'string') {
@@ -869,7 +938,7 @@ abstract class AbstractObject implements JsonSerializable
         if (!is_null($model['size']['fixed']) && $model['size']['fixed'] !== $length) {
             $message = sprintf('A valid %s must have %d characters.', $property, $model['size']['fixed']);
 
-            throw new ild78\Exceptions\InvalidArgumentException($message);
+            throw new $exceptionClass($message);
         }
 
         if (!is_null($model['size']['max'])) {
@@ -921,7 +990,7 @@ abstract class AbstractObject implements JsonSerializable
                 }
             }
 
-            throw new ild78\Exceptions\InvalidArgumentException($message);
+            throw new $exceptionClass($message);
         }
 
         return $this;
