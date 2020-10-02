@@ -2,6 +2,7 @@
 
 namespace ild78\tests\unit;
 
+use DateTime;
 use ild78;
 use ild78\Refund as testedClass;
 
@@ -13,6 +14,52 @@ class Refund extends ild78\Tests\atoum
             ->currentlyTestedClass()
                 ->isSubclassOf(ild78\Core\AbstractObject::class)
                 ->hasTrait(ild78\Traits\AmountTrait::class)
+        ;
+    }
+
+    public function testGetDateBank()
+    {
+        $this
+            ->if($this->newTestedInstance)
+            ->and($date = new DateTime)
+            ->then
+                ->variable($this->testedInstance->getDateBank())
+                    ->isNull
+
+                ->exception(function () use ($date) {
+                    $this->testedInstance->setDateBank($date);
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify "dateBank".')
+
+            ->if($this->testedInstance->hydrate(['dateBank' => $date]))
+            ->then
+                ->dateTime($this->testedInstance->getDateBank())
+                    ->isEqualTo($date)
+        ;
+    }
+
+    public function testGetDateRefund()
+    {
+        $this
+            ->if($this->newTestedInstance)
+            ->and($date = new DateTime)
+            ->then
+                ->variable($this->testedInstance->getDateRefund())
+                    ->isNull
+
+                ->exception(function () use ($date) {
+                    $this->testedInstance->setDateRefund($date);
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify "dateRefund".')
+
+            ->if($this->testedInstance->hydrate(['dateRefund' => $date]))
+            ->then
+                ->dateTime($this->testedInstance->getDateRefund())
+                    ->isEqualTo($date)
         ;
     }
 

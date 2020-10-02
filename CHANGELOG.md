@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
+- `ild78\Payment::$dateBank`
+- `ild78\Refund::$dateBank`
+- `ild78\Refund::$dateRefund`
 - `ild78\Sepa::$mandate`
 - `ild78\Sepa::$dateMandate`
 - `ild78\Sepa` can be sent, retrieved or deleted to the API

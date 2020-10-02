@@ -17,6 +17,7 @@ use ild78;
  * @method string|null getCountry()
  * @method string getCurrency()
  * @method ild78\\Customer getCustomer()
+ * @method string getDateBank()
  * @method string|null getDescription()
  * @method ild78\\Device getDevice()
  * @method string|null getMethod()
@@ -48,6 +49,7 @@ use ild78;
  * @property DateTime|null $created
  * @property string $currency
  * @property ild78\\Customer $customer
+ * @property string $dateBank
  * @property string|null $description
  * @property ild78\\Device $device
  * @property string|null $method
@@ -94,6 +96,10 @@ class Payment extends ild78\Core\AbstractObject
         ],
         'customer' => [
             'type' => ild78\Customer::class,
+        ],
+        'dateBank' => [
+            'restricted' => true,
+            'type' => DateTime::class,
         ],
         'description' => [
             'size' => [
