@@ -1,7 +1,7 @@
 {
     "name": "ild78/lib-php",
     "description": "Ild78 PHP library",
-    "version": "0.0.4",
+    "version": "0.0.5",
     "type": "library",
     "keywords": [
         "payments",
