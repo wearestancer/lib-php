@@ -1,0 +1,11 @@
+
+parameters:
+  level: max
+  paths:
+    - src
+  tmpDir: reports/phpstan
+
+  ignoreErrors:
+    - '/Unsafe usage of new static/'
+    - '/Call to an undefined static method ild78\\Core\\AbstractObject::[gs]et\w+\(\)/'
+    - '/^Only booleans are allowed in/'
