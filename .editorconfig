@@ -14,3 +14,6 @@ indent_size = 4
 
 [composer.json]
 indent_size = 4
+
+[phpstan-baseline.neon]
+indent_style = tab
