@@ -207,7 +207,7 @@ class Client extends ild78\Tests\atoum
         $this
             ->given($ressource = uniqid())
             ->and($this->function->curl_init = $ressource)
-            ->and($this->function->curl_close = true)
+            ->and($this->function->curl_close = uniqid())
             ->then
                 ->object($this->newTestedInstance)
                 ->function('curl_init')->wasCalled->once
@@ -651,7 +651,7 @@ class Client extends ild78\Tests\atoum
                 ->and($this->function->curl_exec = $body = sprintf('"%s"', uniqid()))
                 ->and($this->function->curl_getinfo = $code)
                 ->and($this->function->curl_errno = $error)
-                ->and($this->function->curl_error = uniqid())
+                ->and($this->function->curl_error = '')
 
                 ->when(function () use ($code, &$logMessage, $config) {
                     if ($code === 401) {

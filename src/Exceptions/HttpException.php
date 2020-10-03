@@ -35,7 +35,7 @@ class HttpException extends Exception implements ExceptionInterface
      * @param integer $code The Exception code.
      * @param Throwable $previous The previous exception used for the exception chaining.
      */
-    public function __construct(string $message = '', int $code = 0, Throwable $previous = null)
+    public function __construct(string $message = null, int $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
 
@@ -49,7 +49,9 @@ class HttpException extends Exception implements ExceptionInterface
      * Create an instance from an array
      *
      * @param array $params Parameters, keys must correspond to exception properties.
-     * @return self
+     * @return static
+     *
+     * @phpstan-param CreateExceptionParameters $params
      */
     public static function create(array $params = []): Exception
     {

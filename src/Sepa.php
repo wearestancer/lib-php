@@ -12,13 +12,14 @@ use DateTime;
  * @method string getBic()
  * @method string|null getCountry()
  * @method DateTime|null getDateMandate()
+ * @method string|null getIban()
  * @method string getLast4()
  * @method string|null getMandate()
  * @method string getName()
  *
- * @method self setDateMandate(DateTime $dateMandate)
- * @method self setMandate(string $mandate)
- * @method self setName(string $name)
+ * @method $this setDateMandate(DateTime $dateMandate)
+ * @method $this setMandate(string $mandate)
+ * @method $this setName(string $name)
  *
  * @property string $bic
  * @property string|null $country
@@ -33,7 +34,7 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
     /** @var string */
     protected $endpoint = 'sepa';
 
-    /** @var array */
+    /** @var array<string, DataModel> */
     protected $dataModel = [
         'bic' => [
             'required' => true,
@@ -74,18 +75,24 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
     /**
      * Return IBAN with usual readeable format (AAAA BBBB CCCC ...)
      *
-     * @return string
+     * @return string|null
      */
-    public function getFormattedIban(): string
+    public function getFormattedIban(): ?string
     {
-        return trim(chunk_split($this->getIban(), 4, ' '));
+        $iban = $this->getIban();
+
+        if (!$iban) {
+            return null;
+        }
+
+        return trim(chunk_split($iban, 4, ' '));
     }
 
     /**
      * Add or update a Bank Identifier Code (BIC)
      *
      * @param string $bic A Bank Identifier Code.
-     * @return self
+     * @return $this
      * @throws ild78\Exceptions\InvalidBicException When BIC seems invalid.
      */
     public function setBic(string $bic): self
@@ -106,7 +113,7 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
      * Add or update an International Bank Account Number (IBAN)
      *
      * @param string $iban An International Bank Account Number.
-     * @return self
+     * @return $this
      * @throws ild78\Exceptions\InvalidIbanException When IBAN is invalid.
      */
     public function setIban(string $iban): self

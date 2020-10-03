@@ -11,7 +11,7 @@ use Psr;
  */
 class Call extends ild78\Core\AbstractObject
 {
-    /** @var array */
+    /** @var array<string, DataModel> */
     protected $dataModel = [
         'exception' => [
             'restricted' => true,

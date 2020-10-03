@@ -86,7 +86,7 @@ class Request extends ild78\Tests\atoum
                         ->isTestedInstance
 
                     ->string($this->testedInstance->getUri())
-                        ->isIdenticalTo('/')
+                        ->isIdenticalTo('')
 
                     ->array($this->testedInstance->getHeader('host'))
                         ->contains($host)
@@ -94,6 +94,32 @@ class Request extends ild78\Tests\atoum
             ->assert('With HTTPS, host only')
                 ->if($host = uniqid())
                 ->and($uri = 'https://' . $host)
+                ->then
+                    ->object($this->testedInstance->updateUri($uri))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getUri())
+                        ->isIdenticalTo('')
+
+                    ->array($this->testedInstance->getHeader('host'))
+                        ->contains($host)
+
+            ->assert('With HTTP, host only and trailing slash')
+                ->if($host = uniqid())
+                ->and($uri = 'http://' . $host . '/')
+                ->then
+                    ->object($this->testedInstance->updateUri($uri))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getUri())
+                        ->isIdenticalTo('/')
+
+                    ->array($this->testedInstance->getHeader('host'))
+                        ->contains($host)
+
+            ->assert('With HTTPS, host only and trailing slash')
+                ->if($host = uniqid())
+                ->and($uri = 'https://' . $host . '/')
                 ->then
                     ->object($this->testedInstance->updateUri($uri))
                         ->isTestedInstance

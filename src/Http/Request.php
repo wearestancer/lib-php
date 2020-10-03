@@ -27,7 +27,7 @@ class Request implements Psr\Http\Message\RequestInterface
      *
      * @param string $method HTTP method.
      * @param string $uri URI.
-     * @param array $headers Request headers.
+     * @param mixed[] $headers Request headers.
      * @param string|null $body Request body.
      * @param string $version Protocol version.
      */
@@ -97,7 +97,7 @@ class Request implements Psr\Http\Message\RequestInterface
      * Update URI and host header
      *
      * @param string $uri New URI.
-     * @return self
+     * @return $this
      */
     public function updateUri(string $uri): self
     {
@@ -108,7 +108,7 @@ class Request implements Psr\Http\Message\RequestInterface
 
         if (count($matches)) {
             $this->removeHeader($name)->addHeader($name, $matches[1]);
-            $this->uri = $matches[2] ?: '/';
+            $this->uri = $matches[2] ?? '/';
         }
 
         return $this;
@@ -126,7 +126,7 @@ class Request implements Psr\Http\Message\RequestInterface
      * changed request method.
      *
      * @param string $method Case-sensitive method.
-     * @return self
+     * @return static
      */
     public function withMethod($method): self
     {
@@ -142,7 +142,7 @@ class Request implements Psr\Http\Message\RequestInterface
      * @link http://tools.ietf.org/html/rfc7230#section-5.3 (for the various
      *     request-target forms allowed in request messages)
      * @param mixed $requestTarget New target.
-     * @return self
+     * @return static
      */
     public function withRequestTarget($requestTarget): self
     {
@@ -183,6 +183,8 @@ class Request implements Psr\Http\Message\RequestInterface
      * @param boolean $preserveHost Preserve the original state of the Host header.
      * @return void
      * @throws ild78\Exceptions\BadMethodCallException For everycall.
+     *
+     * @phpstan-return static
      */
     public function withUri(Psr\Http\Message\UriInterface $uri, $preserveHost = false): self
     {

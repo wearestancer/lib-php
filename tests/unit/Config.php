@@ -311,19 +311,28 @@ class Config extends ild78\Tests\atoum
     public function testGetDefaultTimeZone_SetDefaultTimeZone($zone)
     {
         $this
+            ->given($badName = uniqid())
             ->assert('Default value')
                 ->if($this->newTestedInstance([]))
                 ->then
                     ->variable($this->testedInstance->getDefaultTimeZone())
                         ->isNull
 
-            ->assert('Exception if not a string or a DateTimeZone instance')
+            ->assert('Exception if not a DateTimeZone instance')
                 ->exception(function () {
                     $this->newTestedInstance([])->setDefaultTimeZone(new DateTime);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
                     ->message
-                        ->isIdenticalTo('Invalid "$tz" argument.')
+                        ->isIdenticalTo('Invalid time zone.')
+
+            ->assert('Exception if not a valid time zone name')
+                ->exception(function () use ($badName) {
+                    $this->newTestedInstance([])->setDefaultTimeZone($badName);
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Invalid time zone "' . $badName . '".')
 
             ->assert('Update with a string')
                 ->if($this->newTestedInstance([]))

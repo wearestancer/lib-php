@@ -14,10 +14,10 @@ use Psr;
  */
 trait MessageTrait
 {
-    /** @var string */
+    /** @var string|null */
     protected $body;
 
-    /** @var array */
+    /** @var mixed[] */
     protected $headers = [];
 
     /** @var string */
@@ -28,7 +28,7 @@ trait MessageTrait
      *
      * @param string $name Header name.
      * @param string|string[] $value Header value.
-     * @return self
+     * @return $this
      */
     public function addHeader(string $name, $value): self
     {
@@ -114,7 +114,7 @@ trait MessageTrait
     public function getHeaders(): array
     {
         $headers = [];
-        $func = function ($data, $key) use (&$headers) {
+        $func = function ($data, $key) use (&$headers): void {
             $headers[$data['name']] = $data['values'];
         };
 
@@ -152,7 +152,7 @@ trait MessageTrait
      * Remove header by name
      *
      * @param string $name Header name to remove.
-     * @return self
+     * @return $this
      */
     public function removeHeader($name): self
     {

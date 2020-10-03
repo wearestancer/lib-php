@@ -16,11 +16,12 @@ use ild78;
  * @method integer getPort()
  * @method string getUserAgent()
  *
- * @method self setCity(string $city)
- * @method self setCountry(string $country)
- * @method self setHttpAccept(string $httpAccept)
- * @method self setLanguages(string $languages)
- * @method self setUserAgent(string $userAgent)
+ * @method $this setCity(string $city)
+ * @method $this setCountry(string $country)
+ * @method $this setHttpAccept(string $httpAccept)
+ * @method $this setLanguages(string $languages)
+ * @method $this setPort(integer $port)
+ * @method $this setUserAgent(string $userAgent)
  *
  * @property string $city
  * @property string $country
@@ -33,7 +34,7 @@ use ild78;
  */
 class Device extends ild78\Core\AbstractObject
 {
-    /** @var array */
+    /** @var array<string, DataModel> */
     protected $dataModel = [
         'city' => [
             'type' => self::STRING,
@@ -65,7 +66,7 @@ class Device extends ild78\Core\AbstractObject
     /**
      * Hydrate from environment
      *
-     * @return self
+     * @return $this
      * @throws ild78\Exceptions\InvalidIpAddressException When no IP address was given.
      * @throws ild78\Exceptions\InvalidPortException When no port was given.
      */
@@ -108,7 +109,7 @@ class Device extends ild78\Core\AbstractObject
      * We allow IPv4 and IPv6 addresses.
      *
      * @param string $ip New IP address.
-     * @return self
+     * @return $this
      * @throws ild78\Exceptions\InvalidIpAddressException When $ip is not a correct IP address.
      */
     public function setIp(string $ip): self

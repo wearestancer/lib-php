@@ -3,12 +3,70 @@ includes:
   - phpstan-baseline.neon
 
 parameters:
-  level: max
-  paths:
-    - src
-  tmpDir: reports/phpstan
-
   ignoreErrors:
-    - '/Unsafe usage of new static/'
     - '/Call to an undefined static method ild78\\Core\\AbstractObject::[gs]et\w+\(\)/'
     - '/^Only booleans are allowed in/'
+
+    - message: '/Unsafe usage of new static/'
+      paths:
+        - src/Config.php
+        - src/Core/AbstractObject.php
+        - src/Exceptions/Exception.php
+        - src/Traits/SearchTrait.php
+        - src/Payment.php
+
+    - message: '/^Variable (property access|method call)/'
+      paths:
+        - src/Core/AbstractObject.php
+        - src/Core/Request.php
+        - src/Exceptions/HttpException.php
+        - src/Http/Client.php
+        - src/Payment.php
+
+  level: max
+
+  paths:
+    - src
+
+  typeAliases:
+    DataModel: '''
+      array{
+        coerce?: callable,
+        exception?: class-string,
+        exportable?: bool,
+        list?: bool,
+        restricted?: bool,
+        required?: bool,
+        size?: array{
+          fixed?: int,
+          min?: int,
+          max?: int,
+        },
+        type: string,
+        value?: mixed,
+      }
+    '''
+
+    CreateExceptionParameters: '''
+      array{
+        code?: integer,
+        message?: string,
+        previous?: Throwable,
+        request?: Psr\Http\Message\RequestInterface,
+        response?: Psr\Http\Message\ResponseInterface,
+        status?: integer,
+      }
+    '''
+
+    PaymentChargeOptions: '''
+      array{
+        account_holder_name?: string,
+        account_number?: string,
+        id?: string,
+        source: string|array{
+          id?: string,
+        },
+      }
+    '''
+
+  tmpDir: reports/phpstan

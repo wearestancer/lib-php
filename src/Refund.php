@@ -13,16 +13,20 @@ use ild78;
  * @method string getCurrency()
  * @method string getDateBank()
  * @method string getDateRefund()
- * @method ild78\\Payment getPayment()
+ * @method ild78\Payment getPayment()
  * @method string getStatus()
  *
+ * @method $this setAmount(integer $amount)
+ * @method $this setPayment(ild78\Payment $payment)
+ *
  * @property integer $amount
- * @property DateTime|null $created
- * @property string $currency
- * @property string $dateBank
- * @property string $dateRefund
- * @property ild78\\Payment $payment
- * @property string $status
+ * @property ild78\Payment $payment
+ *
+ * @property-read DateTime|null $created
+ * @property-read string $currency
+ * @property-read string $dateBank
+ * @property-read string $dateRefund
+ * @property-read string $status
  */
 class Refund extends ild78\Core\AbstractObject
 {
@@ -31,7 +35,7 @@ class Refund extends ild78\Core\AbstractObject
     /** @var string */
     protected $endpoint = 'refunds';
 
-    /** @var array */
+    /** @var array<string, DataModel> */
     protected $dataModel = [
         'amount' => [
             'size' => [
@@ -70,7 +74,7 @@ class Refund extends ild78\Core\AbstractObject
      */
     public function isModified(): bool
     {
-        return !empty($this->modified);
+        return !!count($this->modified);
     }
 
     /**
@@ -78,7 +82,7 @@ class Refund extends ild78\Core\AbstractObject
      *
      * Overrided to make sure that the payment instance and the modified flag will not change.
      *
-     * @return ild78\Core\AbstractObject
+     * @return $this
      * @throws ild78\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
     public function send(): ild78\Core\AbstractObject

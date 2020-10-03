@@ -11,7 +11,7 @@ use ild78;
  * @method integer getAmount()
  * @method string getCurrency()
  * @method string getOrderId()
- * @method ild78\\Payment getPayment()
+ * @method ild78\Payment getPayment()
  * @method string getResponse()
  *
  * @method Generator list(array $terms)
@@ -20,7 +20,7 @@ use ild78;
  * @property DateTime|null $created
  * @property string $currency
  * @property string $orderId
- * @property ild78\\Payment $payment
+ * @property ild78\Payment $payment
  * @property string $response
  */
 class Dispute extends ild78\Core\AbstractObject
@@ -31,7 +31,7 @@ class Dispute extends ild78\Core\AbstractObject
     /** @var string */
     protected $endpoint = 'disputes';
 
-    /** @var array */
+    /** @var array<string, DataModel> */
     protected $dataModel = [
         'orderId' => [
             'restricted' => true,

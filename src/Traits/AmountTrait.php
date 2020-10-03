@@ -16,7 +16,7 @@ trait AmountTrait
      * We will not use the floating part.
      *
      * @param float $amount New amount.
-     * @return self
+     * @return $this
      * @throws ild78\Exceptions\InvalidAmountException When the amount is invalid.
      */
     public function setAmount(float $amount): self
