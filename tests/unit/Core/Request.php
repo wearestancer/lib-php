@@ -50,7 +50,10 @@ class Request extends ild78\Tests\atoum
                         ->isInstanceOf(ild78\Http\Request::class)
                         ->isNotIdenticalTo($request) // Returns clone
 
-                    ->string($calls[0]->getRequest()->getBody())
+                    ->object($calls[0]->getRequest()->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+
+                    ->castToString($calls[0]->getRequest()->getBody())
                         ->notContains($number)
                         ->contains($obfuscated)
 
@@ -91,7 +94,10 @@ class Request extends ild78\Tests\atoum
                         ->isInstanceOf(ild78\Http\Request::class)
                         ->isNotIdenticalTo($request) // Returns clone
 
-                    ->string($calls[0]->getRequest()->getBody())
+                    ->object($calls[0]->getRequest()->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+
+                    ->castToString($calls[0]->getRequest()->getBody())
                         ->notContains($iban)
                         ->contains($obfuscated)
 
@@ -137,7 +143,10 @@ class Request extends ild78\Tests\atoum
                         ->isInstanceOf(ild78\Http\Request::class)
                         ->isNotIdenticalTo($request) // Returns clone
 
-                    ->string($calls[0]->getRequest()->getBody())
+                    ->object($calls[0]->getRequest()->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+
+                    ->castToString($calls[0]->getRequest()->getBody())
                         ->isIdenticalTo(sprintf('{"card":"%s"}', $id))
 
                     ->object($calls[0]->getResponse())
@@ -182,7 +191,10 @@ class Request extends ild78\Tests\atoum
                         ->isInstanceOf(ild78\Http\Request::class)
                         ->isNotIdenticalTo($request) // Returns clone
 
-                    ->string($calls[0]->getRequest()->getBody())
+                    ->object($calls[0]->getRequest()->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+
+                    ->castToString($calls[0]->getRequest()->getBody())
                         ->isIdenticalTo(sprintf('{"sepa":"%s"}', $id))
 
                     ->object($calls[0]->getResponse())
@@ -411,7 +423,7 @@ class Request extends ild78\Tests\atoum
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($body = uniqid())
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
 
             ->and($config->setHttpClient($client))

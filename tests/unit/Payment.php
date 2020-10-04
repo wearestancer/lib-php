@@ -280,7 +280,7 @@ class Payment extends ild78\Tests\atoum
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-no-method.json'))
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
 
             ->and($config->setHttpClient($client))
@@ -595,7 +595,7 @@ class Payment extends ild78\Tests\atoum
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($body = file_get_contents(__DIR__ . '/fixtures/issue/7.json'))
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
 
             ->and($config->setHttpClient($client))
@@ -616,7 +616,7 @@ class Payment extends ild78\Tests\atoum
             ->given($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/list.json'))
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
             ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
@@ -812,7 +812,7 @@ class Payment extends ild78\Tests\atoum
                         'limit' => 10,
                     ],
                 ])
-                ->and($this->calling($response)->getBody = json_encode($body))
+                ->and($this->calling($response)->getBody = new ild78\Http\Stream(json_encode($body)))
 
                 ->if($limit = rand(1, 100))
                 ->and($terms = [
@@ -832,7 +832,7 @@ class Payment extends ild78\Tests\atoum
                                 ->once
 
             ->assert('Invalid response')
-                ->given($this->calling($response)->getBody = null)
+                ->given($this->calling($response)->getBody = new ild78\Http\Stream(''))
 
                 ->if($limit = rand(1, 100))
                 ->and($terms = [
@@ -1013,7 +1013,7 @@ class Payment extends ild78\Tests\atoum
             ->and($notEnough = rand(1, 49))
             ->then
                 ->assert('Without refunds we get an empty array')
-                    ->if($this->calling($response)->getBody = json_encode($paymentData))
+                    ->if($this->calling($response)->getBody = new ild78\Http\Stream(json_encode($paymentData)))
                     ->then
                         ->array($this->testedInstance->getRefunds())
                             ->isEmpty
@@ -1035,7 +1035,7 @@ class Payment extends ild78\Tests\atoum
                             ->isIdenticalTo('Amount must be greater than or equal to 50.')
 
                 ->assert('We can put a refund amount')
-                    ->if($this->calling($response)->getBody = json_encode($refund1Data))
+                    ->if($this->calling($response)->getBody = new ild78\Http\Stream(json_encode($refund1Data)))
                     ->then
                         ->object($this->testedInstance->refund($amount))
                             ->isTestedInstance
@@ -1077,7 +1077,7 @@ class Payment extends ild78\Tests\atoum
                             ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $paid / 100) . ' EUR) more than paid (34.06 EUR with ' . sprintf('%.02f', $amount / 100) . ' EUR already refunded).')
 
                 ->assert('Without amount we will refund all')
-                    ->if($this->calling($response)->getBody = json_encode($refund2Data))
+                    ->if($this->calling($response)->getBody = new ild78\Http\Stream(json_encode($refund2Data)))
                     ->and($location = $this->testedInstance->getUri())
                     ->then
                         ->object($this->testedInstance->refund())
@@ -1403,7 +1403,7 @@ class Payment extends ild78\Tests\atoum
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-card-auth.json'))
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
 
             ->and($config->setHttpClient($client))
@@ -1543,7 +1543,7 @@ class Payment extends ild78\Tests\atoum
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-card-auth.json'))
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
 
             ->and($config->setHttpClient($client))
@@ -1691,7 +1691,7 @@ class Payment extends ild78\Tests\atoum
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-no-method.json'))
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
 
             ->and($config->setHttpClient($client))
@@ -1782,7 +1782,7 @@ class Payment extends ild78\Tests\atoum
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-no-method-auth.json'))
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
 
             ->and($config->setHttpClient($client))
@@ -1877,7 +1877,7 @@ class Payment extends ild78\Tests\atoum
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-no-method.json'))
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
 
             ->and($config->setHttpClient($client))
@@ -1939,7 +1939,7 @@ class Payment extends ild78\Tests\atoum
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-card.json'))
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
 
             ->and($config->setHttpClient($client))

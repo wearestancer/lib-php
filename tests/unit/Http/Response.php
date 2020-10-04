@@ -77,8 +77,11 @@ class Response extends ild78\Tests\atoum
                         ->isIdenticalTo($code)
 
                     // Check no diff on other properties
-                    ->string($this->testedInstance->getBody())
+                    ->object($this->testedInstance->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
                         ->isIdenticalTo($obj->getBody())
+
+                    ->castToString($this->testedInstance->getBody())
                         ->isIdenticalTo($body)
 
                     ->array($this->testedInstance->getHeaders())
@@ -114,8 +117,11 @@ class Response extends ild78\Tests\atoum
                         ->isIdenticalTo($reason)
 
                     // Check no diff on other properties
-                    ->string($this->testedInstance->getBody())
+                    ->object($this->testedInstance->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
                         ->isIdenticalTo($obj->getBody())
+
+                    ->castToString($this->testedInstance->getBody())
                         ->isIdenticalTo($body)
 
                     ->array($this->testedInstance->getHeaders())

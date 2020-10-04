@@ -92,14 +92,14 @@ class Response implements Psr\Http\Message\ResponseInterface
      * Create a response instance
      *
      * @param integer $code Status code.
-     * @param string $body Response body.
+     * @param Psr\Http\Message\StreamInterface|string|null $body Response body.
      * @param array<string, string|string[]> $headers Response headers.
      * @param string $version Protocol version.
      * @param string|null $reason  Reason phrase (when empty a default will be used based on the status code).
      */
     public function __construct(
         int $code,
-        string $body = null,
+        $body = null,
         array $headers = [],
         string $version = '1.1',
         $reason = null
@@ -107,8 +107,10 @@ class Response implements Psr\Http\Message\ResponseInterface
         $this->code = $code;
         $this->protocol = $version;
 
-        if ($body) {
+        if ($body instanceof Psr\Http\Message\StreamInterface) {
             $this->body = $body;
+        } else {
+            $this->body = new Stream($body ?? '');
         }
 
         if ($reason) {

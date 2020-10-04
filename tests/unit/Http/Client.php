@@ -282,10 +282,16 @@ class Client extends ild78\Tests\atoum
                 ->string($request->getMethod())
                     ->isIdenticalTo($method)
 
-                ->string($request->getUri())
+                ->object($request->getUri())
+                    ->isInstanceOf(ild78\Http\Uri::class)
+
+                ->castToString($request->getUri())
                     ->isIdenticalTo($query)
 
-                ->string($request->getBody())
+                ->object($request->getBody())
+                    ->isInstanceOf(ild78\Http\Stream::class)
+
+                ->castToString($request->getBody())
                     ->isIdenticalTo($options['body'])
 
                 ->array($request->getHeaders())
@@ -340,7 +346,10 @@ class Client extends ild78\Tests\atoum
                     ->object($response = $this->testedInstance->request($method, $host))
                         ->isInstanceOf(ild78\Http\Response::class)
 
-                    ->string($response->getBody())
+                    ->object($response->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+
+                    ->castToString($response->getBody())
                         ->isIdenticalTo($body)
 
                     ->function('curl_setopt')
@@ -397,7 +406,10 @@ class Client extends ild78\Tests\atoum
                     ->object($response = $this->testedInstance->request($method, $host, $options))
                         ->isInstanceOf(ild78\Http\Response::class)
 
-                    ->string($response->getBody())
+                    ->object($response->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+
+                    ->castToString($response->getBody())
                         ->isIdenticalTo($body)
 
                     ->function('curl_setopt')
@@ -448,7 +460,10 @@ class Client extends ild78\Tests\atoum
                     ->object($response = $this->exception->getResponse())
                         ->isInstanceOf(ild78\Http\Response::class)
 
-                    ->string($response->getBody())
+                    ->object($response->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+
+                    ->castToString($response->getBody())
                         ->isIdenticalTo($body)
 
                     ->function('curl_setopt')
@@ -489,7 +504,10 @@ class Client extends ild78\Tests\atoum
                     ->object($response = $this->exception->getResponse())
                         ->isInstanceOf(ild78\Http\Response::class)
 
-                    ->string($response->getBody())
+                    ->object($response->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+
+                    ->castToString($response->getBody())
                         ->isIdenticalTo($body)
 
                     ->function('curl_setopt')
@@ -530,7 +548,10 @@ class Client extends ild78\Tests\atoum
                     ->object($response = $this->exception->getResponse())
                         ->isInstanceOf(ild78\Http\Response::class)
 
-                    ->string($response->getBody())
+                    ->object($response->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+
+                    ->castToString($response->getBody())
                         ->isIdenticalTo($body)
 
                     ->function('curl_setopt')

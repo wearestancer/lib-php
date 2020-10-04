@@ -14,7 +14,7 @@ use Psr;
  */
 trait MessageTrait
 {
-    /** @var string|null */
+    /** @var Psr\Http\Message\StreamInterface */
     protected $body;
 
     /** @var mixed[] */
@@ -49,9 +49,9 @@ trait MessageTrait
     /**
      * Gets the body of the message.
      *
-     * @return string|null
+     * @return Psr\Http\Message\StreamInterface
      */
-    public function getBody(): ?string
+    public function getBody(): Psr\Http\Message\StreamInterface
     {
         return $this->body;
     }
@@ -171,9 +171,9 @@ trait MessageTrait
      *
      * @param string $name Case-insensitive header field name to add.
      * @param string|string[] $value Header value(s).
-     * @return self
+     * @return static
      */
-    public function withAddedHeader($name, $value): self
+    public function withAddedHeader($name, $value): Psr\Http\Message\MessageInterface
     {
         $obj = clone $this;
 
@@ -184,12 +184,12 @@ trait MessageTrait
      * Return an instance with the specified message body.
      *
      * @param Psr\Http\Message\StreamInterface $body Body.
-     * @return self
+     * @return static
      */
-    public function withBody(Psr\Http\Message\StreamInterface $body): self
+    public function withBody(Psr\Http\Message\StreamInterface $body): Psr\Http\Message\MessageInterface
     {
         $obj = clone $this;
-        $obj->body = (string) $body;
+        $obj->body = $body;
 
         return $obj;
     }
@@ -199,9 +199,9 @@ trait MessageTrait
      *
      * @param string $name Case-insensitive header field name.
      * @param string|string[] $value Header value(s).
-     * @return self
+     * @return static
      */
-    public function withHeader($name, $value): self
+    public function withHeader($name, $value): Psr\Http\Message\MessageInterface
     {
         return $this->withoutHeader($name)->addHeader($name, $value);
     }
@@ -209,16 +209,16 @@ trait MessageTrait
     /**
      * Return an instance with obfuscated message body.
      *
-     * @param string|string[] $in Text to search.
-     * @param string|string[] $out Text for replacement.
-     * @return self
+     * @param string|string[]|null $in Text to search.
+     * @param string|string[]|null $out Text for replacement.
+     * @return static
      */
-    public function withModifiedBody(?string $in = '', ?string $out = ''): self
+    public function withModifiedBody($in = '', $out = ''): Psr\Http\Message\MessageInterface
     {
         $obj = clone $this;
 
         if ($in) {
-            $obj->body = str_replace($in, $out, $this->body);
+            $obj->body = new Stream(str_replace($in, $out ?? '', (string) $this->body));
         }
 
         return $obj;
@@ -228,9 +228,9 @@ trait MessageTrait
      * Return an instance without the specified header.
      *
      * @param string $name Case-insensitive header field name to remove.
-     * @return self
+     * @return static
      */
-    public function withoutHeader($name): self
+    public function withoutHeader($name): Psr\Http\Message\MessageInterface
     {
         $obj = clone $this;
 
@@ -241,9 +241,9 @@ trait MessageTrait
      * Return an instance with the specified HTTP protocol version.
      *
      * @param string $version HTTP protocol version.
-     * @return self
+     * @return static
      */
-    public function withProtocolVersion($version): self
+    public function withProtocolVersion($version): Psr\Http\Message\MessageInterface
     {
         $obj = clone $this;
         $obj->protocol = $version;

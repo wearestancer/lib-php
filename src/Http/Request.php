@@ -19,28 +19,35 @@ class Request implements Psr\Http\Message\RequestInterface
     /** @var string */
     protected $method;
 
-    /** @var string */
+    /** @var Psr\Http\Message\UriInterface */
     protected $uri;
 
     /**
      * Create a response instance
      *
      * @param string $method HTTP method.
-     * @param string $uri URI.
+     * @param Psr\Http\Message\UriInterface|string $uri URI.
      * @param mixed[] $headers Request headers.
-     * @param string|null $body Request body.
+     * @param Psr\Http\Message\StreamInterface|string|mixed[]|null $body Request body.
      * @param string $version Protocol version.
      */
     public function __construct(
         string $method,
-        string $uri,
+        $uri,
         array $headers = [],
         $body = null,
         $version = '1.1'
     ) {
         $this->method = strtoupper($method);
-        $this->body = $body;
         $this->protocol = $version;
+
+        if ($body instanceof Psr\Http\Message\StreamInterface) {
+            $this->body = $body;
+        } elseif (is_array($body)) {
+            $this->body = new Stream('Unsupported multipart form data');
+        } else {
+            $this->body = new Stream($body ?? '');
+        }
 
         foreach ($headers as $name => $value) {
             $this->addHeader($name, $value);
@@ -77,7 +84,7 @@ class Request implements Psr\Http\Message\RequestInterface
      */
     public function getRequestTarget(): string
     {
-        return $this->getUri();
+        return (string) $this->getUri();
     }
 
     /**
@@ -86,9 +93,9 @@ class Request implements Psr\Http\Message\RequestInterface
      * We will not implement the real interface as we will not return an UriInterface.
      *
      * @link http://tools.ietf.org/html/rfc3986#section-4.3
-     * @return string Returns the URI of the request.
+     * @return Psr\Http\Message\UriInterface Returns the URI of the request.
      */
-    public function getUri(): string
+    public function getUri(): Psr\Http\Message\UriInterface
     {
         return $this->uri;
     }
@@ -96,19 +103,36 @@ class Request implements Psr\Http\Message\RequestInterface
     /**
      * Update URI and host header
      *
-     * @param string $uri New URI.
+     * @param Psr\Http\Message\UriInterface|string $uri New URI.
      * @return $this
      */
-    public function updateUri(string $uri): self
+    public function updateUri($uri): self
     {
-        $matches = [];
+        $host = '';
         $name = 'Host';
 
-        preg_match('!https?://([^/]+)(.*)!', $uri, $matches);
+        if (is_string($uri)) {
+            $matches = [];
 
-        if (count($matches)) {
-            $this->removeHeader($name)->addHeader($name, $matches[1]);
-            $this->uri = $matches[2] ?? '/';
+            preg_match('!https?://([^/]+)(.*)!', $uri, $matches);
+
+            if (count($matches)) {
+                $host = $matches[1];
+                $this->uri = new Uri($matches[2] ?? '/');
+            }
+        } else {
+            $host = $uri->getHost();
+            $components = [
+                'fragment' => $uri->getFragment(),
+                'path' => $uri->getPath(),
+                'query' => $uri->getQuery(),
+            ];
+
+            $this->uri = new Uri($components);
+        }
+
+        if ($host) {
+            $this->removeHeader($name)->addHeader($name, $host);
         }
 
         return $this;
@@ -146,9 +170,14 @@ class Request implements Psr\Http\Message\RequestInterface
      */
     public function withRequestTarget($requestTarget): self
     {
+        $parse = new Uri($requestTarget);
         $obj = clone $this;
 
-        $obj->uri = $requestTarget;
+        $obj->uri = $this->uri
+            ->withPath($parse->getPath())
+            ->withQuery($parse->getQuery())
+            ->withFragment($parse->getFragment())
+        ;
 
         return $obj;
     }
