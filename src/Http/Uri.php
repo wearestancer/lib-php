@@ -499,6 +499,11 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function withScheme($scheme): self
     {
+        $components = $this->getComponents();
+
+        $components['scheme'] = $scheme;
+
+        return new static($components);
     }
 
     /**

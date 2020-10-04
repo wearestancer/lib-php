@@ -308,4 +308,31 @@ class Uri extends ild78\Tests\atoum
                     ->isEqualTo($this->cleanComponent('query', $this->testedInstance))
         ;
     }
+
+    /**
+     * @dataProvider urlProvider
+     */
+    public function testWithScheme($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
+    {
+        $this
+            ->if($this->newTestedInstance($uri))
+            ->and($newScheme = uniqid())
+            ->then
+                ->string($this->testedInstance->getScheme())
+                    ->isIdenticalTo($scheme)
+
+                ->object($object = $this->testedInstance->withScheme($newScheme))
+                    ->isInstanceOfTestedClass
+                    ->isNotTestedInstance
+
+                ->string($this->testedInstance->getScheme())
+                    ->isIdenticalTo($scheme)
+
+                ->string($object->getScheme())
+                    ->isIdenticalTo($newScheme)
+
+                ->array($this->cleanComponent('scheme', $object))
+                    ->isEqualTo($this->cleanComponent('scheme', $this->testedInstance))
+        ;
+    }
 }
