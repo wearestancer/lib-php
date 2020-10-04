@@ -440,6 +440,29 @@ trait Http
             '',
         ];
 
+        // Others
+        $data[] = [
+            'file:///home/user/file.txt',
+            'file',
+            '',
+            null,
+            '',
+            '/home/user/file.txt',
+            '',
+            '',
+        ];
+
+        $data[] = [
+            '',
+            '',
+            '',
+            null,
+            '',
+            '',
+            '',
+            '',
+        ];
+
         shuffle($data);
 
         return $data;
