@@ -85,6 +85,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      */
     public function eof()
     {
+        return $this->position === $this->size;
     }
 
     /**

@@ -105,11 +105,17 @@ class Stream extends ild78\Tests\atoum
                 ->integer($this->testedInstance->tell())
                     ->isEqualTo(0)
 
+                ->boolean($this->testedInstance->eof())
+                    ->isFalse
+
                 ->string($this->testedInstance->read(1))
                     ->isIdenticalTo(substr($content, 0, 1))
 
                 ->integer($this->testedInstance->tell())
                     ->isEqualTo(1)
+
+                ->boolean($this->testedInstance->eof())
+                    ->isFalse
 
                 ->string($this->testedInstance->read(10))
                     ->isIdenticalTo(substr($content, 1, 10))
@@ -117,11 +123,17 @@ class Stream extends ild78\Tests\atoum
                 ->integer($this->testedInstance->tell())
                     ->isEqualTo(11)
 
+                ->boolean($this->testedInstance->eof())
+                    ->isFalse
+
                 ->string($this->testedInstance->read($len))
                     ->isIdenticalTo(substr($content, 11))
 
                 ->integer($this->testedInstance->tell())
                     ->isEqualTo($len)
+
+                ->boolean($this->testedInstance->eof())
+                    ->isTrue
         ;
     }
 
