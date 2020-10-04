@@ -48,7 +48,7 @@ class Uri implements Psr\Http\Message\UriInterface
             }
 
             if (array_key_exists('pass', $parts)) {
-                $this->components['user'] .= ':' . $parts['pass'];
+                $this->components['user'] = ($this->components['user'] ?? '') . ':' . $parts['pass'];
             }
 
             if ($this->getHost()) {
