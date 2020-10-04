@@ -135,6 +135,176 @@ trait Http
     {
         $data = [];
 
+        // Full
+        $data[] = [
+            'https://user:pass@example.com:8080/path/123?q=abc#test',
+            'https',
+            'example.com',
+        ];
+
+        $data[] = [
+            'http://user:pass@example.com:8080/path/123?q=abc#test',
+            'http',
+            'example.com',
+        ];
+
+        $data[] = [
+            '//user:pass@example.com:8080/path/123?q=abc#test',
+            '',
+            'example.com',
+        ];
+
+        // Default port / multiple queries
+        $data[] = [
+            'https://user:pass@example.com:443/path/123?foo=123&bar=456',
+            'https',
+            'example.com',
+        ];
+
+        $data[] = [
+            'http://user:pass@example.com:80/path/123?foo=123&bar=456',
+            'http',
+            'example.com',
+        ];
+
+        // No port / no passwd
+        $data[] = [
+            'https://user@example.com/path/123?foo=bar#test',
+            'https',
+            'example.com',
+        ];
+
+        $data[] = [
+            'http://user@example.com/path/123?foo=bar#test',
+            'http',
+            'example.com',
+        ];
+
+        $data[] = [
+            '//user@example.com/path/123?foo=bar#test',
+            '',
+            'example.com',
+        ];
+
+        // No hash / no identity / multiple queries
+        $data[] = [
+            'https://example.com/path/123?foo=bar',
+            'https',
+            'example.com',
+        ];
+
+        $data[] = [
+            'http://example.com/path/123?foo=bar',
+            'http',
+            'example.com',
+        ];
+
+        $data[] = [
+            '//example.com/path/123?foo=bar',
+            '',
+            'example.com',
+        ];
+
+        // No hash / no identity
+        $data[] = [
+            'https://example.com/path/123?foo=bar',
+            'https',
+            'example.com',
+        ];
+
+        $data[] = [
+            'http://example.com/path/123?foo=bar',
+            'http',
+            'example.com',
+        ];
+
+        $data[] = [
+            '//example.com/path/123?foo=bar',
+            '',
+            'example.com',
+        ];
+
+        // No path / no query
+        $data[] = [
+            'https://example.com/',
+            'https',
+            'example.com',
+        ];
+
+        $data[] = [
+            'http://example.com/',
+            'http',
+            'example.com',
+        ];
+
+        $data[] = [
+            '//example.com/',
+            '',
+            'example.com',
+        ];
+
+        $data[] = [
+            'https://example.com',
+            'https',
+            'example.com',
+        ];
+
+        $data[] = [
+            'http://example.com',
+            'http',
+            'example.com',
+        ];
+
+        $data[] = [
+            '//example.com',
+            '',
+            'example.com',
+        ];
+
+        // No host
+        $data[] = [
+            '/foo/bar',
+            '',
+            '',
+        ];
+
+        $data[] = [
+            'foo/bar/',
+            '',
+            '',
+        ];
+
+        $data[] = [
+            '?foo=bar',
+            '',
+            '',
+        ];
+
+        $data[] = [
+            '#123',
+            '',
+            '',
+        ];
+
+        // Case
+        $data[] = [
+            'HTTPS://eXAMple.com',
+            'https',
+            'example.com',
+        ];
+
+        $data[] = [
+            'hTTp://examPLE.com',
+            'http',
+            'example.com',
+        ];
+
+        $data[] = [
+            '//ExaMplE.COM',
+            '',
+            'example.com',
+        ];
+
         shuffle($data);
 
         return $data;

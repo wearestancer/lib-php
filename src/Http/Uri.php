@@ -14,6 +14,23 @@ use Psr;
  */
 class Uri implements Psr\Http\Message\UriInterface
 {
+    /** @var string Uri host. */
+    protected $host = '';
+
+    /**
+     * @param string $uri URI to parse.
+     */
+    public function __construct(string $uri = '')
+    {
+        if ($uri) {
+            $parts = parse_url($uri);
+
+            if (array_key_exists('host', $parts)) {
+                $this->host = strtolower($parts['host']);
+            }
+        }
+    }
+
     /**
      * Return the string representation as a URI reference.
      *
@@ -96,6 +113,7 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function getHost(): string
     {
+        return $this->host;
     }
 
     /**

@@ -16,4 +16,17 @@ class Uri extends ild78\Tests\atoum
                 ->implements(Psr\Http\Message\UriInterface::class)
         ;
     }
+
+    /**
+     * @dataProvider urlProvider
+     */
+    public function testGetHost($uri, $scheme, $host)
+    {
+        $this
+            ->if($this->newTestedInstance($uri))
+            ->then
+                ->string($this->testedInstance->getHost())
+                    ->isIdenticalTo($host)
+        ;
+    }
 }
