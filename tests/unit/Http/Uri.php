@@ -200,4 +200,31 @@ class Uri extends ild78\Tests\atoum
                     ->isEqualTo($this->cleanComponent('fragment', $this->testedInstance))
         ;
     }
+
+    /**
+     * @dataProvider urlProvider
+     */
+    public function testWithHost($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
+    {
+        $this
+            ->if($this->newTestedInstance($uri))
+            ->and($newHost = uniqid())
+            ->then
+                ->string($this->testedInstance->getHost())
+                    ->isIdenticalTo($host)
+
+                ->object($object = $this->testedInstance->withHost($newHost))
+                    ->isInstanceOfTestedClass
+                    ->isNotTestedInstance
+
+                ->string($this->testedInstance->getHost())
+                    ->isIdenticalTo($host)
+
+                ->string($object->getHost())
+                    ->isIdenticalTo($newHost)
+
+                ->array($this->cleanComponent('host', $object))
+                    ->isEqualTo($this->cleanComponent('host', $this->testedInstance))
+        ;
+    }
 }

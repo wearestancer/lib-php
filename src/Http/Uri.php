@@ -398,6 +398,11 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function withHost($host): self
     {
+        $components = $this->getComponents();
+
+        $components['host'] = $host;
+
+        return new static($components);
     }
 
     /**
