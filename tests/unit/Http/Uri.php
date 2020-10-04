@@ -29,4 +29,17 @@ class Uri extends ild78\Tests\atoum
                     ->isIdenticalTo($host)
         ;
     }
+
+    /**
+     * @dataProvider urlProvider
+     */
+    public function testGetScheme($uri, $scheme, $host)
+    {
+        $this
+            ->if($this->newTestedInstance($uri))
+            ->then
+                ->string($this->testedInstance->getScheme())
+                    ->isIdenticalTo($scheme)
+        ;
+    }
 }

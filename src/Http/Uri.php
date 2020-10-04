@@ -17,6 +17,9 @@ class Uri implements Psr\Http\Message\UriInterface
     /** @var string Uri host. */
     protected $host = '';
 
+    /** @var string Uri scheme. */
+    protected $scheme = '';
+
     /**
      * @param string $uri URI to parse.
      */
@@ -25,8 +28,31 @@ class Uri implements Psr\Http\Message\UriInterface
         if ($uri) {
             $parts = parse_url($uri);
 
-            if (array_key_exists('host', $parts)) {
-                $this->host = strtolower($parts['host']);
+            $keys = [
+                [
+                    'name' => 'host',
+                    'clean' => function (string $v): string {
+                        return strtolower($v);
+                    },
+                ],
+                [
+                    'name' => 'scheme',
+                    'clean' => function (string $v): string {
+                        return strtolower($v);
+                    },
+                ],
+            ];
+
+            foreach ($keys as $data) {
+                $key = $data['name'];
+
+                if (array_key_exists($key, $parts)) {
+                    if (is_callable($data['clean'])) {
+                        $this->$key = $data['clean']($parts[$key]);
+                    } else {
+                        $this->$key = $parts[$key];
+                    }
+                }
             }
         }
     }
@@ -204,6 +230,7 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function getScheme(): string
     {
+        return $this->scheme;
     }
 
     /**
