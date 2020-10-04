@@ -60,6 +60,22 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
+    public function testGetComponents($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
+    {
+        $this
+            ->if($this->newTestedInstance($uri))
+            ->and($fragment = $hash)
+            ->and($components = array_filter(compact('fragment', 'host', 'pass', 'path', 'port', 'query', 'scheme', 'user')))
+            ->then
+                ->array($this->testedInstance->getComponents())
+                    ->hasKeys(array_keys($components))
+                    ->isEqualTo($components)
+        ;
+    }
+
+    /**
+     * @dataProvider urlProvider
+     */
     public function testGetFragment($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
         $this

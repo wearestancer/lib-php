@@ -185,6 +185,29 @@ class Uri implements Psr\Http\Message\UriInterface
     }
 
     /**
+     * Retrieve URI components.
+     *
+     * @return array
+     *
+     * @phpstan-return UriComponents
+     */
+    public function getComponents(): array
+    {
+        $components = $this->components;
+
+        if (array_key_exists('user', $components)) {
+            $tmp = explode(':', $components['user']);
+
+            if (count($tmp) > 1) {
+                $components['user'] = $tmp[0];
+                $components['pass'] = $tmp[1];
+            }
+        }
+
+        return $components;
+    }
+
+    /**
      * Retrieve the fragment component of the URI.
      *
      * If no fragment is present, this method MUST return an empty string.
