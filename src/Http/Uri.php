@@ -23,6 +23,9 @@ class Uri implements Psr\Http\Message\UriInterface
     /** @var string Uri scheme. */
     protected $scheme = '';
 
+    /** @var string Uri user info. */
+    protected $user = '';
+
     /**
      * @param string $uri URI to parse.
      */
@@ -47,6 +50,9 @@ class Uri implements Psr\Http\Message\UriInterface
                 [
                     'name' => 'port',
                 ],
+                [
+                    'name' => 'user',
+                ],
             ];
 
             foreach ($keys as $data) {
@@ -59,6 +65,10 @@ class Uri implements Psr\Http\Message\UriInterface
                         $this->$key = $parts[$key];
                     }
                 }
+            }
+
+            if (array_key_exists('pass', $parts)) {
+                $this->user .= ':' . $parts['pass'];
             }
 
             $this->cleanPort();
@@ -292,6 +302,7 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function getUserInfo(): string
     {
+        return $this->user;
     }
 
     /**

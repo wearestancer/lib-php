@@ -141,6 +141,7 @@ trait Http
             'https',
             'example.com',
             8080,
+            'user:pass',
         ];
 
         $data[] = [
@@ -148,6 +149,7 @@ trait Http
             'http',
             'example.com',
             8080,
+            'user:pass',
         ];
 
         $data[] = [
@@ -155,6 +157,7 @@ trait Http
             '',
             'example.com',
             8080,
+            'user:pass',
         ];
 
         // Default port / multiple queries
@@ -163,6 +166,7 @@ trait Http
             'https',
             'example.com',
             null,
+            'user:pass',
         ];
 
         $data[] = [
@@ -170,6 +174,7 @@ trait Http
             'http',
             'example.com',
             null,
+            'user:pass',
         ];
 
         // No port / no passwd
@@ -178,6 +183,7 @@ trait Http
             'https',
             'example.com',
             null,
+            'user',
         ];
 
         $data[] = [
@@ -185,6 +191,7 @@ trait Http
             'http',
             'example.com',
             null,
+            'user',
         ];
 
         $data[] = [
@@ -192,6 +199,7 @@ trait Http
             '',
             'example.com',
             null,
+            'user',
         ];
 
         // No hash / no identity / multiple queries
@@ -200,6 +208,7 @@ trait Http
             'https',
             'example.com',
             null,
+            '',
         ];
 
         $data[] = [
@@ -207,6 +216,7 @@ trait Http
             'http',
             'example.com',
             null,
+            '',
         ];
 
         $data[] = [
@@ -214,6 +224,7 @@ trait Http
             '',
             'example.com',
             null,
+            '',
         ];
 
         // No hash / no identity
@@ -222,6 +233,7 @@ trait Http
             'https',
             'example.com',
             null,
+            '',
         ];
 
         $data[] = [
@@ -229,6 +241,7 @@ trait Http
             'http',
             'example.com',
             null,
+            '',
         ];
 
         $data[] = [
@@ -236,6 +249,7 @@ trait Http
             '',
             'example.com',
             null,
+            '',
         ];
 
         // No path / no query
@@ -244,6 +258,7 @@ trait Http
             'https',
             'example.com',
             null,
+            '',
         ];
 
         $data[] = [
@@ -251,6 +266,7 @@ trait Http
             'http',
             'example.com',
             null,
+            '',
         ];
 
         $data[] = [
@@ -258,6 +274,7 @@ trait Http
             '',
             'example.com',
             null,
+            '',
         ];
 
         $data[] = [
@@ -265,6 +282,7 @@ trait Http
             'https',
             'example.com',
             null,
+            '',
         ];
 
         $data[] = [
@@ -272,6 +290,7 @@ trait Http
             'http',
             'example.com',
             null,
+            '',
         ];
 
         $data[] = [
@@ -279,6 +298,7 @@ trait Http
             '',
             'example.com',
             null,
+            '',
         ];
 
         // No host
@@ -287,6 +307,7 @@ trait Http
             '',
             '',
             null,
+            '',
         ];
 
         $data[] = [
@@ -294,6 +315,7 @@ trait Http
             '',
             '',
             null,
+            '',
         ];
 
         $data[] = [
@@ -301,6 +323,7 @@ trait Http
             '',
             '',
             null,
+            '',
         ];
 
         $data[] = [
@@ -308,6 +331,7 @@ trait Http
             '',
             '',
             null,
+            '',
         ];
 
         // Case
@@ -316,6 +340,7 @@ trait Http
             'https',
             'example.com',
             null,
+            '',
         ];
 
         $data[] = [
@@ -323,6 +348,7 @@ trait Http
             'http',
             'example.com',
             null,
+            '',
         ];
 
         $data[] = [
@@ -330,6 +356,7 @@ trait Http
             '',
             'example.com',
             null,
+            '',
         ];
 
         shuffle($data);
