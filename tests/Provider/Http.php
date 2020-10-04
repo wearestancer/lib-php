@@ -144,6 +144,7 @@ trait Http
             'user:pass',
             '/path/123',
             'q=abc',
+            'test',
         ];
 
         $data[] = [
@@ -154,6 +155,7 @@ trait Http
             'user:pass',
             '/path/123',
             'q=abc',
+            'test',
         ];
 
         $data[] = [
@@ -164,6 +166,7 @@ trait Http
             'user:pass',
             '/path/123',
             'q=abc',
+            'test',
         ];
 
         // Default port / multiple queries
@@ -175,6 +178,7 @@ trait Http
             'user:pass',
             '/path/123',
             'foo=123&bar=456',
+            '',
         ];
 
         $data[] = [
@@ -185,6 +189,7 @@ trait Http
             'user:pass',
             '/path/123',
             'foo=123&bar=456',
+            '',
         ];
 
         // No port / no passwd
@@ -196,6 +201,7 @@ trait Http
             'user',
             '/path/123',
             'foo=bar',
+            'test',
         ];
 
         $data[] = [
@@ -206,6 +212,7 @@ trait Http
             'user',
             '/path/123',
             'foo=bar',
+            'test',
         ];
 
         $data[] = [
@@ -216,6 +223,7 @@ trait Http
             'user',
             '/path/123',
             'foo=bar',
+            'test',
         ];
 
         // No hash / no identity / multiple queries
@@ -227,6 +235,7 @@ trait Http
             '',
             '/path/123',
             'foo=bar',
+            '',
         ];
 
         $data[] = [
@@ -237,6 +246,7 @@ trait Http
             '',
             '/path/123',
             'foo=bar',
+            '',
         ];
 
         $data[] = [
@@ -247,6 +257,7 @@ trait Http
             '',
             '/path/123',
             'foo=bar',
+            '',
         ];
 
         // No hash / no identity
@@ -258,6 +269,7 @@ trait Http
             '',
             '/path/123',
             'foo=bar',
+            '',
         ];
 
         $data[] = [
@@ -268,6 +280,7 @@ trait Http
             '',
             '/path/123',
             'foo=bar',
+            '',
         ];
 
         $data[] = [
@@ -278,6 +291,7 @@ trait Http
             '',
             '/path/123',
             'foo=bar',
+            '',
         ];
 
         // No path / no query
@@ -289,6 +303,7 @@ trait Http
             '',
             '/',
             '',
+            '',
         ];
 
         $data[] = [
@@ -298,6 +313,7 @@ trait Http
             null,
             '',
             '/',
+            '',
             '',
         ];
 
@@ -309,6 +325,7 @@ trait Http
             '',
             '/',
             '',
+            '',
         ];
 
         $data[] = [
@@ -316,6 +333,7 @@ trait Http
             'https',
             'example.com',
             null,
+            '',
             '',
             '',
             '',
@@ -329,6 +347,7 @@ trait Http
             '',
             '',
             '',
+            '',
         ];
 
         $data[] = [
@@ -336,6 +355,7 @@ trait Http
             '',
             'example.com',
             null,
+            '',
             '',
             '',
             '',
@@ -350,6 +370,7 @@ trait Http
             '',
             '/foo/bar',
             '',
+            '',
         ];
 
         $data[] = [
@@ -359,6 +380,7 @@ trait Http
             null,
             '',
             'foo/bar/',
+            '',
             '',
         ];
 
@@ -370,6 +392,7 @@ trait Http
             '',
             '',
             'foo=bar',
+            '',
         ];
 
         $data[] = [
@@ -380,6 +403,7 @@ trait Http
             '',
             '',
             '',
+            '123',
         ];
 
         // Case
@@ -388,6 +412,7 @@ trait Http
             'https',
             'example.com',
             null,
+            '',
             '',
             '',
             '',
@@ -401,6 +426,7 @@ trait Http
             '',
             '',
             '',
+            '',
         ];
 
         $data[] = [
@@ -408,6 +434,7 @@ trait Http
             '',
             'example.com',
             null,
+            '',
             '',
             '',
             '',

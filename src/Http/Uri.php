@@ -14,6 +14,9 @@ use Psr;
  */
 class Uri implements Psr\Http\Message\UriInterface
 {
+    /** @var string Uri fragment. */
+    protected $fragment = '';
+
     /** @var string Uri host. */
     protected $host = '';
 
@@ -64,6 +67,9 @@ class Uri implements Psr\Http\Message\UriInterface
                 ],
                 [
                     'name' => 'query',
+                ],
+                [
+                    'name' => 'fragment',
                 ],
             ];
 
@@ -201,6 +207,7 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function getFragment(): string
     {
+        return $this->fragment;
     }
 
     /**
