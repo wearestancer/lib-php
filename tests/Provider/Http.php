@@ -142,6 +142,7 @@ trait Http
             'example.com',
             8080,
             'user:pass',
+            '/path/123',
         ];
 
         $data[] = [
@@ -150,6 +151,7 @@ trait Http
             'example.com',
             8080,
             'user:pass',
+            '/path/123',
         ];
 
         $data[] = [
@@ -158,6 +160,7 @@ trait Http
             'example.com',
             8080,
             'user:pass',
+            '/path/123',
         ];
 
         // Default port / multiple queries
@@ -167,6 +170,7 @@ trait Http
             'example.com',
             null,
             'user:pass',
+            '/path/123',
         ];
 
         $data[] = [
@@ -175,6 +179,7 @@ trait Http
             'example.com',
             null,
             'user:pass',
+            '/path/123',
         ];
 
         // No port / no passwd
@@ -184,6 +189,7 @@ trait Http
             'example.com',
             null,
             'user',
+            '/path/123',
         ];
 
         $data[] = [
@@ -192,6 +198,7 @@ trait Http
             'example.com',
             null,
             'user',
+            '/path/123',
         ];
 
         $data[] = [
@@ -200,6 +207,7 @@ trait Http
             'example.com',
             null,
             'user',
+            '/path/123',
         ];
 
         // No hash / no identity / multiple queries
@@ -209,6 +217,7 @@ trait Http
             'example.com',
             null,
             '',
+            '/path/123',
         ];
 
         $data[] = [
@@ -217,6 +226,7 @@ trait Http
             'example.com',
             null,
             '',
+            '/path/123',
         ];
 
         $data[] = [
@@ -225,6 +235,7 @@ trait Http
             'example.com',
             null,
             '',
+            '/path/123',
         ];
 
         // No hash / no identity
@@ -234,6 +245,7 @@ trait Http
             'example.com',
             null,
             '',
+            '/path/123',
         ];
 
         $data[] = [
@@ -242,6 +254,7 @@ trait Http
             'example.com',
             null,
             '',
+            '/path/123',
         ];
 
         $data[] = [
@@ -250,6 +263,7 @@ trait Http
             'example.com',
             null,
             '',
+            '/path/123',
         ];
 
         // No path / no query
@@ -259,6 +273,7 @@ trait Http
             'example.com',
             null,
             '',
+            '/',
         ];
 
         $data[] = [
@@ -267,6 +282,7 @@ trait Http
             'example.com',
             null,
             '',
+            '/',
         ];
 
         $data[] = [
@@ -275,6 +291,7 @@ trait Http
             'example.com',
             null,
             '',
+            '/',
         ];
 
         $data[] = [
@@ -282,6 +299,7 @@ trait Http
             'https',
             'example.com',
             null,
+            '',
             '',
         ];
 
@@ -291,6 +309,7 @@ trait Http
             'example.com',
             null,
             '',
+            '',
         ];
 
         $data[] = [
@@ -298,6 +317,7 @@ trait Http
             '',
             'example.com',
             null,
+            '',
             '',
         ];
 
@@ -308,6 +328,7 @@ trait Http
             '',
             null,
             '',
+            '/foo/bar',
         ];
 
         $data[] = [
@@ -316,6 +337,7 @@ trait Http
             '',
             null,
             '',
+            'foo/bar/',
         ];
 
         $data[] = [
@@ -324,6 +346,7 @@ trait Http
             '',
             null,
             '',
+            '',
         ];
 
         $data[] = [
@@ -331,6 +354,7 @@ trait Http
             '',
             '',
             null,
+            '',
             '',
         ];
 
@@ -341,6 +365,7 @@ trait Http
             'example.com',
             null,
             '',
+            '',
         ];
 
         $data[] = [
@@ -349,6 +374,7 @@ trait Http
             'example.com',
             null,
             '',
+            '',
         ];
 
         $data[] = [
@@ -356,6 +382,7 @@ trait Http
             '',
             'example.com',
             null,
+            '',
             '',
         ];
 

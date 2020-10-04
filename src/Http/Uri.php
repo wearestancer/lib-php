@@ -17,6 +17,9 @@ class Uri implements Psr\Http\Message\UriInterface
     /** @var string Uri host. */
     protected $host = '';
 
+    /** @var string Uri path. */
+    protected $path = '';
+
     /** @var integer|null Uri port. */
     protected $port;
 
@@ -52,6 +55,9 @@ class Uri implements Psr\Http\Message\UriInterface
                 ],
                 [
                     'name' => 'user',
+                ],
+                [
+                    'name' => 'path',
                 ],
             ];
 
@@ -234,6 +240,7 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function getPath(): string
     {
+        return $this->path;
     }
 
     /**
