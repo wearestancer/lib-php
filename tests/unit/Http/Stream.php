@@ -48,6 +48,19 @@ class Stream extends ild78\Tests\atoum
         ;
     }
 
+    public function testGetSize()
+    {
+        $this
+            ->given($content = uniqid())
+            ->and($len = strlen($content))
+
+            ->if($this->newTestedInstance($content))
+            ->then
+                ->integer($this->testedInstance->getSize())
+                    ->isEqualTo($len)
+        ;
+    }
+
     public function testIsReadable()
     {
         $this

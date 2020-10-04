@@ -124,6 +124,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      */
     public function getSize()
     {
+        return $this->size;
     }
 
     /**
