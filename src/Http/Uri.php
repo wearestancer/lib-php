@@ -363,6 +363,16 @@ class Uri implements Psr\Http\Message\UriInterface
     }
 
     /**
+     * Return a string representation of current URI.
+     *
+     * @return string
+     */
+    public function toString(): string
+    {
+        return (string) $this;
+    }
+
+    /**
      * Return an instance with the specified URI fragment.
      *
      * This method MUST retain the state of the current instance, and return

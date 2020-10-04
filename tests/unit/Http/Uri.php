@@ -41,6 +41,7 @@ class Uri extends ild78\Tests\atoum
             ->if($this->newTestedInstance($uri))
             ->then
                 ->castToString($this->testedInstance)
+                    ->isIdenticalTo($this->testedInstance->toString())
                     ->isIdenticalTo($clean)
         ;
     }
