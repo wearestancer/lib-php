@@ -95,6 +95,11 @@ class Stream implements Psr\Http\Message\StreamInterface
      */
     public function getContents()
     {
+        if (!$this->tell()) {
+            return $this->content;
+        }
+
+        return $this->read($this->size);
     }
 
     /**

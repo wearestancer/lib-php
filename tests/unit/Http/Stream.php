@@ -35,6 +35,71 @@ class Stream extends ild78\Tests\atoum
         ;
     }
 
+    public function testGetContent_castToString()
+    {
+        $this
+            ->given($content = md5(uniqid()))
+            ->and($len = strlen($content))
+
+            ->assert('From beginning')
+                ->if($this->newTestedInstance($content))
+                ->then
+                    ->integer($this->testedInstance->tell())
+                        ->isIdenticalTo(0)
+
+                    ->string($this->testedInstance->getContents())
+                        ->isIdenticalTo($content)
+
+                    ->integer($this->testedInstance->tell())
+                        ->isIdenticalTo(0)
+
+                    ->castToString($this->testedInstance)
+                        ->isIdenticalTo($content)
+
+                    ->integer($this->testedInstance->tell())
+                        ->isIdenticalTo(0)
+
+            ->assert('From a position')
+                ->if($this->newTestedInstance($content))
+                ->and($offset = rand(0, $len - 5))
+                ->and($this->testedInstance->seek($offset))
+                ->then
+                    ->integer($this->testedInstance->tell())
+                        ->isIdenticalTo($offset)
+
+                    ->string($this->testedInstance->getContents())
+                        ->isIdenticalTo(substr($content, $offset))
+
+                    ->integer($this->testedInstance->tell())
+                        ->isIdenticalTo($len)
+
+                    ->castToString($this->testedInstance)
+                        ->isIdenticalTo($content)
+
+                    ->integer($this->testedInstance->tell())
+                        ->isIdenticalTo(0)
+
+            ->assert('Already at end')
+                ->if($this->newTestedInstance($content))
+                ->and($this->testedInstance->seek($len))
+                ->then
+                    ->integer($this->testedInstance->tell())
+                        ->isIdenticalTo($len)
+
+                    ->string($this->testedInstance->getContents())
+                        ->isEmpty
+
+                    ->integer($this->testedInstance->tell())
+                        ->isIdenticalTo($len)
+
+                    ->castToString($this->testedInstance)
+                        ->isIdenticalTo($content)
+
+                    ->integer($this->testedInstance->tell())
+                        ->isIdenticalTo(0)
+        ;
+    }
+
     public function testGetMetadata()
     {
         $this
