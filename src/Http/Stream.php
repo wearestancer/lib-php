@@ -30,6 +30,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      */
     public function __toString()
     {
+        return $this->rewind()->getContents();
     }
 
     /**
@@ -50,6 +51,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      */
     public function detach()
     {
+        return null;
     }
 
     /**
@@ -84,6 +86,11 @@ class Stream implements Psr\Http\Message\StreamInterface
      */
     public function getMetadata($key = null)
     {
+        if ($key) {
+            return null;
+        }
+
+        return [];
     }
 
     /**
@@ -102,6 +109,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      */
     public function isReadable()
     {
+        return true;
     }
 
     /**
@@ -111,6 +119,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      */
     public function isSeekable()
     {
+        return true;
     }
 
     /**
@@ -120,6 +129,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      */
     public function isWritable()
     {
+        return false;
     }
 
     /**
@@ -143,9 +153,11 @@ class Stream implements Psr\Http\Message\StreamInterface
      *
      * @see seek()
      * @link http://www.php.net/manual/en/function.fseek.php
+     * @return $this
      */
     public function rewind()
     {
+        return $this->seek(0);
     }
 
     /**
@@ -158,6 +170,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      *   PHP $whence values for `fseek()`.  SEEK_SET: Set position equal to
      *   offset bytes SEEK_CUR: Set position to current location plus offset
      *   SEEK_END: Set position to end-of-stream plus offset.
+     * @return $this
      */
     public function seek($offset, $whence = SEEK_SET)
     {
@@ -177,8 +190,10 @@ class Stream implements Psr\Http\Message\StreamInterface
      *
      * @param string $string The string that is to be written.
      * @return integer Returns the number of bytes written to the stream.
+     * @throws ild78\Exceptions\BadMethodCallException For everycall.
      */
     public function write($string)
     {
+        throw new ild78\Exceptions\BadMethodCallException('This method is not implemented.');
     }
 }
