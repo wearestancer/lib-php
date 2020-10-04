@@ -105,6 +105,23 @@ trait Http
         return $data;
     }
 
+    public function verbAndUrlProvider()
+    {
+        $verbs = $this->httpVerbProvider();
+        $urls = array_map(function ($data) {
+            return new ild78\Http\Uri($data[0]);
+        }, $this->urlProvider());
+
+        foreach ($verbs as $verb) {
+            foreach ($urls as $url) {
+                yield [$verb, $url];
+                yield [(string) $verb, $url];
+                yield [$verb, (string) $url];
+                yield [(string) $verb, (string) $url];
+            }
+        }
+    }
+
     public function statusDataProvider()
     {
         $data = [];

@@ -229,6 +229,35 @@ class Uri implements Psr\Http\Message\UriInterface
     }
 
     /**
+     * Retrieve the local command component of the URI.
+     *
+     * The local command syntax of the URI is:
+     *
+     * <pre>
+     * path[?query][#fragment]
+     * </pre>
+     *
+     * @return string
+     */
+    public function getLocalCommand(): string
+    {
+        $fragment = $this->getFragment();
+        $query = $this->getQuery();
+
+        $command = $this->getPath();
+
+        if ($query) {
+            $command .= '?' . $query;
+        }
+
+        if ($fragment) {
+            $command .= '#' . $fragment;
+        }
+
+        return $command;
+    }
+
+    /**
      * Retrieve the host component of the URI.
      *
      * If no host is present, this method MUST return an empty string.

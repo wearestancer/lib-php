@@ -105,6 +105,31 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
+    public function testGetLocalCommand($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
+    {
+        $this
+            ->if($this->newTestedInstance($uri))
+            ->and($command = '')
+            ->when(function () use (&$command, $path, $query, $hash) {
+                $command = $path;
+
+                if ($query ) {
+                    $command .= '?' . $query;
+                }
+
+                if ($hash ) {
+                    $command .= '#' . $hash;
+                }
+            })
+            ->then
+                ->string($this->testedInstance->getLocalCommand())
+                    ->isIdenticalTo($command)
+        ;
+    }
+
+    /**
+     * @dataProvider urlProvider
+     */
     public function testGetHost($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
         $this

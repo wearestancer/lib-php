@@ -286,7 +286,7 @@ class Client extends ild78\Tests\atoum
                     ->isInstanceOf(ild78\Http\Uri::class)
 
                 ->castToString($request->getUri())
-                    ->isIdenticalTo($query)
+                    ->isIdenticalTo($url)
 
                 ->object($request->getBody())
                     ->isInstanceOf(ild78\Http\Stream::class)

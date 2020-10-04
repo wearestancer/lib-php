@@ -20,6 +20,46 @@ class Response extends ild78\Tests\atoum
     /**
      * @dataProvider httpStatusDataProvider
      */
+    public function test__construct($code, $status)
+    {
+        $this
+            ->assert('Body as a string')
+                ->if($body = uniqid())
+                ->then
+                    ->object($this->newTestedInstance($code, $body))
+                        ->isInstanceOfTestedClass
+
+                    ->object($this->testedInstance->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+
+                    ->castToString($this->testedInstance->getBody())
+                        ->isIdenticalTo($body)
+
+            ->assert('Body as an object')
+                ->if($body = new ild78\Http\Stream(uniqid()))
+                ->then
+                    ->object($this->newTestedInstance($code, $body))
+                        ->isInstanceOfTestedClass
+
+                    ->object($this->testedInstance->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+                        ->isIdenticalTo($body)
+
+            ->assert('Body as a null value')
+                ->object($this->newTestedInstance($code, null))
+                    ->isInstanceOfTestedClass
+
+                ->object($this->testedInstance->getBody())
+                    ->isInstanceOf(ild78\Http\Stream::class)
+
+                ->castToString($this->testedInstance->getBody())
+                    ->isEmpty
+        ;
+    }
+
+    /**
+     * @dataProvider httpStatusDataProvider
+     */
     public function testGetReasonPhrase($code, $message)
     {
         $this

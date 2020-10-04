@@ -25,20 +25,20 @@ class Request implements Psr\Http\Message\RequestInterface
     /**
      * Create a response instance
      *
-     * @param string $method HTTP method.
+     * @param ild78\Http\Verb\AbstractVerb|string $method HTTP method.
      * @param Psr\Http\Message\UriInterface|string $uri URI.
      * @param mixed[] $headers Request headers.
      * @param Psr\Http\Message\StreamInterface|string|mixed[]|null $body Request body.
      * @param string $version Protocol version.
      */
     public function __construct(
-        string $method,
+        $method,
         $uri,
         array $headers = [],
         $body = null,
         $version = '1.1'
     ) {
-        $this->method = strtoupper($method);
+        $this->method = strtoupper((string) $method);
         $this->protocol = $version;
 
         if ($body instanceof Psr\Http\Message\StreamInterface) {
@@ -84,7 +84,21 @@ class Request implements Psr\Http\Message\RequestInterface
      */
     public function getRequestTarget(): string
     {
-        return (string) $this->getUri();
+        $uri = $this->getUri();
+        $fragment = $uri->getFragment();
+        $query = $uri->getQuery();
+
+        $target = $uri->getPath();
+
+        if ($query) {
+            $target .= '?' . $query;
+        }
+
+        if ($fragment) {
+            $target .= '#' . $fragment;
+        }
+
+        return $target;
     }
 
     /**
@@ -108,31 +122,16 @@ class Request implements Psr\Http\Message\RequestInterface
      */
     public function updateUri($uri): self
     {
-        $host = '';
-        $name = 'Host';
-
         if (is_string($uri)) {
-            $matches = [];
-
-            preg_match('!https?://([^/]+)(.*)!', $uri, $matches);
-
-            if (count($matches)) {
-                $host = $matches[1];
-                $this->uri = new Uri($matches[2] ?? '/');
-            }
+            $this->uri = new Uri($uri);
         } else {
-            $host = $uri->getHost();
-            $components = [
-                'fragment' => $uri->getFragment(),
-                'path' => $uri->getPath(),
-                'query' => $uri->getQuery(),
-            ];
-
-            $this->uri = new Uri($components);
+            $this->uri = $uri;
         }
 
+        $host = $this->uri->getHost();
+
         if ($host) {
-            $this->removeHeader($name)->addHeader($name, $host);
+            $this->removeHeader('Host')->addHeader('Host', $host);
         }
 
         return $this;
