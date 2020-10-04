@@ -15,6 +15,30 @@ use Psr;
 class Stream implements Psr\Http\Message\StreamInterface
 {
     /**
+     * @var string Stream content.
+     */
+    protected $content = '';
+
+    /**
+     * @var integer Total length.
+     */
+    protected $size = 0;
+
+    /**
+     * @var integer Actual position.
+     */
+    protected $position = 0;
+
+    /**
+     * @param string $content Content.
+     */
+    public function __construct(string $content)
+    {
+        $this->content = $content;
+        $this->size = strlen($content);
+    }
+
+    /**
      * Reads all data from the stream into a string, from the beginning to end.
      *
      * This method MUST attempt to seek to the beginning of the stream before
@@ -174,6 +198,27 @@ class Stream implements Psr\Http\Message\StreamInterface
      */
     public function seek($offset, $whence = SEEK_SET)
     {
+        if ($whence === SEEK_CUR) {
+            $this->position += $offset;
+        }
+
+        if ($whence === SEEK_END) {
+            $this->position = $this->size + $offset;
+        }
+
+        if ($whence === SEEK_SET) {
+            $this->position = $offset;
+        }
+
+        if ($this->position < 0) {
+            $this->position = 0;
+        }
+
+        if ($this->position > $this->size) {
+            $this->position = $this->size;
+        }
+
+        return $this;
     }
 
     /**
@@ -183,6 +228,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      */
     public function tell()
     {
+        return $this->position;
     }
 
     /**
