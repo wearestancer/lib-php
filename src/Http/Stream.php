@@ -167,6 +167,15 @@ class Stream implements Psr\Http\Message\StreamInterface
      */
     public function read($length)
     {
+        if (!$length) {
+            return '';
+        }
+
+        $content = substr($this->content, $this->position, $length);
+
+        $this->seek($length, SEEK_CUR);
+
+        return $content;
     }
 
     /**

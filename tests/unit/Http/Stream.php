@@ -78,6 +78,40 @@ class Stream extends ild78\Tests\atoum
         ;
     }
 
+    public function testRead()
+    {
+        $this
+            ->given($content = uniqid())
+            ->and($len = strlen($content))
+
+            ->if($this->newTestedInstance($content))
+            ->then
+                ->string($this->testedInstance->read(0))
+                    ->isEmpty
+
+                ->integer($this->testedInstance->tell())
+                    ->isEqualTo(0)
+
+                ->string($this->testedInstance->read(1))
+                    ->isIdenticalTo(substr($content, 0, 1))
+
+                ->integer($this->testedInstance->tell())
+                    ->isEqualTo(1)
+
+                ->string($this->testedInstance->read(10))
+                    ->isIdenticalTo(substr($content, 1, 10))
+
+                ->integer($this->testedInstance->tell())
+                    ->isEqualTo(11)
+
+                ->string($this->testedInstance->read($len))
+                    ->isIdenticalTo(substr($content, 11))
+
+                ->integer($this->testedInstance->tell())
+                    ->isEqualTo($len)
+        ;
+    }
+
     public function testSeek_Tell()
     {
         $this
