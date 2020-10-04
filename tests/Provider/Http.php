@@ -145,6 +145,7 @@ trait Http
             '/path/123',
             'q=abc',
             'test',
+            'https://user:pass@example.com:8080/path/123?q=abc#test',
         ];
 
         $data[] = [
@@ -156,6 +157,7 @@ trait Http
             '/path/123',
             'q=abc',
             'test',
+            'http://user:pass@example.com:8080/path/123?q=abc#test',
         ];
 
         $data[] = [
@@ -167,6 +169,7 @@ trait Http
             '/path/123',
             'q=abc',
             'test',
+            '//user:pass@example.com:8080/path/123?q=abc#test',
         ];
 
         // Default port / multiple queries
@@ -179,6 +182,7 @@ trait Http
             '/path/123',
             'foo=123&bar=456',
             '',
+            'https://user:pass@example.com/path/123?foo=123&bar=456',
         ];
 
         $data[] = [
@@ -190,6 +194,7 @@ trait Http
             '/path/123',
             'foo=123&bar=456',
             '',
+            'http://user:pass@example.com/path/123?foo=123&bar=456',
         ];
 
         // No port / no passwd
@@ -202,6 +207,7 @@ trait Http
             '/path/123',
             'foo=bar',
             'test',
+            'https://user@example.com/path/123?foo=bar#test',
         ];
 
         $data[] = [
@@ -213,6 +219,7 @@ trait Http
             '/path/123',
             'foo=bar',
             'test',
+            'http://user@example.com/path/123?foo=bar#test',
         ];
 
         $data[] = [
@@ -224,6 +231,7 @@ trait Http
             '/path/123',
             'foo=bar',
             'test',
+            '//user@example.com/path/123?foo=bar#test',
         ];
 
         // No hash / no identity / multiple queries
@@ -236,6 +244,7 @@ trait Http
             '/path/123',
             'foo=bar',
             '',
+            'https://example.com/path/123?foo=bar',
         ];
 
         $data[] = [
@@ -247,6 +256,7 @@ trait Http
             '/path/123',
             'foo=bar',
             '',
+            'http://example.com/path/123?foo=bar',
         ];
 
         $data[] = [
@@ -258,6 +268,7 @@ trait Http
             '/path/123',
             'foo=bar',
             '',
+            '//example.com/path/123?foo=bar',
         ];
 
         // No hash / no identity
@@ -270,6 +281,7 @@ trait Http
             '/path/123',
             'foo=bar',
             '',
+            'https://example.com/path/123?foo=bar',
         ];
 
         $data[] = [
@@ -281,6 +293,7 @@ trait Http
             '/path/123',
             'foo=bar',
             '',
+            'http://example.com/path/123?foo=bar',
         ];
 
         $data[] = [
@@ -292,6 +305,7 @@ trait Http
             '/path/123',
             'foo=bar',
             '',
+            '//example.com/path/123?foo=bar',
         ];
 
         // No path / no query
@@ -304,6 +318,7 @@ trait Http
             '/',
             '',
             '',
+            'https://example.com/',
         ];
 
         $data[] = [
@@ -315,6 +330,7 @@ trait Http
             '/',
             '',
             '',
+            'http://example.com/',
         ];
 
         $data[] = [
@@ -326,6 +342,7 @@ trait Http
             '/',
             '',
             '',
+            '//example.com/',
         ];
 
         $data[] = [
@@ -337,6 +354,7 @@ trait Http
             '',
             '',
             '',
+            'https://example.com',
         ];
 
         $data[] = [
@@ -348,6 +366,7 @@ trait Http
             '',
             '',
             '',
+            'http://example.com',
         ];
 
         $data[] = [
@@ -359,6 +378,7 @@ trait Http
             '',
             '',
             '',
+            '//example.com',
         ];
 
         // No host
@@ -371,6 +391,7 @@ trait Http
             '/foo/bar',
             '',
             '',
+            '/foo/bar',
         ];
 
         $data[] = [
@@ -382,6 +403,7 @@ trait Http
             'foo/bar/',
             '',
             '',
+            'foo/bar/',
         ];
 
         $data[] = [
@@ -393,6 +415,7 @@ trait Http
             '',
             'foo=bar',
             '',
+            '?foo=bar',
         ];
 
         $data[] = [
@@ -404,6 +427,7 @@ trait Http
             '',
             '',
             '123',
+            '#123',
         ];
 
         // Case
@@ -416,6 +440,7 @@ trait Http
             '',
             '',
             '',
+            'https://example.com',
         ];
 
         $data[] = [
@@ -427,6 +452,7 @@ trait Http
             '',
             '',
             '',
+            'http://example.com',
         ];
 
         $data[] = [
@@ -438,6 +464,7 @@ trait Http
             '',
             '',
             '',
+            '//example.com',
         ];
 
         // Others
@@ -450,6 +477,7 @@ trait Http
             '/home/user/file.txt',
             '',
             '',
+            'file:///home/user/file.txt',
         ];
 
         $data[] = [
@@ -457,6 +485,7 @@ trait Http
             '',
             '',
             null,
+            '',
             '',
             '',
             '',

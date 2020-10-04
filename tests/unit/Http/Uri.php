@@ -20,7 +20,20 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
-    public function testGetAuthority($uri, $scheme, $host, $port, $user, $path, $query, $hash)
+    public function testCastToString($uri, $scheme, $host, $port, $user, $path, $query, $hash, $clean)
+    {
+        $this
+            ->if($this->newTestedInstance($uri))
+            ->then
+                ->castToString($this->testedInstance)
+                    ->isIdenticalTo($clean)
+        ;
+    }
+
+    /**
+     * @dataProvider urlProvider
+     */
+    public function testGetAuthority($uri, $scheme, $host, $port, $user, $path, $query, $hash, $clean)
     {
         $this
             ->if($this->newTestedInstance($uri))
@@ -47,7 +60,7 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
-    public function testGetFragment($uri, $scheme, $host, $port, $user, $path, $query, $hash)
+    public function testGetFragment($uri, $scheme, $host, $port, $user, $path, $query, $hash, $clean)
     {
         $this
             ->if($this->newTestedInstance($uri))
@@ -60,7 +73,7 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
-    public function testGetHost($uri, $scheme, $host, $port, $user, $path, $query, $hash)
+    public function testGetHost($uri, $scheme, $host, $port, $user, $path, $query, $hash, $clean)
     {
         $this
             ->if($this->newTestedInstance($uri))
@@ -73,7 +86,7 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
-    public function testGetPath($uri, $scheme, $host, $port, $user, $path, $query, $hash)
+    public function testGetPath($uri, $scheme, $host, $port, $user, $path, $query, $hash, $clean)
     {
         $this
             ->if($this->newTestedInstance($uri))
@@ -86,7 +99,7 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
-    public function testGetPort($uri, $scheme, $host, $port, $user, $path, $query, $hash)
+    public function testGetPort($uri, $scheme, $host, $port, $user, $path, $query, $hash, $clean)
     {
         $this
             ->if($this->newTestedInstance($uri))
@@ -99,7 +112,7 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
-    public function testGetQuery($uri, $scheme, $host, $port, $user, $path, $query, $hash)
+    public function testGetQuery($uri, $scheme, $host, $port, $user, $path, $query, $hash, $clean)
     {
         $this
             ->if($this->newTestedInstance($uri))
@@ -112,7 +125,7 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
-    public function testGetScheme($uri, $scheme, $host, $port, $user, $path, $query, $hash)
+    public function testGetScheme($uri, $scheme, $host, $port, $user, $path, $query, $hash, $clean)
     {
         $this
             ->if($this->newTestedInstance($uri))
@@ -125,7 +138,7 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
-    public function testGetUserInfo($uri, $scheme, $host, $port, $user, $path, $query, $hash)
+    public function testGetUserInfo($uri, $scheme, $host, $port, $user, $path, $query, $hash, $clean)
     {
         $this
             ->if($this->newTestedInstance($uri))

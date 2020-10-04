@@ -118,6 +118,31 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function __toString(): string
     {
+        $auth = $this->getAuthority();
+        $fragment = $this->getFragment();
+        $scheme = $this->getScheme();
+        $query = $this->getQuery();
+        $uri = '';
+
+        if ($scheme) {
+            $uri .= $scheme . ':';
+        }
+
+        if ($auth || $scheme === 'file') {
+            $uri .= '//' . $auth;
+        }
+
+        $uri .= $this->getPath();
+
+        if ($query) {
+            $uri .= '?' . $query;
+        }
+
+        if ($fragment) {
+            $uri .= '#' . $fragment;
+        }
+
+        return $uri;
     }
 
     /**
