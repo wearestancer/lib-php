@@ -246,7 +246,7 @@ class Request
      * @uses ild78\Config
      * @param ild78\Http\Verb\AbstractVerb $verb HTTP verb for the call.
      * @param ild78\Core\AbstractObject $object Object.
-     * @param array{headers?: mixed[], query?: mixed[], timeout?: integer} $options Guzzle options.
+     * @param array $options Guzzle options.
      * @return string
      * @throws ild78\Exceptions\InvalidArgumentException When calling with unsupported verb.
      * @throws ild78\Exceptions\TooManyRedirectsException On too many redirection case (HTTP 310).
@@ -255,6 +255,8 @@ class Request
      * @throws ild78\Exceptions\ClientException On HTTP 4** errors.
      * @throws ild78\Exceptions\ServerException On HTTP 5** errors.
      * @throws ild78\Exceptions\Exception On every over exception.
+     *
+     * @phpstan-param array{headers?: mixed[], query?: mixed[], timeout?: integer} $options
      */
     public function request(ild78\Http\Verb\AbstractVerb $verb, AbstractObject $object, array $options = []): string
     {

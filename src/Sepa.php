@@ -73,7 +73,7 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
     ];
 
     /**
-     * Return IBAN with usual readeable format (AAAA BBBB CCCC ...)
+     * Return IBAN with usual readeable format (AAAA BBBB CCCC ...).
      *
      * @return string|null
      */
@@ -89,7 +89,7 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
     }
 
     /**
-     * Add or update a Bank Identifier Code (BIC)
+     * Add or update a Bank Identifier Code (BIC).
      *
      * @param string $bic A Bank Identifier Code.
      * @return $this
@@ -110,7 +110,7 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
     }
 
     /**
-     * Add or update an International Bank Account Number (IBAN)
+     * Add or update an International Bank Account Number (IBAN).
      *
      * @param string $iban An International Bank Account Number.
      * @return $this

@@ -115,7 +115,7 @@ class Request implements Psr\Http\Message\RequestInterface
     }
 
     /**
-     * Update URI and host header
+     * Update URI and host header.
      *
      * @param Psr\Http\Message\UriInterface|string $uri New URI.
      * @return $this
@@ -209,9 +209,8 @@ class Request implements Psr\Http\Message\RequestInterface
      * @link http://tools.ietf.org/html/rfc3986#section-4.3
      * @param Psr\Http\Message\UriInterface $uri New request URI to use.
      * @param boolean $preserveHost Preserve the original state of the Host header.
-     * @return void
-     * @throws ild78\Exceptions\BadMethodCallException For everycall.
-     *
+     * @return static
+     * @throws ild78\Exceptions\BadMethodCallException For every call.
      * @phpstan-return static
      */
     public function withUri(Psr\Http\Message\UriInterface $uri, $preserveHost = false): self

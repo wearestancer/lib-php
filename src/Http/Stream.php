@@ -252,7 +252,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      *
      * @param string $string The string that is to be written.
      * @return integer Returns the number of bytes written to the stream.
-     * @throws ild78\Exceptions\BadMethodCallException For everycall.
+     * @throws ild78\Exceptions\BadMethodCallException For every call.
      */
     public function write($string)
     {

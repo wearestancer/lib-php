@@ -159,9 +159,9 @@ class Config
     }
 
     /**
-     * Return current instance
+     * Return current instance.
      *
-     * This is used to prevent passing an API instance on everycall.
+     * This is used to prevent passing an API instance on every call.
      * `Api::setGlobal()` is called on every new instance to simplify your workflow.
      *
      * @return static
@@ -247,7 +247,7 @@ class Config
      *
      * Default : 443 (HTTPS)
      *
-     * If defaut port is used, it will not be shown in API URI.
+     * If default port is used, it will not be shown in API URI.
      *
      * @return integer
      */
@@ -494,13 +494,13 @@ class Config
     /**
      * Update HTTP client instance
      *
-     * Be carefull, no limitation is done on this method to allow you to use your own
+     * Be careful, no limitation is done on this method to allow you to use your own
      * implementation of an HTTP client.
      *
      * @param ild78\Http\Client|GuzzleHttp\ClientInterface $client New instance.
      * @return $this
      */
-    public function setHttpClient(object $client): self
+    public function setHttpClient($client): self
     {
         $this->httpClient = $client;
 

@@ -68,7 +68,7 @@ class Refund extends ild78\Core\AbstractObject
     /**
      * Indicate if the current object is modified.
      *
-     * Overrided to prevent to return payment state.
+     * Overridden to prevent to return payment state.
      *
      * @return boolean
      */
@@ -80,7 +80,7 @@ class Refund extends ild78\Core\AbstractObject
     /**
      * Send the current object.
      *
-     * Overrided to make sure that the payment instance and the modified flag will not change.
+     * Overridden to make sure that the payment instance and the modified flag will not change.
      *
      * @return $this
      * @throws ild78\Exceptions\InvalidArgumentException When all requirement are not provided.
@@ -91,7 +91,7 @@ class Refund extends ild78\Core\AbstractObject
         $modified = $payment->modified;
         $payment->modified = [];
 
-        $this->modified[] = 'amount'; // Mandatory, force `parent::send()` to work even if no amount is setted.
+        $this->modified[] = 'amount'; // Mandatory, force `parent::send()` to work even if no amount is set.
 
         parent::send();
 

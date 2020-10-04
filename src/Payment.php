@@ -35,7 +35,6 @@ use ild78;
  *
  * @method $this setAmount(integer $amount)
  * @method $this setCapture(boolean $capture)
- * @method $this setCard(ild78\Card $card)
  * @method $this setCountry(string $country)
  * @method $this setCustomer(ild78\Customer $customer)
  * @method $this setDescription(string $description)
@@ -288,10 +287,13 @@ class Payment extends ild78\Core\AbstractObject
      * `order_id` and `unique_id` will be treated as a string and will filter payments corresponding to the data
      * you specified in your initial payment request.
      *
-     * @param array{order_id?: string, unique_id?: string} $terms Search terms. May have `order_id` or `unique_id` key.
-     * @return array{order_id?: string, unique_id?: string}
+     * @param array $terms Search terms. May have `order_id` or `unique_id` key.
+     * @return array
      * @throws ild78\Exceptions\InvalidSearchOrderIdFilterException When `order_id` is invalid.
      * @throws ild78\Exceptions\InvalidSearchUniqueIdFilterException When `unique_id` is invalid.
+     *
+     * @phpstan-param array{order_id?: string, unique_id?: string} $terms
+     * @phpstan-return array{order_id?: string, unique_id?: string}
      */
     public static function filterListParams(array $terms): array
     {
@@ -337,11 +339,13 @@ class Payment extends ild78\Core\AbstractObject
      *
      * Maybe used as an iframe or a redirection page if you needed it.
      *
-     * @param array{lang?: string} $params Parameters to add to the URL.
+     * @param array $params Parameters to add to the URL.
      * @return string
      * @throws ild78\Exceptions\MissingApiKeyException When no public key was given in configuration.
      * @throws ild78\Exceptions\MissingReturnUrlException When no return URL was given to payment data.
      * @throws ild78\Exceptions\MissingPaymentIdException When no payment has no ID.
+     *
+     * @phpstan-param array{lang?: string} $params Parameters to add to the URL.
      */
     public function getPaymentPageUrl(array $params = []): string
     {

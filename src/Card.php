@@ -229,13 +229,13 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
     /**
      * Return tokenize status
      *
-     * For every card sended to the API, you will get an ID representing it.
+     * For every card sent to the API, you will get an ID representing it.
      * This ID is not reusable, you can not use it for an other payment.
      *
      * If you needed to make later payment, you can set tokenize to true,
      * in that case, the card ID may be reuse for other payment.
      *
-     * This can be usefull for payments in multiple times.
+     * This can be useful for payments in multiple times.
      *
      * @return boolean
      */

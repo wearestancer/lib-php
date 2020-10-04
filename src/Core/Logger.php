@@ -121,7 +121,7 @@ class Logger implements LoggerInterface
      * The `$level` can be everything and we can not use it without choosing one for you.
      * Monolog use 100 as an emergency level, where Zend uses 0.
      *
-     * It is simpler to forget this method and onl use stricly named method.
+     * It is simpler to forget this method and onl use strictly named method.
      *
      * @param mixed  $level   The log level.
      * @param string $message The log message.

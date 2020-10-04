@@ -23,13 +23,14 @@ trait SearchTrait
      *
      * `start` must be an integer, will be used as a pagination cursor, starts at 0.
      *
-     * @param array{ created?: DateTime|int, limit?: int, start?: int} $terms Search terms.
-     *   May have `created`, `limit` or `start` key.
+     * @param array $terms Search terms. May have `created`, `limit` or `start` key.
      * @return Generator<static>
      * @throws ild78\Exceptions\InvalidSearchFilterException When `$terms` is invalid.
      * @throws ild78\Exceptions\InvalidSearchCreationFilterException When `created` is invalid.
      * @throws ild78\Exceptions\InvalidSearchLimitException When `limit` is invalid.
      * @throws ild78\Exceptions\InvalidSearchStartException When `start` is invalid.
+     *
+     * @param array{ created?: DateTime|int, limit?: int, start?: int} $terms
      */
     public static function list(array $terms): Generator
     {

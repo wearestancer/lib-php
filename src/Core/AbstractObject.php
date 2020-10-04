@@ -11,9 +11,9 @@ use JsonSerializable;
 use ReflectionClass;
 
 /**
- * Manage common code between API object
+ * Manage common code between API object.
  *
- * @throws ild78\Exceptions\BadMethodCallException when calling unknown method
+ * @throws ild78\Exceptions\BadMethodCallException when calling unknown method.
  *
  * @property DateTime|null $created
  * @property DateTime|null $creationDate
@@ -49,9 +49,9 @@ abstract class AbstractObject implements JsonSerializable
     protected $aliases = [];
 
     /**
-     * Create or get an API object
+     * Create or get an API object.
      *
-     * @param string|array<string, mixed>|null $id Object id or data for hydratation.
+     * @param string|array<string, mixed>|null $id Object id or data for hydration.
      */
     public function __construct($id = null)
     {
@@ -254,7 +254,7 @@ abstract class AbstractObject implements JsonSerializable
     /**
      * Create a fresh instance of an API object
      *
-     * @param mixed[] $data Additionnal data for creation.
+     * @param mixed[] $data Additional data for creation.
      * @return static
      */
     public static function create(array $data): self
@@ -296,7 +296,7 @@ abstract class AbstractObject implements JsonSerializable
     /**
      * Get a value stored in data model.
      *
-     * This was initialy in `self::__call()` method, I removed it for simplicity.
+     * This was initially in `self::__call()` method, I removed it for simplicity.
      *
      * @param string $property Property to get.
      * @param boolean $autoPopulate Auto populate the property.
@@ -339,7 +339,7 @@ abstract class AbstractObject implements JsonSerializable
     /**
      * Set a value in data model.
      *
-     * This was initialy in `self::__call()` method, I removed it for simplicity.
+     * This was initially in `self::__call()` method, I removed it for simplicity.
      *
      * @param string $property Property to set.
      * @param mixed $value Value to set.
@@ -403,6 +403,7 @@ abstract class AbstractObject implements JsonSerializable
      * Delete the current object in the API
      *
      * @return $this
+     * @throws ild78\Exceptions\InvalidArgumentException When configuration is missing.
      */
     public function delete(): self
     {
@@ -506,7 +507,7 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Return ressource location
+     * Return resource location.
      *
      * @return string
      */
@@ -531,7 +532,7 @@ abstract class AbstractObject implements JsonSerializable
     /**
      * Hydrate the current object.
      *
-     * @param array<string, mixed> $data Data for hydratation.
+     * @param array<string, mixed> $data Data for hydration.
      * @return $this
      */
     public function hydrate(array $data): self
@@ -711,7 +712,7 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Return a array representation of the current object for a convertion as JSON.
+     * Return a array representation of the current object for a conversion as JSON.
      *
      * @uses self::toArray()
      * @return string|integer|boolean|null|array<string, mixed>
@@ -768,8 +769,8 @@ abstract class AbstractObject implements JsonSerializable
     /**
      * Populate object with API data.
      *
-     * This method is not supposed to be used directly, it will be used automaticaly when ask for some data.
-     * The purpose of this method is to limitate API call (and avoid reaching the rate limit).
+     * This method is not supposed to be used directly, it will be used automatically when ask for some data.
+     * The purpose of this method is to limit API call (and avoid reaching the rate limit).
      *
      * @return $this
      */
@@ -820,7 +821,7 @@ abstract class AbstractObject implements JsonSerializable
     /**
      * Send the current object.
      *
-     * @uses Request::post()
+     * @uses ild78\Core\Request::post()
      * @return $this
      * @throws ild78\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
