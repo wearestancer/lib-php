@@ -23,6 +23,9 @@ class Uri implements Psr\Http\Message\UriInterface
     /** @var integer|null Uri port. */
     protected $port;
 
+    /** @var string Uri query string. */
+    protected $query = '';
+
     /** @var string Uri scheme. */
     protected $scheme = '';
 
@@ -58,6 +61,9 @@ class Uri implements Psr\Http\Message\UriInterface
                 ],
                 [
                     'name' => 'path',
+                ],
+                [
+                    'name' => 'query',
                 ],
             ];
 
@@ -285,6 +291,7 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function getQuery(): string
     {
+        return $this->query;
     }
 
     /**

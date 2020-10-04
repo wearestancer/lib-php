@@ -143,6 +143,7 @@ trait Http
             8080,
             'user:pass',
             '/path/123',
+            'q=abc',
         ];
 
         $data[] = [
@@ -152,6 +153,7 @@ trait Http
             8080,
             'user:pass',
             '/path/123',
+            'q=abc',
         ];
 
         $data[] = [
@@ -161,6 +163,7 @@ trait Http
             8080,
             'user:pass',
             '/path/123',
+            'q=abc',
         ];
 
         // Default port / multiple queries
@@ -171,6 +174,7 @@ trait Http
             null,
             'user:pass',
             '/path/123',
+            'foo=123&bar=456',
         ];
 
         $data[] = [
@@ -180,6 +184,7 @@ trait Http
             null,
             'user:pass',
             '/path/123',
+            'foo=123&bar=456',
         ];
 
         // No port / no passwd
@@ -190,6 +195,7 @@ trait Http
             null,
             'user',
             '/path/123',
+            'foo=bar',
         ];
 
         $data[] = [
@@ -199,6 +205,7 @@ trait Http
             null,
             'user',
             '/path/123',
+            'foo=bar',
         ];
 
         $data[] = [
@@ -208,6 +215,7 @@ trait Http
             null,
             'user',
             '/path/123',
+            'foo=bar',
         ];
 
         // No hash / no identity / multiple queries
@@ -218,6 +226,7 @@ trait Http
             null,
             '',
             '/path/123',
+            'foo=bar',
         ];
 
         $data[] = [
@@ -227,6 +236,7 @@ trait Http
             null,
             '',
             '/path/123',
+            'foo=bar',
         ];
 
         $data[] = [
@@ -236,6 +246,7 @@ trait Http
             null,
             '',
             '/path/123',
+            'foo=bar',
         ];
 
         // No hash / no identity
@@ -246,6 +257,7 @@ trait Http
             null,
             '',
             '/path/123',
+            'foo=bar',
         ];
 
         $data[] = [
@@ -255,6 +267,7 @@ trait Http
             null,
             '',
             '/path/123',
+            'foo=bar',
         ];
 
         $data[] = [
@@ -264,6 +277,7 @@ trait Http
             null,
             '',
             '/path/123',
+            'foo=bar',
         ];
 
         // No path / no query
@@ -274,6 +288,7 @@ trait Http
             null,
             '',
             '/',
+            '',
         ];
 
         $data[] = [
@@ -283,6 +298,7 @@ trait Http
             null,
             '',
             '/',
+            '',
         ];
 
         $data[] = [
@@ -292,6 +308,7 @@ trait Http
             null,
             '',
             '/',
+            '',
         ];
 
         $data[] = [
@@ -299,6 +316,7 @@ trait Http
             'https',
             'example.com',
             null,
+            '',
             '',
             '',
         ];
@@ -310,6 +328,7 @@ trait Http
             null,
             '',
             '',
+            '',
         ];
 
         $data[] = [
@@ -317,6 +336,7 @@ trait Http
             '',
             'example.com',
             null,
+            '',
             '',
             '',
         ];
@@ -329,6 +349,7 @@ trait Http
             null,
             '',
             '/foo/bar',
+            '',
         ];
 
         $data[] = [
@@ -338,6 +359,7 @@ trait Http
             null,
             '',
             'foo/bar/',
+            '',
         ];
 
         $data[] = [
@@ -347,6 +369,7 @@ trait Http
             null,
             '',
             '',
+            'foo=bar',
         ];
 
         $data[] = [
@@ -354,6 +377,7 @@ trait Http
             '',
             '',
             null,
+            '',
             '',
             '',
         ];
@@ -366,6 +390,7 @@ trait Http
             null,
             '',
             '',
+            '',
         ];
 
         $data[] = [
@@ -375,6 +400,7 @@ trait Http
             null,
             '',
             '',
+            '',
         ];
 
         $data[] = [
@@ -382,6 +408,7 @@ trait Http
             '',
             'example.com',
             null,
+            '',
             '',
             '',
         ];
