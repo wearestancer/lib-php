@@ -17,6 +17,9 @@ class Uri implements Psr\Http\Message\UriInterface
     /** @var string Uri host. */
     protected $host = '';
 
+    /** @var integer|null Uri port. */
+    protected $port;
+
     /** @var string Uri scheme. */
     protected $scheme = '';
 
@@ -41,19 +44,24 @@ class Uri implements Psr\Http\Message\UriInterface
                         return strtolower($v);
                     },
                 ],
+                [
+                    'name' => 'port',
+                ],
             ];
 
             foreach ($keys as $data) {
                 $key = $data['name'];
 
                 if (array_key_exists($key, $parts)) {
-                    if (is_callable($data['clean'])) {
+                    if (array_key_exists('clean', $data) && is_callable($data['clean'])) {
                         $this->$key = $data['clean']($parts[$key]);
                     } else {
                         $this->$key = $parts[$key];
                     }
                 }
             }
+
+            $this->cleanPort();
         }
     }
 
@@ -82,6 +90,39 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function __toString(): string
     {
+    }
+
+    /**
+     * Clean port value.
+     *
+     * @return $this
+     */
+    protected function cleanPort(): self
+    {
+        if (is_null($this->getPort())) {
+            return $this;
+        }
+
+        if (!$this->getScheme()) {
+            return $this;
+        }
+
+        $defaults = [
+            'https' => 443,
+            'http' => 80,
+        ];
+
+        if (!array_key_exists($this->getScheme(), $defaults)) {
+            return $this;
+        }
+
+        $port = $defaults[$this->getScheme()];
+
+        if ($this->getPort() === $port) {
+            $this->port = null;
+        }
+
+        return $this;
     }
 
     /**
@@ -188,6 +229,7 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function getPort(): ?int
     {
+        return $this->port;
     }
 
     /**

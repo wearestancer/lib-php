@@ -140,18 +140,21 @@ trait Http
             'https://user:pass@example.com:8080/path/123?q=abc#test',
             'https',
             'example.com',
+            8080,
         ];
 
         $data[] = [
             'http://user:pass@example.com:8080/path/123?q=abc#test',
             'http',
             'example.com',
+            8080,
         ];
 
         $data[] = [
             '//user:pass@example.com:8080/path/123?q=abc#test',
             '',
             'example.com',
+            8080,
         ];
 
         // Default port / multiple queries
@@ -159,12 +162,14 @@ trait Http
             'https://user:pass@example.com:443/path/123?foo=123&bar=456',
             'https',
             'example.com',
+            null,
         ];
 
         $data[] = [
             'http://user:pass@example.com:80/path/123?foo=123&bar=456',
             'http',
             'example.com',
+            null,
         ];
 
         // No port / no passwd
@@ -172,18 +177,21 @@ trait Http
             'https://user@example.com/path/123?foo=bar#test',
             'https',
             'example.com',
+            null,
         ];
 
         $data[] = [
             'http://user@example.com/path/123?foo=bar#test',
             'http',
             'example.com',
+            null,
         ];
 
         $data[] = [
             '//user@example.com/path/123?foo=bar#test',
             '',
             'example.com',
+            null,
         ];
 
         // No hash / no identity / multiple queries
@@ -191,18 +199,21 @@ trait Http
             'https://example.com/path/123?foo=bar',
             'https',
             'example.com',
+            null,
         ];
 
         $data[] = [
             'http://example.com/path/123?foo=bar',
             'http',
             'example.com',
+            null,
         ];
 
         $data[] = [
             '//example.com/path/123?foo=bar',
             '',
             'example.com',
+            null,
         ];
 
         // No hash / no identity
@@ -210,18 +221,21 @@ trait Http
             'https://example.com/path/123?foo=bar',
             'https',
             'example.com',
+            null,
         ];
 
         $data[] = [
             'http://example.com/path/123?foo=bar',
             'http',
             'example.com',
+            null,
         ];
 
         $data[] = [
             '//example.com/path/123?foo=bar',
             '',
             'example.com',
+            null,
         ];
 
         // No path / no query
@@ -229,36 +243,42 @@ trait Http
             'https://example.com/',
             'https',
             'example.com',
+            null,
         ];
 
         $data[] = [
             'http://example.com/',
             'http',
             'example.com',
+            null,
         ];
 
         $data[] = [
             '//example.com/',
             '',
             'example.com',
+            null,
         ];
 
         $data[] = [
             'https://example.com',
             'https',
             'example.com',
+            null,
         ];
 
         $data[] = [
             'http://example.com',
             'http',
             'example.com',
+            null,
         ];
 
         $data[] = [
             '//example.com',
             '',
             'example.com',
+            null,
         ];
 
         // No host
@@ -266,24 +286,28 @@ trait Http
             '/foo/bar',
             '',
             '',
+            null,
         ];
 
         $data[] = [
             'foo/bar/',
             '',
             '',
+            null,
         ];
 
         $data[] = [
             '?foo=bar',
             '',
             '',
+            null,
         ];
 
         $data[] = [
             '#123',
             '',
             '',
+            null,
         ];
 
         // Case
@@ -291,18 +315,21 @@ trait Http
             'HTTPS://eXAMple.com',
             'https',
             'example.com',
+            null,
         ];
 
         $data[] = [
             'hTTp://examPLE.com',
             'http',
             'example.com',
+            null,
         ];
 
         $data[] = [
             '//ExaMplE.COM',
             '',
             'example.com',
+            null,
         ];
 
         shuffle($data);

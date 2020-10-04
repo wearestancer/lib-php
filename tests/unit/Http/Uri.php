@@ -20,7 +20,7 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
-    public function testGetHost($uri, $scheme, $host)
+    public function testGetHost($uri, $scheme, $host, $port)
     {
         $this
             ->if($this->newTestedInstance($uri))
@@ -33,7 +33,20 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
-    public function testGetScheme($uri, $scheme, $host)
+    public function testGetPort($uri, $scheme, $host, $port)
+    {
+        $this
+            ->if($this->newTestedInstance($uri))
+            ->then
+                ->variable($this->testedInstance->getPort())
+                    ->isIdenticalTo($port)
+        ;
+    }
+
+    /**
+     * @dataProvider urlProvider
+     */
+    public function testGetScheme($uri, $scheme, $host, $port)
     {
         $this
             ->if($this->newTestedInstance($uri))
