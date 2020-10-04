@@ -14,83 +14,53 @@ use Psr;
  */
 class Uri implements Psr\Http\Message\UriInterface
 {
-    /** @var string Uri fragment. */
-    protected $fragment = '';
-
-    /** @var string Uri host. */
-    protected $host = '';
-
-    /** @var string Uri path. */
-    protected $path = '';
-
-    /** @var integer|null Uri port. */
-    protected $port;
-
-    /** @var string Uri query string. */
-    protected $query = '';
-
-    /** @var string Uri scheme. */
-    protected $scheme = '';
-
-    /** @var string Uri user info. */
-    protected $user = '';
+    /** @var UriComponents Uri components. */
+    protected $components = [];
 
     /**
      * @param string $uri URI to parse.
+     *
+     * @phpstan-param string|UriComponents $uri
      */
-    public function __construct(string $uri = '')
+    public function __construct($uri = [])
     {
-        if ($uri) {
-            $parts = parse_url($uri);
+        $parts = $uri;
 
+        if (is_string($uri)) {
+            $parts = parse_url($uri);
+        }
+
+        if (is_array($parts) && count($parts)) {
             $keys = [
-                [
-                    'name' => 'host',
-                    'clean' => function (string $v): string {
-                        return strtolower($v);
-                    },
-                ],
-                [
-                    'name' => 'scheme',
-                    'clean' => function (string $v): string {
-                        return strtolower($v);
-                    },
-                ],
-                [
-                    'name' => 'port',
-                ],
-                [
-                    'name' => 'user',
-                ],
-                [
-                    'name' => 'path',
-                ],
-                [
-                    'name' => 'query',
-                ],
-                [
-                    'name' => 'fragment',
-                ],
+                'fragment',
+                'host',
+                'path',
+                'port',
+                'query',
+                'scheme',
+                'user',
             ];
 
-            foreach ($keys as $data) {
-                $key = $data['name'];
-
-                if (array_key_exists($key, $parts)) {
-                    if (array_key_exists('clean', $data) && is_callable($data['clean'])) {
-                        $this->$key = $data['clean']($parts[$key]);
-                    } else {
-                        $this->$key = $parts[$key];
-                    }
+            foreach ($keys as $key) {
+                if (array_key_exists($key, $parts) && $parts[$key]) {
+                    $this->components[$key] = $parts[$key];
                 }
             }
 
             if (array_key_exists('pass', $parts)) {
-                $this->user .= ':' . $parts['pass'];
+                $this->components['user'] .= ':' . $parts['pass'];
             }
 
-            $this->cleanPort();
+            if ($this->getHost()) {
+                $this->components['host'] = strtolower($this->getHost());
+            }
+
+            if ($this->getScheme()) {
+                $this->components['scheme'] = strtolower($this->getScheme());
+            }
         }
+
+        $this->cleanPort();
     }
 
     /**
@@ -172,7 +142,7 @@ class Uri implements Psr\Http\Message\UriInterface
         $port = $defaults[$this->getScheme()];
 
         if ($this->getPort() === $port) {
-            $this->port = null;
+            unset($this->components['port']);
         }
 
         return $this;
@@ -232,7 +202,7 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function getFragment(): string
     {
-        return $this->fragment;
+        return $this->components['fragment'] ?? '';
     }
 
     /**
@@ -248,7 +218,7 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function getHost(): string
     {
-        return $this->host;
+        return $this->components['host'] ?? '';
     }
 
     /**
@@ -278,7 +248,7 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function getPath(): string
     {
-        return $this->path;
+        return $this->components['path'] ?? '';
     }
 
     /**
@@ -298,7 +268,11 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function getPort(): ?int
     {
-        return $this->port;
+        if (array_key_exists('port', $this->components)) {
+            return $this->components['port'];
+        }
+
+        return null;
     }
 
     /**
@@ -323,7 +297,7 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function getQuery(): string
     {
-        return $this->query;
+        return $this->components['query'] ?? '';
     }
 
     /**
@@ -342,7 +316,7 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function getScheme(): string
     {
-        return $this->scheme;
+        return $this->components['scheme'] ?? '';
     }
 
     /**
@@ -362,7 +336,7 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function getUserInfo(): string
     {
-        return $this->user;
+        return $this->components['user'] ?? '';
     }
 
     /**

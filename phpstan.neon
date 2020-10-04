@@ -69,4 +69,17 @@ parameters:
       }
     '''
 
+    UriComponents: '''
+      array{
+        fragment?: string,
+        host?: string,
+        path?: string,
+        pass?: string,
+        port?: integer|null,
+        query?: string,
+        scheme?: string,
+        user?: string,
+      }
+    '''
+
   tmpDir: reports/phpstan

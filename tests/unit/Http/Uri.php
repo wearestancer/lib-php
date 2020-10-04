@@ -20,7 +20,7 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
-    public function testCastToString($uri, $scheme, $host, $port, $user, $path, $query, $hash, $clean)
+    public function testCastToString($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
         $this
             ->if($this->newTestedInstance($uri))
@@ -33,16 +33,16 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
-    public function testGetAuthority($uri, $scheme, $host, $port, $user, $path, $query, $hash, $clean)
+    public function testGetAuthority($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
         $this
             ->if($this->newTestedInstance($uri))
             ->and($authority = '')
-            ->when(function () use (&$authority, $user, $host, $port) {
+            ->when(function () use (&$authority, $user, $pass, $host, $port) {
                 $authority = '';
 
-                if ($user) {
-                    $authority .= $user . '@';
+                if ($user || $pass ) {
+                    $authority .= $user . ($pass ? ':' : '') . $pass . '@';
                 }
 
                 $authority .= $host;
@@ -60,7 +60,7 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
-    public function testGetFragment($uri, $scheme, $host, $port, $user, $path, $query, $hash, $clean)
+    public function testGetFragment($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
         $this
             ->if($this->newTestedInstance($uri))
@@ -73,7 +73,7 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
-    public function testGetHost($uri, $scheme, $host, $port, $user, $path, $query, $hash, $clean)
+    public function testGetHost($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
         $this
             ->if($this->newTestedInstance($uri))
@@ -86,7 +86,7 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
-    public function testGetPath($uri, $scheme, $host, $port, $user, $path, $query, $hash, $clean)
+    public function testGetPath($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
         $this
             ->if($this->newTestedInstance($uri))
@@ -99,7 +99,7 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
-    public function testGetPort($uri, $scheme, $host, $port, $user, $path, $query, $hash, $clean)
+    public function testGetPort($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
         $this
             ->if($this->newTestedInstance($uri))
@@ -112,7 +112,7 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
-    public function testGetQuery($uri, $scheme, $host, $port, $user, $path, $query, $hash, $clean)
+    public function testGetQuery($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
         $this
             ->if($this->newTestedInstance($uri))
@@ -125,7 +125,7 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
-    public function testGetScheme($uri, $scheme, $host, $port, $user, $path, $query, $hash, $clean)
+    public function testGetScheme($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
         $this
             ->if($this->newTestedInstance($uri))
@@ -138,13 +138,14 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
-    public function testGetUserInfo($uri, $scheme, $host, $port, $user, $path, $query, $hash, $clean)
+    public function testGetUserInfo($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
         $this
             ->if($this->newTestedInstance($uri))
+            ->and($info = $user . ($pass ? ':' : '') . $pass)
             ->then
                 ->string($this->testedInstance->getUserInfo())
-                    ->isIdenticalTo($user)
+                    ->isIdenticalTo($info)
         ;
     }
 }
