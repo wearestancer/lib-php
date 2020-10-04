@@ -428,6 +428,11 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function withPath($path): self
     {
+        $components = $this->getComponents();
+
+        $components['path'] = $path;
+
+        return new static($components);
     }
 
     /**
