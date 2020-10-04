@@ -130,4 +130,13 @@ trait Http
 
         return $data;
     }
+
+    public function urlProvider(): array
+    {
+        $data = [];
+
+        shuffle($data);
+
+        return $data;
+    }
 }
