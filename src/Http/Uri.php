@@ -476,6 +476,11 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function withQuery($query): self
     {
+        $components = $this->getComponents();
+
+        $components['query'] = $query;
+
+        return new static($components);
     }
 
     /**
