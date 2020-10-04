@@ -453,6 +453,11 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function withPort($port): self
     {
+        $components = $this->getComponents();
+
+        $components['port'] = $port;
+
+        return new static($components);
     }
 
     /**

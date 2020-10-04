@@ -254,4 +254,31 @@ class Uri extends ild78\Tests\atoum
                     ->isEqualTo($this->cleanComponent('path', $this->testedInstance))
         ;
     }
+
+    /**
+     * @dataProvider urlProvider
+     */
+    public function testWithPort($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
+    {
+        $this
+            ->if($this->newTestedInstance($uri))
+            ->and($newPort = rand(1, 65535))
+            ->then
+                ->variable($this->testedInstance->getPort())
+                    ->isIdenticalTo($port)
+
+                ->object($object = $this->testedInstance->withPort($newPort))
+                    ->isInstanceOfTestedClass
+                    ->isNotTestedInstance
+
+                ->variable($this->testedInstance->getPort())
+                    ->isIdenticalTo($port)
+
+                ->integer($object->getPort())
+                    ->isIdenticalTo($newPort)
+
+                ->array($this->cleanComponent('port', $object))
+                    ->isEqualTo($this->cleanComponent('port', $this->testedInstance))
+        ;
+    }
 }
