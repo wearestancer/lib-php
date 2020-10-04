@@ -522,5 +522,11 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function withUserInfo($user, $password = null): self
     {
+        $components = $this->getComponents();
+
+        $components['user'] = $user;
+        $components['pass'] = $password;
+
+        return new static($components);
     }
 }

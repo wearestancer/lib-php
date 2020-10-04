@@ -13,7 +13,13 @@ class Uri extends ild78\Tests\atoum
     {
         $arr = $obj->getComponents();
 
-        unset($arr[$name]);
+        if (is_array($name)) {
+            foreach ($name as $n) {
+                unset($arr[$n]);
+            }
+        } else {
+            unset($arr[$name]);
+        }
 
         return $arr;
     }
@@ -333,6 +339,38 @@ class Uri extends ild78\Tests\atoum
 
                 ->array($this->cleanComponent('scheme', $object))
                     ->isEqualTo($this->cleanComponent('scheme', $this->testedInstance))
+        ;
+    }
+
+    /**
+     * @dataProvider urlProvider
+     */
+    public function testWithUserInfo($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
+    {
+        $this
+            ->if($this->newTestedInstance($uri))
+            ->and($info = $user . ($pass ? ':' : '') . $pass)
+
+            ->and($newUser = uniqid())
+            ->and($newPass = uniqid())
+            ->and($newInfo = $newUser . ($newPass ? ':' : '') . $newPass)
+            ->then
+                ->string($this->testedInstance->getUserInfo())
+                    ->isIdenticalTo($info)
+
+                ->assert('With user and pass')
+                    ->object($object = $this->testedInstance->withUserInfo($newUser, $newPass))
+                        ->isInstanceOfTestedClass
+                        ->isNotTestedInstance
+
+                    ->string($this->testedInstance->getUserInfo())
+                        ->isIdenticalTo($info)
+
+                    ->string($object->getUserInfo())
+                        ->isIdenticalTo($newInfo)
+
+                    ->array($this->cleanComponent(['user', 'pass'], $object))
+                        ->isEqualTo($this->cleanComponent(['user', 'pass'], $this->testedInstance))
         ;
     }
 }
