@@ -9,6 +9,15 @@ class Uri extends ild78\Tests\atoum
 {
     use ild78\Tests\Provider\Http;
 
+    public function cleanComponent($name, $obj)
+    {
+        $arr = $obj->getComponents();
+
+        unset($arr[$name]);
+
+        return $arr;
+    }
+
     public function testClass()
     {
         $this
@@ -162,6 +171,33 @@ class Uri extends ild78\Tests\atoum
             ->then
                 ->string($this->testedInstance->getUserInfo())
                     ->isIdenticalTo($info)
+        ;
+    }
+
+    /**
+     * @dataProvider urlProvider
+     */
+    public function testWithFragment($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
+    {
+        $this
+            ->if($this->newTestedInstance($uri))
+            ->and($fragment = uniqid())
+            ->then
+                ->string($this->testedInstance->getFragment())
+                    ->isIdenticalTo($hash)
+
+                ->object($object = $this->testedInstance->withFragment($fragment))
+                    ->isInstanceOfTestedClass
+                    ->isNotTestedInstance
+
+                ->string($this->testedInstance->getFragment())
+                    ->isIdenticalTo($hash)
+
+                ->string($object->getFragment())
+                    ->isIdenticalTo($fragment)
+
+                ->array($this->cleanComponent('fragment', $object))
+                    ->isEqualTo($this->cleanComponent('fragment', $this->testedInstance))
         ;
     }
 }

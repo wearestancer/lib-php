@@ -378,6 +378,11 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function withFragment($fragment): self
     {
+        $components = $this->getComponents();
+
+        $components['fragment'] = $fragment;
+
+        return new static($components);
     }
 
     /**

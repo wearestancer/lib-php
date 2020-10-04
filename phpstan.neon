@@ -12,6 +12,7 @@ parameters:
         - src/Config.php
         - src/Core/AbstractObject.php
         - src/Exceptions/Exception.php
+        - src/Http/Uri.php
         - src/Traits/SearchTrait.php
         - src/Payment.php
 
