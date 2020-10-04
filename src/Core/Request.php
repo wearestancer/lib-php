@@ -174,14 +174,14 @@ class Request
      * Add a new call made with other client
      *
      * @param Psr\Http\Message\RequestInterface $request Request.
-     * @param Psr\Http\Message\ResponseInterface $response Response.
+     * @param Psr\Http\Message\ResponseInterface|null $response Response.
      * @param ild78\Core\AbstractObject $object Object used during call.
      * @param ild78\Exceptions\HttpException $exception Exception thrown during call.
      * @return $this
      */
     private function addCallWithOtherClient(
         Psr\Http\Message\RequestInterface $request,
-        Psr\Http\Message\ResponseInterface $response,
+        $response,
         AbstractObject $object,
         ild78\Exceptions\HttpException $exception = null
     ): self {
@@ -200,7 +200,7 @@ class Request
 
         if ($object instanceof ild78\Payment) {
             $in = null;
-            $out = null;
+            $out = '';
 
             $card = $object->dataModelGetter('card', false);
             $sepa = $object->dataModelGetter('sepa', false);
@@ -226,7 +226,7 @@ class Request
                     $request->getMethod(),
                     $request->getUri(),
                     $request->getHeaders(),
-                    str_replace($in, $out, $request->getBody())
+                    str_replace($in, $out, (string) $request->getBody())
                 );
             }
         }
@@ -314,6 +314,10 @@ class Request
             $logMethod = 'error';
 
             $response = $exception->getResponse();
+
+            if (is_null($response)) {
+                throw new \Exception();
+            }
 
             $excepClass = ild78\Exceptions\ClientException::class;
             $excepParams['previous'] = $exception;
@@ -403,7 +407,11 @@ class Request
 
         if ($logMethod) {
             if (!$logMessage) {
-                $logMessage = $excepParams['message'] ?? $excepClass::getDefaultMessage();
+                $logMessage = $excepParams['message'] ?? null;
+            }
+
+            if (!$logMessage && $excepClass) {
+                $logMessage = $excepClass::getDefaultMessage();
             }
 
             $logger->$logMethod($logMessage);
@@ -421,7 +429,7 @@ class Request
             if ($client instanceof ild78\Http\Client) {
                 $this->addCallWithDefaultClient($object, $exception);
             } else {
-                $body = array_key_exists('body', $options) ? $options['body'] : null;
+                $body = $options['body'] ?? null;
                 $request = new GuzzleHttp\Psr7\Request((string) $verb, $location ?? '', $options['headers'], $body);
 
                 if (!$response && $exception instanceof ild78\Exceptions\HttpException) {
@@ -434,6 +442,10 @@ class Request
 
         if ($exception) {
             throw $exception;
+        }
+
+        if (!$response) {
+            return '';
         }
 
         return (string) $response->getBody();
