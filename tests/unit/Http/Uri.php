@@ -20,6 +20,33 @@ class Uri extends ild78\Tests\atoum
     /**
      * @dataProvider urlProvider
      */
+    public function testGetAuthority($uri, $scheme, $host, $port, $user)
+    {
+        $this
+            ->if($this->newTestedInstance($uri))
+            ->and($authority = '')
+            ->when(function () use (&$authority, $user, $host, $port) {
+                $authority = '';
+
+                if ($user) {
+                    $authority .= $user . '@';
+                }
+
+                $authority .= $host;
+
+                if (!is_null($port)) {
+                    $authority .= ':' . $port;
+                }
+            })
+            ->then
+                ->string($this->testedInstance->getAuthority())
+                    ->isIdenticalTo($authority)
+        ;
+    }
+
+    /**
+     * @dataProvider urlProvider
+     */
     public function testGetHost($uri, $scheme, $host, $port, $user)
     {
         $this

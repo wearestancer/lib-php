@@ -155,6 +155,20 @@ class Uri implements Psr\Http\Message\UriInterface
      */
     public function getAuthority(): string
     {
+        $info = $this->getUserInfo();
+        $port = $this->getPort();
+
+        $authority = $this->getHost();
+
+        if ($info) {
+            $authority = $info . '@' . $authority;
+        }
+
+        if ($port) {
+            $authority .= ':' . $port;
+        }
+
+        return $authority;
     }
 
     /**
