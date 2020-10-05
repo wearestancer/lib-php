@@ -425,7 +425,6 @@ class Request
             $exception = $excepClass::create($excepParams);
         }
 
-        $params = [];
 
         if ($config->getDebug()) {
             if ($client instanceof ild78\Http\Client) {

@@ -20,7 +20,6 @@ parameters:
       paths:
         - src/Core/AbstractObject.php
         - src/Core/Request.php
-        - src/Exceptions/HttpException.php
         - src/Http/Client.php
         - src/Payment.php
 

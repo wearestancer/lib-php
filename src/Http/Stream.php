@@ -52,7 +52,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      * @see http://php.net/manual/en/language.oop5.magic.php#object.tostring
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         return $this->rewind()->getContents();
     }
@@ -83,7 +83,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      *
      * @return boolean
      */
-    public function eof()
+    public function eof(): bool
     {
         return $this->position === $this->size;
     }
@@ -93,7 +93,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      *
      * @return string
      */
-    public function getContents()
+    public function getContents(): string
     {
         if (!$this->tell()) {
             return $this->content;
@@ -110,11 +110,11 @@ class Stream implements Psr\Http\Message\StreamInterface
      *
      * @link http://php.net/manual/en/function.stream-get-meta-data.php
      * @param string $key Specific metadata to retrieve.
-     * @return array|mixed|null Returns an associative array if no key is
+     * @return array|null Returns an associative array if no key is
      *   provided. Returns a specific key value if a key is provided and the
      *   value is found, or null if the key is not found.
      */
-    public function getMetadata($key = null)
+    public function getMetadata($key = null): ?array
     {
         if ($key) {
             return null;
@@ -128,7 +128,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      *
      * @return integer|null Returns the size in bytes if known, or null if unknown.
      */
-    public function getSize()
+    public function getSize(): ?int
     {
         return $this->size;
     }
@@ -138,7 +138,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      *
      * @return boolean
      */
-    public function isReadable()
+    public function isReadable(): bool
     {
         return true;
     }
@@ -148,7 +148,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      *
      * @return boolean
      */
-    public function isSeekable()
+    public function isSeekable(): bool
     {
         return true;
     }
@@ -158,7 +158,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      *
      * @return boolean
      */
-    public function isWritable()
+    public function isWritable(): bool
     {
         return false;
     }
@@ -172,7 +172,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      * @return string Returns the data read from the stream, or an empty string
      *   if no bytes are available.
      */
-    public function read($length)
+    public function read($length): string
     {
         if (!$length) {
             return '';
@@ -195,7 +195,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      * @link http://www.php.net/manual/en/function.fseek.php
      * @return $this
      */
-    public function rewind()
+    public function rewind(): self
     {
         return $this->seek(0);
     }
@@ -212,7 +212,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      *   SEEK_END: Set position to end-of-stream plus offset.
      * @return $this
      */
-    public function seek($offset, $whence = SEEK_SET)
+    public function seek($offset, $whence = SEEK_SET): self
     {
         if ($whence === SEEK_CUR) {
             $this->position += $offset;
@@ -242,7 +242,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      *
      * @return integer Position of the file pointer.
      */
-    public function tell()
+    public function tell(): int
     {
         return $this->position;
     }
@@ -254,7 +254,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      * @return integer Returns the number of bytes written to the stream.
      * @throws ild78\Exceptions\BadMethodCallException For every call.
      */
-    public function write($string)
+    public function write($string): int
     {
         throw new ild78\Exceptions\BadMethodCallException('This method is not implemented.');
     }

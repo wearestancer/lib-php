@@ -910,7 +910,7 @@ class Request extends ild78\Tests\atoum
                         }
 
                         if ($code === 500) {
-                            $infos['message'] = 'Servor error, please leave a minute to repair it and try again';
+                            $infos['message'] = 'Server error, please leave a minute to repair it and try again';
                         }
                     })
                     ->then

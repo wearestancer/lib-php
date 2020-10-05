@@ -5,7 +5,6 @@ namespace ild78\Core;
 
 use DateTime;
 use DateTimeInterface;
-use GuzzleHttp;
 use ild78;
 use JsonSerializable;
 use ReflectionClass;

@@ -65,15 +65,12 @@ class HttpException extends Exception implements ExceptionInterface
 
         $obj = parent::create($params);
 
-        $keys = [
-            'request',
-            'response',
-        ];
+        if (array_key_exists('request', $params) && $params['request']) {
+            $obj->request = $params['request'];
+        }
 
-        foreach ($keys as $key) {
-            if (array_key_exists($key, $params) && $params[$key]) {
-                $obj->$key = $params[$key];
-            }
+        if (array_key_exists('response', $params) && $params['response']) {
+            $obj->response = $params['response'];
         }
 
         return $obj;

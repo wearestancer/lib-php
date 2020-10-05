@@ -4,7 +4,6 @@ declare(strict_types=1);
 namespace ild78;
 
 use DateTime;
-use Generator;
 use ild78;
 
 /**

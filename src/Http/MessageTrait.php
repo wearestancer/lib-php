@@ -114,7 +114,7 @@ trait MessageTrait
     public function getHeaders(): array
     {
         $headers = [];
-        $func = function ($data, $key) use (&$headers): void {
+        $func = function ($data) use (&$headers): void {
             $headers[$data['name']] = $data['values'];
         };
 
