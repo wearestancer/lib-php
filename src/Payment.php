@@ -75,7 +75,10 @@ class Payment extends ild78\Core\AbstractObject
     /** @var string */
     protected $endpoint = 'checkout';
 
-    /** @var array<string, DataModel> */
+    /**
+     * @var array
+     * @phpstan-var array<string, DataModel>
+     */
     protected $dataModel = [
         'amount' => [
             'required' => true,

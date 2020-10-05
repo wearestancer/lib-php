@@ -30,7 +30,7 @@ abstract class AbstractObject implements JsonSerializable
     /** @var string */
     protected $endpoint = '';
 
-    /** @var array<string, DataModel> */
+    /** @var array */
     protected $dataModel = [];
 
     /** @var string|null */
@@ -277,11 +277,13 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function dataModelAdder(string $property, $value): self
     {
-        if (!array_key_exists($property, $this->dataModel)) {
+        $model = $this->getModel($property);
+
+        if (!$model) {
             throw new ild78\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
         }
 
-        if (!$this->dataModel[$property]['list']) {
+        if (!$model['list']) {
             $message = sprintf('"%s" is not a list, you can not add elements in it.', $property);
 
             throw new ild78\Exceptions\InvalidArgumentException($message);
@@ -305,25 +307,28 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function dataModelGetter(string $property, bool $autoPopulate = true)
     {
-        if (!array_key_exists($property, $this->dataModel)) {
+        $model = $this->getModel($property);
+
+        if (!$model) {
             throw new ild78\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
         }
 
-        $value = $this->dataModel[$property]['value'];
+        $value = $model['value'];
 
         if (is_null($value) && $autoPopulate && $this->isNotModified()) {
-            $value = $this->populate()->dataModel[$property]['value'];
+            $model = $this->populate()->getModel($property);
+            $value = $model['value'];
         }
 
-        if (is_null($value) && $this->dataModel[$property]['list']) {
+        if (is_null($value) && $model['list']) {
             return [];
         }
 
-        if (!is_null($value) && $this->dataModel[$property]['type'] === DateTime::class) {
+        if (!is_null($value) && $model['type'] === DateTime::class) {
             $tz = ild78\Config::getGlobal()->getDefaultTimeZone();
 
             if ($tz) {
-                if ($this->dataModel[$property]['list']) {
+                if ($model['list']) {
                     foreach ($value as $val) {
                         $val->setTimezone($tz);
                     }
@@ -351,11 +356,11 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function dataModelSetter(string $property, $value): self
     {
-        if (!array_key_exists($property, $this->dataModel)) {
+        $model = $this->getModel($property);
+
+        if (!$model) {
             throw new ild78\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
         }
-
-        $model = $this->dataModel[$property];
 
         if ($model['restricted']) {
             $message = sprintf('You are not allowed to modify "%s".', $property);
@@ -465,8 +470,8 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function getEntityName(): string
     {
-        $expl = explode('\\', get_class($this));
-        $last = end($expl);
+        $parts = explode('\\', get_class($this));
+        $last = end($parts);
 
         if ($last === false) {
             return '';
@@ -489,9 +494,11 @@ abstract class AbstractObject implements JsonSerializable
      * Return property model
      *
      * @param string|null $property Property name.
-     * @return array
+     * @return array|null
+     *
+     * @phpstan-return DataModelResolved|array<string, DataModelResolved>|null
      */
-    public function getModel(string $property = null)
+    public function getModel(string $property = null): ?array
     {
         $model = $this->populate()->dataModel;
 
@@ -553,14 +560,16 @@ abstract class AbstractObject implements JsonSerializable
                     return $v;
                 };
 
-                if (is_callable($this->dataModel[$property]['coerce'])) {
-                    $coerce = $this->dataModel[$property]['coerce'];
+                $model = $this->getModel($property);
+
+                if (is_callable($model['coerce'])) {
+                    $coerce = $model['coerce'];
                 }
 
-                if ($value && !in_array($this->dataModel[$property]['type'], $types, true) && !is_object($value)) {
-                    $class = $this->dataModel[$property]['type'];
+                if ($value && !in_array($model['type'], $types, true) && !is_object($value)) {
+                    $class = $model['type'];
 
-                    if ($this->dataModel[$property]['list']) {
+                    if ($model['list']) {
                         $list = [];
 
                         foreach ($value as $val) {
@@ -574,7 +583,7 @@ abstract class AbstractObject implements JsonSerializable
 
                                 $missing = true;
 
-                                if (!is_array($this->dataModel[$property]['value'])) {
+                                if (!is_array($model['value'])) {
                                     $this->dataModel[$property]['value'] = [];
                                 }
 
@@ -600,7 +609,6 @@ abstract class AbstractObject implements JsonSerializable
                             }
                         }
 
-                        // @phpstan-ignore-next-line
                         $this->$property = $list;
                     } else {
                         if (is_subclass_of($class, self::class)) {
@@ -629,7 +637,6 @@ abstract class AbstractObject implements JsonSerializable
                             if ($this->dataModel[$property]['restricted']) {
                                 $this->dataModel[$property]['value'] = $coerce($value);
                             } else {
-                                // @phpstan-ignore-next-line
                                 $this->$property = $value;
                             }
                         }
@@ -638,7 +645,6 @@ abstract class AbstractObject implements JsonSerializable
                     if ($this->dataModel[$property]['restricted'] || is_null($value) || is_array($value)) {
                         $this->dataModel[$property]['value'] = $coerce($value);
                     } else {
-                        // @phpstan-ignore-next-line
                         $this->$property = $value;
                     }
                 }
@@ -887,7 +893,7 @@ abstract class AbstractObject implements JsonSerializable
             return strtoupper(ltrim($matches[0], '_'));
         };
 
-        $rep = preg_replace_callback('`\_[a-z]`', $replace, $text);
+        $rep = preg_replace_callback('`_[a-z]`', $replace, $text);
 
         if (!$rep) {
             return '';
@@ -913,12 +919,10 @@ abstract class AbstractObject implements JsonSerializable
         $data = array_merge($data, $this->dataModel);
 
         foreach ($data as $property => $infos) {
-            $value = $infos['value'];
-
-            if ($value !== null && $infos['exportable']) {
+            if ($infos['exportable'] && $infos['value'] !== null) {
                 $prop = $this->camelCaseToSnakeCase($property);
 
-                $json[$prop] = $value;
+                $json[$prop] = $infos['value'];
             }
         }
 
@@ -965,11 +969,11 @@ abstract class AbstractObject implements JsonSerializable
      */
     protected function validateDataModel(string $property, $value): self
     {
-        if (!array_key_exists($property, $this->dataModel)) {
+        $model = $this->getModel($property);
+
+        if (!$model) {
             throw new ild78\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
         }
-
-        $model = $this->dataModel[$property];
 
         $exceptionList = [
             'ild78\\Exceptions\\Invalid' . ucfirst($property) . 'Exception',

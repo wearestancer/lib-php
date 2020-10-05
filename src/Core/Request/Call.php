@@ -11,7 +11,10 @@ use Psr;
  */
 class Call extends ild78\Core\AbstractObject
 {
-    /** @var array<string, DataModel> */
+    /**
+     * @var array
+     * @phpstan-var array<string, DataModel>
+     */
     protected $dataModel = [
         'exception' => [
             'restricted' => true,

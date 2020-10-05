@@ -1,72 +1,17 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Offset 'list' does not exist on array\\(\\?'coerce' \\=\\> callable\\(\\)\\: mixed, \\?'exception' \\=\\> class\\-string, \\?'exportable' \\=\\> bool, \\?'list' \\=\\> bool, \\?'restricted' \\=\\> bool, \\?'required' \\=\\> bool, \\?'size' \\=\\> array\\(\\?'fixed' \\=\\> int, \\?'min' \\=\\> int, \\?'max' \\=\\> int\\), 'type' \\=\\> string, \\.\\.\\.\\)\\.$#"
-			count: 2
-			path: src/Core/AbstractObject.php
-
-		-
-			message: "#^Offset 'value' does not exist on array\\(\\?'coerce' \\=\\> callable\\(\\)\\: mixed, \\?'exception' \\=\\> class\\-string, \\?'exportable' \\=\\> bool, \\?'list' \\=\\> bool, \\?'restricted' \\=\\> bool, \\?'required' \\=\\> bool, \\?'size' \\=\\> array\\(\\?'fixed' \\=\\> int, \\?'min' \\=\\> int, \\?'max' \\=\\> int\\), 'type' \\=\\> string, \\.\\.\\.\\)\\.$#"
-			count: 7
-			path: src/Core/AbstractObject.php
-
-		-
-			message: "#^Offset 'list' does not exist on array\\('type' \\=\\> 'DateTime', \\?'coerce' \\=\\> callable\\(\\)\\: mixed, \\?'exception' \\=\\> class\\-string, \\?'exportable' \\=\\> bool, \\?'list' \\=\\> bool, \\?'restricted' \\=\\> bool, \\?'required' \\=\\> bool, \\?'size' \\=\\> array\\(\\?'fixed' \\=\\> int, \\?'min' \\=\\> int, \\?'max' \\=\\> int\\), \\.\\.\\.\\)\\.$#"
+			message: "#^Property ild78\\\\Core\\\\AbstractObject\\:\\:\\$dataModel type has no value type specified in iterable type array\\.$#"
 			count: 1
 			path: src/Core/AbstractObject.php
 
 		-
-			message: "#^Offset 'restricted' does not exist on array\\(\\?'coerce' \\=\\> callable\\(\\)\\: mixed, \\?'exception' \\=\\> class\\-string, \\?'exportable' \\=\\> bool, \\?'list' \\=\\> bool, \\?'restricted' \\=\\> bool, \\?'required' \\=\\> bool, \\?'size' \\=\\> array\\(\\?'fixed' \\=\\> int, \\?'min' \\=\\> int, \\?'max' \\=\\> int\\), 'type' \\=\\> string, \\.\\.\\.\\)\\.$#"
-			count: 1
+			message: "#^Negated boolean expression is always false\\.$#"
+			count: 4
 			path: src/Core/AbstractObject.php
 
 		-
-			message: "#^Call to function is_callable\\(\\) with callable\\(\\)\\: mixed will always evaluate to true\\.$#"
-			count: 2
-			path: src/Core/AbstractObject.php
-
-		-
-			message: "#^Offset 'coerce' does not exist on array\\('type' \\=\\> string, \\?'coerce' \\=\\> callable\\(\\)\\: mixed, \\?'exception' \\=\\> class\\-string, \\?'exportable' \\=\\> bool, \\?'list' \\=\\> bool, \\?'required' \\=\\> bool, \\?'size' \\=\\> array\\(\\?'fixed' \\=\\> int, \\?'min' \\=\\> int, \\?'max' \\=\\> int\\), \\?'value' \\=\\> mixed, \\.\\.\\.\\)\\.$#"
-			count: 1
-			path: src/Core/AbstractObject.php
-
-		-
-			message: "#^Offset 'list' does not exist on array\\('type' \\=\\> string, 'restricted' \\=\\> false, \\?'exception' \\=\\> class\\-string, \\?'exportable' \\=\\> bool, \\?'list' \\=\\> bool, \\?'required' \\=\\> bool, \\?'size' \\=\\> array\\(\\?'fixed' \\=\\> int, \\?'min' \\=\\> int, \\?'max' \\=\\> int\\), \\?'value' \\=\\> mixed, \\.\\.\\.\\)\\.$#"
-			count: 1
-			path: src/Core/AbstractObject.php
-
-		-
-			message: "#^Method ild78\\\\Core\\\\AbstractObject\\:\\:getModel\\(\\) return type has no value type specified in iterable type array\\.$#"
-			count: 1
-			path: src/Core/AbstractObject.php
-
-		-
-			message: "#^Offset 'coerce' does not exist on array\\(\\?'coerce' \\=\\> callable\\(\\)\\: mixed, \\?'exception' \\=\\> class\\-string, \\?'exportable' \\=\\> bool, \\?'list' \\=\\> bool, \\?'restricted' \\=\\> bool, \\?'required' \\=\\> bool, \\?'size' \\=\\> array\\(\\?'fixed' \\=\\> int, \\?'min' \\=\\> int, \\?'max' \\=\\> int\\), 'type' \\=\\> string, \\.\\.\\.\\)\\.$#"
-			count: 1
-			path: src/Core/AbstractObject.php
-
-		-
-			message: "#^Offset 'list' does not exist on array\\('type' \\=\\> string, \\?'exception' \\=\\> class\\-string, \\?'exportable' \\=\\> bool, \\?'list' \\=\\> bool, \\?'restricted' \\=\\> bool, \\?'required' \\=\\> bool, \\?'size' \\=\\> array\\(\\?'fixed' \\=\\> int, \\?'min' \\=\\> int, \\?'max' \\=\\> int\\), \\?'value' \\=\\> mixed, \\.\\.\\.\\)\\.$#"
-			count: 1
-			path: src/Core/AbstractObject.php
-
-		-
-			message: "#^Offset 'value' does not exist on array\\('type' \\=\\> string, 'coerce' \\=\\> callable\\(\\)\\: mixed, \\?'exception' \\=\\> class\\-string, \\?'exportable' \\=\\> bool, \\?'restricted' \\=\\> bool, \\?'required' \\=\\> bool, \\?'size' \\=\\> array\\(\\?'fixed' \\=\\> int, \\?'min' \\=\\> int, \\?'max' \\=\\> int\\), \\?'value' \\=\\> mixed, \\.\\.\\.\\)\\.$#"
-			count: 1
-			path: src/Core/AbstractObject.php
-
-		-
-			message: "#^Offset 'restricted' does not exist on array\\('type' \\=\\> string, 'coerce' \\=\\> callable\\(\\)\\: mixed, \\?'exception' \\=\\> class\\-string, \\?'exportable' \\=\\> bool, \\?'restricted' \\=\\> bool, \\?'required' \\=\\> bool, \\?'size' \\=\\> array\\(\\?'fixed' \\=\\> int, \\?'min' \\=\\> int, \\?'max' \\=\\> int\\), \\?'value' \\=\\> mixed, \\.\\.\\.\\)\\.$#"
-			count: 1
-			path: src/Core/AbstractObject.php
-
-		-
-			message: "#^Offset 'restricted' does not exist on array\\('type' \\=\\> string, \\?'exception' \\=\\> class\\-string, \\?'exportable' \\=\\> bool, \\?'list' \\=\\> bool, \\?'restricted' \\=\\> bool, \\?'required' \\=\\> bool, \\?'size' \\=\\> array\\(\\?'fixed' \\=\\> int, \\?'min' \\=\\> int, \\?'max' \\=\\> int\\), \\?'value' \\=\\> mixed, \\.\\.\\.\\)\\.$#"
-			count: 1
-			path: src/Core/AbstractObject.php
-
-		-
-			message: "#^Offset 'exception' does not exist on array\\(\\?'coerce' \\=\\> callable\\(\\)\\: mixed, \\?'exception' \\=\\> class\\-string, \\?'exportable' \\=\\> bool, \\?'list' \\=\\> bool, \\?'restricted' \\=\\> bool, \\?'required' \\=\\> bool, \\?'size' \\=\\> array\\(\\?'fixed' \\=\\> int, \\?'min' \\=\\> int, \\?'max' \\=\\> int\\), 'type' \\=\\> string, \\.\\.\\.\\)\\.$#"
+			message: "#^Parameter \\#1 \\$text of method ild78\\\\Core\\\\AbstractObject\\:\\:camelCaseToSnakeCase\\(\\) expects string, int\\|string given\\.$#"
 			count: 1
 			path: src/Core/AbstractObject.php
 
@@ -79,3 +24,4 @@ parameters:
 			message: "#^Right side of && is always true\\.$#"
 			count: 1
 			path: src/Exceptions/HttpException.php
+

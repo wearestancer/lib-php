@@ -48,6 +48,24 @@ parameters:
       }
     '''
 
+    DataModelResolved: '''
+      array{
+        coerce: ?callable,
+        exception: ?class-string,
+        exportable: bool,
+        list: bool,
+        restricted: bool,
+        required: bool,
+        size: array{
+          fixed: ?int,
+          min: ?int,
+          max: ?int,
+        },
+        type: string,
+        value: mixed,
+      }
+    '''
+
     CreateExceptionParameters: '''
       array{
         code?: integer,
@@ -84,3 +102,10 @@ parameters:
     '''
 
   tmpDir: reports/phpstan
+
+
+services:
+  -
+    class: ild78\PHPStan\Types\AbstractObjectDynamicReturnTypeExtension
+    tags:
+      - phpstan.broker.dynamicMethodReturnTypeExtension

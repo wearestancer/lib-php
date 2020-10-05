@@ -34,7 +34,10 @@ use ild78;
  */
 class Device extends ild78\Core\AbstractObject
 {
-    /** @var array<string, DataModel> */
+    /**
+     * @var array
+     * @phpstan-var array<string, DataModel>
+     */
     protected $dataModel = [
         'city' => [
             'type' => self::STRING,

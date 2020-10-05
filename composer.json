@@ -17,6 +17,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "ild78\\PHPStan\\": "tests/stan",
             "ild78\\Stub\\": "tests/Stub",
             "ild78\\Tests\\": "tests/"
         }

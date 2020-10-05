@@ -31,7 +31,10 @@ class Dispute extends ild78\Core\AbstractObject
     /** @var string */
     protected $endpoint = 'disputes';
 
-    /** @var array<string, DataModel> */
+    /**
+     * @var array
+     * @phpstan-var array<string, DataModel>
+     */
     protected $dataModel = [
         'orderId' => [
             'restricted' => true,

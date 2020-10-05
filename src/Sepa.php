@@ -34,7 +34,10 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
     /** @var string */
     protected $endpoint = 'sepa';
 
-    /** @var array<string, DataModel> */
+    /**
+     * @var array
+     * @phpstan-var array<string, DataModel>
+     */
     protected $dataModel = [
         'bic' => [
             'required' => true,

@@ -54,7 +54,10 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
     /** @var string */
     protected $endpoint = 'cards';
 
-    /** @var array<string, DataModel> */
+    /**
+     * @var array
+     * @phpstan-var array<string, DataModel>
+     */
     protected $dataModel = [
         'brand' => [
             'restricted' => true,

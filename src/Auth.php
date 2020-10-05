@@ -19,7 +19,10 @@ use ild78;
  */
 class Auth extends ild78\Core\AbstractObject
 {
-    /** @var array<string, DataModel> */
+    /**
+     * @var array
+     * @phpstan-var array<string, DataModel>
+     */
     protected $dataModel = [
         'redirectUrl' => [
             'restricted' => true,
