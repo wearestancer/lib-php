@@ -19,13 +19,13 @@ $runner->addExtension(new mageekguy\atoum\jsonSchema\extension($script));
 
 // Reports (and bonus branch coverage)
 if (extension_loaded('xdebug') === true) {
-    $script
-        ->enableBranchAndPathCoverage()
-        ->addDefaultReport()
-    ;
+    $script->enableBranchAndPathCoverage();
 
-    // HTML report
     if (!getenv('CI')) {
+        // Show default report
+        $script->addDefaultReport();
+
+        // HTML report
         $coverage = new mageekguy\atoum\reports\coverage\html();
         $coverage
             ->addWriter(new mageekguy\atoum\writers\std\out())
