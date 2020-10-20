@@ -20,3 +20,10 @@ include:
     file: '/registry/composer.yml'
   - project: 'stancer/ci-template'
     file: '/notifications/mattermost/library.yml'
+
+
+.atoum:
+  artifacts:
+    reports:
+      cobertura: reports/*.clover.xml
+      junit: reports/*.xunit.xml

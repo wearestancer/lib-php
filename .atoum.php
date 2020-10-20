@@ -39,4 +39,9 @@ if (extension_loaded('xdebug') === true) {
     $xunit = new mageekguy\atoum\reports\asynchronous\xunit();
     $xunit->addWriter(new mageekguy\atoum\writers\file($path . 'atoum-' . $version . '.xunit.xml'));
     $runner->addReport($xunit);
+
+    // clover report
+    $clover = new mageekguy\atoum\reports\sonar\clover();
+    $clover->addWriter(new mageekguy\atoum\writers\file($path . 'atoum-' . $version . '.clover.xml'));
+    $runner->addReport($clover);
 }
