@@ -16,25 +16,24 @@ $runner
 // JSON schema
 $runner->addExtension(new mageekguy\atoum\jsonSchema\extension($script));
 
-// Reports (for HTML coverage)
+
+// Reports
 if (extension_loaded('xdebug') === true) {
     $script->addDefaultReport();
 
+    // HTML report
     $coverage = new mageekguy\atoum\reports\coverage\html();
     $coverage
         ->addWriter(new mageekguy\atoum\writers\std\out())
         ->setOutPutDirectory(__DIR__ . '/reports/coverage')
     ;
-
     $runner->addReport($coverage);
 
-    // xnit report
     $version = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;
-    $xunitPath = __DIR__ . '/reports/atoum-' . $version . '.xunit.xml';
-    $xunit = new mageekguy\atoum\reports\asynchronous\xunit();
-    $xunit
-        ->addWriter(new atoum\writers\file($xunitPath))
-    ;
+    $path = __DIR__ . '/reports/';
 
+    // xunit report
+    $xunit = new mageekguy\atoum\reports\asynchronous\xunit();
+    $xunit->addWriter(new mageekguy\atoum\writers\file($path . 'atoum-' . $version . '.xunit.xml'));
     $runner->addReport($xunit);
 }
