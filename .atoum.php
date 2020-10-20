@@ -25,15 +25,14 @@ if (extension_loaded('xdebug') === true) {
     ;
 
     // HTML report
-    $coverage = new mageekguy\atoum\reports\coverage\html();
-    $coverage
-        ->addWriter(new mageekguy\atoum\writers\std\out())
-        ->setOutPutDirectory(__DIR__ . '/reports/coverage')
-    ;
-    $runner->addReport($coverage);
-
-    $version = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;
-    $path = __DIR__ . '/reports/';
+    if (!getenv('CI')) {
+        $coverage = new mageekguy\atoum\reports\coverage\html();
+        $coverage
+            ->addWriter(new mageekguy\atoum\writers\std\out())
+            ->setOutPutDirectory(__DIR__ . '/reports/coverage')
+        ;
+        $runner->addReport($coverage);
+    }
 
     // xunit report
     $xunitFile = getenv('XUNIT_FILE');
