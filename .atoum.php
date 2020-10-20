@@ -17,9 +17,12 @@ $runner
 $runner->addExtension(new mageekguy\atoum\jsonSchema\extension($script));
 
 
-// Reports
+// Reports (and bonus branch coverage)
 if (extension_loaded('xdebug') === true) {
-    $script->addDefaultReport();
+    $script
+        ->enableBranchAndPathCoverage()
+        ->addDefaultReport()
+    ;
 
     // HTML report
     $coverage = new mageekguy\atoum\reports\coverage\html();
