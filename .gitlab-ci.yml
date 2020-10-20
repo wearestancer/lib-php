@@ -1,6 +1,8 @@
 
 variables:
   BUILD_FILENAME: "lib-php-${CI_COMMIT_TAG}.tar.gz"
+  COVERAGE_FILE: "reports/${PHP_VERSION}-coverage.xml"
+  XUNIT_FILE: "reports/${PHP_VERSION}-xunit.xml"
 
 
 notification:mattermost:
@@ -25,5 +27,5 @@ include:
 .atoum:
   artifacts:
     reports:
-      cobertura: reports/*.clover.xml
-      junit: reports/*.xunit.xml
+      cobertura: "$COVERAGE_FILE"
+      junit: "$XUNIT_FILE"

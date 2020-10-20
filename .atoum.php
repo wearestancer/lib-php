@@ -36,12 +36,20 @@ if (extension_loaded('xdebug') === true) {
     $path = __DIR__ . '/reports/';
 
     // xunit report
-    $xunit = new mageekguy\atoum\reports\asynchronous\xunit();
-    $xunit->addWriter(new mageekguy\atoum\writers\file($path . 'atoum-' . $version . '.xunit.xml'));
-    $runner->addReport($xunit);
+    $xunitFile = getenv('XUNIT_FILE');
+
+    if ($xunitFile) {
+        $xunit = new mageekguy\atoum\reports\asynchronous\xunit();
+        $xunit->addWriter(new mageekguy\atoum\writers\file(__DIR__ . '/' . $xunitFile));
+        $runner->addReport($xunit);
+    }
 
     // clover report
-    $clover = new mageekguy\atoum\reports\sonar\clover();
-    $clover->addWriter(new mageekguy\atoum\writers\file($path . 'atoum-' . $version . '.clover.xml'));
-    $runner->addReport($clover);
+    $covFile = getenv('COVERAGE_FILE');
+
+    if ($covFile) {
+        $clover = new mageekguy\atoum\reports\sonar\clover();
+        $clover->addWriter(new mageekguy\atoum\writers\file(__DIR__ . '/' . $covFile));
+        $runner->addReport($clover);
+    }
 }
