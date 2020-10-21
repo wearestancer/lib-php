@@ -25,11 +25,17 @@ if (extension_loaded('xdebug') === true) {
         // Show default report
         $script->addDefaultReport();
 
+        $path = __DIR__ . '/reports/coverage';
+
+        if (!is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
+
         // HTML report
         $coverage = new mageekguy\atoum\reports\coverage\html();
         $coverage
             ->addWriter(new mageekguy\atoum\writers\std\out())
-            ->setOutPutDirectory(__DIR__ . '/reports/coverage')
+            ->setOutPutDirectory($path)
         ;
         $runner->addReport($coverage);
     }
@@ -38,6 +44,12 @@ if (extension_loaded('xdebug') === true) {
     $xunitFile = getenv('XUNIT_FILE');
 
     if ($xunitFile) {
+        $path = pathinfo($xunitFile, PATHINFO_DIRNAME);
+
+        if (!is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
+
         $xunit = new mageekguy\atoum\reports\asynchronous\xunit();
         $xunit->addWriter(new mageekguy\atoum\writers\file(__DIR__ . '/' . $xunitFile));
         $runner->addReport($xunit);
@@ -47,6 +59,12 @@ if (extension_loaded('xdebug') === true) {
     $covFile = getenv('COVERAGE_FILE');
 
     if ($covFile) {
+        $path = pathinfo($covFile, PATHINFO_DIRNAME);
+
+        if (!is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
+
         $clover = new mageekguy\atoum\reports\sonar\clover();
         $clover->addWriter(new mageekguy\atoum\writers\file(__DIR__ . '/' . $covFile));
         $runner->addReport($clover);
