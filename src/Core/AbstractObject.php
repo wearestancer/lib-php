@@ -495,17 +495,15 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function getModel(string $property = null): ?array
     {
-        $model = $this->populate()->dataModel;
-
-        foreach ($model as $key => &$infos) {
-            $infos = array_diff_key($infos, ['value' => null]);
-        }
-
         if ($property) {
-            return $model[$property];
+            if (array_key_exists($property, $this->dataModel)) {
+                return $this->dataModel[$property];
+            }
+
+            return null;
         }
 
-        return $model;
+        return $this->dataModel;
     }
 
     /**

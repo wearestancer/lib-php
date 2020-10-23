@@ -1274,8 +1274,7 @@ class StubObject extends ild78\Tests\atoum
                                 ->isIdenticalTo($fixed)
                         ;
                     })
-                    ->notHasKey('value')
-                    ->hasKeys(['restricted', 'required'])
+                    ->hasKeys(['restricted', 'required', 'value'])
 
                 ->array($this->testedInstance->getModel())
                     ->hasKey($property)
@@ -1291,8 +1290,7 @@ class StubObject extends ild78\Tests\atoum
                                         ->isIdenticalTo($fixed)
                                 ;
                             })
-                            ->notHasKey('value')
-                            ->hasKeys(['restricted', 'required'])
+                            ->hasKeys(['restricted', 'required', 'value'])
                         ;
                     })
         ;
