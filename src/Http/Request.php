@@ -1,7 +1,8 @@
 <?php
 declare(strict_types=1);
 
-// Next line is required, we can not force type in function signature, it triggers a fatal error.
+// Next lines are required, we can not force type in function signature, it triggers a fatal error.
+// phpcs:disable Squiz.Commenting.FunctionComment.InvalidNoReturn
 // phpcs:disable Squiz.Commenting.FunctionComment.ScalarTypeHintMissing
 
 namespace ild78\Http;
@@ -169,6 +170,10 @@ class Request implements Psr\Http\Message\RequestInterface
      */
     public function withRequestTarget($requestTarget): self
     {
+        // phpcs:disable PEAR.Functions.FunctionCallSignature.SpaceAfterCloseBracket
+        // phpcs:disable Squiz.WhiteSpace.ObjectOperatorSpacing.Before
+        // phpcs:disable Squiz.WhiteSpace.SemicolonSpacing.Incorrect
+
         $parse = new Uri($requestTarget);
         $obj = clone $this;
 

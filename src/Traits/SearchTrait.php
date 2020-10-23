@@ -30,7 +30,7 @@ trait SearchTrait
      * @throws ild78\Exceptions\InvalidSearchLimitException When `limit` is invalid.
      * @throws ild78\Exceptions\InvalidSearchStartException When `start` is invalid.
      *
-     * @param array{ created?: DateTime|int, limit?: int, start?: int} $terms
+     * @phpstan-param array{ created?: DateTime|int, limit?: int, start?: int} $terms
      */
     public static function list(array $terms): Generator
     {
@@ -96,6 +96,7 @@ trait SearchTrait
         $element = new static(); // Mandatory for requests.
         $property = strtolower($element->getEntityName() . 's');
 
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
         // @var callable(): Generator<static> $gen
         $gen = function () use ($request, $element, $params, $property): Generator {
             $more = true;

@@ -1,7 +1,8 @@
 <?php
 declare(strict_types=1);
 
-// Next line is required, we can not force type in function signature, it triggers a fatal error.
+// Next lines are required, we can not force type in function signature, it triggers a fatal error.
+// phpcs:disable Squiz.Commenting.FunctionComment.InvalidNoReturn
 // phpcs:disable Squiz.Commenting.FunctionComment.ScalarTypeHintMissing
 
 namespace ild78\Http;

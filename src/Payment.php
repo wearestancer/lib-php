@@ -248,6 +248,8 @@ class Payment extends ild78\Core\AbstractObject
             $method = 'setSepa';
         }
 
+        // phpcs:disable Squiz.Commenting.BlockComment.WrongStart
+        // phpcs:disable Squiz.Commenting.InlineComment.DocBlock
         /** @var PaymentChargeOptions $data */
         if (array_key_exists('account_holder_name', $data)) {
             $data['name'] = $data['account_holder_name'];
@@ -259,6 +261,8 @@ class Payment extends ild78\Core\AbstractObject
             $class = Sepa::class;
             $method = 'setSepa';
         }
+        // phpcs:enable Squiz.Commenting.BlockComment.WrongStart
+        // phpcs:enable Squiz.Commenting.InlineComment.DocBlock
 
         $means = new $class($id);
 
