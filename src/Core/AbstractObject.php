@@ -472,11 +472,7 @@ abstract class AbstractObject implements JsonSerializable
         $parts = explode('\\', get_class($this));
         $last = end($parts);
 
-        if ($last === false) {
-            return '';
-        }
-
-        return $last;
+        return $last ?: '';
     }
 
     /**
