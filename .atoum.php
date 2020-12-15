@@ -65,7 +65,7 @@ if (extension_loaded('xdebug') === true) {
             mkdir($path, 0777, true);
         }
 
-        $clover = new mageekguy\atoum\reports\sonar\clover();
+        $clover = new mageekguy\atoum\reports\cobertura();
         $clover->addWriter(new mageekguy\atoum\writers\file(__DIR__ . '/' . $covFile));
         $runner->addReport($clover);
     }
