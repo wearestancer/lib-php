@@ -286,7 +286,7 @@ class Payment extends ild78\Tests\atoum
             ->and($config->setHttpClient($client))
 
             ->if($amount = rand(100, 999999))
-            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($currency = $this->cardCurrencyDataProvider(true))
 
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setAmount($amount))
@@ -945,7 +945,7 @@ class Payment extends ild78\Tests\atoum
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidCurrencyException::class)
 
-            ->if($this->testedInstance->setCurrency($this->currencyDataProvider(true)))
+            ->if($this->testedInstance->setCurrency($this->cardCurrencyDataProvider(true)))
             ->then
                 ->object($this->testedInstance->send())
                     ->isTestedInstance
@@ -1186,7 +1186,7 @@ class Payment extends ild78\Tests\atoum
             ->and($config->setHttpClient($client))
 
             ->if($amount = rand(10, 99999))
-            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($currency = $this->cardCurrencyDataProvider(true))
             ->and($description = uniqid())
             ->and($url = 'https://www.example.org?' . uniqid())
 
@@ -1326,7 +1326,7 @@ class Payment extends ild78\Tests\atoum
             ->and($config->setHttpClient($client))
 
             ->if($amount = rand(10, 99999))
-            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($currency = $this->cardCurrencyDataProvider(true))
             ->and($description = uniqid())
             ->and($url = 'https://www.example.org?' . uniqid())
 
@@ -1479,7 +1479,7 @@ class Payment extends ild78\Tests\atoum
             ->and($customer->setMobile(uniqid()))
 
             ->if($amount = rand(100, 999999))
-            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($currency = $this->cardCurrencyDataProvider(true))
 
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setAmount($amount))
@@ -1565,7 +1565,7 @@ class Payment extends ild78\Tests\atoum
             ->and($config->setHttpClient($client))
 
             ->if($amount = rand(100, 999999))
-            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($currency = $this->cardCurrencyDataProvider(true))
             ->and($description = uniqid())
 
             ->if($this->newTestedInstance)
@@ -1665,7 +1665,7 @@ class Payment extends ild78\Tests\atoum
             ->and($customer->setMobile(uniqid()))
 
             ->if($amount = rand(100, 999999))
-            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($currency = $this->cardCurrencyDataProvider(true))
 
             ->if($card = new ild78\Card)
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
@@ -1956,7 +1956,7 @@ class Payment extends ild78\Tests\atoum
     }
 
     /**
-     * @dataProvider currencyDataProvider
+     * @dataProvider cardCurrencyDataProvider
      */
     public function testSetCurrency($currency)
     {

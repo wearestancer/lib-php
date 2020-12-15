@@ -624,9 +624,17 @@ class Payment extends ild78\Core\AbstractObject
         $cur = strtolower($currency);
 
         $valid = [
+            'aud',
+            'cad',
+            'chf',
+            'dkk',
             'eur',
-            'usd',
             'gbp',
+            'jpy',
+            'nok',
+            'pln',
+            'sek',
+            'usd',
         ];
 
         if (!in_array($cur, $valid, true)) {

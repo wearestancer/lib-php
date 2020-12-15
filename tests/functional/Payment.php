@@ -81,7 +81,7 @@ class Payment extends TestCase
     }
 
     /**
-     * @dataProvider currencyDataProvider
+     * @dataProvider cardCurrencyDataProvider
      */
     public function testList($currency)
     {
@@ -153,7 +153,7 @@ class Payment extends TestCase
     }
 
     /**
-     * @dataProvider currencyDataProvider
+     * @dataProvider cardCurrencyDataProvider
      */
     public function testPay($currency)
     {
@@ -201,7 +201,7 @@ class Payment extends TestCase
     }
 
     /**
-     * @dataProvider currencyDataProvider
+     * @dataProvider cardCurrencyDataProvider
      */
     public function testSend($currency)
     {

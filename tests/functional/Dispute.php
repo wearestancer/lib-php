@@ -15,7 +15,7 @@ class Dispute extends TestCase
     public function testList()
     {
         $this
-            ->given($currency = $this->currencyDataProvider(true))
+            ->given($currency = $this->cardCurrencyDataProvider(true))
 
             ->if($payment = new ild78\Payment)
             ->and($payment->setAmount($amount = rand(50, 10000)))

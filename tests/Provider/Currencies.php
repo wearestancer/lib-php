@@ -4,12 +4,35 @@ namespace ild78\Tests\Provider;
 
 trait Currencies
 {
-    public function currencyDataProvider($one = false)
+    public function cardCurrencyDataProvider($one = false)
+    {
+        $data = [
+            'AUD',
+            'CAD',
+            'CHF',
+            'DKK',
+            'EUR',
+            'GBP',
+            'JPY',
+            'NOK',
+            'PLN',
+            'SEK',
+            'USD',
+        ];
+
+        shuffle($data);
+
+        if ($one) {
+            return $data[0];
+        }
+
+        return $data;
+    }
+
+    public function sepaCurrencyDataProvider($one = false)
     {
         $data = [
             'EUR',
-            'USD',
-            'GBP',
         ];
 
         shuffle($data);
