@@ -45,6 +45,19 @@ class StubObject extends ild78\Core\AbstractObject
                 'fixed' => 5,
             ],
         ],
+        'string5' => [
+            'allowedValues' => ['foo', 'bar'],
+            'type' => self::STRING,
+        ],
+        'string6' => [
+            'allowedValues' => ['foo', 'bar'],
+            'list' => true,
+            'type' => self::STRING,
+        ],
+        'string7' => [
+            'allowedValues' => ild78\Stub\FakeStatus::class,
+            'type' => self::STRING,
+        ],
         'integer1' => [
             'required' => true,
             'type' => self::INTEGER,
@@ -64,6 +77,19 @@ class StubObject extends ild78\Core\AbstractObject
             'size' => [
                 'max' => 20,
             ],
+        ],
+        'integer4' => [
+            'allowedValues' => [1, 2, 3],
+            'type' => self::INTEGER,
+        ],
+        'integer5' => [
+            'allowedValues' => [1, 2, 3],
+            'list' => true,
+            'type' => self::INTEGER,
+        ],
+        'integer6' => [
+            'allowedValues' => ild78\Stub\FakeOptions::class,
+            'type' => self::INTEGER,
         ],
         'object1' => [
             'type' => ild78\Card::class,

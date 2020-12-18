@@ -7,6 +7,7 @@ use DateTime;
 use GuzzleHttp;
 use ild78;
 use JsonSerializable;
+use ReflectionClass;
 
 /**
  * Manage common code between API object
@@ -51,6 +52,7 @@ abstract class AbstractObject implements JsonSerializable
     public function __construct($id = null)
     {
         $defaultModel = [
+            'allowedValues' => null,
             'coerce' => null,
             'exception' => null,
             'exportable' => null,
@@ -330,6 +332,8 @@ abstract class AbstractObject implements JsonSerializable
      * @throws ild78\Exceptions\InvalidArgumentException When asking an unknown property.
      * @throws ild78\Exceptions\BadMethodCallException When setting a restricted property.
      * @throws ild78\Exceptions\InvalidArgumentException When the value do not match expected pattern.
+     * @throws ild78\Exceptions\RangeException When a range of allowed values is provided and the given value
+     *    does not conform to it.
      */
     public function dataModelSetter(string $property, $value): self
     {
@@ -924,6 +928,46 @@ abstract class AbstractObject implements JsonSerializable
             $message = vsprintf('Type mismatch, given "%s" expected "%s".', $params);
 
             throw new $exceptionClass($message);
+        }
+
+        if ($model['allowedValues']) {
+            $names = null;
+
+            if (gettype($model['allowedValues']) === 'string') {
+                $class = $model['allowedValues'];
+                $ref = new ReflectionClass($class);
+
+                $model['allowedValues'] = $ref->getConstants();
+
+                $clean = function ($name) use ($class) {
+                    return $class . '::' . $name;
+                };
+
+                $names = implode(', ', array_map($clean, array_keys($model['allowedValues'])));
+            }
+
+            if (!$names) {
+                $names = implode(', ', $model['allowedValues']);
+            }
+
+            $allowValue = function ($v) use ($model, $names, $property) {
+                if (!in_array($v, $model['allowedValues'], true)) {
+                    $params = [
+                        $v,
+                        $property,
+                        $names,
+                    ];
+                    $message = vsprintf('"%s" is not a valid %s, please use one of the following : %s', $params);
+
+                    return $message;
+                }
+            };
+
+            $message = $allowValue($value);
+
+            if ($message) {
+                throw new $exceptionClass($message);
+            }
         }
 
         if ($type === 'string') {

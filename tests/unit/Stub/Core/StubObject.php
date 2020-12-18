@@ -371,6 +371,189 @@ class StubObject extends ild78\Tests\atoum
         ;
     }
 
+    public function testAllowedValues()
+    {
+        $this
+            ->assert('Test with strings')
+                ->given($this->newTestedInstance)
+                ->if($value = 'foo')
+                ->then
+                    ->object($this->testedInstance->setString5($value))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getString5())
+                        ->isIdenticalTo($value)
+
+                ->if($value = 'bar')
+                ->then
+                    ->object($this->testedInstance->setString5($value))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getString5())
+                        ->isIdenticalTo($value)
+
+                ->if($value = uniqid())
+                ->then
+                    ->exception(function () use ($value) {
+                        $this->testedInstance->setString5($value);
+                    })
+                        ->isInstanceOf(Ild78\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo(vsprintf('"%s" is not a valid %s, please use one of the following : %s', [
+                                $value,
+                                'string5',
+                                'foo, bar',
+                            ]))
+
+            ->assert('Test with strings and lists')
+                ->given($this->newTestedInstance)
+                ->if($value = 'foo')
+                ->then
+                    ->object($this->testedInstance->setString6([$value]))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->getString6())
+                        ->hasSize(1)
+                        ->string[0]
+                            ->isIdenticalTo($value)
+
+                ->if($value = 'bar')
+                ->then
+                    ->object($this->testedInstance->setString6([$value]))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->getString6())
+                        ->hasSize(1)
+                        ->string[0]
+                            ->isIdenticalTo($value)
+
+                ->if($value = uniqid())
+                ->then
+                    ->exception(function () use ($value) {
+                        $this->testedInstance->setString6([$value]);
+                    })
+                        ->isInstanceOf(Ild78\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo(vsprintf('"%s" is not a valid %s, please use one of the following : %s', [
+                                $value,
+                                'string6',
+                                'foo, bar',
+                            ]))
+
+            ->assert('Test with objects\' constants (as string)')
+                ->given($this->newTestedInstance)
+                ->if($value = ild78\Stub\FakeStatus::DONE)
+                ->then
+                    ->object($this->testedInstance->setString7($value))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getString7())
+                        ->isIdenticalTo($value)
+
+                ->if($value = uniqid())
+                ->then
+                    ->exception(function () use ($value) {
+                        $this->testedInstance->setString7($value);
+                    })
+                        ->isInstanceOf(Ild78\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo(vsprintf('"%s" is not a valid %s, please use one of the following : %s', [
+                                $value,
+                                'string7',
+                                'ild78\Stub\FakeStatus::ACTIVE, ild78\Stub\FakeStatus::DONE, ild78\Stub\FakeStatus::PENDING',
+                            ]))
+
+            ->assert('Test with integers')
+                ->given($this->newTestedInstance)
+                ->if($value = 1)
+                ->then
+                    ->object($this->testedInstance->setInteger4($value))
+                        ->isTestedInstance
+
+                    ->integer($this->testedInstance->getInteger4())
+                        ->isIdenticalTo($value)
+
+                ->if($value = 2)
+                ->then
+                    ->object($this->testedInstance->setInteger4($value))
+                        ->isTestedInstance
+
+                    ->integer($this->testedInstance->getInteger4())
+                        ->isIdenticalTo($value)
+
+                ->if($value = rand(4, PHP_INT_MAX))
+                ->then
+                    ->exception(function () use ($value) {
+                        $this->testedInstance->setInteger4($value);
+                    })
+                        ->isInstanceOf(Ild78\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo(vsprintf('"%s" is not a valid %s, please use one of the following : %s', [
+                                $value,
+                                'integer4',
+                                '1, 2, 3',
+                            ]))
+
+            ->assert('Test with strings and lists')
+                ->given($this->newTestedInstance)
+                ->if($value = 1)
+                ->then
+                    ->object($this->testedInstance->setInteger5([$value]))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->getInteger5())
+                        ->hasSize(1)
+                        ->integer[0]
+                            ->isIdenticalTo($value)
+
+                ->if($value = 2)
+                ->then
+                    ->object($this->testedInstance->setInteger5([$value]))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->getInteger5())
+                        ->hasSize(1)
+                        ->integer[0]
+                            ->isIdenticalTo($value)
+
+                ->if($value = rand(10, PHP_INT_MAX))
+                ->then
+                    ->exception(function () use ($value) {
+                        $this->testedInstance->setInteger5([$value]);
+                    })
+                        ->isInstanceOf(Ild78\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo(vsprintf('"%s" is not a valid %s, please use one of the following : %s', [
+                                $value,
+                                'integer5',
+                                '1, 2, 3',
+                            ]))
+
+            ->assert('Test with objects\' constants (as integer)')
+                ->given($this->newTestedInstance)
+                ->if($value = ild78\Stub\FakeOptions::READ)
+                ->then
+                    ->object($this->testedInstance->setInteger6($value))
+                        ->isTestedInstance
+
+                    ->integer($this->testedInstance->getInteger6())
+                        ->isIdenticalTo($value)
+
+                ->if($value = rand(10, PHP_INT_MAX))
+                ->then
+                    ->exception(function () use ($value) {
+                        $this->testedInstance->setInteger6($value);
+                    })
+                        ->isInstanceOf(Ild78\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo(vsprintf('"%s" is not a valid %s, please use one of the following : %s', [
+                                $value,
+                                'integer6',
+                                'ild78\Stub\FakeOptions::READ, ild78\Stub\FakeOptions::WRITE',
+                            ]))
+        ;
+    }
+
     /**
      * @dataProvider validDataProvider
      */
