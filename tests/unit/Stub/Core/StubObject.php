@@ -374,23 +374,6 @@ class StubObject extends ild78\Tests\atoum
     /**
      * @dataProvider validDataProvider
      */
-    public function testDataModelAdderThrowsNotAList($property, $value)
-    {
-        $this
-            ->given($this->newTestedInstance)
-            ->then
-                ->exception(function () use ($property, $value) {
-                    $this->testedInstance->dataModelAdder($property, $value);
-                })
-                    ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
-                    ->message
-                        ->isIdenticalTo('"' . $property . '" is not a list, you can not add elements in it.')
-        ;
-    }
-
-    /**
-     * @dataProvider validDataProvider
-     */
     public function testCreate($property, $value)
     {
         $this
@@ -405,6 +388,23 @@ class StubObject extends ild78\Tests\atoum
 
                 ->array($this->testedInstance->testOnlyGetModified())
                     ->contains($property)
+        ;
+    }
+
+    /**
+     * @dataProvider validDataProvider
+     */
+    public function testDataModelAdderThrowsNotAList($property, $value)
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->exception(function () use ($property, $value) {
+                    $this->testedInstance->dataModelAdder($property, $value);
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('"' . $property . '" is not a list, you can not add elements in it.')
         ;
     }
 
