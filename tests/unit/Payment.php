@@ -2008,7 +2008,7 @@ class Payment extends ild78\Tests\atoum
                         ->message
                             ->contains('"' . $fakeCurrency . '" is not a valid currency')
                             ->contains('please use one of the following :')
-                            ->contains($upper)
+                            ->contains($lower)
 
                     ->boolean($this->testedInstance->isModified())
                         ->isFalse

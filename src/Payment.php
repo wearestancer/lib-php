@@ -91,6 +91,20 @@ class Payment extends ild78\Core\AbstractObject
             'type' => self::STRING,
         ],
         'currency' => [
+            'allowedValues' => [
+                'aud',
+                'cad',
+                'chf',
+                'dkk',
+                'eur',
+                'gbp',
+                'jpy',
+                'nok',
+                'pln',
+                'sek',
+                'usd',
+            ],
+            'coerce' => 'strtolower',
             'required' => true,
             'type' => self::STRING,
         ],
@@ -608,47 +622,6 @@ class Payment extends ild78\Core\AbstractObject
     {
         parent::setCard($card);
         $this->dataModel['method']['value'] = 'card';
-
-        return $this;
-    }
-
-    /**
-     * Set the currency.
-     *
-     * @param string $currency The currency, must one in the following : EUR, USD, GBP.
-     * @return self
-     * @throws ild78\Exceptions\InvalidCurrencyException When currency is not EUR, USD or GBP.
-     */
-    public function setCurrency(string $currency): self
-    {
-        $cur = strtolower($currency);
-
-        $valid = [
-            'aud',
-            'cad',
-            'chf',
-            'dkk',
-            'eur',
-            'gbp',
-            'jpy',
-            'nok',
-            'pln',
-            'sek',
-            'usd',
-        ];
-
-        if (!in_array($cur, $valid, true)) {
-            $params = [
-                $currency,
-                strtoupper(implode(', ', $valid)),
-            ];
-            $message = vsprintf('"%s" is not a valid currency, please use one of the following : %s', $params);
-
-            throw new ild78\Exceptions\InvalidCurrencyException($message);
-        }
-
-        $this->dataModel['currency']['value'] = $cur;
-        $this->modified[] = 'currency';
 
         return $this;
     }

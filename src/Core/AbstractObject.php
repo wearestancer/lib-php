@@ -84,6 +84,12 @@ abstract class AbstractObject implements JsonSerializable
                 $data['exportable'] = !$data['restricted'];
             }
 
+            if ($data['coerce'] === 'strtolower') {
+                $data['coerce'] = function ($value) {
+                    return strtolower($value);
+                };
+            }
+
             if ($data['type'] === DateTime::class) {
                 $data['coerce'] = function ($value) {
                     if ($value instanceof DateTime) {
