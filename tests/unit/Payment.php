@@ -720,6 +720,54 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
+    public function testMethodsAllowed()
+    {
+        $this
+            ->given($methods = ['card', 'sepa'])
+
+            ->assert('Should return an empty array as default')
+                ->given($this->newTestedInstance)
+                ->then
+                    ->array($this->testedInstance->getMethodsAllowed())
+                        ->isEmpty
+
+            ->assert('Should allow array of strings')
+                ->given($this->newTestedInstance)
+                ->then
+                    ->object($this->testedInstance->setMethodsAllowed($methods))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->getMethodsAllowed())
+                        ->hasSize(2)
+                        ->string[0]
+                            ->isIdenticalTo('card')
+                        ->string[1]
+                            ->isIdenticalTo('sepa')
+
+            ->assert('Should only allow known methods')
+                ->given($this->newTestedInstance)
+                ->and($value = uniqid())
+                ->then
+                    ->exception(function () use ($value) {
+                        $this->testedInstance->setMethodsAllowed([$value]);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->contains($value)
+
+            ->assert('Should allow to add methods')
+                ->given($this->newTestedInstance)
+                ->then
+                    ->object($this->testedInstance->addMethodsAllowed($methods[0]))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->getMethodsAllowed())
+                        ->hasSize(1)
+                        ->string[0]
+                            ->isIdenticalTo($methods[0])
+        ;
+    }
+
     public function testPay()
     {
         $this

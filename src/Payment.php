@@ -129,6 +129,14 @@ class Payment extends ild78\Core\AbstractObject
             'restricted' => true,
             'type' => self::STRING,
         ],
+        'methodsAllowed' => [
+            'allowedValues' => [
+                'card',
+                'sepa',
+            ],
+            'list' => true,
+            'type' => self::STRING,
+        ],
         'orderId' => [
             'size' => [
                 'min' => 1,
