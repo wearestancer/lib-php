@@ -1,13 +1,4 @@
 
-stages:
-  - lint
-  - test
-  - coverage
-  - build
-  - publish
-  - notification
-
-
 variables:
   BUILD_FILENAME: "lib-php-${CI_COMMIT_TAG}.tar.gz"
 
