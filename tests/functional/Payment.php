@@ -206,111 +206,6 @@ class Payment extends TestCase
     public function testSend($currency)
     {
         $this
-            ->assert('With a card')
-                ->given($amount = rand(50, 99999))
-                ->and($description = vsprintf('Automatic test, with card, %.02f %s', [
-                    $amount / 100,
-                    $currency,
-                ]))
-
-                ->if($card = new ild78\Card)
-                ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth(rand(1, 12)))
-                ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
-                ->and($card->setCvc((string) rand(100, 999)))
-
-                ->if($customer = new ild78\Customer)
-                ->and($customer->setName('John Doe'))
-                ->and($customer->setEmail('john.doe@example.com'))
-
-                ->if($this->newTestedInstance)
-                ->and($this->testedInstance->setAmount($amount))
-                ->and($this->testedInstance->setCurrency($currency))
-                ->and($this->testedInstance->setCard($card))
-                ->and($this->testedInstance->setCustomer($customer))
-                ->and($this->testedInstance->setDescription($description))
-
-                ->then
-                    ->object($this->testedInstance->send())
-                        ->isTestedInstance
-
-                    ->string($this->testedInstance->getId())
-                        ->startWith('paym_')
-                        ->hasLength(29)
-
-                    ->dateTime($this->testedInstance->getCreationDate())
-                        ->hasDay(date('d'))
-
-                    ->string($this->testedInstance->getMethod())
-                        ->isIdenticalTo('card')
-
-                    ->string($card->getId())
-                        ->startWith('card_')
-                        ->hasLength(29)
-
-                    ->dateTime($card->getCreationDate())
-                        ->hasDay(date('d'))
-
-                    ->string($customer->getId())
-                        ->startWith('cust_')
-                        ->hasLength(29)
-
-                    ->dateTime($customer->getCreationDate())
-                        ->hasDay(date('d'))
-
-            ->assert('With a sepa account')
-                ->given($amount = rand(50, 99999))
-                ->and($description = vsprintf('Automatic test, with SEPA, %.02f %s', [
-                    $amount / 100,
-                    $currency,
-                ]))
-
-                ->if($sepa = new ild78\Sepa)
-                ->and($sepa->setIban($this->getValidIban()))
-                ->and($sepa->setName($this->fake()->name))
-
-                ->if($customer = new ild78\Customer)
-                ->and($customer->setName('John Doe'))
-                ->and($customer->setEmail('john.doe@example.com'))
-
-                ->if($this->newTestedInstance)
-                ->and($this->testedInstance->setAmount($amount))
-                ->and($this->testedInstance->setCurrency($currency))
-                ->and($this->testedInstance->setCustomer($customer))
-                ->and($this->testedInstance->setDescription($description))
-                ->and($this->testedInstance->setSepa($sepa))
-
-                ->then
-                    ->object($this->testedInstance->send())
-                        ->isTestedInstance
-
-                    ->string($this->testedInstance->getId())
-                        ->startWith('paym_')
-                        ->hasLength(29)
-
-                    ->dateTime($this->testedInstance->getCreationDate())
-                        ->hasDay(date('d'))
-
-                    ->string($this->testedInstance->getMethod())
-                        ->isIdenticalTo('sepa')
-
-                    ->string($sepa->getId())
-                        ->startWith('sepa_')
-                        ->hasLength(29)
-
-                    ->dateTime($sepa->getCreationDate())
-                        ->hasDay(date('d'))
-
-                    ->string($sepa->getBic())
-                        ->startWith('TEST')
-
-                    ->string($customer->getId())
-                        ->startWith('cust_')
-                        ->hasLength(29)
-
-                    ->dateTime($customer->getCreationDate())
-                        ->hasDay(date('d'))
-
             ->assert('With authentication')
                 ->given($amount = rand(50, 99999))
                 ->and($description = vsprintf('Automatic auth test, %.02f %s', [
@@ -670,6 +565,126 @@ class Payment extends TestCase
                         ->startWith('cust_')
                         ->hasLength(29)
                         ->isIdenticalTo($customerID) // From previous test
+        ;
+    }
+
+    /**
+     * @dataProvider cardCurrencyDataProvider
+     */
+    public function testSend_withCard($currency)
+    {
+        $this
+            ->given($amount = rand(50, 99999))
+            ->and($description = vsprintf('Automatic test, with card, %.02f %s', [
+                $amount / 100,
+                $currency,
+            ]))
+
+            ->if($card = new ild78\Card)
+            ->and($card->setNumber($this->getValidCardNumber()))
+            ->and($card->setExpirationMonth(rand(1, 12)))
+            ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
+            ->and($card->setCvc((string) rand(100, 999)))
+
+            ->if($customer = new ild78\Customer)
+            ->and($customer->setName('John Doe'))
+            ->and($customer->setEmail('john.doe@example.com'))
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount($amount))
+            ->and($this->testedInstance->setCurrency($currency))
+            ->and($this->testedInstance->setCard($card))
+            ->and($this->testedInstance->setCustomer($customer))
+            ->and($this->testedInstance->setDescription($description))
+
+            ->then
+                ->object($this->testedInstance->send())
+                    ->isTestedInstance
+
+                ->string($this->testedInstance->getId())
+                    ->startWith('paym_')
+                    ->hasLength(29)
+
+                ->dateTime($this->testedInstance->getCreationDate())
+                    ->hasDay(date('d'))
+
+                ->string($this->testedInstance->getMethod())
+                    ->isIdenticalTo('card')
+
+                ->string($card->getId())
+                    ->startWith('card_')
+                    ->hasLength(29)
+
+                ->dateTime($card->getCreationDate())
+                    ->hasDay(date('d'))
+
+                ->string($customer->getId())
+                    ->startWith('cust_')
+                    ->hasLength(29)
+
+                ->dateTime($customer->getCreationDate())
+                    ->hasDay(date('d'))
+        ;
+    }
+
+    /**
+     * @dataProvider sepaCurrencyDataProvider
+     */
+    public function testSend_withSepa($currency)
+    {
+        $this
+            ->assert('With a sepa account')
+                ->given($amount = rand(50, 99999))
+                ->and($description = vsprintf('Automatic test, with SEPA, %.02f %s', [
+                    $amount / 100,
+                    $currency,
+                ]))
+
+                ->if($sepa = new ild78\Sepa)
+                ->and($sepa->setIban($this->getValidIban()))
+                ->and($sepa->setName($this->fake()->name))
+
+                ->if($customer = new ild78\Customer)
+                ->and($customer->setName('John Doe'))
+                ->and($customer->setEmail('john.doe@example.com'))
+
+                ->if($this->newTestedInstance)
+                ->and($this->testedInstance->setAmount($amount))
+                ->and($this->testedInstance->setCurrency($currency))
+                ->and($this->testedInstance->setCustomer($customer))
+                ->and($this->testedInstance->setDescription($description))
+                ->and($this->testedInstance->setSepa($sepa))
+
+                ->then
+                    ->object($this->testedInstance->send())
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getId())
+                        ->startWith('paym_')
+                        ->hasLength(29)
+
+                    ->dateTime($this->testedInstance->getCreationDate())
+                        ->hasDay(date('d'))
+
+                    ->string($this->testedInstance->getMethod())
+                        ->isIdenticalTo('sepa')
+
+                    ->string($sepa->getId())
+                        ->startWith('sepa_')
+                        ->hasLength(29)
+
+                    ->dateTime($sepa->getCreationDate())
+                        ->hasDay(date('d'))
+
+                    ->string($sepa->getBic())
+                        ->startWith('TEST')
+
+                    ->string($customer->getId())
+                        ->startWith('cust_')
+                        ->hasLength(29)
+
+                    ->dateTime($customer->getCreationDate())
+                        ->hasDay(date('d'))
         ;
     }
 }
