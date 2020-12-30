@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
+- `ild78\Payment::$methodsAllowed`
+- New supported currencies
+- `ild78\Payment::$currency` and `ild78\Payment::$methodsAllowed` can throw exception when used with incompatible values
 - Coverage report
 
 ### Fixed
