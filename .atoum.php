@@ -16,25 +16,57 @@ $runner
 // JSON schema
 $runner->addExtension(new mageekguy\atoum\jsonSchema\extension($script));
 
-// Reports (for HTML coverage)
+
+// Reports (and bonus branch coverage)
 if (extension_loaded('xdebug') === true) {
-    $script->addDefaultReport();
+    $script->enableBranchAndPathCoverage();
 
-    $coverage = new mageekguy\atoum\reports\coverage\html();
-    $coverage
-        ->addWriter(new mageekguy\atoum\writers\std\out())
-        ->setOutPutDirectory(__DIR__ . '/reports/coverage')
-    ;
+    if (!getenv('CI')) {
+        // Show default report
+        $script->addDefaultReport();
 
-    $runner->addReport($coverage);
+        $path = __DIR__ . '/reports/coverage';
 
-    // xnit report
-    $version = PHP_MAJOR_VERSION . '.' . PHP_MINOR_VERSION;
-    $xunitPath = __DIR__ . '/reports/atoum-' . $version . '.xunit.xml';
-    $xunit = new mageekguy\atoum\reports\asynchronous\xunit();
-    $xunit
-        ->addWriter(new atoum\writers\file($xunitPath))
-    ;
+        if (!is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
 
-    $runner->addReport($xunit);
+        // HTML report
+        $coverage = new mageekguy\atoum\reports\coverage\html();
+        $coverage
+            ->addWriter(new mageekguy\atoum\writers\std\out())
+            ->setOutPutDirectory($path)
+        ;
+        $runner->addReport($coverage);
+    }
+
+    // xunit report
+    $xunitFile = getenv('ATOUM_XUNIT_FILENAME');
+
+    if ($xunitFile) {
+        $path = pathinfo($xunitFile, PATHINFO_DIRNAME);
+
+        if (!is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
+
+        $xunit = new mageekguy\atoum\reports\asynchronous\xunit();
+        $xunit->addWriter(new mageekguy\atoum\writers\file(__DIR__ . '/' . $xunitFile));
+        $runner->addReport($xunit);
+    }
+
+    // clover report
+    $covFile = getenv('ATOUM_COVERAGE_FILENAME');
+
+    if ($covFile) {
+        $path = pathinfo($covFile, PATHINFO_DIRNAME);
+
+        if (!is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
+
+        $clover = new mageekguy\atoum\reports\cobertura();
+        $clover->addWriter(new mageekguy\atoum\writers\file(__DIR__ . '/' . $covFile));
+        $runner->addReport($clover);
+    }
 }
