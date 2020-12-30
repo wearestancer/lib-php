@@ -41,7 +41,7 @@ if (extension_loaded('xdebug') === true) {
     }
 
     // xunit report
-    $xunitFile = getenv('XUNIT_FILE');
+    $xunitFile = getenv('ATOUM_XUNIT_FILENAME');
 
     if ($xunitFile) {
         $path = pathinfo($xunitFile, PATHINFO_DIRNAME);
@@ -56,7 +56,7 @@ if (extension_loaded('xdebug') === true) {
     }
 
     // clover report
-    $covFile = getenv('COVERAGE_FILE');
+    $covFile = getenv('ATOUM_COVERAGE_FILENAME');
 
     if ($covFile) {
         $path = pathinfo($covFile, PATHINFO_DIRNAME);

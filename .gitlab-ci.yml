@@ -1,8 +1,8 @@
 
 variables:
+  ATOUM_COVERAGE_FILENAME: "reports/${PHP_VERSION}-coverage.xml"
+  ATOUM_XUNIT_FILENAME: "reports/${PHP_VERSION}-xunit.xml"
   BUILD_FILENAME: "lib-php-${CI_COMMIT_TAG}.tar.gz"
-  COVERAGE_FILE: "reports/${PHP_VERSION}-coverage.xml"
-  XUNIT_FILE: "reports/${PHP_VERSION}-xunit.xml"
 
 
 notification:mattermost:
@@ -22,10 +22,3 @@ include:
     file: '/registry/composer.yml'
   - project: 'stancer/ci-template'
     file: '/notifications/mattermost/library.yml'
-
-
-.atoum:
-  artifacts:
-    reports:
-      cobertura: "$COVERAGE_FILE"
-      junit: "$XUNIT_FILE"
