@@ -720,7 +720,10 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
-    public function testMethodsAllowed()
+    /**
+     * @dataProvider cardCurrencyDataProvider
+     */
+    public function testMethodsAllowed($currency)
     {
         $this
             ->given($methods = ['card', 'sepa'])
@@ -766,6 +769,33 @@ class Payment extends ild78\Tests\atoum
                         ->string[0]
                             ->isIdenticalTo($methods[0])
         ;
+
+        $lower = strtolower($currency);
+
+        if ($lower !== 'eur') {
+            $this
+                ->assert('Currency can be refused when using SEPA')
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->setCurrency($currency))
+                    ->then
+                        ->exception(function () {
+                            $this->testedinstance->addMethodsAllowed('sepa');
+                        })
+                            ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                            ->message
+                                ->isIdenticalTo(sprintf('You can not use "%s" method with "%s" currency.', 'sepa', $lower))
+
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->setCurrency($currency))
+                    ->then
+                        ->exception(function () use ($methods) {
+                            $this->testedinstance->setMethodsAllowed($methods);
+                        })
+                            ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                            ->message
+                                ->isIdenticalTo(sprintf('You can not use "%s" method with "%s" currency.', 'sepa', $lower))
+            ;
+        }
     }
 
     public function testPay()
@@ -2061,6 +2091,21 @@ class Payment extends ild78\Tests\atoum
                     ->boolean($this->testedInstance->isModified())
                         ->isFalse
         ;
+
+        if ($lower !== 'eur') {
+            $this
+                ->assert('Currency can be refused when using SEPA')
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->addMethodsAllowed('sepa'))
+                    ->then
+                        ->exception(function () use ($currency) {
+                            $this->testedInstance->setCurrency($currency);
+                        })
+                            ->isInstanceOf(ild78\Exceptions\InvalidCurrencyException::class)
+                            ->message
+                                ->isIdenticalTo(sprintf('You can not use "%s" currency with "%s" method.', $lower, 'sepa'))
+            ;
+        }
     }
 
     public function testSetDescription()

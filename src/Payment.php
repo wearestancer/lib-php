@@ -179,6 +179,26 @@ class Payment extends ild78\Core\AbstractObject
     ];
 
     /**
+     * Add an allowed method.
+     *
+     * @param string $method New method.
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When currency is EUR and trying to set "sepa" method.
+     */
+    public function addMethodsAllowed(string $method): self
+    {
+        $currency = $this->getCurrency();
+
+        if ($currency && $method && $method === 'sepa' && $currency !== 'eur') {
+            $message = sprintf('You can not use "%s" method with "%s" currency.', $method, $currency);
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
+        return parent::addMethodsAllowed($method);
+    }
+
+    /**
      * Charge a card or a bank account.
      *
      * This method is Stripe compatible.
@@ -632,6 +652,46 @@ class Payment extends ild78\Core\AbstractObject
         $this->dataModel['method']['value'] = 'card';
 
         return $this;
+    }
+
+    /**
+     * Set allowed methods.
+     *
+     * @param string[] $methods New methods.
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When currency is EUR and trying to set "sepa" method.
+     */
+    public function setMethodsAllowed(array $methods): self
+    {
+        $currency = $this->getCurrency();
+
+        if ($currency && $methods && in_array('sepa', $methods) && $currency !== 'eur') {
+            $message = sprintf('You can not use "%s" method with "%s" currency.', 'sepa', $currency);
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
+        return parent::setMethodsAllowed($methods);
+    }
+
+    /**
+     * Set the currency.
+     *
+     * @param string $currency The currency.
+     * @return self
+     * @throws ild78\Exceptions\InvalidCurrencyException When currency is EUR and "sepa" is already allowed.
+     */
+    public function setCurrency(string $currency): self
+    {
+        $methods = $this->getMethodsAllowed();
+
+        if ($currency && $methods && in_array('sepa', $methods) && strtolower($currency) !== 'eur') {
+            $message = sprintf('You can not use "%s" currency with "%s" method.', strtolower($currency), 'sepa');
+
+            throw new ild78\Exceptions\InvalidCurrencyException($message);
+        }
+
+        return parent::setCurrency($currency);
     }
 
     /**
