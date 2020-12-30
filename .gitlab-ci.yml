@@ -5,6 +5,7 @@ stages:
   - coverage
   - build
   - publish
+  - notification
 
 
 variables:
