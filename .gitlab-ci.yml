@@ -1,17 +1,9 @@
 
-stages:
-  - lint
-  - test
-  - coverage
-  - build
-  - publish
-
-
 variables:
   BUILD_FILENAME: "lib-php-${CI_COMMIT_TAG}.tar.gz"
 
 
-notifications:mattermost:
+notification:mattermost:
   variables:
     MATTERMOST_FILE: "${CI_PROJECT_DIR}/lib-php-${CI_COMMIT_TAG}.tar.gz"
     POST_ICON: https://www.php.net/images/logos/new-php-logo.png
