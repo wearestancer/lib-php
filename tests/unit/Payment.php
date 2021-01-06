@@ -1260,7 +1260,7 @@ class Payment extends ild78\Tests\atoum
 
     public function testSend_authenticatedPayment()
     {
-        $_SERVER['SERVER_ADDR'] = $ip = $this->ipDataProvider()[0];
+        $_SERVER['SERVER_ADDR'] = $ip = $this->ipDataProvider(true);
         $_SERVER['SERVER_PORT'] = $port = rand(1, 65535);
 
         $this
@@ -1423,7 +1423,7 @@ class Payment extends ild78\Tests\atoum
             ->if($auth = new ild78\Auth)
             ->and($auth->setReturnUrl($url))
 
-            ->if($ip = $this->ipDataProvider()[0])
+            ->if($ip = $this->ipDataProvider(true))
             ->and($port = rand(1, 65535))
             ->and($device = new ild78\Device(['ip' => $ip, 'port' => $port]))
 
@@ -1800,7 +1800,7 @@ class Payment extends ild78\Tests\atoum
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setDebug(false))
             ->and($port = rand(1, 65535))
-            ->and($addr = $this->ipDataProvider()[0])
+            ->and($addr = $this->ipDataProvider(true))
             ->and($url = 'https://www.example.org?' . uniqid())
 
             ->if($client = new mock\ild78\Http\Client)

@@ -4,7 +4,7 @@ namespace ild78\Tests\Provider;
 
 trait Network
 {
-    public function ipDataProvider()
+    public function ipDataProvider($one = false)
     {
         $v4 = $this->ipv4DataProvider();
         $v6 = $this->ipv6DataProvider();
@@ -13,10 +13,14 @@ trait Network
 
         shuffle($data);
 
+        if ($one) {
+            return $data[0];
+        }
+
         return $data;
     }
 
-    public function ipv4DataProvider()
+    public function ipv4DataProvider($one = false)
     {
         $data = [];
 
@@ -34,10 +38,14 @@ trait Network
 
         shuffle($data);
 
+        if ($one) {
+            return $data[0];
+        }
+
         return $data;
     }
 
-    public function ipv6DataProvider()
+    public function ipv6DataProvider($one = false)
     {
         $data = [];
 
@@ -55,6 +63,10 @@ trait Network
         $data[] = '2001:503:ba3e::2:30'; // a.root-servers.org
 
         shuffle($data);
+
+        if ($one) {
+            return $data[0];
+        }
 
         return $data;
     }

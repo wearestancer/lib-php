@@ -235,7 +235,7 @@ class Payment extends TestCase
 
                 // You may not need to do that, we will use SERVER_ADDR and SERVER_PORT environment variable
                 //  as IP and port (they are populated by Apache or nginx)
-                ->if($ip = $this->ipDataProvider()[0])
+                ->if($ip = $this->ipDataProvider(true))
                 ->and($port = rand(1, 65535))
                 ->and($this->testedInstance->setDevice(new ild78\Device(['ip' => $ip, 'port' => $port])))
 
