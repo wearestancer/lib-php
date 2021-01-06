@@ -664,8 +664,9 @@ class Payment extends ild78\Core\AbstractObject
     public function setMethodsAllowed(array $methods): self
     {
         $currency = $this->getCurrency();
+        $method = $this->getMethod();
 
-        if ($currency && $methods && in_array('sepa', $methods) && $currency !== 'eur') {
+        if (!$method && $currency && $methods && in_array('sepa', $methods) && $currency !== 'eur') {
             $message = sprintf('You can not use "%s" method with "%s" currency.', 'sepa', $currency);
 
             throw new ild78\Exceptions\InvalidArgumentException($message);
@@ -683,9 +684,10 @@ class Payment extends ild78\Core\AbstractObject
      */
     public function setCurrency(string $currency): self
     {
+        $method = $this->getMethod();
         $methods = $this->getMethodsAllowed();
 
-        if ($currency && $methods && in_array('sepa', $methods) && strtolower($currency) !== 'eur') {
+        if (!$method && $currency && $methods && in_array('sepa', $methods) && strtolower($currency) !== 'eur') {
             $message = sprintf('You can not use "%s" currency with "%s" method.', strtolower($currency), 'sepa');
 
             throw new ild78\Exceptions\InvalidCurrencyException($message);

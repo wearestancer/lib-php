@@ -1,0 +1,47 @@
+{
+  "amount": 6456,
+  "auth": null,
+  "capture": true,
+  "card": {
+    "brand": "visa",
+    "country": "SG",
+    "created": 1609949901,
+    "exp_month": 10,
+    "exp_year": 2026,
+    "external_id": null,
+    "funding": "credit",
+    "id": "card_8DWb0cjJQ5fre4YKol2OmGIi",
+    "last4": "0003",
+    "live_mode": false,
+    "name": null,
+    "nature": "personnal",
+    "network": "visa",
+    "zip_code": null
+  },
+  "created": 1609949901,
+  "currency": "jpy",
+  "customer": {
+    "country": null,
+    "created": 1609949901,
+    "email": "john.doe@example.com",
+    "external_id": null,
+    "id": "cust_jbpykKZSgAINmFDsYfplRSIu",
+    "live_mode": false,
+    "mobile": null,
+    "name": "John Doe"
+  },
+  "fee": 57,
+  "id": "paym_QAM6fOpJnH5DvkYr3ezAVPpa",
+  "live_mode": false,
+  "method": "card",
+  "methods_allowed": [
+    "card",
+    "sepa"
+  ],
+  "order_id": null,
+  "response": "00",
+  "response_author": null,
+  "return_url": null,
+  "status": "to_capture",
+  "unique_id": null
+}

@@ -995,6 +995,18 @@ class Payment extends ild78\Tests\atoum
                         ->isInstanceOf(ild78\Exceptions\MissingPaymentIdException::class)
                         ->message
                             ->isIdenticalTo('A payment ID is mandatory. Maybe you forgot to send the payment.')
+
+                ->assert('Should work with methods allowed (internal bug)')
+                    ->if($this->calling($response)->getBody = file_get_contents(__DIR__ . '/fixtures/payment/read-methods-allowed.json'))
+
+                    ->if($this->newTestedInstance('paym_QAM6fOpJnH5DvkYr3ezAVPpa'))
+                    ->then
+                        ->array($this->testedInstance->getMethodsAllowed())
+                            ->hasSize(2)
+                            ->containsValues(['card', 'sepa'])
+
+                        ->object($this->testedInstance->refund())
+                            ->isTestedInstance
         ;
     }
 
