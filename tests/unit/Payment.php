@@ -389,6 +389,30 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
+    public function testGetResponseAuthor()
+    {
+        $this
+            ->given($author = $this->getRandomString(6))
+            ->if($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getResponseAuthor())
+                    ->isNull
+
+                ->exception(function () use ($author) {
+                    $this->testedInstance->setResponseAuthor($author);
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify "responseAuthor".')
+
+
+            ->if($this->testedInstance->hydrate(['response_author' => $author]))
+            ->then
+                ->string($this->testedInstance->getResponseAuthor())
+                    ->isIdenticalTo($author)
+        ;
+    }
+
     public function testGetReturnUrl_SetReturnUrl()
     {
         $this

@@ -156,6 +156,13 @@ class Payment extends ild78\Core\AbstractObject
             ],
             'type' => self::STRING,
         ],
+        'responseAuthor' => [
+            'restricted' => true,
+            'size' => [
+                'fixed' => 6,
+            ],
+            'type' => self::STRING,
+        ],
         'returnUrl' => [
             'size' => [
                 'min' => 1,
