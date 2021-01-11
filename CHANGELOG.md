@@ -11,9 +11,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - New supported currencies
 - `ild78\Payment::$currency` and `ild78\Payment::$methodsAllowed` can throw exception when used with incompatible values
 - Coverage report
+- `ild78\Payment::$responseAuthor`
 
 ### Fixed
 - CI run
+- `ild78\Payment::$response` length
 
 ### Removed
 - `ild78\Payment::$responseMessage`, please refer to documentation to obtain the full list
