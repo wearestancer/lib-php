@@ -389,21 +389,6 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
-    /**
-     * @dataProvider responseMessageDataProvider
-     */
-    public function testGetResponseMessage($code, $message)
-    {
-        $this
-            ->assert($code . ' / ' . $message)
-                ->given($this->newTestedInstance)
-                ->and($this->testedInstance->hydrate(['response' => $code]))
-                ->then
-                    ->string($this->testedInstance->getResponseMessage())
-                        ->isIdenticalTo($message)
-        ;
-    }
-
     public function testGetReturnUrl_SetReturnUrl()
     {
         $this
