@@ -450,6 +450,12 @@ class Payment extends ild78\Tests\atoum
 
                     ->boolean($this->testedInstance->isNotSuccess())
                         ->isTrue('isNotSuccess')
+
+                    ->boolean($this->testedInstance->isError())
+                        ->isFalse('isError')
+
+                    ->boolean($this->testedInstance->isNotError())
+                        ->isTrue('isNotError')
         ;
 
         $oks = [
@@ -474,6 +480,12 @@ class Payment extends ild78\Tests\atoum
 
                         ->boolean($this->testedInstance->isNotSuccess())
                             ->isFalse('isNotSuccess')
+
+                        ->boolean($this->testedInstance->isError())
+                            ->isFalse('isError')
+
+                        ->boolean($this->testedInstance->isNotError())
+                            ->isTrue('isNotError')
             ;
         }
 
@@ -487,6 +499,12 @@ class Payment extends ild78\Tests\atoum
 
                     ->boolean($this->testedInstance->isNotSuccess())
                         ->isTrue('isNotSuccess')
+
+                    ->boolean($this->testedInstance->isError())
+                        ->isTrue('isError')
+
+                    ->boolean($this->testedInstance->isNotError())
+                        ->isFalse('isNotError')
         ;
 
         foreach ($noks as $status) {
@@ -500,6 +518,12 @@ class Payment extends ild78\Tests\atoum
 
                         ->boolean($this->testedInstance->isNotSuccess())
                             ->isTrue('isNotSuccess')
+
+                        ->boolean($this->testedInstance->isError())
+                            ->isTrue('isError')
+
+                        ->boolean($this->testedInstance->isNotError())
+                            ->isFalse('isNotError')
             ;
         }
 
@@ -514,6 +538,12 @@ class Payment extends ild78\Tests\atoum
 
                         ->boolean($this->testedInstance->isNotSuccess())
                             ->isFalse('isNotSuccess')
+
+                        ->boolean($this->testedInstance->isError())
+                            ->isFalse('isError')
+
+                        ->boolean($this->testedInstance->isNotError())
+                            ->isTrue('isNotError')
             ;
         }
 
@@ -527,6 +557,12 @@ class Payment extends ild78\Tests\atoum
 
                     ->boolean($this->testedInstance->isNotSuccess())
                         ->isFalse('isNotSuccess')
+
+                    ->boolean($this->testedInstance->isError())
+                        ->isFalse('isError')
+
+                    ->boolean($this->testedInstance->isNotError())
+                        ->isTrue('isNotError')
         ;
 
         foreach ($noks as $status) {
@@ -540,6 +576,12 @@ class Payment extends ild78\Tests\atoum
 
                         ->boolean($this->testedInstance->isNotSuccess())
                             ->isTrue('isNotSuccess')
+
+                        ->boolean($this->testedInstance->isError())
+                            ->isTrue('isError')
+
+                        ->boolean($this->testedInstance->isNotError())
+                            ->isFalse('isNotError')
             ;
         }
     }
