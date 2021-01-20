@@ -1162,6 +1162,90 @@ class StubObject extends ild78\Tests\atoum
         ;
     }
 
+    public function testGet()
+    {
+        $this
+            ->given($timestamp = rand(946681200, 1893452400))
+            ->and($string1 = $this->makeStringBetween(10, 20))
+            ->and($integer1 = $this->makeIntegerBetween(10, 20))
+            ->and($integer2 = $this->makeIntegerBetween(10, 20))
+            ->and($camelCaseProperty = $this->makeStringBetween(10, 20))
+            ->and($objectData = ['integer2' => $integer2])
+            ->and($object2 = $this->newTestedInstance($objectData))
+            ->and($data = [
+                'string1' => $string1,
+                'integer1' => $integer1,
+                'object2' => $objectData,
+                'camel_case_property' => $camelCaseProperty,
+            ])
+
+            ->if($response = new mock\ild78\Http\Response(200))
+            ->and($this->calling($response)->getBody = json_encode($data))
+
+            ->if($client = new mock\ild78\Http\Client)
+            ->and($this->calling($client)->request = $response)
+
+            ->if($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
+            ->and($config->setHttpClient($client))
+
+            ->if($id = uniqid())
+            ->and($this->newTestedInstance($id))
+            ->then
+                ->assert('Default values')
+                    ->variable($this->testedInstance->get())
+                        ->isNull
+
+                    ->variable($this->testedInstance->get(uniqid()))
+                        ->isNull
+
+                    ->variable($this->testedInstance->get('string1'))
+                        ->isNull
+
+                    ->variable($this->testedInstance->get('integer1'))
+                        ->isNull
+
+                    ->variable($this->testedInstance->get('object2'))
+                        ->isNull
+
+                    ->variable($this->testedInstance->get('camel_case_property'))
+                        ->isNull
+
+                    ->variable($this->testedInstance->get('camelCaseProperty'))
+                        ->isNull
+
+                ->assert('After API call')
+                    ->if($this->testedInstance->populate())
+                    ->then
+                        ->array($this->testedInstance->get())
+                            ->isEqualTo($data)
+
+                        ->variable($this->testedInstance->get(uniqid()))
+                            ->isNull
+
+                        ->string($this->testedInstance->get('string1'))
+                            ->isIdenticalTo($string1)
+
+                        ->integer($this->testedInstance->get('integer1'))
+                            ->isIdenticalTo($integer1)
+
+                        ->array($this->testedInstance->get('object2'))
+                            ->isEqualTo($objectData)
+
+                        ->string($this->testedInstance->get('camel_case_property'))
+                            ->isIdenticalTo($camelCaseProperty)
+
+                        ->string($this->testedInstance->get('camelCaseProperty'))
+                            ->isIdenticalTo($camelCaseProperty)
+
+                        ->array($this->testedInstance->getObject2()->get())
+                            ->isEqualTo($objectData)
+
+                        ->integer($this->testedInstance->getObject2()->get('integer2'))
+                            ->isIdenticalTo($integer2)
+        ;
+    }
+
     /**
      * @dataProvider validDataProvider
      */

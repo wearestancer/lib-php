@@ -22,6 +22,9 @@ abstract class AbstractObject implements JsonSerializable
     public const INTEGER = 'integer';
     public const STRING = 'string';
 
+    /** @var array */
+    protected $apiData;
+
     /** @var string */
     protected $endpoint = '';
 
@@ -407,6 +410,27 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
+     * Return raw data from the API.
+     *
+     * @param string $attr Optional attribute name.
+     * @return mixed
+     */
+    public function get(string $attr = null)
+    {
+        if ($attr && $this->apiData) {
+            $prop = $this->camelCaseToSnakeCase($attr);
+
+            if (array_key_exists($prop, $this->apiData)) {
+                return $this->apiData[$prop];
+            }
+
+            return null;
+        }
+
+        return $this->apiData;
+    }
+
+    /**
      * Return creation date
      *
      * @return DateTime|null
@@ -746,8 +770,21 @@ abstract class AbstractObject implements JsonSerializable
 
         $this->cleanModified = true;
         $this->populated = true;
+        $this->apiData = $body;
 
         $this->hydrate($body);
+
+        $struct = $this->toArray();
+
+        foreach ($struct as $prop => $value) {
+            if (is_object($value) && $value instanceof self) {
+                $tmp = $this->camelCaseToSnakeCase($prop);
+
+                if (array_key_exists($tmp, $body)) {
+                    $value->apiData = $body[$tmp];
+                }
+            }
+        }
 
         return $this;
     }
