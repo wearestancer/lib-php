@@ -1172,11 +1172,14 @@ class StubObject extends ild78\Tests\atoum
             ->and($camelCaseProperty = $this->makeStringBetween(10, 20))
             ->and($objectData = ['integer2' => $integer2])
             ->and($object2 = $this->newTestedInstance($objectData))
+            ->and($unknownKey = uniqid())
+            ->and($unknownValue = uniqid())
             ->and($data = [
                 'string1' => $string1,
                 'integer1' => $integer1,
                 'object2' => $objectData,
                 'camel_case_property' => $camelCaseProperty,
+                $unknownKey => $unknownValue,
             ])
 
             ->if($response = new mock\ild78\Http\Response(200))
@@ -1214,6 +1217,9 @@ class StubObject extends ild78\Tests\atoum
                     ->variable($this->testedInstance->get('camelCaseProperty'))
                         ->isNull
 
+                    ->variable($this->testedInstance->get($unknownKey))
+                        ->isNull
+
                 ->assert('After API call')
                     ->if($this->testedInstance->populate())
                     ->then
@@ -1237,6 +1243,9 @@ class StubObject extends ild78\Tests\atoum
 
                         ->string($this->testedInstance->get('camelCaseProperty'))
                             ->isIdenticalTo($camelCaseProperty)
+
+                        ->string($this->testedInstance->get($unknownKey))
+                            ->isIdenticalTo($unknownValue)
 
                         ->array($this->testedInstance->getObject2()->get())
                             ->isEqualTo($objectData)
