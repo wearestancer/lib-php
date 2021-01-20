@@ -57,13 +57,13 @@ abstract class AbstractObject implements JsonSerializable
             'exception' => null,
             'exportable' => null,
             'list' => false,
+            'restricted' => false,
+            'required' => false,
             'size' => [
                 'fixed' => null,
                 'min' => null,
                 'max' => null,
             ],
-            'restricted' => false,
-            'required' => false,
             'value' => null,
         ];
 
