@@ -13,10 +13,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ild78\Payment::$responseAuthor`
 - Coverage report
 - PHPCS report
+- `ild78\Payment::isError()` and `ild78\Payment::isNotError()`
+
+### Changed
+- `ild78\Payment::isStatus()` and `ild78\Payment::isNotStatus()` are now base on status
 
 ### Fixed
-- CI run
 - `ild78\Payment::$response` length
+- CI run
+- Tests
 
 ### Removed
 - `ild78\Payment::$responseMessage`, please refer to documentation to obtain the full list
@@ -34,7 +39,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Date properties
 - Allow to reset default timezone
 
-### Changes
+### Changed
 - `created` uses date property mecanism
 - Magic setter can throw better exceptions
 
@@ -70,7 +75,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Setter aliases
 - Tests on PHP 7.4
 
-### Changes
+### Changed
 - `ild78\Payment::$status` is now editable
 - No automatic hydratation on `ild78\Device->new()`
 - Getters and setters handles snake_case and camelCase property correctly
@@ -101,7 +106,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - First implementation
 - Tests on 7.1, 7.2 and 7.3
 
-### Changes
+### Changed
 - `Object` renamed in `AbstractObject`
 
 ### Fixed

@@ -439,27 +439,151 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
-    /**
-     * @dataProvider responseMessageDataProvider
-     */
-    public function testIsSuccess_IsNotSuccess($code, $message)
+    public function testIsSuccess_IsNotSuccess()
     {
         $this
-            ->assert($code . ' / ' . $message)
+            ->assert('Default values')
                 ->given($this->newTestedInstance)
                 ->then
                     ->boolean($this->testedInstance->isSuccess())
-                        ->isFalse
+                        ->isFalse('isSuccess')
 
                     ->boolean($this->testedInstance->isNotSuccess())
-                        ->isFalse
+                        ->isTrue('isNotSuccess')
 
-                ->if($this->testedInstance->hydrate(['response' => $code]))
+                    ->boolean($this->testedInstance->isError())
+                        ->isFalse('isError')
+
+                    ->boolean($this->testedInstance->isNotError())
+                        ->isTrue('isNotError')
+        ;
+
+        $oks = [
+            ild78\Payment\Status::CAPTURED,
+            ild78\Payment\Status::TO_CAPTURE,
+        ];
+        $noks = [
+            ild78\Payment\Status::CANCELED,
+            ild78\Payment\Status::DISPUTED,
+            ild78\Payment\Status::EXPIRED,
+            ild78\Payment\Status::FAILED,
+        ];
+
+        foreach ($oks as $status) {
+            $this
+                ->assert('Captured payment, "' . $status . '" is success')
+                    ->given($this->newTestedInstance)
+                    ->and($this->testedInstance->hydrate(['capture' => true, 'status' => $status]))
+                    ->then
+                        ->boolean($this->testedInstance->isSuccess())
+                            ->isTrue('isSuccess')
+
+                        ->boolean($this->testedInstance->isNotSuccess())
+                            ->isFalse('isNotSuccess')
+
+                        ->boolean($this->testedInstance->isError())
+                            ->isFalse('isError')
+
+                        ->boolean($this->testedInstance->isNotError())
+                            ->isTrue('isNotError')
+            ;
+        }
+
+        $this
+            ->assert('Captured payment, "' . ild78\Payment\Status::AUTHORIZED . '" is an error')
+                ->given($this->newTestedInstance)
+                ->and($this->testedInstance->hydrate(['capture' => true, 'status' => ild78\Payment\Status::AUTHORIZED]))
                 ->then
                     ->boolean($this->testedInstance->isSuccess())
-                        ->isIdenticalTo($code === '00')
-                        ->isIdenticalTo(!$this->testedInstance->isNotSuccess())
+                        ->isFalse('isSuccess')
+
+                    ->boolean($this->testedInstance->isNotSuccess())
+                        ->isTrue('isNotSuccess')
+
+                    ->boolean($this->testedInstance->isError())
+                        ->isTrue('isError')
+
+                    ->boolean($this->testedInstance->isNotError())
+                        ->isFalse('isNotError')
         ;
+
+        foreach ($noks as $status) {
+            $this
+                ->assert('Captured payment, "' . $status . '" is an error')
+                    ->given($this->newTestedInstance)
+                    ->and($this->testedInstance->hydrate(['capture' => true, 'status' => $status]))
+                    ->then
+                        ->boolean($this->testedInstance->isSuccess())
+                            ->isFalse('isSuccess')
+
+                        ->boolean($this->testedInstance->isNotSuccess())
+                            ->isTrue('isNotSuccess')
+
+                        ->boolean($this->testedInstance->isError())
+                            ->isTrue('isError')
+
+                        ->boolean($this->testedInstance->isNotError())
+                            ->isFalse('isNotError')
+            ;
+        }
+
+        foreach ($oks as $status) {
+            $this
+                ->assert('Authorization only, "' . $status . '" is success')
+                    ->given($this->newTestedInstance)
+                    ->and($this->testedInstance->hydrate(['capture' => false, 'status' => $status]))
+                    ->then
+                        ->boolean($this->testedInstance->isSuccess())
+                            ->isTrue('isSuccess')
+
+                        ->boolean($this->testedInstance->isNotSuccess())
+                            ->isFalse('isNotSuccess')
+
+                        ->boolean($this->testedInstance->isError())
+                            ->isFalse('isError')
+
+                        ->boolean($this->testedInstance->isNotError())
+                            ->isTrue('isNotError')
+            ;
+        }
+
+        $this
+            ->assert('Authorization only, "' . ild78\Payment\Status::AUTHORIZED . '" is success')
+                ->given($this->newTestedInstance)
+                ->and($this->testedInstance->hydrate(['capture' => false, 'status' => ild78\Payment\Status::AUTHORIZED]))
+                ->then
+                    ->boolean($this->testedInstance->isSuccess())
+                        ->isTrue('isSuccess')
+
+                    ->boolean($this->testedInstance->isNotSuccess())
+                        ->isFalse('isNotSuccess')
+
+                    ->boolean($this->testedInstance->isError())
+                        ->isFalse('isError')
+
+                    ->boolean($this->testedInstance->isNotError())
+                        ->isTrue('isNotError')
+        ;
+
+        foreach ($noks as $status) {
+            $this
+                ->assert('Authorization only, "' . $status . '" is an error')
+                    ->given($this->newTestedInstance)
+                    ->and($this->testedInstance->hydrate(['capture' => false, 'status' => $status]))
+                    ->then
+                        ->boolean($this->testedInstance->isSuccess())
+                            ->isFalse('isSuccess')
+
+                        ->boolean($this->testedInstance->isNotSuccess())
+                            ->isTrue('isNotSuccess')
+
+                        ->boolean($this->testedInstance->isError())
+                            ->isTrue('isError')
+
+                        ->boolean($this->testedInstance->isNotError())
+                            ->isFalse('isNotError')
+            ;
+        }
     }
 
     public function testIssue7()

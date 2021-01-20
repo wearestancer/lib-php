@@ -393,27 +393,65 @@ class Payment extends ild78\Core\AbstractObject
     }
 
     /**
-     * Indicates if payment is not a success
+     * Indicates if payment is an error.
+     *
+     * @return boolean
+     */
+    public function isError(): bool
+    {
+        if (is_null($this->getStatus())) {
+            return false;
+        }
+
+        if ($this->getCapture() === false && $this->getStatus() === ild78\Payment\Status::AUTHORIZED) {
+            return false;
+        }
+
+        $allowed = [
+            ild78\Payment\Status::CAPTURED,
+            ild78\Payment\Status::TO_CAPTURE,
+        ];
+
+        return !in_array($this->getStatus(), $allowed, true);
+    }
+
+    /**
+     * Indicates if payment is not an error.
+     *
+     * @return boolean
+     */
+    public function isNotError(): bool
+    {
+        return !$this->isError();
+    }
+
+    /**
+     * Indicates if payment is not a success.
      *
      * @return boolean
      */
     public function isNotSuccess(): bool
     {
-        if (is_null($this->getResponse())) {
-            return false;
-        }
-
         return !$this->isSuccess();
     }
 
     /**
-     * Indicates if payment is a success or not
+     * Indicates if payment is a success.
      *
      * @return boolean
      */
     public function isSuccess(): bool
     {
-        return $this->getResponse() === '00';
+        if ($this->getCapture() === false && $this->getStatus() === ild78\Payment\Status::AUTHORIZED) {
+            return true;
+        }
+
+        $allowed = [
+            ild78\Payment\Status::CAPTURED,
+            ild78\Payment\Status::TO_CAPTURE,
+        ];
+
+        return in_array($this->getStatus(), $allowed, true);
     }
 
     /**
