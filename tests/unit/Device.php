@@ -20,7 +20,7 @@ class Device extends ild78\Tests\atoum
     {
         $this
             ->if($data = [
-                'ip' => $this->ipDataProvider()[0],
+                'ip' => $this->ipDataProvider(true),
                 'port' => rand(1, 65535),
             ])
             ->then

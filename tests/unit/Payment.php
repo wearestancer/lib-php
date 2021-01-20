@@ -286,7 +286,7 @@ class Payment extends ild78\Tests\atoum
             ->and($config->setHttpClient($client))
 
             ->if($amount = rand(100, 999999))
-            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($currency = $this->cardCurrencyDataProvider(true))
 
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setAmount($amount))
@@ -720,6 +720,84 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
+    /**
+     * @dataProvider cardCurrencyDataProvider
+     */
+    public function testMethodsAllowed($currency)
+    {
+        $this
+            ->given($methods = ['card', 'sepa'])
+
+            ->assert('Should return an empty array as default')
+                ->given($this->newTestedInstance)
+                ->then
+                    ->array($this->testedInstance->getMethodsAllowed())
+                        ->isEmpty
+
+            ->assert('Should allow array of strings')
+                ->given($this->newTestedInstance)
+                ->then
+                    ->object($this->testedInstance->setMethodsAllowed($methods))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->getMethodsAllowed())
+                        ->hasSize(2)
+                        ->string[0]
+                            ->isIdenticalTo('card')
+                        ->string[1]
+                            ->isIdenticalTo('sepa')
+
+            ->assert('Should only allow known methods')
+                ->given($this->newTestedInstance)
+                ->and($value = uniqid())
+                ->then
+                    ->exception(function () use ($value) {
+                        $this->testedInstance->setMethodsAllowed([$value]);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->contains($value)
+
+            ->assert('Should allow to add methods')
+                ->given($this->newTestedInstance)
+                ->then
+                    ->object($this->testedInstance->addMethodsAllowed($methods[0]))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->getMethodsAllowed())
+                        ->hasSize(1)
+                        ->string[0]
+                            ->isIdenticalTo($methods[0])
+        ;
+
+        $lower = strtolower($currency);
+
+        if ($lower !== 'eur') {
+            $this
+                ->assert('Currency can be refused when using SEPA')
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->setCurrency($currency))
+                    ->then
+                        ->exception(function () {
+                            $this->testedinstance->addMethodsAllowed('sepa');
+                        })
+                            ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                            ->message
+                                ->isIdenticalTo(sprintf('You can not use "%s" method with "%s" currency.', 'sepa', $lower))
+
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->setCurrency($currency))
+                    ->then
+                        ->exception(function () use ($methods) {
+                            $this->testedinstance->setMethodsAllowed($methods);
+                        })
+                            ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                            ->message
+                                ->isIdenticalTo(sprintf('You can not use "%s" method with "%s" currency.', 'sepa', $lower))
+            ;
+        }
+    }
+
     public function testPay()
     {
         $this
@@ -917,6 +995,18 @@ class Payment extends ild78\Tests\atoum
                         ->isInstanceOf(ild78\Exceptions\MissingPaymentIdException::class)
                         ->message
                             ->isIdenticalTo('A payment ID is mandatory. Maybe you forgot to send the payment.')
+
+                ->assert('Should work with methods allowed (internal bug)')
+                    ->if($this->calling($response)->getBody = file_get_contents(__DIR__ . '/fixtures/payment/read-methods-allowed.json'))
+
+                    ->if($this->newTestedInstance('paym_QAM6fOpJnH5DvkYr3ezAVPpa'))
+                    ->then
+                        ->array($this->testedInstance->getMethodsAllowed())
+                            ->hasSize(2)
+                            ->containsValues(['card', 'sepa'])
+
+                        ->object($this->testedInstance->refund())
+                            ->isTestedInstance
         ;
     }
 
@@ -945,7 +1035,7 @@ class Payment extends ild78\Tests\atoum
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidCurrencyException::class)
 
-            ->if($this->testedInstance->setCurrency($this->currencyDataProvider(true)))
+            ->if($this->testedInstance->setCurrency($this->cardCurrencyDataProvider(true)))
             ->then
                 ->object($this->testedInstance->send())
                     ->isTestedInstance
@@ -1170,7 +1260,7 @@ class Payment extends ild78\Tests\atoum
 
     public function testSend_authenticatedPayment()
     {
-        $_SERVER['SERVER_ADDR'] = $ip = $this->ipDataProvider()[0];
+        $_SERVER['SERVER_ADDR'] = $ip = $this->ipDataProvider(true);
         $_SERVER['SERVER_PORT'] = $port = rand(1, 65535);
 
         $this
@@ -1186,7 +1276,7 @@ class Payment extends ild78\Tests\atoum
             ->and($config->setHttpClient($client))
 
             ->if($amount = rand(10, 99999))
-            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($currency = $this->cardCurrencyDataProvider(true))
             ->and($description = uniqid())
             ->and($url = 'https://www.example.org?' . uniqid())
 
@@ -1326,14 +1416,14 @@ class Payment extends ild78\Tests\atoum
             ->and($config->setHttpClient($client))
 
             ->if($amount = rand(10, 99999))
-            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($currency = $this->cardCurrencyDataProvider(true))
             ->and($description = uniqid())
             ->and($url = 'https://www.example.org?' . uniqid())
 
             ->if($auth = new ild78\Auth)
             ->and($auth->setReturnUrl($url))
 
-            ->if($ip = $this->ipDataProvider()[0])
+            ->if($ip = $this->ipDataProvider(true))
             ->and($port = rand(1, 65535))
             ->and($device = new ild78\Device(['ip' => $ip, 'port' => $port]))
 
@@ -1479,7 +1569,7 @@ class Payment extends ild78\Tests\atoum
             ->and($customer->setMobile(uniqid()))
 
             ->if($amount = rand(100, 999999))
-            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($currency = $this->cardCurrencyDataProvider(true))
 
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setAmount($amount))
@@ -1565,7 +1655,7 @@ class Payment extends ild78\Tests\atoum
             ->and($config->setHttpClient($client))
 
             ->if($amount = rand(100, 999999))
-            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($currency = $this->cardCurrencyDataProvider(true))
             ->and($description = uniqid())
 
             ->if($this->newTestedInstance)
@@ -1665,7 +1755,7 @@ class Payment extends ild78\Tests\atoum
             ->and($customer->setMobile(uniqid()))
 
             ->if($amount = rand(100, 999999))
-            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($currency = $this->cardCurrencyDataProvider(true))
 
             ->if($card = new ild78\Card)
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
@@ -1710,7 +1800,7 @@ class Payment extends ild78\Tests\atoum
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setDebug(false))
             ->and($port = rand(1, 65535))
-            ->and($addr = $this->ipDataProvider()[0])
+            ->and($addr = $this->ipDataProvider(true))
             ->and($url = 'https://www.example.org?' . uniqid())
 
             ->if($client = new mock\ild78\Http\Client)
@@ -1956,7 +2046,7 @@ class Payment extends ild78\Tests\atoum
     }
 
     /**
-     * @dataProvider currencyDataProvider
+     * @dataProvider cardCurrencyDataProvider
      */
     public function testSetCurrency($currency)
     {
@@ -2008,11 +2098,26 @@ class Payment extends ild78\Tests\atoum
                         ->message
                             ->contains('"' . $fakeCurrency . '" is not a valid currency')
                             ->contains('please use one of the following :')
-                            ->contains($upper)
+                            ->contains($lower)
 
                     ->boolean($this->testedInstance->isModified())
                         ->isFalse
         ;
+
+        if ($lower !== 'eur') {
+            $this
+                ->assert('Currency can be refused when using SEPA')
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->addMethodsAllowed('sepa'))
+                    ->then
+                        ->exception(function () use ($currency) {
+                            $this->testedInstance->setCurrency($currency);
+                        })
+                            ->isInstanceOf(ild78\Exceptions\InvalidCurrencyException::class)
+                            ->message
+                                ->isIdenticalTo(sprintf('You can not use "%s" currency with "%s" method.', $lower, 'sepa'))
+            ;
+        }
     }
 
     public function testSetDescription()

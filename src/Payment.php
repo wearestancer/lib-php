@@ -91,6 +91,20 @@ class Payment extends ild78\Core\AbstractObject
             'type' => self::STRING,
         ],
         'currency' => [
+            'allowedValues' => [
+                'aud',
+                'cad',
+                'chf',
+                'dkk',
+                'eur',
+                'gbp',
+                'jpy',
+                'nok',
+                'pln',
+                'sek',
+                'usd',
+            ],
+            'coerce' => 'strtolower',
             'required' => true,
             'type' => self::STRING,
         ],
@@ -113,6 +127,14 @@ class Payment extends ild78\Core\AbstractObject
         ],
         'method' => [
             'restricted' => true,
+            'type' => self::STRING,
+        ],
+        'methodsAllowed' => [
+            'allowedValues' => [
+                'card',
+                'sepa',
+            ],
+            'list' => true,
             'type' => self::STRING,
         ],
         'orderId' => [
@@ -155,6 +177,26 @@ class Payment extends ild78\Core\AbstractObject
             'type' => self::STRING,
         ],
     ];
+
+    /**
+     * Add an allowed method.
+     *
+     * @param string $method New method.
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When currency is EUR and trying to set "sepa" method.
+     */
+    public function addMethodsAllowed(string $method): self
+    {
+        $currency = $this->getCurrency();
+
+        if ($currency && $method && $method === 'sepa' && $currency !== 'eur') {
+            $message = sprintf('You can not use "%s" method with "%s" currency.', $method, $currency);
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
+        return parent::addMethodsAllowed($method);
+    }
 
     /**
      * Charge a card or a bank account.
@@ -613,36 +655,45 @@ class Payment extends ild78\Core\AbstractObject
     }
 
     /**
+     * Set allowed methods.
+     *
+     * @param string[] $methods New methods.
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When currency is EUR and trying to set "sepa" method.
+     */
+    public function setMethodsAllowed(array $methods): self
+    {
+        $currency = $this->getCurrency();
+        $method = $this->getMethod();
+
+        if (!$method && $currency && $methods && in_array('sepa', $methods) && $currency !== 'eur') {
+            $message = sprintf('You can not use "%s" method with "%s" currency.', 'sepa', $currency);
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
+        return parent::setMethodsAllowed($methods);
+    }
+
+    /**
      * Set the currency.
      *
-     * @param string $currency The currency, must one in the following : EUR, USD, GBP.
+     * @param string $currency The currency.
      * @return self
-     * @throws ild78\Exceptions\InvalidCurrencyException When currency is not EUR, USD or GBP.
+     * @throws ild78\Exceptions\InvalidCurrencyException When currency is EUR and "sepa" is already allowed.
      */
     public function setCurrency(string $currency): self
     {
-        $cur = strtolower($currency);
+        $method = $this->getMethod();
+        $methods = $this->getMethodsAllowed();
 
-        $valid = [
-            'eur',
-            'usd',
-            'gbp',
-        ];
-
-        if (!in_array($cur, $valid, true)) {
-            $params = [
-                $currency,
-                strtoupper(implode(', ', $valid)),
-            ];
-            $message = vsprintf('"%s" is not a valid currency, please use one of the following : %s', $params);
+        if (!$method && $currency && $methods && in_array('sepa', $methods) && strtolower($currency) !== 'eur') {
+            $message = sprintf('You can not use "%s" currency with "%s" method.', strtolower($currency), 'sepa');
 
             throw new ild78\Exceptions\InvalidCurrencyException($message);
         }
 
-        $this->dataModel['currency']['value'] = $cur;
-        $this->modified[] = 'currency';
-
-        return $this;
+        return parent::setCurrency($currency);
     }
 
     /**
