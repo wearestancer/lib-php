@@ -18,8 +18,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ild78\Payment::isStatus()` and `ild78\Payment::isNotStatus()` are now base on status
 
 ### Fixed
-- CI run
 - `ild78\Payment::$response` length
+- CI run
+- Tests
 
 ### Removed
 - `ild78\Payment::$responseMessage`, please refer to documentation to obtain the full list
