@@ -4,6 +4,7 @@ variables:
   ATOUM_XUNIT_FILENAME: "reports/${PHP_VERSION}-xunit.xml"
   BUILD_FILENAME: "lib-php-${CI_COMMIT_TAG}.tar.gz"
   PHPCS_FILENAME: "reports/${PHP_VERSION}-phpcs.json"
+  PHPSTAN_FILENAME: "reports/${PHP_VERSION}-stan.json"
 
 
 notification:mattermost:
