@@ -335,11 +335,9 @@ abstract class AbstractObject implements JsonSerializable
      * @param mixed $value Value to set.
      * @return self
      * @uses self::validateDataModel() To check value's integrity.
-     * @throws ild78\Exceptions\InvalidArgumentException When asking an unknown property.
      * @throws ild78\Exceptions\BadMethodCallException When setting a restricted property.
+     * @throws ild78\Exceptions\InvalidArgumentException When asking an unknown property.
      * @throws ild78\Exceptions\InvalidArgumentException When the value do not match expected pattern.
-     * @throws ild78\Exceptions\RangeException When a range of allowed values is provided and the given value
-     *    does not conform to it.
      */
     public function dataModelSetter(string $property, $value): self
     {
