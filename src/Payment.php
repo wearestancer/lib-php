@@ -152,7 +152,15 @@ class Payment extends ild78\Core\AbstractObject
         'response' => [
             'restricted' => true,
             'size' => [
-                'fixed' => 2,
+                'min' => 2,
+                'max' => 4,
+            ],
+            'type' => self::STRING,
+        ],
+        'responseAuthor' => [
+            'restricted' => true,
+            'size' => [
+                'fixed' => 6,
             ],
             'type' => self::STRING,
         ],
@@ -382,30 +390,6 @@ class Payment extends ild78\Core\AbstractObject
         $refunded = array_map($getAmounts, $refunds);
 
         return array_sum($refunded);
-    }
-
-    /**
-     * Get a readable message of response code
-     *
-     * @return string
-     */
-    public function getResponseMessage(): string
-    {
-        $messages = [
-            '00' => 'OK',
-            '05' => 'Do not honor',
-            '41' => 'Lost card',
-            '42' => 'Stolen card',
-            '51' => 'Insufficient funds',
-        ];
-
-        $code = $this->getResponse();
-
-        if (array_key_exists($code, $messages)) {
-            return $messages[$code];
-        }
-
-        return 'Unknown';
     }
 
     /**

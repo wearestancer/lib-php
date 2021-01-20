@@ -389,18 +389,27 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
-    /**
-     * @dataProvider responseMessageDataProvider
-     */
-    public function testGetResponseMessage($code, $message)
+    public function testGetResponseAuthor()
     {
         $this
-            ->assert($code . ' / ' . $message)
-                ->given($this->newTestedInstance)
-                ->and($this->testedInstance->hydrate(['response' => $code]))
-                ->then
-                    ->string($this->testedInstance->getResponseMessage())
-                        ->isIdenticalTo($message)
+            ->given($author = $this->getRandomString(6))
+            ->if($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getResponseAuthor())
+                    ->isNull
+
+                ->exception(function () use ($author) {
+                    $this->testedInstance->setResponseAuthor($author);
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify "responseAuthor".')
+
+
+            ->if($this->testedInstance->hydrate(['response_author' => $author]))
+            ->then
+                ->string($this->testedInstance->getResponseAuthor())
+                    ->isIdenticalTo($author)
         ;
     }
 
