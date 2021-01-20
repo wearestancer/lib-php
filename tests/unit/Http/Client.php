@@ -379,12 +379,12 @@ class Client extends ild78\Tests\atoum
                 ->and($options = [
                     'timeout' => rand(1, 1000),
                     'headers' => [
-                        uniqid() => uniqid(),
-                        uniqid() => [uniqid(), uniqid()],
+                        $this->getRandomString(10) => uniqid(),
+                        $this->getRandomString(10) => [uniqid(), uniqid()],
                     ],
                     'body' => [
-                        uniqid() => uniqid(),
-                        uniqid() => uniqid(),
+                        $this->getRandomString(10) => uniqid(),
+                        $this->getRandomString(10) => uniqid(),
                     ],
                 ])
                 ->and($headers = [])
