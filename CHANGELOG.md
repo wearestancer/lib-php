@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `ild78\Payment::isStatus()` and `ild78\Payment::isNotStatus()` are now base on status
+- `ild78\Core\Object::get()`, return raw API data (even unknown properties)
 
 ### Fixed
 - `ild78\Payment::$response` length
