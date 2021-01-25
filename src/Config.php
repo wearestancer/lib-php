@@ -153,7 +153,7 @@ class Config
         }
 
         if ($client instanceof GuzzleHttp\ClientInterface) {
-            array_unshift($params, 'GuzzleHttp/' . GuzzleHttp\Client::VERSION);
+            array_unshift($params, 'GuzzleHttp');
         }
 
         return vsprintf('%s libiliad-php/%s (%s %s %s; php %s)', $params);
