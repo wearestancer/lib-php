@@ -33,7 +33,7 @@
         "atoum/reports-extension": "^3.0",
         "atoum/stubs": "^2.6",
         "atoum/visibility-extension": "^1.3",
-        "fzaninotto/faker": "^1.9",
+        "fakerphp/faker": "^1.13",
         "guzzlehttp/guzzle": "^7.2",
         "jdslv/atoum-report-cobertura": "^1.0",
         "ramsey/uuid": "^4.1",
