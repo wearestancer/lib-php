@@ -16,11 +16,6 @@ parameters:
 			path: src/Core/AbstractObject.php
 
 		-
-			message: "#^Parameter \\#1 \\$text of method ild78\\\\Core\\\\AbstractObject\\:\\:camelCaseToSnakeCase\\(\\) expects string, int\\|string given\\.$#"
-			count: 1
-			path: src/Core/AbstractObject.php
-
-		-
 			message: "#^Right side of && is always true\\.$#"
 			count: 2
 			path: src/Exceptions/HttpException.php

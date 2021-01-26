@@ -17,6 +17,7 @@ use PHPStan\Type\Constant\ConstantStringType;
 use PHPStan\Type\DynamicMethodReturnTypeExtension;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\NullType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
@@ -42,40 +43,34 @@ class AbstractObjectDynamicReturnTypeExtension implements DynamicMethodReturnTyp
             return TypeCombinator::addNull(new ArrayType(new StringType(), new MixedType()));
         }
 
-        $sizeKeys = [
-            new ConstantStringType('fixed'),
-            new ConstantStringType('max'),
-            new ConstantStringType('min'),
-        ];
+        $createKey = function ($name): ConstantStringType {
+            return new ConstantStringType($name);
+        };
+
         $sizeValues = [
-            TypeCombinator::addNull(new IntegerType()),
-            TypeCombinator::addNull(new IntegerType()),
-            TypeCombinator::addNull(new IntegerType()),
+            'fixed' => TypeCombinator::addNull(new IntegerType()),
+            'max' => TypeCombinator::addNull(new IntegerType()),
+            'min' => TypeCombinator::addNull(new IntegerType()),
         ];
+        $sizeKeys = array_map($createKey, array_keys($sizeValues));
 
-        $keys = [
-            new ConstantStringType('coerce'),
-            new ConstantStringType('exception'),
-            new ConstantStringType('exportable'),
-            new ConstantStringType('list'),
-            new ConstantStringType('required'),
-            new ConstantStringType('restricted'),
-            new ConstantStringType('size'),
-            new ConstantStringType('type'),
-            new ConstantStringType('value'),
-        ];
+        $allowedAsArray = new ArrayType(new IntegerType(), new StringType());
+        $allowedAsString = new ClassStringType();
+
         $values = [
-            TypeCombinator::addNull(new CallableType()),
-            TypeCombinator::addNull(new ClassStringType()),
-            new BooleanType(),
-            new BooleanType(),
-            new BooleanType(),
-            new BooleanType(),
-            new ConstantArrayType($sizeKeys, $sizeValues),
-            new StringType(),
-            new MixedType(),
+            'allowedValues' => TypeCombinator::union(new NullType(), $allowedAsArray, $allowedAsString),
+            'coerce' => TypeCombinator::addNull(new CallableType()),
+            'exception' => TypeCombinator::addNull(new ClassStringType()),
+            'exportable' => new BooleanType(),
+            'list' => new BooleanType(),
+            'required' => new BooleanType(),
+            'restricted' => new BooleanType(),
+            'size' => new ConstantArrayType($sizeKeys, array_values($sizeValues)),
+            'type' => new StringType(),
+            'value' => new MixedType(),
         ];
+        $keys = array_map($createKey, array_keys($values));
 
-        return new ConstantArrayType($keys, $values);
+        return new ConstantArrayType($keys, array_values($values));
     }
 }

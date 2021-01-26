@@ -14,8 +14,8 @@ use ReflectionClass;
  *
  * @throws ild78\Exceptions\BadMethodCallException when calling unknown method.
  *
- * @property DateTime|null $created
- * @property DateTime|null $creationDate
+ * @property-read DateTime|null $created
+ * @property-read DateTime|null $creationDate
  */
 abstract class AbstractObject implements JsonSerializable
 {
@@ -23,7 +23,7 @@ abstract class AbstractObject implements JsonSerializable
     public const INTEGER = 'integer';
     public const STRING = 'string';
 
-    /** @var array */
+    /** @var array<string, mixed> */
     protected $apiData;
 
     /** @var string */
@@ -88,7 +88,7 @@ abstract class AbstractObject implements JsonSerializable
             }
 
             if ($data['coerce'] === 'strtolower') {
-                $data['coerce'] = function ($value) {
+                $data['coerce'] = function ($value): string {
                     return strtolower($value);
                 };
             }
@@ -1003,13 +1003,13 @@ abstract class AbstractObject implements JsonSerializable
         if ($model['allowedValues']) {
             $names = null;
 
-            if (gettype($model['allowedValues']) === 'string') {
+            if (is_string($model['allowedValues'])) {
                 $class = $model['allowedValues'];
                 $ref = new ReflectionClass($class);
 
                 $model['allowedValues'] = $ref->getConstants();
 
-                $clean = function ($name) use ($class) {
+                $clean = function ($name) use ($class): string {
                     return $class . '::' . $name;
                 };
 
@@ -1020,7 +1020,7 @@ abstract class AbstractObject implements JsonSerializable
                 $names = implode(', ', $model['allowedValues']);
             }
 
-            $allowValue = function ($v) use ($model, $names, $property) {
+            $allowValue = function ($v) use ($model, $names, $property): string {
                 if (!in_array($v, $model['allowedValues'], true)) {
                     $params = [
                         $v,
@@ -1031,6 +1031,8 @@ abstract class AbstractObject implements JsonSerializable
 
                     return $message;
                 }
+
+                return '';
             };
 
             $message = $allowValue($value);

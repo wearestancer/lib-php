@@ -31,6 +31,7 @@ parameters:
   typeAliases:
     DataModel: '''
       array{
+        allowedValues?: string[] | class-string,
         coerce?: callable,
         exception?: class-string,
         exportable?: bool,
@@ -49,6 +50,7 @@ parameters:
 
     DataModelResolved: '''
       array{
+        allowedValues: string[] | class-string | null,
         coerce: ?callable,
         exception: ?class-string,
         exportable: bool,

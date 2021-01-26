@@ -1183,7 +1183,7 @@ class StubObject extends ild78\Tests\atoum
             ])
 
             ->if($response = new mock\ild78\Http\Response(200))
-            ->and($this->calling($response)->getBody = json_encode($data))
+            ->and($this->calling($response)->getBody[] = new ild78\Http\Stream(json_encode($data)))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($this->calling($client)->request = $response)

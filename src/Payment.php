@@ -22,6 +22,7 @@ use ild78;
  * @method string|null getDescription()
  * @method ild78\Device|null getDevice()
  * @method string|null getMethod()
+ * @method string[]|null getMethodsAllowed()
  * @method string|null getOrderId()
  * @method ild78\Refund[] getRefunds()
  * @method string|null getResponse()
@@ -38,6 +39,7 @@ use ild78;
  * @method $this setCustomer(ild78\Customer $customer)
  * @method $this setDescription(string $description)
  * @method $this setDevice(ild78\Device $device)
+ * @method $this setMethodsAllowed(string[] $methods)
  * @method $this setOrderId(string $orderId)
  * @method $this setStatus(string $status)
  * @method $this setUniqueId(string $uniqueId)
@@ -50,6 +52,7 @@ use ild78;
  * @property ild78\Customer|null $customer
  * @property string|null $description
  * @property ild78\Device|null $device
+ * @property string[]|null $methodsAllowed
  * @property string|null $orderId
  * @property string|null $returnUrl
  * @property ild78\Sepa|null $sepa
@@ -211,7 +214,9 @@ class Payment extends ild78\Core\AbstractObject
             throw new ild78\Exceptions\InvalidArgumentException($message);
         }
 
+        // @phpstan-ignore-next-line The method is not defined in parent object so it will trigger __call ...
         return parent::addMethodsAllowed($method);
+        // ... and that's that we want
     }
 
     /**
@@ -483,7 +488,7 @@ class Payment extends ild78\Core\AbstractObject
      * @param integer $amount Amount.
      * @param string $currency Currency.
      * @param ild78\Interfaces\PaymentMeansInterface $means Payment means.
-     * @return $this
+     * @return self
      */
     public function pay(int $amount, string $currency, ild78\Interfaces\PaymentMeansInterface $means): self
     {
@@ -590,11 +595,14 @@ class Payment extends ild78\Core\AbstractObject
             return parent::send();
         }
 
-        if (!$this->getAmount()) {
+        $amount = $this->getAmount();
+        $currency = $this->getCurrency();
+
+        if (!$amount) {
             throw new ild78\Exceptions\InvalidAmountException();
         }
 
-        if (!$this->getCurrency()) {
+        if (!$currency) {
             throw new ild78\Exceptions\InvalidCurrencyException();
         }
 
@@ -713,7 +721,7 @@ class Payment extends ild78\Core\AbstractObject
         $currency = $this->getCurrency();
         $method = $this->getMethod();
 
-        if (!$method && $currency && $methods && in_array('sepa', $methods) && $currency !== 'eur') {
+        if (!$method && $currency && $methods && in_array('sepa', $methods, true) && $currency !== 'eur') {
             $message = sprintf('You can not use "%s" method with "%s" currency.', 'sepa', $currency);
 
             throw new ild78\Exceptions\InvalidArgumentException($message);
@@ -734,7 +742,7 @@ class Payment extends ild78\Core\AbstractObject
         $method = $this->getMethod();
         $methods = $this->getMethodsAllowed();
 
-        if (!$method && $currency && $methods && in_array('sepa', $methods) && strtolower($currency) !== 'eur') {
+        if (!$method && $currency && $methods && in_array('sepa', $methods, true) && strtolower($currency) !== 'eur') {
             $message = sprintf('You can not use "%s" currency with "%s" method.', strtolower($currency), 'sepa');
 
             throw new ild78\Exceptions\InvalidCurrencyException($message);

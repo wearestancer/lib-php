@@ -147,8 +147,13 @@ class Config
 
         if ($client instanceof ild78\Http\Client) {
             $curl = curl_version();
+            $version = 'unknown-version';
 
-            array_unshift($params, 'curl/' . $curl['version']);
+            if ($curl) {
+                $version = $curl['version'];
+            }
+
+            array_unshift($params, 'curl/' . $version);
         }
 
         if ($client instanceof GuzzleHttp\ClientInterface) {

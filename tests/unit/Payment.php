@@ -1130,7 +1130,7 @@ class Payment extends ild78\Tests\atoum
                             ->isIdenticalTo('A payment ID is mandatory. Maybe you forgot to send the payment.')
 
                 ->assert('Should work with methods allowed (internal bug)')
-                    ->if($this->calling($response)->getBody = file_get_contents(__DIR__ . '/fixtures/payment/read-methods-allowed.json'))
+                    ->if($this->calling($response)->getBody = new ild78\Http\Stream(file_get_contents(__DIR__ . '/fixtures/payment/read-methods-allowed.json')))
 
                     ->if($this->newTestedInstance('paym_QAM6fOpJnH5DvkYr3ezAVPpa'))
                     ->then

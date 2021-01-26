@@ -317,6 +317,7 @@ class Request
 
             $response = $exception->getResponse();
 
+            // @phpstan-ignore-next-line May be `null` before Guzzle 7.2
             if (is_null($response)) {
                 throw new \Exception();
             }
