@@ -7,31 +7,30 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
-- `ild78\Payment::$methodsAllowed`
-- `ild78\Payment\Status::CAPTURE_SENT`
-- New supported currencies
+- `ild78\Core\Object::get()`, return raw API data (even unknown properties)
+- `ild78\Payment::isError()` and `ild78\Payment::isNotError()`
 - `ild78\Payment::$currency` and `ild78\Payment::$methodsAllowed` can throw exception when used with incompatible values
+- `ild78\Payment::$methodsAllowed`
 - `ild78\Payment::$responseAuthor`
+- `ild78\Payment\Status::CAPTURE_SENT`
+- `ild78\Http\Stream` and `ild78\Http\Uri` to complete internal PSR7 implementation
+- New supported currencies
+- PHPStan validation
 - Coverage report
 - PHPCS report
-- `ild78\Payment::isError()` and `ild78\Payment::isNotError()`
 
 ### Changed
-- `ild78\Payment::isStatus()` and `ild78\Payment::isNotStatus()` are now base on status
-- `ild78\Core\Object::get()`, return raw API data (even unknown properties)
+- `ild78\Payment::isStatus()` and `ild78\Payment::isNotStatus()` are now based on status
 
 ### Fixed
 - `ild78\Payment::$response` length
 - Misstype in `InternalServerErrorException` default message
 - PHPDoc
-- CI run
-- Tests
+- Tests / CI run
 
 ### Removed
 - `ild78\Payment::$responseMessage`, please refer to documentation to obtain the full list
 - Guzzle version from header, they remove the contant `VERSION` from the package
-- PHPStan validation
-- `ild78\Http\Stream` and `ild78\Http\Uri` to complete internal PSR7 implementation
 
 
 ## [0.0.5] - 2020-10-02
