@@ -62,7 +62,7 @@ class Customer extends ild78\Tests\atoum
             ->given($client = new mock\GuzzleHttp\Client)
             ->and($response = new mock\GuzzleHttp\Psr7\Response)
             ->and($body = file_get_contents(__DIR__ . '/fixtures/customers/create.json'))
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
             ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
@@ -171,7 +171,7 @@ class Customer extends ild78\Tests\atoum
             ->then
                 ->assert('Modify a fresh and not populated instance, will send only known data')
                     ->if($response = new mock\ild78\Http\Response(200))
-                    ->and($this->calling($response)->getBody = '{}')
+                    ->and($this->calling($response)->getBody = new ild78\Http\Stream('{}'))
                     ->and($this->calling($client)->request = $response)
 
                     ->if($this->newTestedInstance(uniqid()))
@@ -200,8 +200,8 @@ class Customer extends ild78\Tests\atoum
                 ->assert('Modify a populated instance will send everything known')
                     ->if($response = new mock\ild78\Http\Response(200))
                     ->and($body = file_get_contents(__DIR__ . '/fixtures/customers/read.json'))
-                    ->and($this->calling($response)->getBody[] = $body) // default response
-                    ->and($this->calling($response)->getBody[2] = '{}')
+                    ->and($this->calling($response)->getBody[] = new ild78\Http\Stream($body)) // default response
+                    ->and($this->calling($response)->getBody[2] = new ild78\Http\Stream('{}'))
                     ->and($this->calling($client)->request = $response)
 
                     ->if($this->newTestedInstance(uniqid()))

@@ -86,7 +86,10 @@ class Config extends ild78\Tests\atoum
                     ->object($calls[0]->getRequest())
                         ->isInstanceOf(ild78\Http\Request::class)
 
-                    ->string($calls[0]->getRequest()->getBody())
+                    ->object($calls[0]->getRequest()->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+
+                    ->castToString($calls[0]->getRequest()->getBody())
                         ->notContains($number)
                         ->contains($obfuscated)
 
@@ -132,14 +135,20 @@ class Config extends ild78\Tests\atoum
                     ->object($calls[0]->getRequest())
                         ->isInstanceOf(ild78\Http\Request::class)
 
-                    ->string($calls[0]->getRequest()->getBody())
+                    ->object($calls[0]->getRequest()->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+
+                    ->castToString($calls[0]->getRequest()->getBody())
                         ->notContains($iban)
                         ->contains($obfuscated)
 
                     ->object($calls[0]->getResponse())
                         ->isInstanceOf(ild78\Http\Response::class)
 
-                    ->string($calls[0]->getResponse()->getBody())
+                    ->object($calls[0]->getResponse()->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+
+                    ->castToString($calls[0]->getResponse()->getBody())
                         ->isIdenticalTo($body)
 
             ->assert('With debug mode activated / Guzzle / Without exception')
@@ -147,9 +156,8 @@ class Config extends ild78\Tests\atoum
                 ->and($this->testedInstance->setDebug(true))
 
                 ->if($client = new mock\GuzzleHttp\Client)
-                ->and($response = new mock\GuzzleHttp\Psr7\Response)
                 ->and($body = uniqid())
-                ->and($this->calling($response)->getBody = $body)
+                ->and($response = new mock\GuzzleHttp\Psr7\Response(200, [], $body))
                 ->and($this->calling($client)->request = $response)
 
                 ->and($this->testedInstance->setHttpClient($client))
@@ -177,6 +185,9 @@ class Config extends ild78\Tests\atoum
                     ->object($calls[0]->getRequest())
                         ->isInstanceOf(GuzzleHttp\Psr7\Request::class)
 
+                    ->object($calls[0]->getRequest()->getBody())
+                        ->isInstanceOf(GuzzleHttp\Psr7\Stream::class)
+
                     ->castToString($calls[0]->getRequest()->getBody())
                         ->notContains($iban)
                         ->contains($obfuscated)
@@ -184,7 +195,10 @@ class Config extends ild78\Tests\atoum
                     ->object($calls[0]->getResponse())
                         ->isInstanceOf(GuzzleHttp\Psr7\Response::class)
 
-                    ->string($calls[0]->getResponse()->getBody())
+                    ->object($calls[0]->getResponse()->getBody())
+                        ->isInstanceOf(GuzzleHttp\Psr7\Stream::class)
+
+                    ->castToString($calls[0]->getResponse()->getBody())
                         ->isIdenticalTo($body)
 
             ->assert('With debug mode activated / Guzzle / With exception')
@@ -226,12 +240,18 @@ class Config extends ild78\Tests\atoum
                     ->object($calls[0]->getRequest())
                         ->isInstanceOf(GuzzleHttp\Psr7\Request::class)
 
+                    ->object($calls[0]->getRequest()->getBody())
+                        ->isInstanceOf(GuzzleHttp\Psr7\Stream::class)
+
                     ->castToString($calls[0]->getRequest()->getBody())
                         ->notContains($iban)
                         ->contains($obfuscated)
 
                     ->object($calls[0]->getResponse())
                         ->isInstanceOf(GuzzleHttp\Psr7\Response::class)
+
+                    ->object($calls[0]->getResponse()->getBody())
+                        ->isInstanceOf(GuzzleHttp\Psr7\Stream::class)
 
                     ->castToString($calls[0]->getResponse()->getBody())
                         ->isIdenticalTo($body)
@@ -311,19 +331,28 @@ class Config extends ild78\Tests\atoum
     public function testGetDefaultTimeZone_SetDefaultTimeZone($zone)
     {
         $this
+            ->given($badName = uniqid())
             ->assert('Default value')
                 ->if($this->newTestedInstance([]))
                 ->then
                     ->variable($this->testedInstance->getDefaultTimeZone())
                         ->isNull
 
-            ->assert('Exception if not a string or a DateTimeZone instance')
+            ->assert('Exception if not a DateTimeZone instance')
                 ->exception(function () {
                     $this->newTestedInstance([])->setDefaultTimeZone(new DateTime);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
                     ->message
-                        ->isIdenticalTo('Invalid "$tz" argument.')
+                        ->isIdenticalTo('Invalid time zone.')
+
+            ->assert('Exception if not a valid time zone name')
+                ->exception(function () use ($badName) {
+                    $this->newTestedInstance([])->setDefaultTimeZone($badName);
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Invalid time zone "' . $badName . '".')
 
             ->assert('Update with a string')
                 ->if($this->newTestedInstance([]))

@@ -6,7 +6,7 @@ namespace ild78;
 use DateTimeZone;
 use GuzzleHttp;
 use ild78;
-use Psr\Log\LoggerInterface;
+use Psr;
 
 /**
  * Handle configuration, connection and credential to API
@@ -20,19 +20,19 @@ class Config
     /** @var ild78\Core\Request\Call[] */
     protected $calls = [];
 
-    /** @var boolean */
+    /** @var boolean|null */
     protected $debug;
 
     /** @var string */
     protected $host = 'api.iliad78.net';
 
-    /** @var ild78\Http\Client|GuzzleHttp\ClientInterface */
+    /** @var ild78\Http\Client|GuzzleHttp\ClientInterface|null */
     protected $httpClient;
 
-    /** @var self */
+    /** @var static|null */
     protected static $instance;
 
-    /** @var array[string]string */
+    /** @var array<string, string|null> */
     protected $keys = [
         'pprod' => null,
         'ptest' => null,
@@ -40,7 +40,7 @@ class Config
         'stest' => null,
     ];
 
-    /** @var Psr\\Log\\LoggerInterface */
+    /** @var Psr\Log\LoggerInterface|null */
     protected $logger;
 
     /** @var string */
@@ -52,7 +52,7 @@ class Config
     /** @var integer */
     protected $timeout = 5;
 
-    /** @var DateTimeZone */
+    /** @var DateTimeZone|null */
     protected $timezone;
 
     /** @var integer */
@@ -66,7 +66,6 @@ class Config
      *
      * @see self::init() for a quick config setup
      * @param string[] $keys Authentication keys.
-     * @return self
      */
     public function __construct(array $keys)
     {
@@ -77,7 +76,7 @@ class Config
      * Add a call to the list.
      *
      * @param ild78\Core\Request\Call $call New call to add.
-     * @return self
+     * @return $this
      */
     public function addCall(ild78\Core\Request\Call $call): self
     {
@@ -148,8 +147,13 @@ class Config
 
         if ($client instanceof ild78\Http\Client) {
             $curl = curl_version();
+            $version = 'unknown-version';
 
-            array_unshift($params, 'curl/' . $curl['version']);
+            if ($curl) {
+                $version = $curl['version'];
+            }
+
+            array_unshift($params, 'curl/' . $version);
         }
 
         if ($client instanceof GuzzleHttp\ClientInterface) {
@@ -160,12 +164,12 @@ class Config
     }
 
     /**
-     * Return current instance
+     * Return current instance.
      *
-     * This is used to prevent passing an API instance on everycall.
+     * This is used to prevent passing an API instance on every call.
      * `Api::setGlobal()` is called on every new instance to simplify your workflow.
      *
-     * @return self
+     * @return static
      * @throws ild78\Exceptions\InvalidArgumentException When no previous instance was stored (use `Config::init()`).
      */
     public static function getGlobal(): self
@@ -192,11 +196,11 @@ class Config
     /**
      * Return an instance of HTTP client
      *
-     * You can give your instance of `ild78\Http\Client` or `GuzzleHttp\Client`
+     * You can give your instance of `ild78\Http\Client` or `GuzzleHttp\ClientInterface`
      * with `Api::setHttpClient()` method.
      * If none provided, we will spawn a default instance for you.
      *
-     * @return object
+     * @return ild78\Http\Client|GuzzleHttp\ClientInterface
      */
     public function getHttpClient()
     {
@@ -214,11 +218,19 @@ class Config
     /**
      * Return a valid and PSR3 compatible logger instance
      *
-     * @return Psr\\Log\\LoggerInterface
+     * @return Psr\Log\LoggerInterface
      */
-    public function getLogger(): LoggerInterface
+    public function getLogger(): Psr\Log\LoggerInterface
     {
-        return $this->logger ?: new ild78\Core\Logger();
+        if ($this->logger) {
+            return $this->logger;
+        }
+
+        $logger = new ild78\Core\Logger();
+
+        $this->setLogger($logger);
+
+        return $logger;
     }
 
     /**
@@ -232,7 +244,7 @@ class Config
      */
     public function getMode(): string
     {
-        return $this->mode ?: static::TEST_MODE;
+        return $this->mode ?? static::TEST_MODE;
     }
 
     /**
@@ -240,13 +252,13 @@ class Config
      *
      * Default : 443 (HTTPS)
      *
-     * If defaut port is used, it will not be shown in API URI.
+     * If default port is used, it will not be shown in API URI.
      *
      * @return integer
      */
     public function getPort(): int
     {
-        return $this->port ?: 443;
+        return $this->port ?? 443;
     }
 
     /**
@@ -341,7 +353,7 @@ class Config
      *
      * Default : 1
      *
-     * @return string
+     * @return integer
      */
     public function getVersion(): int
     {
@@ -405,7 +417,7 @@ class Config
     /**
      * Reset default time zone
      *
-     * @return self
+     * @return $this
      */
     public function resetDefaultTimeZone(): self
     {
@@ -418,7 +430,7 @@ class Config
      * Change debug mode.
      *
      * @param boolean $value New value for the mode.
-     * @return self
+     * @return $this
      */
     public function setDebug(bool $value): self
     {
@@ -431,20 +443,29 @@ class Config
      * Update default time zone
      *
      * @param string|DateTimeZone $tz New time zone.
-     * @return self
+     * @return $this
      * @throws ild78\Exceptions\InvalidArgumentException When `$tz` is not a string or a DateTimeZone instance.
      */
     public function setDefaultTimeZone($tz): self
     {
+        $message = 'Invalid time zone.';
+        $zone = $tz;
+
         if (is_string($tz)) {
-            $tz = new DateTimeZone($tz);
+            $message = sprintf('Invalid time zone "%s".', $tz);
+
+            try {
+                $zone = new DateTimeZone($tz);
+            } catch (\Exception $exception) {
+                throw new ild78\Exceptions\InvalidArgumentException($message, $exception->getCode(), $exception);
+            }
         }
 
-        if (!($tz instanceof DateTimeZone)) {
-            throw new ild78\Exceptions\InvalidArgumentException('Invalid "$tz" argument.');
+        if (!($zone instanceof DateTimeZone)) {
+            throw new ild78\Exceptions\InvalidArgumentException($message);
         }
 
-        $this->timezone = $tz;
+        $this->timezone = $zone;
 
         return $this;
     }
@@ -466,7 +487,7 @@ class Config
      * Update API host
      *
      * @param string $host New host.
-     * @return self
+     * @return $this
      */
     public function setHost(string $host): self
     {
@@ -478,11 +499,11 @@ class Config
     /**
      * Update HTTP client instance
      *
-     * Be carefull, no limitation is done on this method to allow you to use your own
+     * Be careful, no limitation is done on this method to allow you to use your own
      * implementation of an HTTP client.
      *
      * @param ild78\Http\Client|GuzzleHttp\ClientInterface $client New instance.
-     * @return self
+     * @return $this
      */
     public function setHttpClient($client): self
     {
@@ -496,14 +517,12 @@ class Config
      *
      * @param string|string[] $keys One or more keys to update.
      *
-     * @return self
+     * @return $this
      */
     public function setKeys($keys): self
     {
-        $k = $keys;
-
         if (!is_array($keys)) {
-            $k = [$keys];
+            return $this->setKeys([$keys]);
         }
 
         $prefixes = [
@@ -513,7 +532,7 @@ class Config
             'stest',
         ];
 
-        foreach ($k as $key) {
+        foreach ($keys as $key) {
             foreach ($prefixes as $prefix) {
                 if (preg_match('`^' . $prefix . '_\w{24}$`', $key)) {
                     $this->keys[$prefix] = $key;
@@ -528,9 +547,9 @@ class Config
      * Update logger handler
      *
      * @param Psr\Log\LoggerInterface $logger A PSR3 compatible logger.
-     * @return self
+     * @return $this
      */
-    public function setLogger(LoggerInterface $logger): self
+    public function setLogger(Psr\Log\LoggerInterface $logger): self
     {
         $this->logger = $logger;
 
@@ -543,7 +562,7 @@ class Config
      * You should use class constant `LIVE_MODE` and `TEST_MODE` to be sure
      *
      * @param string $mode New mode. Should be class constant `LIVE_MODE` or `TEST_MODE`.
-     * @return self
+     * @return $this
      * @throws ild78\Exceptions\InvalidArgumentException If new mode is not valid.
      */
     public function setMode(string $mode): self
@@ -568,7 +587,7 @@ class Config
      * Update API port
      *
      * @param integer $port New port.
-     * @return self
+     * @return $this
      */
     public function setPort(int $port): self
     {
@@ -581,7 +600,7 @@ class Config
      * Update API timeout
      *
      * @param integer $timeout New timeout.
-     * @return self
+     * @return $this
      * @throws ild78\Exceptions\InvalidArgumentException When setting a too high timeout.
      */
     public function setTimeout(int $timeout): self
@@ -613,7 +632,7 @@ class Config
      * Update API version
      *
      * @param integer $version New version.
-     * @return self
+     * @return $this
      */
     public function setVersion(int $version): self
     {

@@ -18,10 +18,10 @@ class Logger implements LoggerInterface
      * System is unusable.
      *
      * @param string $message The log message.
-     * @param array  $context The log context.
+     * @param mixed[] $context The log context.
      * @return void
      */
-    public function emergency($message, array $context = [])
+    public function emergency($message, array $context = []): void
     {
     }
 
@@ -32,10 +32,10 @@ class Logger implements LoggerInterface
      * trigger the SMS alerts and wake you up.
      *
      * @param string $message The log message.
-     * @param array  $context The log context.
+     * @param mixed[] $context The log context.
      * @return void
      */
-    public function alert($message, array $context = [])
+    public function alert($message, array $context = []): void
     {
     }
 
@@ -45,10 +45,10 @@ class Logger implements LoggerInterface
      * Example: Application component unavailable, unexpected exception.
      *
      * @param string $message The log message.
-     * @param array  $context The log context.
+     * @param mixed[] $context The log context.
      * @return void
      */
-    public function critical($message, array $context = [])
+    public function critical($message, array $context = []): void
     {
     }
 
@@ -57,10 +57,10 @@ class Logger implements LoggerInterface
      * be logged and monitored.
      *
      * @param string $message The log message.
-     * @param array  $context The log context.
+     * @param mixed[] $context The log context.
      * @return void
      */
-    public function error($message, array $context = [])
+    public function error($message, array $context = []): void
     {
     }
 
@@ -71,10 +71,10 @@ class Logger implements LoggerInterface
      * that are not necessarily wrong.
      *
      * @param string $message The log message.
-     * @param array  $context The log context.
+     * @param mixed[] $context The log context.
      * @return void
      */
-    public function warning($message, array $context = [])
+    public function warning($message, array $context = []): void
     {
     }
 
@@ -82,10 +82,10 @@ class Logger implements LoggerInterface
      * Normal but significant events.
      *
      * @param string $message The log message.
-     * @param array  $context The log context.
+     * @param mixed[] $context The log context.
      * @return void
      */
-    public function notice($message, array $context = [])
+    public function notice($message, array $context = []): void
     {
     }
 
@@ -95,10 +95,10 @@ class Logger implements LoggerInterface
      * Example: User logs in, SQL logs.
      *
      * @param string $message The log message.
-     * @param array  $context The log context.
+     * @param mixed[] $context The log context.
      * @return void
      */
-    public function info($message, array $context = [])
+    public function info($message, array $context = []): void
     {
     }
 
@@ -106,10 +106,10 @@ class Logger implements LoggerInterface
      * Detailed debug information.
      *
      * @param string $message The log message.
-     * @param array  $context The log context.
+     * @param mixed[] $context The log context.
      * @return void
      */
-    public function debug($message, array $context = [])
+    public function debug($message, array $context = []): void
     {
     }
 
@@ -121,15 +121,15 @@ class Logger implements LoggerInterface
      * The `$level` can be everything and we can not use it without choosing one for you.
      * Monolog use 100 as an emergency level, where Zend uses 0.
      *
-     * It is simpler to forget this method and onl use stricly named method.
+     * It is simpler to forget this method and onl use strictly named method.
      *
      * @param mixed  $level   The log level.
      * @param string $message The log message.
-     * @param array  $context The log context.
+     * @param mixed[] $context The log context.
      * @return void
      * @throws ild78\Exceptions\BadMethodCallException Every time, on every call ! Do not use this method.
      */
-    public function log($level, $message, array $context = [])
+    public function log($level, $message, array $context = []): void
     {
         $message = sprintf('This method is not allowed, use "%s()" method instead', (string) $level);
 

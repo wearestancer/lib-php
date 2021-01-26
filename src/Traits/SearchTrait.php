@@ -24,11 +24,13 @@ trait SearchTrait
      * `start` must be an integer, will be used as a pagination cursor, starts at 0.
      *
      * @param array $terms Search terms. May have `created`, `limit` or `start` key.
-     * @return Generator
+     * @return Generator<static>
      * @throws ild78\Exceptions\InvalidSearchFilterException When `$terms` is invalid.
      * @throws ild78\Exceptions\InvalidSearchCreationFilterException When `created` is invalid.
      * @throws ild78\Exceptions\InvalidSearchLimitException When `limit` is invalid.
      * @throws ild78\Exceptions\InvalidSearchStartException When `start` is invalid.
+     *
+     * @phpstan-param array{ created?: DateTime|int, limit?: int, start?: int} $terms
      */
     public static function list(array $terms): Generator
     {
@@ -36,6 +38,7 @@ trait SearchTrait
         $others = [];
 
         if (method_exists(static::class, 'filterListParams')) {
+            // @phpstan-ignore-next-line Method must be defined or we can not be there
             $others = static::filterListParams($terms);
         }
 
@@ -93,7 +96,9 @@ trait SearchTrait
         $element = new static(); // Mandatory for requests.
         $property = strtolower($element->getEntityName() . 's');
 
-        $gen = function () use ($request, $element, $params, $property) {
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+        // @var callable(): Generator<static> $gen
+        $gen = function () use ($request, $element, $params, $property): Generator {
             $more = true;
             $start = 0;
 

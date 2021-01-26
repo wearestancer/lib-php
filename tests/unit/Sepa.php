@@ -65,8 +65,16 @@ class Sepa extends ild78\Tests\atoum
             ->given($this->newTestedInstance)
             ->and($withoutSpaces = str_replace(' ', '', $iban))
             ->and($withSpaces = trim(chunk_split($withoutSpaces, 4, ' ')))
-            ->and($this->testedInstance->setIban($iban))
             ->then
+                ->variable($this->testedInstance->getIban())
+                    ->isNull
+
+                ->variable($this->testedInstance->getFormattedIban())
+                    ->isNull
+
+                ->object($this->testedInstance->setIban($iban))
+                    ->isTestedInstance
+
                 ->string($this->testedInstance->getIban())
                     ->isIdenticalTo($withoutSpaces)
 

@@ -27,6 +27,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Removed
 - `ild78\Payment::$responseMessage`, please refer to documentation to obtain the full list
 - Guzzle version from header, they remove the contant `VERSION` from the package
+- PHPStan validation
+- `ild78\Http\Stream` and `ild78\Http\Uri` to complete internal PSR7 implementation
+
+### Fixed
+- Misstype in `InternalServerErrorException` default message
+- PHPDoc
 
 
 ## [0.0.5] - 2020-10-02

@@ -1144,7 +1144,7 @@ class StubObject extends ild78\Tests\atoum
             ->and($this->calling($client)->request = $response)
 
             ->assert('Can be null')
-                ->given($this->calling($response)->getBody = '{}')
+                ->given($this->calling($response)->getBody = new ild78\Http\Stream('{}'))
 
                 ->if($this->newTestedInstance(uniqid()))
                 ->then
@@ -1153,7 +1153,7 @@ class StubObject extends ild78\Tests\atoum
 
             ->assert('No date but an ID, it will populate data')
                 ->given($created = rand(946681200, 1893452400))
-                ->and($this->calling($response)->getBody = json_encode(compact('created')))
+                ->and($this->calling($response)->getBody = new ild78\Http\Stream(json_encode(compact('created'))))
 
                 ->if($this->newTestedInstance(uniqid()))
                 ->then
@@ -1183,7 +1183,7 @@ class StubObject extends ild78\Tests\atoum
             ])
 
             ->if($response = new mock\ild78\Http\Response(200))
-            ->and($this->calling($response)->getBody = json_encode($data))
+            ->and($this->calling($response)->getBody[] = new ild78\Http\Stream(json_encode($data)))
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($this->calling($client)->request = $response)
@@ -1274,8 +1274,7 @@ class StubObject extends ild78\Tests\atoum
                                 ->isIdenticalTo($fixed)
                         ;
                     })
-                    ->notHasKey('value')
-                    ->hasKeys(['restricted', 'required'])
+                    ->hasKeys(['restricted', 'required', 'value'])
 
                 ->array($this->testedInstance->getModel())
                     ->hasKey($property)
@@ -1291,8 +1290,7 @@ class StubObject extends ild78\Tests\atoum
                                         ->isIdenticalTo($fixed)
                                 ;
                             })
-                            ->notHasKey('value')
-                            ->hasKeys(['restricted', 'required'])
+                            ->hasKeys(['restricted', 'required', 'value'])
                         ;
                     })
         ;
@@ -2171,7 +2169,7 @@ class StubObject extends ild78\Tests\atoum
 
                 ->if($response = new mock\ild78\Http\Response(200))
                 ->and($this->calling($client)->request = $response)
-                ->and($this->calling($response)->getBody = null)
+                ->and($this->calling($response)->getBody = new ild78\Http\Stream(''))
 
                 ->if($string1 = $this->makeStringBetween(10, 20))
                 ->and($integer1 = $this->makeIntegerBetween(10, 20))

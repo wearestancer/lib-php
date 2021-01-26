@@ -8,11 +8,99 @@ use Psr;
 
 class Request extends ild78\Tests\atoum
 {
+    use ild78\Tests\Provider\Http;
+
     public function testClass()
     {
         $this
             ->currentlyTestedClass
                 ->implements(Psr\Http\Message\RequestInterface::class)
+        ;
+    }
+
+    /**
+     * @dataProvider verbAndUrlProvider
+     */
+    public function test__construct($method, $uri)
+    {
+        $this
+            ->assert('Body as a string')
+                ->if($body = uniqid())
+                ->then
+                    ->object($this->newTestedInstance($method, $uri, [], $body))
+                        ->isInstanceOfTestedClass
+
+                    ->string($this->testedInstance->getMethod())
+                        ->isIdenticalTo((string) $method)
+
+                    ->object($this->testedInstance->getUri())
+                        ->isInstanceOf(ild78\Http\Uri::class)
+
+                    ->castToString($this->testedInstance->getUri())
+                        ->isIdenticalTo((string) $uri)
+
+                    ->object($this->testedInstance->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+
+                    ->castToString($this->testedInstance->getBody())
+                        ->isIdenticalTo($body)
+
+            ->assert('Body as an object')
+                ->if($body = new ild78\Http\Stream(uniqid()))
+                ->then
+                    ->object($this->newTestedInstance($method, $uri, [], $body))
+                        ->isInstanceOfTestedClass
+
+                    ->string($this->testedInstance->getMethod())
+                        ->isIdenticalTo((string) $method)
+
+                    ->object($this->testedInstance->getUri())
+                        ->isInstanceOf(ild78\Http\Uri::class)
+
+                    ->castToString($this->testedInstance->getUri())
+                        ->isIdenticalTo((string) $uri)
+
+                    ->object($this->testedInstance->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+                        ->isIdenticalTo($body)
+
+            ->assert('Body as a null value')
+                ->object($this->newTestedInstance($method, $uri, [], null))
+                    ->isInstanceOfTestedClass
+
+                ->string($this->testedInstance->getMethod())
+                    ->isIdenticalTo((string) $method)
+
+                ->object($this->testedInstance->getUri())
+                    ->isInstanceOf(ild78\Http\Uri::class)
+
+                ->castToString($this->testedInstance->getUri())
+                    ->isIdenticalTo((string) $uri)
+
+                ->object($this->testedInstance->getBody())
+                    ->isInstanceOf(ild78\Http\Stream::class)
+
+                ->castToString($this->testedInstance->getBody())
+                    ->isEmpty
+
+            ->assert('Body as an array')
+                ->object($this->newTestedInstance($method, $uri, [], []))
+                    ->isInstanceOfTestedClass
+
+                ->string($this->testedInstance->getMethod())
+                    ->isIdenticalTo((string) $method)
+
+                ->object($this->testedInstance->getUri())
+                    ->isInstanceOf(ild78\Http\Uri::class)
+
+                ->castToString($this->testedInstance->getUri())
+                    ->isIdenticalTo((string) $uri)
+
+                ->object($this->testedInstance->getBody())
+                    ->isInstanceOf(ild78\Http\Stream::class)
+
+                ->castToString($this->testedInstance->getBody())
+                    ->isIdenticalTo('Unsupported multipart form data')
         ;
     }
 
@@ -28,20 +116,45 @@ class Request extends ild78\Tests\atoum
         ;
     }
 
-    public function testGetUri_GetRequestTarget()
+    public function testGetUri()
     {
         $this
             ->given($method = uniqid())
             ->and($host = uniqid())
-            ->and($query = '/' . uniqid())
-            ->and($uri = 'http://' . $host . $query)
+            ->and($path = '/' . uniqid())
+            ->and($location = 'http://' . $host . $path)
+            ->and($uri = new ild78\Http\Uri($location))
+            ->then
+                ->assert('With a string')
+                    ->if($this->newTestedInstance($method, $location))
+                    ->then
+                        ->object($this->testedInstance->getUri())
+                            ->isInstanceOf(ild78\Http\Uri::class)
+
+                        ->castToString($this->testedInstance->getUri())
+                            ->isIdenticalTo($location)
+
+                ->assert('With an object')
+                    ->if($this->newTestedInstance($method, $uri))
+                    ->then
+                        ->object($this->testedInstance->getUri())
+                            ->isInstanceOf(ild78\Http\Uri::class)
+                            ->isIdenticalTo($uri)
+        ;
+    }
+
+    /**
+     * @dataProvider urlProvider
+     */
+    public function testGetRequestTarget($location, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
+    {
+        $this
+            ->given($method = uniqid())
+            ->and($uri = new ild78\Http\Uri($location))
             ->if($this->newTestedInstance($method, $uri))
             ->then
-                ->string($this->testedInstance->getUri())
-                    ->isIdenticalTo($query)
-
                 ->string($this->testedInstance->getRequestTarget())
-                    ->isIdenticalTo($query)
+                    ->isIdenticalTo($uri->getLocalCommand())
         ;
     }
 
@@ -58,8 +171,11 @@ class Request extends ild78\Tests\atoum
                     ->object($this->testedInstance->updateUri($uri))
                         ->isTestedInstance
 
-                    ->string($this->testedInstance->getUri())
-                        ->isIdenticalTo($query)
+                    ->object($this->testedInstance->getUri())
+                        ->isInstanceOf(Ild78\Http\Uri::class)
+
+                    ->castToString($this->testedInstance->getUri())
+                        ->isIdenticalTo($uri)
 
                     ->array($this->testedInstance->getHeader('host'))
                         ->contains($host)
@@ -72,8 +188,11 @@ class Request extends ild78\Tests\atoum
                     ->object($this->testedInstance->updateUri($uri))
                         ->isTestedInstance
 
-                    ->string($this->testedInstance->getUri())
-                        ->isIdenticalTo($query)
+                    ->object($this->testedInstance->getUri())
+                        ->isInstanceOf(Ild78\Http\Uri::class)
+
+                    ->castToString($this->testedInstance->getUri())
+                        ->isIdenticalTo($uri)
 
                     ->array($this->testedInstance->getHeader('host'))
                         ->contains($host)
@@ -85,8 +204,11 @@ class Request extends ild78\Tests\atoum
                     ->object($this->testedInstance->updateUri($uri))
                         ->isTestedInstance
 
-                    ->string($this->testedInstance->getUri())
-                        ->isIdenticalTo('/')
+                    ->object($this->testedInstance->getUri())
+                        ->isInstanceOf(Ild78\Http\Uri::class)
+
+                    ->castToString($this->testedInstance->getUri())
+                        ->isIdenticalTo($uri)
 
                     ->array($this->testedInstance->getHeader('host'))
                         ->contains($host)
@@ -98,8 +220,43 @@ class Request extends ild78\Tests\atoum
                     ->object($this->testedInstance->updateUri($uri))
                         ->isTestedInstance
 
-                    ->string($this->testedInstance->getUri())
-                        ->isIdenticalTo('/')
+                    ->object($this->testedInstance->getUri())
+                        ->isInstanceOf(Ild78\Http\Uri::class)
+
+                    ->castToString($this->testedInstance->getUri())
+                        ->isIdenticalTo($uri)
+
+                    ->array($this->testedInstance->getHeader('host'))
+                        ->contains($host)
+
+            ->assert('With HTTP, host only and trailing slash')
+                ->if($host = uniqid())
+                ->and($uri = 'http://' . $host . '/')
+                ->then
+                    ->object($this->testedInstance->updateUri($uri))
+                        ->isTestedInstance
+
+                    ->object($this->testedInstance->getUri())
+                        ->isInstanceOf(Ild78\Http\Uri::class)
+
+                    ->castToString($this->testedInstance->getUri())
+                        ->isIdenticalTo($uri)
+
+                    ->array($this->testedInstance->getHeader('host'))
+                        ->contains($host)
+
+            ->assert('With HTTPS, host only and trailing slash')
+                ->if($host = uniqid())
+                ->and($uri = 'https://' . $host . '/')
+                ->then
+                    ->object($this->testedInstance->updateUri($uri))
+                        ->isTestedInstance
+
+                    ->object($this->testedInstance->getUri())
+                        ->isInstanceOf(Ild78\Http\Uri::class)
+
+                    ->castToString($this->testedInstance->getUri())
+                        ->isIdenticalTo($uri)
 
                     ->array($this->testedInstance->getHeader('host'))
                         ->contains($host)
@@ -154,8 +311,11 @@ class Request extends ild78\Tests\atoum
                     ->isIdenticalTo(strtoupper($method))
 
                 // Check no diff on other properties
-                ->string($this->testedInstance->getBody())
+                ->object($this->testedInstance->getBody())
+                    ->isInstanceOf(ild78\Http\Stream::class)
                     ->isIdenticalTo($obj->getBody())
+
+                ->castToString($this->testedInstance->getBody())
                     ->isIdenticalTo($body)
 
                 ->array($this->testedInstance->getHeaders())
@@ -194,8 +354,11 @@ class Request extends ild78\Tests\atoum
                     ->isIdenticalTo($query)
 
                 // Check no diff on other properties
-                ->string($this->testedInstance->getBody())
+                ->object($this->testedInstance->getBody())
+                    ->isInstanceOf(ild78\Http\Stream::class)
                     ->isIdenticalTo($obj->getBody())
+
+                ->castToString($this->testedInstance->getBody())
                     ->isIdenticalTo($body)
 
                 ->array($this->testedInstance->getHeaders())

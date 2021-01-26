@@ -22,7 +22,7 @@ class Response implements Psr\Http\Message\ResponseInterface
     /** @var string */
     protected $reason;
 
-    /** @var array HTTP status list */
+    /** @var array<int, string> HTTP status list */
     protected $status = [
         100 => 'Continue',
         101 => 'Switching Protocols',
@@ -92,22 +92,30 @@ class Response implements Psr\Http\Message\ResponseInterface
      * Create a response instance
      *
      * @param integer $code Status code.
-     * @param string $body Response body.
-     * @param array $headers Response headers.
+     * @param Psr\Http\Message\StreamInterface|string|null $body Response body.
+     * @param array<string, string|string[]> $headers Response headers.
      * @param string $version Protocol version.
      * @param string|null $reason  Reason phrase (when empty a default will be used based on the status code).
      */
     public function __construct(
         int $code,
-        string $body = null,
+        $body = null,
         array $headers = [],
         string $version = '1.1',
         $reason = null
     ) {
         $this->code = $code;
-        $this->body = $body;
         $this->protocol = $version;
-        $this->reason = $reason;
+
+        if ($body instanceof Psr\Http\Message\StreamInterface) {
+            $this->body = $body;
+        } else {
+            $this->body = new Stream($body ?? '');
+        }
+
+        if ($reason) {
+            $this->reason = $reason;
+        }
 
         foreach ($headers as $name => $value) {
             $this->addHeader($name, $value);
@@ -168,7 +176,7 @@ class Response implements Psr\Http\Message\ResponseInterface
      * @param string $reasonPhrase The reason phrase to use with the
      *     provided status code; if none is provided, implementations MAY
      *     use the defaults as suggested in the HTTP specification.
-     * @return self
+     * @return static
      */
     public function withStatus($code, $reasonPhrase = ''): self
     {
