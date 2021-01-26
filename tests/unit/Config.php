@@ -377,7 +377,7 @@ class Config extends ild78\Tests\atoum
                 php_uname('r'),
                 PHP_VERSION,
             ]))
-            ->and($guzzlePrefix = 'GuzzleHttp/' . GuzzleHttp\Client::VERSION)
+            ->and($guzzlePrefix = 'GuzzleHttp')
             ->and($curlPrefix = 'curl/' . curl_version()['version'])
 
             ->if($this->testedInstance->setHttpClient($client))
