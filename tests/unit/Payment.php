@@ -459,6 +459,7 @@ class Payment extends ild78\Tests\atoum
         ;
 
         $oks = [
+            ild78\Payment\Status::CAPTURE_SENT,
             ild78\Payment\Status::CAPTURED,
             ild78\Payment\Status::TO_CAPTURE,
         ];
