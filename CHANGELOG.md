@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - `ild78\Payment::$methodsAllowed`
+- `ild78\Payment\Status::CAPTURE_SENT`
 - New supported currencies
 - `ild78\Payment::$currency` and `ild78\Payment::$methodsAllowed` can throw exception when used with incompatible values
 - `ild78\Payment::$responseAuthor`
@@ -21,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - `ild78\Payment::$response` length
+- Misstype in `InternalServerErrorException` default message
+- PHPDoc
 - CI run
 - Tests
 
@@ -29,10 +32,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Guzzle version from header, they remove the contant `VERSION` from the package
 - PHPStan validation
 - `ild78\Http\Stream` and `ild78\Http\Uri` to complete internal PSR7 implementation
-
-### Fixed
-- Misstype in `InternalServerErrorException` default message
-- PHPDoc
 
 
 ## [0.0.5] - 2020-10-02

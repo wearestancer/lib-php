@@ -436,6 +436,7 @@ class Payment extends ild78\Core\AbstractObject
         }
 
         $allowed = [
+            ild78\Payment\Status::CAPTURE_SENT,
             ild78\Payment\Status::CAPTURED,
             ild78\Payment\Status::TO_CAPTURE,
         ];
@@ -475,6 +476,7 @@ class Payment extends ild78\Core\AbstractObject
         }
 
         $allowed = [
+            ild78\Payment\Status::CAPTURE_SENT,
             ild78\Payment\Status::CAPTURED,
             ild78\Payment\Status::TO_CAPTURE,
         ];

@@ -12,6 +12,7 @@ class Status
     public const AUTHORIZED = 'authorized';
     public const CANCELED = 'canceled';
     public const CAPTURE = 'capture';
+    public const CAPTURE_SENT = 'capture_sent';
     public const CAPTURED = 'captured';
     public const DISPUTED = 'disputed';
     public const EXPIRED = 'expired';

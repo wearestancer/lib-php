@@ -30,6 +30,11 @@ class Status extends ild78\Tests\atoum
                     ->isEqualTo('capture')
 
             ->currentlyTestedClass
+                ->hasConstant('CAPTURE_SENT')
+                ->constant('CAPTURE_SENT')
+                    ->isEqualTo('capture_sent')
+
+            ->currentlyTestedClass
                 ->hasConstant('CAPTURED')
                 ->constant('CAPTURED')
                     ->isEqualTo('captured')
