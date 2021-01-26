@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - `ild78\Payment::$methodsAllowed`
+- `ild78\Payment\Status::CAPTURE_SENT`
 - New supported currencies
 - `ild78\Payment::$currency` and `ild78\Payment::$methodsAllowed` can throw exception when used with incompatible values
 - `ild78\Payment::$responseAuthor`
