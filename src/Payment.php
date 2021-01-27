@@ -8,7 +8,7 @@ use DateTimeImmutable;
 use ild78;
 
 /**
- * Representation of a payment
+ * Representation of a payment.
  *
  * @method integer|null getAmount()
  * @method ild78\Auth|null getAuth()
