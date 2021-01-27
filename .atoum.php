@@ -21,10 +21,10 @@ $runner->addExtension(new mageekguy\atoum\jsonSchema\extension($script));
 if (extension_loaded('xdebug') === true) {
     $script->enableBranchAndPathCoverage();
 
-    if (!getenv('CI')) {
-        // Show default report
-        $script->addDefaultReport();
+    // Show default report
+    $script->addDefaultReport();
 
+    if (!getenv('CI')) {
         $path = __DIR__ . '/reports/coverage';
 
         if (!is_dir($path)) {
