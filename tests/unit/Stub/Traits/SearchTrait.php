@@ -309,4 +309,92 @@ class SearchTrait extends ild78\Tests\atoum
                                 ->once
         ;
     }
+
+    public function testList_with_until()
+    {
+        $created = time() - rand(10, 1000000);
+        $until = 0;
+        $tmp = $created;
+        $items = [];
+
+        for ($index = 0; $index < 5; $index++) {
+            $until = $tmp;
+            $items[] = [
+                'created' => $tmp += rand(100, 1000),
+                'id' => 'stub_' . $this->getRandomString(24),
+            ];
+        }
+
+        $body = [
+            'live_mode' => true,
+            'searchtraits' => $items,
+            'range' => [
+                'end' => 5,
+                'has_more' => false,
+                'limit' => 10,
+                'start' => 0,
+            ],
+        ];
+
+        $this
+            ->given($client = new mock\ild78\Http\Client)
+            ->and($response = new mock\ild78\Http\Response(200, json_encode($body)))
+            ->and($this->calling($client)->request = $response)
+            ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
+
+            ->and($options = [
+                'headers' => [
+                    'Authorization' => $config->getBasicAuthHeader(),
+                    'Content-Type' => 'application/json',
+                    'User-Agent' => $config->getDefaultUserAgent(),
+                ],
+                'timeout' => $config->getTimeout(),
+            ])
+
+            ->if($limit = rand(1, 100))
+            ->and($start = rand(0, PHP_INT_MAX))
+
+            ->and($location = $this->newTestedInstance->getUri())
+            ->and($terms1 = [
+                'created' => $created,
+                'limit' => $limit,
+                'start' => $start,
+            ])
+            ->and($location1 = $location . '?' . http_build_query($terms1))
+            ->and($terms1['created_until'] = $until)
+
+            ->then
+                ->generator(testedClass::list($terms1))
+                    ->yields
+                        ->object
+                            ->isInstanceOf(testedClass::class)
+                            ->toString
+                                ->isIdenticalTo('"' . $items[0]['id'] . '"')
+                    ->yields
+                        ->object
+                            ->isInstanceOf(testedClass::class)
+                            ->toString
+                                ->isIdenticalTo('"' . $items[1]['id'] . '"')
+                    ->yields
+                        ->object
+                            ->isInstanceOf(testedClass::class)
+                            ->toString
+                                ->isIdenticalTo('"' . $items[2]['id'] . '"')
+                    ->yields
+                        ->object
+                            ->isInstanceOf(testedClass::class)
+                            ->toString
+                                ->isIdenticalTo('"' . $items[3]['id'] . '"')
+                    ->yields
+                        ->variable
+                            ->isNull
+
+                ->mock($client)
+                    ->call('request')
+                        ->withArguments('GET', $location1, $options)
+                            ->once
+        ;
+    }
 }

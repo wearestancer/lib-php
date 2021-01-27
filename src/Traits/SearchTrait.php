@@ -58,6 +58,7 @@ trait SearchTrait
         if (array_key_exists('created_until', $terms)) {
             $exception = ild78\Exceptions\InvalidSearchCreationUntilFilterException::class;
             $until = static::validateDateRelativeFilter($terms['created_until'], 'Created until', $exception);
+            unset($params['created_until']);
         }
 
         if ($until && array_key_exists('created', $params) && $params['created'] > $until) {
@@ -92,7 +93,7 @@ trait SearchTrait
 
         // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
         // @var callable(): Generator<static> $gen
-        $gen = function () use ($request, $element, $params, $property): Generator {
+        $gen = function () use ($request, $element, $params, $property, $until): Generator {
             $more = true;
             $start = 0;
 
@@ -114,6 +115,11 @@ trait SearchTrait
                             $start += $results['range']['limit'];
 
                             foreach ($results[$property] as $data) {
+                                if ($until && $data['created'] > $until) {
+                                    $more = false;
+                                    break;
+                                }
+
                                 $obj = new static($data['id']);
 
                                 $obj->cleanModified = true;
