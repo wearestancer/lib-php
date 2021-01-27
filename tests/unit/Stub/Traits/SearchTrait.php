@@ -116,6 +116,51 @@ class SearchTrait extends ild78\Tests\atoum
                     ->message
                         ->isIdenticalTo('Created must be a position integer or a DateTime object.')
 
+            ->assert('Invalid created until filter')
+                ->exception(function () {
+                    testedClass::list(['created_until' => time() + 100]);
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationUntilFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Created until must be in the past.')
+
+                ->exception(function () {
+                    $date = new DateTime();
+                    $date->add(new DateInterval('P1D'));
+
+                    testedClass::list(['created_until' => $date]);
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationUntilFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Created until must be in the past.')
+
+                ->exception(function () {
+                    $created = new DateTime();
+                    $created->sub(new DateInterval('P1D'));
+
+                    $until = new DateTime();
+                    $until->sub(new DateInterval('P2D'));
+
+                    testedClass::list(['created' => $created, 'created_until' => $until]);
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationUntilFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Created until must be after created date.')
+
+                ->exception(function () {
+                    testedClass::list(['created_until' => 0]);
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationUntilFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Created until must be a position integer or a DateTime object.')
+
+                ->exception(function () {
+                    testedClass::list(['created_until' => uniqid()]);
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationUntilFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Created until must be a position integer or a DateTime object.')
+
             ->assert('Make request')
                 ->if($limit = rand(1, 100))
                 ->and($start = rand(0, PHP_INT_MAX))

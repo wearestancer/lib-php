@@ -27,15 +27,17 @@ trait SearchTrait
      * @return Generator<static>
      * @throws ild78\Exceptions\InvalidSearchFilterException When `$terms` is invalid.
      * @throws ild78\Exceptions\InvalidSearchCreationFilterException When `created` is invalid.
+     * @throws ild78\Exceptions\InvalidSearchCreationUntilFilterException When `created_until` is invalid.
      * @throws ild78\Exceptions\InvalidSearchLimitException When `limit` is invalid.
      * @throws ild78\Exceptions\InvalidSearchStartException When `start` is invalid.
      *
-     * @phpstan-param array{ created?: DateTimeInterface|int, limit?: int, start?: int} $terms
+     * @phpstan-param array{ created?: DateTimeInterface|int, created_until?: DateTimeInterface|int, limit?: int, start?: int} $terms
      */
     public static function list(array $terms): Generator
     {
-        $allowed = array_flip(['created', 'limit', 'start']);
+        $allowed = array_flip(['created', 'created_until', 'limit', 'start']);
         $others = [];
+        $until = null;
 
         if (method_exists(static::class, 'filterListParams')) {
             // @phpstan-ignore-next-line Method must be defined or we can not be there
@@ -51,6 +53,17 @@ trait SearchTrait
         if (array_key_exists('created', $terms)) {
             $exception = ild78\Exceptions\InvalidSearchCreationFilterException::class;
             $params['created'] = static::validateDateRelativeFilter($terms['created'], 'Created', $exception);
+        }
+
+        if (array_key_exists('created_until', $terms)) {
+            $exception = ild78\Exceptions\InvalidSearchCreationUntilFilterException::class;
+            $until = static::validateDateRelativeFilter($terms['created_until'], 'Created until', $exception);
+        }
+
+        if ($until && array_key_exists('created', $params) && $params['created'] > $until) {
+            $message = 'Created until must be after created date.';
+
+            throw new ild78\Exceptions\InvalidSearchCreationUntilFilterException($message);
         }
 
         if (array_key_exists('limit', $terms)) {
