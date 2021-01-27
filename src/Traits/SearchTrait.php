@@ -49,27 +49,8 @@ trait SearchTrait
         }
 
         if (array_key_exists('created', $terms)) {
-            $created = $terms['created'];
-
-            if ($terms['created'] instanceof DateTimeInterface) {
-                $created = (int) $terms['created']->format('U');
-            }
-
-            $params['created'] = $created;
-
-            $type = gettype($created);
-
-            if (!$created || $type !== 'integer') {
-                $message = 'Created must be a position integer or a DateTime object.';
-
-                throw new ild78\Exceptions\InvalidSearchCreationFilterException($message);
-            }
-
-            if ($created > time()) {
-                $message = 'Created must be in the past.';
-
-                throw new ild78\Exceptions\InvalidSearchCreationFilterException($message);
-            }
+            $exception = ild78\Exceptions\InvalidSearchCreationFilterException::class;
+            $params['created'] = static::validateDateRelativeFilter($terms['created'], 'Created', $exception);
         }
 
         if (array_key_exists('limit', $terms)) {
@@ -136,5 +117,43 @@ trait SearchTrait
         };
 
         return $gen();
+    }
+
+    /**
+     * Validate date relative filter.
+     *
+     * @param mixed $value Parameter value.
+     * @param string $name Parameter name.
+     * @param string $exception Exception to throw.
+     *
+     * @return integer Ready to use timestamp.
+     *
+     * @throws ild78\Exceptions\InvalidSearchFilterException When `created` is invalid.
+     *
+     * @phpstan-param class-string $exception Exception to throw.
+     */
+    protected static function validateDateRelativeFilter($value, string $name, string $exception): int
+    {
+        $timestamp = $value;
+
+        if ($value instanceof DateTimeInterface) {
+            $timestamp = $value->getTimestamp();
+        }
+
+        $type = gettype($timestamp);
+
+        if (!$timestamp || $type !== 'integer') {
+            $message = $name . ' must be a position integer or a DateTime object.';
+
+            throw new $exception($message);
+        }
+
+        if ($timestamp > time()) {
+            $message = $name . ' must be in the past.';
+
+            throw new $exception($message);
+        }
+
+        return $timestamp;
     }
 }
