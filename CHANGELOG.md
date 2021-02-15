@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `ild78\Sepa` validation
 - `ild78\Core\Object::get()`, return raw API data (even unknown properties)
 - `ild78\Payment::isError()` and `ild78\Payment::isNotError()`
+- New `created_until` parameter on `ild78\Payment::list()` and `ild78\Dispute::list()` methods
 - `ild78\Payment::$currency` and `ild78\Payment::$methodsAllowed` can throw exception when used with incompatible values
 - `ild78\Payment::$methodsAllowed`
 - `ild78\Payment::$responseAuthor`
@@ -21,6 +22,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - PHPCS report
 
 ### Changed
+- `ild78\Payment::list()` and `ild78\Dispute::list()` uses `DateTimeInterface` in parameters
+- `created` parameter accepts `DatePeriod` on `ild78\Payment::list()` and `ild78\Dispute::list()` methods
 - `ild78\Payment::isStatus()` and `ild78\Payment::isNotStatus()` are now based on status
 
 ### Fixed
