@@ -162,7 +162,7 @@ trait SearchTrait
         $type = gettype($timestamp);
 
         if (!$timestamp || $type !== 'integer') {
-            $message = $name . ' must be a position integer or a DateTime object.';
+            $message = $name . ' must be a positive integer or a DateTime object.';
 
             throw new $exception($message);
         }

@@ -107,14 +107,14 @@ class SearchTrait extends ild78\Tests\atoum
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilterException::class)
                     ->message
-                        ->isIdenticalTo('Created must be a position integer or a DateTime object.')
+                        ->isIdenticalTo('Created must be a positive integer or a DateTime object.')
 
                 ->exception(function () {
                     testedClass::list(['created' => uniqid()]);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilterException::class)
                     ->message
-                        ->isIdenticalTo('Created must be a position integer or a DateTime object.')
+                        ->isIdenticalTo('Created must be a positive integer or a DateTime object.')
 
             ->assert('Invalid created until filter')
                 ->exception(function () {
@@ -152,14 +152,14 @@ class SearchTrait extends ild78\Tests\atoum
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationUntilFilterException::class)
                     ->message
-                        ->isIdenticalTo('Created until must be a position integer or a DateTime object.')
+                        ->isIdenticalTo('Created until must be a positive integer or a DateTime object.')
 
                 ->exception(function () {
                     testedClass::list(['created_until' => uniqid()]);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationUntilFilterException::class)
                     ->message
-                        ->isIdenticalTo('Created until must be a position integer or a DateTime object.')
+                        ->isIdenticalTo('Created until must be a positive integer or a DateTime object.')
 
             ->assert('Make request')
                 ->if($limit = rand(1, 100))

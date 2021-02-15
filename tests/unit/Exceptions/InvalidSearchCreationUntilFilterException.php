@@ -22,7 +22,7 @@ class InvalidSearchCreationUntilFilterException extends ild78\Tests\atoum
             ->if($class = $this->testedClass->getClass())
             ->then
                 ->string($class::getDefaultMessage())
-                    ->isIdenticalTo('Created until must be a position integer or a DateTime object and must be in the past.')
+                    ->isIdenticalTo('Created until must be a positive integer or a DateTime object and must be in the past.')
         ;
     }
 
