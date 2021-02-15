@@ -2,6 +2,7 @@
 
 namespace ild78\Traits;
 
+use DatePeriod;
 use DateTimeInterface;
 use Generator;
 use ild78;
@@ -27,6 +28,7 @@ trait SearchTrait
      * @return Generator<static>
      * @throws ild78\Exceptions\InvalidSearchFilterException When `$terms` is invalid.
      * @throws ild78\Exceptions\InvalidSearchCreationFilterException When `created` is invalid.
+     * @throws ild78\Exceptions\InvalidSearchCreationFilterException When `created` is a DatePeriod without end.
      * @throws ild78\Exceptions\InvalidSearchCreationUntilFilterException When `created_until` is invalid.
      * @throws ild78\Exceptions\InvalidSearchLimitException When `limit` is invalid.
      * @throws ild78\Exceptions\InvalidSearchStartException When `start` is invalid.
@@ -50,14 +52,31 @@ trait SearchTrait
             throw new ild78\Exceptions\InvalidSearchFilterException();
         }
 
+        $until = $params['created_until'] ?? null;
+
         if (array_key_exists('created', $terms)) {
             $exception = ild78\Exceptions\InvalidSearchCreationFilterException::class;
-            $params['created'] = static::validateDateRelativeFilter($terms['created'], 'Created', $exception);
+
+            $created = $terms['created'];
+
+            if ($created instanceof DatePeriod) {
+                $created = $terms['created']->getStartDate();
+
+                if (is_null($terms['created']->getEndDate())) {
+                    throw new $exception('DatePeriod must have an end to be used.');
+                }
+
+                if (!$until) {
+                    $until = $terms['created']->getEndDate();
+                }
+            }
+
+            $params['created'] = static::validateDateRelativeFilter($created, 'Created', $exception, true);
         }
 
-        if (array_key_exists('created_until', $terms)) {
+        if (!is_null($until)) {
             $exception = ild78\Exceptions\InvalidSearchCreationUntilFilterException::class;
-            $until = static::validateDateRelativeFilter($terms['created_until'], 'Created until', $exception);
+            $until = static::validateDateRelativeFilter($until, 'Created until', $exception);
             unset($params['created_until']);
         }
 
@@ -144,6 +163,7 @@ trait SearchTrait
      * @param mixed $value Parameter value.
      * @param string $name Parameter name.
      * @param string $exception Exception to throw.
+     * @param boolean $allowPeriod Allow DatePeriod object.
      *
      * @return integer Ready to use timestamp.
      *
@@ -151,7 +171,12 @@ trait SearchTrait
      *
      * @phpstan-param class-string $exception Exception to throw.
      */
-    protected static function validateDateRelativeFilter($value, string $name, string $exception): int
+    protected static function validateDateRelativeFilter(
+        $value,
+        string $name,
+        string $exception,
+        bool $allowPeriod = false
+    ): int
     {
         $timestamp = $value;
 
@@ -163,6 +188,10 @@ trait SearchTrait
 
         if (!$timestamp || $type !== 'integer') {
             $message = $name . ' must be a positive integer or a DateTime object.';
+
+            if ($allowPeriod) {
+                $message = $name . ' must be a positive integer, a DateTime object or a DatePeriod object.';
+            }
 
             throw new $exception($message);
         }

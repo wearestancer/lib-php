@@ -3,6 +3,7 @@
 namespace ild78\tests\unit\Stub\Traits;
 
 use DateInterval;
+use DatePeriod;
 use DateTime;
 use ild78;
 use ild78\Stub\Traits\SearchTrait as testedClass;
@@ -107,14 +108,14 @@ class SearchTrait extends ild78\Tests\atoum
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilterException::class)
                     ->message
-                        ->isIdenticalTo('Created must be a positive integer or a DateTime object.')
+                        ->isIdenticalTo('Created must be a positive integer, a DateTime object or a DatePeriod object.')
 
                 ->exception(function () {
                     testedClass::list(['created' => uniqid()]);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilterException::class)
                     ->message
-                        ->isIdenticalTo('Created must be a positive integer or a DateTime object.')
+                        ->isIdenticalTo('Created must be a positive integer, a DateTime object or a DatePeriod object.')
 
             ->assert('Invalid created until filter')
                 ->exception(function () {
@@ -307,6 +308,144 @@ class SearchTrait extends ild78\Tests\atoum
                         ->call('request')
                             ->withArguments('GET', $location, $options)
                                 ->once
+        ;
+    }
+
+    public function testList_with_date_period()
+    {
+        $created = time() - rand(10, 1000000);
+        $until = 0;
+        $tmp = $created;
+        $items = [];
+
+        for ($index = 0; $index < 5; $index++) {
+            $until = $tmp;
+            $items[] = [
+                'created' => $tmp += rand(100, 1000),
+                'id' => 'stub_' . $this->getRandomString(24),
+            ];
+        }
+
+        $body = [
+            'live_mode' => true,
+            'searchtraits' => $items,
+            'range' => [
+                'end' => 5,
+                'has_more' => false,
+                'limit' => 10,
+                'start' => 0,
+            ],
+        ];
+
+        $this
+            ->given($client = new mock\ild78\Http\Client)
+            ->and($response = new mock\ild78\Http\Response(200, json_encode($body)))
+            ->and($this->calling($client)->request = $response)
+            ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
+
+            ->and($options = [
+                'headers' => [
+                    'Authorization' => $config->getBasicAuthHeader(),
+                    'Content-Type' => 'application/json',
+                    'User-Agent' => $config->getDefaultUserAgent(),
+                ],
+                'timeout' => $config->getTimeout(),
+            ])
+
+            ->and($this->newTestedInstance)
+            ->and($location = $this->testedInstance->getUri())
+
+            ->assert('Period with an end without until')
+                ->if($start = new DateTime('@' . $created))
+                ->and($interval = new DateInterval('P1D'))
+                ->and($end = new DateTime('@' . $until))
+                ->and($period = new DatePeriod($start, $interval, $end))
+
+                ->and($location1 = $location . '?' . http_build_query(['created' => $created, 'start' => 0]))
+                ->then
+                    ->generator(testedClass::list(['created' => $period]))
+                        ->yields
+                            ->object
+                                ->isInstanceOf(testedClass::class)
+                                ->toString
+                                    ->isIdenticalTo('"' . $items[0]['id'] . '"')
+                        ->yields
+                            ->object
+                                ->isInstanceOf(testedClass::class)
+                                ->toString
+                                    ->isIdenticalTo('"' . $items[1]['id'] . '"')
+                        ->yields
+                            ->object
+                                ->isInstanceOf(testedClass::class)
+                                ->toString
+                                    ->isIdenticalTo('"' . $items[2]['id'] . '"')
+                        ->yields
+                            ->object
+                                ->isInstanceOf(testedClass::class)
+                                ->toString
+                                    ->isIdenticalTo('"' . $items[3]['id'] . '"')
+                        ->yields
+                            ->variable
+                                ->isNull
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location1, $options)
+                                ->once
+
+            ->assert('Period with an end with until')
+                ->if($start = new DateTime('@' . $created))
+                ->and($interval = new DateInterval('P1D'))
+                ->and($end = new DateTime())
+                ->and($period = new DatePeriod($start, $interval, $end))
+
+                ->and($location1 = $location . '?' . http_build_query(['created' => $created, 'start' => 0]))
+                ->then
+                    ->generator(testedClass::list(['created' => $period, 'created_until' => $until]))
+                        ->yields
+                            ->object
+                                ->isInstanceOf(testedClass::class)
+                                ->toString
+                                    ->isIdenticalTo('"' . $items[0]['id'] . '"')
+                        ->yields
+                            ->object
+                                ->isInstanceOf(testedClass::class)
+                                ->toString
+                                    ->isIdenticalTo('"' . $items[1]['id'] . '"')
+                        ->yields
+                            ->object
+                                ->isInstanceOf(testedClass::class)
+                                ->toString
+                                    ->isIdenticalTo('"' . $items[2]['id'] . '"')
+                        ->yields
+                            ->object
+                                ->isInstanceOf(testedClass::class)
+                                ->toString
+                                    ->isIdenticalTo('"' . $items[3]['id'] . '"')
+                        ->yields
+                            ->variable
+                                ->isNull
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location1, $options)
+                                ->once
+
+            ->assert('Period without an end')
+                ->if($start = new DateTime('@' . $created))
+                ->and($interval = new DateInterval('P1D'))
+                ->and($recurrences = rand(0, 100))
+                ->and($period = new DatePeriod($start, $interval, $recurrences))
+
+                ->then
+                    ->exception(function () use ($period) {
+                        testedClass::list(['created' => $period]);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilterException::class)
+                        ->message
+                            ->isIdenticalTo('DatePeriod must have an end to be used.')
         ;
     }
 

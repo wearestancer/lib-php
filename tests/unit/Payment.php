@@ -707,14 +707,14 @@ class Payment extends ild78\Tests\atoum
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilterException::class)
                     ->message
-                        ->isIdenticalTo('Created must be a positive integer or a DateTime object.')
+                        ->isIdenticalTo('Created must be a positive integer, a DateTime object or a DatePeriod object.')
 
                 ->exception(function () {
                     testedClass::list(['created' => uniqid()]);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilterException::class)
                     ->message
-                        ->isIdenticalTo('Created must be a positive integer or a DateTime object.')
+                        ->isIdenticalTo('Created must be a positive integer, a DateTime object or a DatePeriod object.')
 
             ->assert('Invalid order id filter')
                 ->exception(function () {
