@@ -48,6 +48,10 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
             'restricted' => true,
             'type' => self::STRING,
         ],
+        'dateBirth' => [
+            'format' => ild78\Core\Type\Helper::DATE_ONLY,
+            'type' => DateTimeInterface::class,
+        ],
         'dateMandate' => [
             'type' => DateTimeInterface::class,
         ],

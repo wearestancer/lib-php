@@ -18,6 +18,34 @@ class Sepa extends ild78\Tests\atoum
         ;
     }
 
+    public function testDateBirth()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($dateBirth = $this->getRandomDate(1950, 2000))
+            ->then
+                ->variable($this->testedInstance->getDateBirth())
+                    ->isNull
+
+                ->object($this->testedInstance->setDateBirth($dateBirth))
+                    ->isTestedInstance
+
+                ->dateTime($date = $this->testedInstance->getDateBirth())
+
+                ->variable($date->format('Y-m-d'))
+                    ->isEqualTo($dateBirth)
+
+                ->boolean($this->testedInstance->isModified())
+                    ->isTrue
+
+                ->array($this->testedInstance->jsonSerialize())
+                    ->hasSize(1)
+                    ->hasKey('date_birth')
+                    ->string['date_birth']
+                        ->isEqualTo($dateBirth)
+        ;
+    }
+
     public function testDateMandate()
     {
         $this
