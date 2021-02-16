@@ -19,6 +19,15 @@ class StubObject extends ild78\Core\AbstractObject
             'list' => true,
             'type' => DateTimeInterface::class,
         ],
+        'date3' => [
+            'format' => ild78\Core\Type\Helper::DATE_ONLY,
+            'type' => DateTimeInterface::class,
+        ],
+        'date4' => [
+            'format' => ild78\Core\Type\Helper::DATE_ONLY,
+            'list' => true,
+            'type' => DateTimeInterface::class,
+        ],
         'string1' => [
             'required' => true,
             'type' => self::STRING,

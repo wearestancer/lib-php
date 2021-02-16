@@ -62,6 +62,7 @@ class AbstractObjectDynamicReturnTypeExtension implements DynamicMethodReturnTyp
             'coerce' => TypeCombinator::addNull(new CallableType()),
             'exception' => TypeCombinator::addNull(new ClassStringType()),
             'exportable' => new BooleanType(),
+            'format' => TypeCombinator::addNull(new CallableType()),
             'list' => new BooleanType(),
             'required' => new BooleanType(),
             'restricted' => new BooleanType(),

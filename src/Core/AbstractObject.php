@@ -59,6 +59,7 @@ abstract class AbstractObject implements JsonSerializable
             'coerce' => null,
             'exception' => null,
             'exportable' => null,
+            'format' => null,
             'list' => false,
             'restricted' => false,
             'required' => false,
@@ -89,11 +90,14 @@ abstract class AbstractObject implements JsonSerializable
 
             if (is_a($data['type'], DateTimeInterface::class, true)) {
                 $data['coerce'] = Type\Helper::PARSE_DATE_TIME;
+
+                if (!$data['format']) {
+                    $data['format'] = Type\Helper::UNIX_TIMESTAMP;
+                }
             }
 
-            if (is_string($data['coerce'])) {
-                $data['coerce'] = Type\Helper::get($data['coerce']);
-            }
+            $data['coerce'] = Type\Helper::get($data['coerce']);
+            $data['format'] = Type\Helper::get($data['format']);
         }
 
         if (is_array($id)) {
@@ -488,6 +492,12 @@ abstract class AbstractObject implements JsonSerializable
                 return $this->dataModel[$property];
             }
 
+            $prop = $this->snakeCaseToCamelCase($property);
+
+            if ($prop !== $property) {
+                return $this->getModel($prop);
+            }
+
             return null;
         }
 
@@ -715,6 +725,10 @@ abstract class AbstractObject implements JsonSerializable
         foreach ($struct as $prop => &$value) {
             $type = gettype($value);
             $supp = !in_array($prop, $this->modified, true);
+            $model = $this->getModel($prop);
+            $format = $model['format'] ?? function ($v) {
+                return $v;
+            };
 
             if ($type === 'object') {
                 if (in_array($prop, $this->modified, true) || $value->isModified()) {
@@ -722,8 +736,6 @@ abstract class AbstractObject implements JsonSerializable
 
                     if (method_exists($value, 'jsonSerialize')) {
                         $value = $value->jsonSerialize();
-                    } elseif ($value instanceof DateTimeInterface) {
-                        $value = $value->getTimestamp();
                     }
                 }
             }
@@ -736,13 +748,15 @@ abstract class AbstractObject implements JsonSerializable
                         if ($val instanceof self) {
                             $keepIt |= $val->isModified();
                             $val = $val->jsonSerialize();
-                        } elseif ($val instanceof DateTimeInterface) {
-                            $val = $val->getTimestamp();
                         }
                     }
+
+                    $val = $format($val);
                 }
 
                 $supp &= !$keepIt;
+            } else {
+                $value = $format($value);
             }
 
             if ($supp) {

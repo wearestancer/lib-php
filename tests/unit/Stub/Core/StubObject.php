@@ -1773,6 +1773,38 @@ class StubObject extends ild78\Tests\atoum
                                             ->isIdenticalTo($object2->getString1())
                                 ;
                             })
+
+                ->assert('Allow formatter')
+                    ->given($timestamp1 = rand(946681200, 1893452400))
+                    ->and($timestamp2 = rand(946681200, 1893452400))
+                    ->and($date1 = new DateTime('@' . $timestamp1))
+                    ->and($date2 = new DateTime('@' . $timestamp2))
+
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->setDate3($date1))
+                    ->and($this->testedInstance->setDate4([$date1, $date2]))
+
+                    ->then
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(2)
+
+                            ->hasKey('date3')
+                            ->hasKey('date4')
+
+                            ->string['date3']
+                                ->isIdenticalTo($date1->format('Y-m-d'))
+
+                            ->child['date4'](function ($dt) use ($date1, $date2) {
+                                $dt
+                                    ->hasSize(2)
+
+                                    ->string[0]
+                                        ->isIdenticalTo($date1->format('Y-m-d'))
+
+                                    ->string[1]
+                                        ->isIdenticalTo($date2->format('Y-m-d'))
+                                ;
+                            })
         ;
     }
 
