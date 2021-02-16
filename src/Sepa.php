@@ -24,11 +24,13 @@ use DateTimeInterface;
  *
  * @property string $bic
  * @property string|null $country
- * @property DateTimeImmutable|null $created
  * @property DateTimeInterface|null $dateMandate
  * @property string $last4
  * @property string|null $mandate
  * @property string $name
+ *
+ * @property-read DateTimeImmutable|null $created
+ * @property-read DateTimeImmutable|null $creationDate
  */
 class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\PaymentMeansInterface
 {

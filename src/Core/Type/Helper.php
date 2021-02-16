@@ -21,7 +21,7 @@ class Helper
      *
      * @param string|null $method Method name.
      *
-     * @return Helper function for dataModel.
+     * @return callable
      */
     public static function get(?string $method): callable
     {
@@ -42,7 +42,7 @@ class Helper
      *
      * @param DateTimeInterface|null $value Date to transform.
      *
-     * @return Date as string.
+     * @return string|null
      */
     public static function dateOnly($value): ?string
     {
@@ -58,7 +58,7 @@ class Helper
      *
      * @param string|integer|DateTimeInterface $value Value to parse.
      *
-     * @return DateTime object corresponding to value.
+     * @return DateTimeInterface|null
      */
     public static function parseDateTime($value): ?DateTimeInterface
     {
@@ -82,7 +82,7 @@ class Helper
      *
      * @param string $value String to transform.
      *
-     * @return Transformed text.
+     * @return string
      */
     public static function toLower(string $value): string
     {
@@ -94,7 +94,7 @@ class Helper
      *
      * @param DateTimeInterface|null $value DateTime to transform.
      *
-     * @return Timestamp corresponding to DateTime.
+     * @return integer|null
      */
     public static function unixTimestamp(?DateTimeInterface $value): ?int
     {
