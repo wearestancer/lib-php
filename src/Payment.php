@@ -116,7 +116,7 @@ class Payment extends ild78\Core\AbstractObject
                 'sek',
                 'usd',
             ],
-            'coerce' => 'strtolower',
+            'coerce' => ild78\Core\Type\Helper::TO_LOWER,
             'required' => true,
             'type' => self::STRING,
         ],

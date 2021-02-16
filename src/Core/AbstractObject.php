@@ -87,24 +87,12 @@ abstract class AbstractObject implements JsonSerializable
                 $data['exportable'] = !$data['restricted'];
             }
 
-            if ($data['coerce'] === 'strtolower') {
-                $data['coerce'] = function ($value): string {
-                    return strtolower($value);
-                };
+            if (is_a($data['type'], DateTimeInterface::class, true)) {
+                $data['coerce'] = Type\Helper::PARSE_DATE_TIME;
             }
 
-            if (is_a($data['type'], DateTimeInterface::class, true)) {
-                $data['coerce'] = function ($value): ?DateTimeInterface {
-                    if ($value instanceof DateTimeInterface) {
-                        return $value;
-                    }
-
-                    if (!$value) {
-                        return null;
-                    }
-
-                    return new DateTimeImmutable('@' . $value);
-                };
+            if (is_string($data['coerce'])) {
+                $data['coerce'] = Type\Helper::get($data['coerce']);
             }
         }
 
