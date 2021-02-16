@@ -23,6 +23,35 @@ class Check extends ild78\Tests\atoum
         ;
     }
 
+    public function testGetResponse()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getResponse())
+                    ->isNull
+
+                ->variable($this->testedInstance->response)
+                    ->isNull
+
+                ->exception(function () {
+                    $this->testedInstance->setResponse(uniqid());
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify "response".')
+
+            ->if($response = $this->getRandomString(2))
+            ->and($this->testedInstance->hydrate(['response' => $response]))
+            ->then
+                ->string($this->testedInstance->getResponse())
+                    ->isIdenticalTo($response)
+
+                ->string($this->testedInstance->response)
+                    ->isIdenticalTo($response)
+        ;
+    }
+
     public function testGetStatus()
     {
         $this

@@ -10,10 +10,12 @@ use ild78;
  *
  * This will use SEPAmail, a french service allowing to verify bank details on SEPA.
  *
+ * @method string|null getResponse()
  * @method string|null getStatus()
  *
  * @property-read DateTimeImmutable|null $created
  * @property-read DateTimeImmutable|null $creationDate
+ * @property-read string|null $response
  * @property-read string|null $status
  */
 class Check extends ild78\Core\AbstractObject
@@ -26,6 +28,14 @@ class Check extends ild78\Core\AbstractObject
      * @phpstan-var array<string, DataModel>
      */
     protected $dataModel = [
+        'response' => [
+            'restricted' => true,
+            'size' => [
+                'min' => 2,
+                'max' => 4,
+            ],
+            'type' => self::STRING,
+        ],
         'status' => [
             'restricted' => true,
             'type' => self::STRING,
