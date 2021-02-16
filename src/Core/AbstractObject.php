@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace ild78\Core;
 
-use DateTime;
+use DateTimeImmutable;
 use DateTimeInterface;
 use ild78;
 use JsonSerializable;
@@ -14,8 +14,8 @@ use ReflectionClass;
  *
  * @throws ild78\Exceptions\BadMethodCallException when calling unknown method.
  *
- * @property-read DateTime|null $created
- * @property-read DateTime|null $creationDate
+ * @property-read DateTimeImmutable|null $created
+ * @property-read DateTimeImmutable|null $creationDate
  */
 abstract class AbstractObject implements JsonSerializable
 {
@@ -73,7 +73,7 @@ abstract class AbstractObject implements JsonSerializable
         $defaultValues = [
             'created' => [
                 'restricted' => true,
-                'type' => DateTime::class,
+                'type' => DateTimeImmutable::class,
             ],
         ];
 
@@ -93,9 +93,9 @@ abstract class AbstractObject implements JsonSerializable
                 };
             }
 
-            if ($data['type'] === DateTime::class) {
+            if (is_a($data['type'], DateTimeInterface::class, true)) {
                 $data['coerce'] = function ($value): ?DateTimeInterface {
-                    if ($value instanceof DateTime) {
+                    if ($value instanceof DateTimeInterface) {
                         return $value;
                     }
 
@@ -103,7 +103,7 @@ abstract class AbstractObject implements JsonSerializable
                         return null;
                     }
 
-                    return new DateTime('@' . $value);
+                    return new DateTimeImmutable('@' . $value);
                 };
             }
         }
@@ -323,16 +323,16 @@ abstract class AbstractObject implements JsonSerializable
             return [];
         }
 
-        if (!is_null($value) && $model['type'] === DateTime::class) {
+        if (!is_null($value) && is_a($model['type'], DateTimeInterface::class, true)) {
             $tz = ild78\Config::getGlobal()->getDefaultTimeZone();
 
             if ($tz) {
                 if ($model['list']) {
-                    foreach ($value as $val) {
-                        $val->setTimezone($tz);
+                    foreach ($value as &$val) {
+                        $val = $val->setTimezone($tz);
                     }
                 } else {
-                    $value->setTimezone($tz);
+                    $value = $value->setTimezone($tz);
                 }
             }
         }
@@ -445,9 +445,9 @@ abstract class AbstractObject implements JsonSerializable
     /**
      * Return creation date
      *
-     * @return DateTime|null
+     * @return DateTimeInterface|null
      */
-    public function getCreationDate(): ?DateTime
+    public function getCreationDate(): ?DateTimeInterface
     {
         return $this->created;
     }
@@ -734,7 +734,7 @@ abstract class AbstractObject implements JsonSerializable
 
                     if (method_exists($value, 'jsonSerialize')) {
                         $value = $value->jsonSerialize();
-                    } elseif ($value instanceof DateTime) {
+                    } elseif ($value instanceof DateTimeInterface) {
                         $value = $value->getTimestamp();
                     }
                 }
@@ -748,7 +748,7 @@ abstract class AbstractObject implements JsonSerializable
                         if ($val instanceof self) {
                             $keepIt |= $val->isModified();
                             $val = $val->jsonSerialize();
-                        } elseif ($val instanceof DateTime) {
+                        } elseif ($val instanceof DateTimeInterface) {
                             $val = $val->getTimestamp();
                         }
                     }

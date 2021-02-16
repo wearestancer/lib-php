@@ -12,7 +12,7 @@ use ild78;
  * @method string getReturnUrl()
  * @method string getStatus()
  *
- * @property DateTime|null $created
+ * @property DateTimeImmutable|null $created
  * @property string|null $redirectUrl
  * @property string $returnUrl
  * @property string $status

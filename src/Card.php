@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace ild78;
 
 use DateInterval;
-use DateTime;
+use DateTimeImmutable;
 use ild78;
 
 /**
@@ -38,7 +38,7 @@ use ild78;
  *
  * @property string $brand
  * @property string $country
- * @property DateTime|null $created
+ * @property DateTimeImmutable|null $created
  * @property string $cvc
  * @property integer $expMonth
  * @property integer $expYear
@@ -164,11 +164,11 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
      *
      * The DateTime object is at last second of the last day in the expiration month.
      *
-     * @return DateTime
+     * @return DateTimeImmutable
      * @throws ild78\Exceptions\InvalidExpirationMonthException When month is not set.
      * @throws ild78\Exceptions\InvalidExpirationYearException When year is not set.
      */
-    public function getExpDate(): DateTime
+    public function getExpDate(): DateTimeImmutable
     {
         $month = $this->getExpMonth();
         $year = $this->getExpYear();
@@ -185,24 +185,21 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
             throw new ild78\Exceptions\InvalidExpirationYearException($message);
         }
 
-        $date = new DateTime(sprintf('%d-%d-01', $year, $month));
+        $date = new DateTimeImmutable(sprintf('%d-%d-01', $year, $month));
 
         $oneMonth = new DateInterval('P1M');
-        $date->add($oneMonth);
-
         $oneSecond = new DateInterval('PT1S');
-        $date->sub($oneSecond);
 
-        return $date;
+        return $date->add($oneMonth)->sub($oneSecond);
     }
 
     /**
      * Alias for `self::getExpDate()`
      *
      * @see self::getExpDate() Return the expiration date.
-     * @return DateTime
+     * @return DateTimeImmutable
      */
-    public function getExpirationDate(): DateTime
+    public function getExpirationDate(): DateTimeImmutable
     {
         return $this->getExpDate();
     }

@@ -2,7 +2,7 @@
 
 namespace ild78\Stub\Core;
 
-use DateTime;
+use DateTimeInterface;
 use ild78;
 
 class StubObject extends ild78\Core\AbstractObject
@@ -13,11 +13,11 @@ class StubObject extends ild78\Core\AbstractObject
 
     protected $dataModel = [
         'date1' => [
-            'type' => DateTime::class,
+            'type' => DateTimeInterface::class,
         ],
         'date2' => [
             'list' => true,
-            'type' => DateTime::class,
+            'type' => DateTimeInterface::class,
         ],
         'string1' => [
             'required' => true,

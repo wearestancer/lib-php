@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace ild78;
 
-use DateTime;
+use DateTimeImmutable;
 use ild78;
 
 /**
@@ -22,7 +22,7 @@ use ild78;
  * @property integer $amount
  * @property ild78\Payment $payment
  *
- * @property-read DateTime|null $created
+ * @property-read DateTimeImmutable|null $created
  * @property-read string $currency
  * @property-read string $dateBank
  * @property-read string $dateRefund
@@ -52,11 +52,11 @@ class Refund extends ild78\Core\AbstractObject
         ],
         'dateBank' => [
             'restricted' => true,
-            'type' => DateTime::class,
+            'type' => DateTimeImmutable::class,
         ],
         'dateRefund' => [
             'restricted' => true,
-            'type' => DateTime::class,
+            'type' => DateTimeImmutable::class,
         ],
         'payment' => [
             'required' => true,

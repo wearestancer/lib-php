@@ -25,7 +25,7 @@ use ild78;
  *
  * @property string $city
  * @property string $country
- * @property DateTime|null $created
+ * @property DateTimeImmutable|null $created
  * @property string $httpAccept
  * @property string $ip
  * @property string $languages

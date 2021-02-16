@@ -17,7 +17,7 @@ use ild78;
  * @method Generator list(array $terms)
  *
  * @property integer $amount
- * @property DateTime|null $created
+ * @property DateTimeImmutable|null $created
  * @property string $currency
  * @property string $orderId
  * @property ild78\Payment $payment

@@ -16,7 +16,7 @@ use ild78;
  * @method $this setMobile(string $mobile)
  * @method $this setName(string $name)
  *
- * @property DateTime|null $created
+ * @property DateTimeImmutable|null $created
  * @property string $email
  * @property string $mobile
  * @property string $name

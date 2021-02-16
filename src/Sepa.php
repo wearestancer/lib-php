@@ -4,27 +4,28 @@ declare(strict_types=1);
 namespace ild78;
 
 use ild78;
-use DateTime;
+use DateTimeImmutable;
+use DateTimeInterface;
 
 /**
  * Representation of a SEPA account
  *
  * @method string getBic()
  * @method string|null getCountry()
- * @method DateTime|null getDateMandate()
+ * @method DateTimeInterface|null getDateMandate()
  * @method string|null getIban()
  * @method string getLast4()
  * @method string|null getMandate()
  * @method string getName()
  *
- * @method $this setDateMandate(DateTime $dateMandate)
+ * @method $this setDateMandate(DateTimeInterface $dateMandate)
  * @method $this setMandate(string $mandate)
  * @method $this setName(string $name)
  *
  * @property string $bic
  * @property string|null $country
- * @property DateTime|null $created
- * @property DateTime|null $dateMandate
+ * @property DateTimeImmutable|null $created
+ * @property DateTimeInterface|null $dateMandate
  * @property string $last4
  * @property string|null $mandate
  * @property string $name
@@ -48,7 +49,7 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
             'type' => self::STRING,
         ],
         'dateMandate' => [
-            'type' => DateTime::class,
+            'type' => DateTimeInterface::class,
         ],
         'iban' => [
             'required' => true,
