@@ -15,6 +15,42 @@ class Check extends ild78\Tests\atoum
         ;
     }
 
+    public function testGetDateBirth()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getDateBirth())
+                    ->isNull
+
+                ->variable($this->testedInstance->dateBirth)
+                    ->isNull
+
+                ->exception(function () {
+                    $this->testedInstance->setDateBirth(uniqid());
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify "dateBirth".')
+
+            ->if($this->testedInstance->hydrate(['dateBirth' => true]))
+            ->then
+                ->boolean($this->testedInstance->getDateBirth())
+                    ->isTrue
+
+                ->boolean($this->testedInstance->dateBirth)
+                    ->isTrue
+
+            ->if($this->testedInstance->hydrate(['dateBirth' => false]))
+            ->then
+                ->boolean($this->testedInstance->getDateBirth())
+                    ->isFalse
+
+                ->boolean($this->testedInstance->dateBirth)
+                    ->isFalse
+        ;
+    }
+
     public function testGetEndpoint()
     {
         $this
