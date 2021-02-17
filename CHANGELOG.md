@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Added
+- `ild78\Sepa` validation
 - `ild78\Core\Object::get()`, return raw API data (even unknown properties)
 - `ild78\Payment::isError()` and `ild78\Payment::isNotError()`
 - `ild78\Payment::$currency` and `ild78\Payment::$methodsAllowed` can throw exception when used with incompatible values
