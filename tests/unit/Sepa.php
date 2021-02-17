@@ -4,10 +4,91 @@ namespace ild78\tests\unit;
 
 use ild78;
 use ild78\Sepa as testedClass;
+use mock;
 
 class Sepa extends ild78\Tests\atoum
 {
     use ild78\Tests\Provider\Banks;
+
+    public function testCheck()
+    {
+        $this
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
+
+            ->assert('Without ID')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->getCheck())
+                        ->isNull
+
+                    ->variable($this->testedInstance->check)
+                        ->isNull
+
+            ->assert('With ID and without data')
+                ->given($client = new mock\ild78\Http\Client)
+                ->and($this->calling($client)->request->throw = new ild78\Exceptions\NotFoundException)
+                ->and($config->setHttpClient($client))
+
+                ->if($id = $this->getRandomString(29))
+                ->and($this->newTestedInstance($id))
+                ->then
+                    ->variable($this->testedInstance->getCheck())
+                        ->isNull
+
+                    ->variable($this->testedInstance->check)
+                        ->isNull
+
+            ->assert('With ID and with validation data')
+                ->given($client = new mock\ild78\Http\Client)
+                ->and($response = new mock\ild78\Http\Response(200))
+                ->and($body = file_get_contents(__DIR__ . '/fixtures/sepa/check/read.json'))
+                ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
+                ->and($this->calling($client)->request = $response)
+                ->and($config->setHttpClient($client))
+
+                ->if($id = $this->getRandomString(29))
+                ->and($this->newTestedInstance($id))
+                ->then
+                    // Method based style
+                    ->object($this->testedInstance->getCheck())
+                        ->isInstanceOf(ild78\Sepa\Check::class)
+
+                    ->string($this->testedInstance->getCheck()->getId())
+                        ->isIdenticalTo('sepa_fZvOCm7oDmUJhqvezEtlZwXa')
+
+                    ->boolean($this->testedInstance->getCheck()->getDateBirth())
+                        ->isTrue
+
+                    ->string($this->testedInstance->getCheck()->getResponse())
+                        ->isIdenticalTo('00')
+
+                    ->float($this->testedInstance->getCheck()->getScoreName())
+                        ->isIdenticalTo(0.32)
+
+                    ->string($this->testedInstance->getCheck()->getStatus())
+                        ->isIdenticalTo(ild78\Sepa\Check\Status::CHECKED)
+
+                    // Property based style
+                    ->object($this->testedInstance->check)
+                        ->isInstanceOf(ild78\Sepa\Check::class)
+
+                    ->string($this->testedInstance->check->id)
+                        ->isIdenticalTo('sepa_fZvOCm7oDmUJhqvezEtlZwXa')
+
+                    ->boolean($this->testedInstance->check->dateBirth)
+                        ->isTrue
+
+                    ->string($this->testedInstance->check->response)
+                        ->isIdenticalTo('00')
+
+                    ->float($this->testedInstance->check->scoreName)
+                        ->isIdenticalTo(0.32)
+
+                    ->string($this->testedInstance->check->status)
+                        ->isIdenticalTo(ild78\Sepa\Check\Status::CHECKED)
+        ;
+    }
 
     public function testClass()
     {

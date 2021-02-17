@@ -29,6 +29,7 @@ use DateTimeInterface;
  * @property string|null $mandate
  * @property string $name
  *
+ * @property-read ild78\Sepa\Check|null $check
  * @property-read DateTimeImmutable|null $created
  * @property-read DateTimeImmutable|null $creationDate
  */
@@ -45,6 +46,10 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
         'bic' => [
             'required' => true,
             'type' => self::STRING,
+        ],
+        'check' => [
+            'restricted' => true,
+            'type' => ild78\Sepa\Check::class,
         ],
         'country' => [
             'restricted' => true,
@@ -81,6 +86,30 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
             'type' => self::STRING,
         ],
     ];
+
+    /**
+     * Return verification results.
+     *
+     * @return ild78\Sepa\Check|null
+     */
+    public function getCheck(): ?ild78\Sepa\Check
+    {
+        if ($this->id) {
+            $check = $this->dataModelGetter('check', false);
+
+            if (!$check) {
+                $check = new ild78\Sepa\Check($this->id);
+            }
+
+            try {
+                $this->dataModel['check']['value'] = $check->populate();
+            } catch (ild78\Exceptions\NotFoundException $exception) {
+                return null;
+            }
+        }
+
+        return parent::getCheck();
+    }
 
     /**
      * Return IBAN with usual readeable format (AAAA BBBB CCCC ...).
