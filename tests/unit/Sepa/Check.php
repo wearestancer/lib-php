@@ -182,4 +182,112 @@ class Check extends ild78\Tests\atoum
                     ->isIdenticalTo($status)
         ;
     }
+
+    public function testToJson()
+    {
+        $this
+            ->assert('SEPA without ID')
+                ->given($bic = $this->getRandomString(8))
+                ->and($dateBirth = $this->getRandomDate(1950, 2000))
+                ->and($dateMandate = rand(946681200, 1893452400))
+                ->and($mandate = $this->getRandomString(34))
+                ->and($name = $this->getRandomString(10))
+
+                ->if($bban = rand())
+                ->and($country = 'FR')
+                ->and($validation = $bban . '1527' . '00') // 15 => F / 27 => R
+                ->and($check = sprintf('%02d', 98 - ($validation % 97)))
+                ->and($iban = $country . $check . $bban)
+
+                ->if($data = [
+                    'bic' => $bic,
+                    'dateBirth' => $dateBirth,
+                    'dateMandate' => $dateMandate,
+                    'iban' => $iban,
+                    'mandate' => $mandate,
+                    'name' => $name,
+                ])
+                ->and($sepa = new ild78\Sepa($data))
+
+                ->if($this->newTestedInstance(['sepa' => $sepa]))
+                ->then
+                    ->json($json = $this->testedInstance->toJson())
+
+                    ->array(json_decode($json, true))
+                        ->hasKeys(['bic', 'date_birth', 'date_mandate', 'iban', 'mandate', 'name'])
+
+                        ->string['bic']
+                            ->isIdenticalTo($bic)
+
+                        ->string['date_birth']
+                            ->isIdenticalTo($dateBirth)
+
+                        ->integer['date_mandate']
+                            ->isIdenticalTo($dateMandate)
+
+                        ->string['iban']
+                            ->isIdenticalTo($iban)
+
+                        ->string['mandate']
+                            ->isIdenticalTo($mandate)
+
+                        ->string['name']
+                            ->isIdenticalTo($name)
+
+            ->assert('SEPA without ID')
+                ->given($id = $this->getRandomString(29))
+                ->and($bic = $this->getRandomString(8))
+                ->and($dateBirth = $this->getRandomDate(1950, 2000))
+                ->and($dateMandate = rand(946681200, 1893452400))
+                ->and($mandate = $this->getRandomString(34))
+                ->and($name = $this->getRandomString(10))
+
+                ->if($bban = rand())
+                ->and($country = 'FR')
+                ->and($validation = $bban . '1527' . '00') // 15 => F / 27 => R
+                ->and($check = sprintf('%02d', 98 - ($validation % 97)))
+                ->and($iban = $country . $check . $bban)
+
+                ->if($data = [
+                    'id' => $id,
+                    'bic' => $bic,
+                    'dateBirth' => $dateBirth,
+                    'dateMandate' => $dateMandate,
+                    'iban' => $iban,
+                    'mandate' => $mandate,
+                    'name' => $name,
+                ])
+                ->and($sepa = new ild78\Sepa($data))
+
+                ->if($this->newTestedInstance(['sepa' => $sepa]))
+                ->then
+                    ->json($json = $this->testedInstance->toJson())
+
+                    ->array(json_decode($json, true))
+                        ->hasKey('id')
+                        ->notHasKeys(['bic', 'date_birth', 'date_mandate', 'iban', 'mandate', 'name'])
+
+                        ->string['id']
+                            ->isIdenticalTo($id)
+
+            ->assert('No SEPA')
+                ->given($response = $this->getRandomString(2))
+                ->and($score = rand(1, 100))
+                ->and($birth = rand(0, 50) > 50)
+                ->and($status = $this->getRandomString(10))
+
+                ->if($data = [
+                    'date_birth' => $birth,
+                    'response' => $response,
+                    'score_name' => $score,
+                    'status' => $status,
+                ])
+                ->and($this->newTestedInstance()->hydrate($data))
+                ->then
+                    ->json($json = $this->testedInstance->toJson())
+
+                    ->array(json_decode($json, true))
+                        ->isEmpty
+        ;
+    }
 }

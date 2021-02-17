@@ -191,4 +191,21 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
 
         return $this;
     }
+
+    /**
+     * Will ask for SEPA validation.
+     *
+     * @return $this
+     */
+    public function validate(): self
+    {
+        $check = new ild78\Sepa\Check(['sepa' => $this]);
+
+        $this->dataModel['check']['value'] = $check->send();
+        $this->id = $check->id;
+
+        $this->modified = [];
+
+        return $this;
+    }
 }

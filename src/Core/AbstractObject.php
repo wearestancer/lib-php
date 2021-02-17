@@ -683,13 +683,13 @@ abstract class AbstractObject implements JsonSerializable
         foreach ($struct as $prop => $value) {
             $type = gettype($value);
 
-            if ($type === 'object' && $value->isModified()) {
+            if ($type === 'object' && $value instanceof self && $value->isModified()) {
                 return true;
             }
 
             if ($type === 'array') {
                 foreach ($value as $val) {
-                    if (gettype($val) === 'object' && $val->isModified()) {
+                    if (gettype($val) === 'object' && $val instanceof self && $val->isModified()) {
                         return true;
                     }
                 }
@@ -732,7 +732,7 @@ abstract class AbstractObject implements JsonSerializable
             };
 
             if ($type === 'object') {
-                if (in_array($prop, $this->modified, true) || $value->isModified()) {
+                if (in_array($prop, $this->modified, true) || ($value instanceof self && $value->isModified())) {
                     $supp = false;
 
                     if (method_exists($value, 'jsonSerialize')) {

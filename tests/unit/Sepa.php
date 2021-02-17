@@ -473,4 +473,185 @@ class Sepa extends ild78\Tests\atoum
                     ->isFalse
         ;
     }
+
+    public function testValidate()
+    {
+        $this
+            ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
+            ->and($options = [
+                'headers' => [
+                    'Authorization' => $config->getBasicAuthHeader(),
+                    'Content-Type' => 'application/json',
+                    'User-Agent' => $config->getDefaultUserAgent(),
+                ],
+                'timeout' => $config->getTimeout(),
+            ])
+
+            ->assert('Ask for verification at SEPA creation')
+                ->given($bic = $this->getRandomString(8))
+                ->and($dateBirth = $this->getRandomDate(1950, 2000))
+                ->and($dateMandate = rand(946681200, 1893452400))
+                ->and($mandate = $this->getRandomString(34))
+                ->and($name = $this->getRandomString(10))
+
+                ->if($bban = rand())
+                ->and($country = 'FR')
+                ->and($validation = $bban . '1527' . '00') // 15 => F / 27 => R
+                ->and($check = sprintf('%02d', 98 - ($validation % 97)))
+                ->and($iban = $country . $check . $bban)
+
+                ->if($data = [
+                    'bic' => $bic,
+                    'date_birth' => $dateBirth,
+                    'date_mandate' => $dateMandate,
+                    'iban' => $iban,
+                    'mandate' => $mandate,
+                    'name' => $name,
+                ])
+                ->and($this->newTestedInstance($data))
+
+                ->if($checkResponse = new mock\ild78\Http\Response(200))
+                ->and($body = file_get_contents(__DIR__ . '/fixtures/sepa/check/create.json'))
+                ->and($this->calling($checkResponse)->getBody = new ild78\Http\Stream($body))
+
+                ->and($sepaResponse = new mock\ild78\Http\Response(200))
+                ->and($body = file_get_contents(__DIR__ . '/fixtures/sepa/read.json'))
+                ->and($this->calling($sepaResponse)->getBody = new ild78\Http\Stream($body))
+
+                ->if($client = new mock\ild78\Http\Client)
+                ->and($this->calling($client)->request[] = $checkResponse)
+                ->and($this->calling($client)->request[] = $sepaResponse)
+                ->and($config->setHttpClient($client))
+
+                ->if($checkLocation = (new ild78\Sepa\Check())->getUri())
+                ->and($sepaLocation = (new ild78\Sepa('sepa_bIvCZePYqfMlU11TANT8IqL1'))->getUri())
+                ->then
+                    // Sepa object
+                    ->object($this->testedInstance->validate())
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getId())
+                        ->isIdenticalTo('sepa_bIvCZePYqfMlU11TANT8IqL1')
+
+                    ->dateTime($this->testedInstance->getCreationDate()) // First to cheat on auto-populate
+                        ->hasDate(2020, 9, 25)
+                        ->hasTime(14, 56, 17)
+                        ->isImmutable
+
+                    ->string($this->testedInstance->getBic())
+                        ->isIdenticalTo('TESTSEPP')
+
+                    ->dateTime($this->testedInstance->getDateBirth())
+                        ->hasDate(1977, 5, 25)
+                        ->hasTime(0, 0, 0)
+                        ->isImmutable
+
+                    ->dateTime($this->testedInstance->getDateMandate())
+                        ->hasDate(2020, 9, 25)
+                        ->hasTime(14, 55, 28)
+                        ->isImmutable
+
+                    ->string($this->testedInstance->getLast4())
+                        ->isIdenticalTo('0003')
+
+                    ->string($this->testedInstance->getMandate())
+                        ->isIdenticalTo('mandate-identifier')
+
+                    ->string($this->testedInstance->getName())
+                        ->isIdenticalTo('John Doe')
+
+                    // Check object
+                    ->object($this->testedInstance->getCheck())
+                        ->isInstanceOf(ild78\Sepa\Check::class)
+
+                    ->string($this->testedInstance->getCheck()->getId())
+                        ->isIdenticalTo('sepa_bIvCZePYqfMlU11TANT8IqL1') // Same as SEPA
+
+                    ->dateTime($this->testedInstance->getCheck()->getCreationDate())
+                        ->hasDate(2021, 2, 10)
+                        ->hasTime(12, 59, 52)
+                        ->isImmutable
+
+                    ->variable($this->testedInstance->getCheck()->getDateBirth())
+                        ->isNull
+
+                    ->variable($this->testedInstance->getCheck()->getResponse())
+                        ->isNull
+
+                    ->object($this->testedInstance->getCheck()->getSepa())
+                        ->isTestedInstance
+
+                    ->variable($this->testedInstance->getCheck()->getScoreName())
+                        ->isNull
+
+                    ->string($this->testedInstance->getCheck()->getStatus())
+                        ->isIdenticalTo(ild78\Sepa\Check\Status::CHECK_SENT)
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('POST', $checkLocation, array_merge($options, ['body' => json_encode($data)]))
+                                ->once
+                        ->call('request')
+                            ->withArguments('GET', $sepaLocation, $options)
+                                ->once
+
+            ->assert('Ask for verification on already created SEPA')
+                ->given($id = $this->getRandomString(29))
+                ->and($this->newTestedInstance($id))
+
+                ->if($checkResponse = new mock\ild78\Http\Response(200))
+                ->and($body = file_get_contents(__DIR__ . '/fixtures/sepa/check/read.json'))
+                ->and($this->calling($checkResponse)->getBody = new ild78\Http\Stream($body))
+
+                ->and($sepaResponse = new mock\ild78\Http\Response(200))
+                ->and($body = file_get_contents(__DIR__ . '/fixtures/sepa/read.json'))
+                ->and($this->calling($sepaResponse)->getBody = new ild78\Http\Stream($body))
+
+                ->if($client = new mock\ild78\Http\Client)
+                ->and($this->calling($client)->request[] = $checkResponse)
+                ->and($this->calling($client)->request[] = $sepaResponse)
+                ->and($config->setHttpClient($client))
+
+                ->if($checkLocation = (new ild78\Sepa\Check())->getUri())
+                ->then
+                    ->object($this->testedInstance->validate())
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getId())
+                        ->isIdenticalTo('sepa_fZvOCm7oDmUJhqvezEtlZwXa') // SEPA id is updated during process
+
+                    // Check object
+                    ->object($this->testedInstance->getCheck())
+                        ->isInstanceOf(ild78\Sepa\Check::class)
+
+                    ->string($this->testedInstance->getCheck()->getId())
+                        ->isIdenticalTo('sepa_fZvOCm7oDmUJhqvezEtlZwXa')
+
+                    ->dateTime($this->testedInstance->getCheck()->getCreationDate())
+                        ->hasDate(2021, 2, 10)
+                        ->hasTime(12, 59, 52)
+                        ->isImmutable
+
+                    ->boolean($this->testedInstance->getCheck()->getDateBirth())
+                        ->isTrue
+
+                    ->string($this->testedInstance->getCheck()->getResponse())
+                        ->isIdenticalTo('00')
+
+                    ->object($this->testedInstance->getCheck()->getSepa())
+                        ->isTestedInstance
+
+                    ->float($this->testedInstance->getCheck()->getScoreName())
+                        ->isIdenticalTo(0.32)
+
+                    ->string($this->testedInstance->getCheck()->getStatus())
+                        ->isIdenticalTo(ild78\Sepa\Check\Status::CHECKED)
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('POST', $checkLocation, array_merge($options, ['body' => json_encode(['id' => $id])]))
+                                ->once
+        ;
+    }
 }

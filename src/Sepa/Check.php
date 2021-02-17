@@ -77,4 +77,40 @@ class Check extends ild78\Core\AbstractObject
 
         return parent::getSepa();
     }
+
+    /**
+     * Return a array representation of the current object for a conversion as JSON.
+     *
+     * @uses self::toArray()
+     * @return string|integer|boolean|null|array<string, mixed>
+     */
+    public function jsonSerialize()
+    {
+        $sepa = $this->getSepa();
+
+        if (!$sepa) {
+            return [];
+        }
+
+        if ($sepa->id) {
+            return [
+                'id' => $sepa->id,
+            ];
+        }
+
+        return $sepa->jsonSerialize();
+    }
+
+    /**
+     * Send the current object.
+     *
+     * @return $this
+     * @throws ild78\Exceptions\InvalidArgumentException When all requirement are not provided.
+     */
+    public function send(): ild78\Core\AbstractObject
+    {
+        $this->modified[] = 'sepa'; // Mandatory, force `parent::send()` to work.
+
+        return parent::send();
+    }
 }
