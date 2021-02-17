@@ -11,13 +11,15 @@ use ild78;
  * This will use SEPAmail, a french service allowing to verify bank details on SEPA.
  *
  * @method bool|null getDateBirth()
- * @method string|null getStatus()
  * @method string|null getResponse()
+ * @method float|null getScoreName()
+ * @method string|null getStatus()
  *
  * @property-read bool|null $dateBirth
  * @property-read DateTimeImmutable|null $created
  * @property-read DateTimeImmutable|null $creationDate
  * @property-read string|null $response
+ * @property-read float|null $scoreName
  * @property-read string|null $status
  */
 class Check extends ild78\Core\AbstractObject
@@ -41,6 +43,11 @@ class Check extends ild78\Core\AbstractObject
                 'max' => 4,
             ],
             'type' => self::STRING,
+        ],
+        'scoreName' => [
+            'coerce' => ild78\Core\Type\Helper::INTEGER_TO_PERCENTAGE,
+            'restricted' => true,
+            'type' => self::FLOAT,
         ],
         'status' => [
             'restricted' => true,

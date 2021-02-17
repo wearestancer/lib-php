@@ -88,6 +88,35 @@ class Check extends ild78\Tests\atoum
         ;
     }
 
+    public function testGetScoreName()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getScoreName())
+                    ->isNull
+
+                ->variable($this->testedInstance->scoreName)
+                    ->isNull
+
+                ->exception(function () {
+                    $this->testedInstance->setScoreName(uniqid());
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify "scoreName".')
+
+            ->if($score = rand(0, 100))
+            ->and($this->testedInstance->hydrate(['scoreName' => $score]))
+            ->then
+                ->float($this->testedInstance->getScoreName())
+                    ->isIdenticalTo($score / 100)
+
+                ->float($this->testedInstance->scoreName)
+                    ->isIdenticalTo($score / 100)
+        ;
+    }
+
     public function testGetStatus()
     {
         $this

@@ -20,6 +20,7 @@ use ReflectionClass;
 abstract class AbstractObject implements JsonSerializable
 {
     public const BOOLEAN = 'boolean';
+    public const FLOAT = 'float';
     public const INTEGER = 'integer';
     public const STRING = 'string';
 

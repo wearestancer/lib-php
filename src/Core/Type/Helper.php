@@ -12,6 +12,7 @@ use DateTimeImmutable;
 class Helper
 {
     public const DATE_ONLY = 'dateOnly';
+    public const INTEGER_TO_PERCENTAGE = 'integerToPercentage';
     public const PARSE_DATE_TIME = 'parseDateTime';
     public const TO_LOWER = 'toLower';
     public const UNIX_TIMESTAMP = 'unixTimestamp';
@@ -51,6 +52,22 @@ class Helper
         }
 
         return null;
+    }
+
+    /**
+     * Transform an integer based percentage to a float based percentage.
+     *
+     * @param integer|null $value Value to transform.
+     *
+     * @return float|null
+     */
+    public static function integerToPercentage(?int $value): ?float
+    {
+        if ($value) {
+            return $value / 100;
+        }
+
+        return $value;
     }
 
     /**
