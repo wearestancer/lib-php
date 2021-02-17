@@ -73,7 +73,7 @@ class Helper
     /**
      * Parse an ISO 8601 string as a date or a integer as timestamp.
      *
-     * @param string|integer|DateTimeInterface $value Value to parse.
+     * @param string|integer|DateTimeInterface|null $value Value to parse.
      *
      * @return DateTimeInterface|null
      */
@@ -83,15 +83,15 @@ class Helper
             return $value;
         }
 
-        if (!$value) {
-            return null;
-        }
-
         if (is_numeric($value)) {
             return new DateTimeImmutable('@' . $value);
         }
 
-        return new DateTimeImmutable($value);
+        if (is_string($value)) {
+            return new DateTimeImmutable($value);
+        }
+
+        return null;
     }
 
     /**
