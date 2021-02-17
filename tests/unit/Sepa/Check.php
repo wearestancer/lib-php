@@ -117,6 +117,43 @@ class Check extends ild78\Tests\atoum
         ;
     }
 
+    public function testGetSepa()
+    {
+        $this
+            ->assert('Without ID')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->getSepa())
+                        ->isNull
+
+                    ->variable($this->testedInstance->sepa)
+                        ->isNull
+
+                    ->exception(function () {
+                        $this->testedInstance->setSepa(uniqid());
+                    })
+                        ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+                        ->message
+                            ->isIdenticalTo('You are not allowed to modify "sepa".')
+
+            ->assert('With an ID')
+                ->if($id = $this->getRandomString(29))
+                ->and($this->newTestedInstance($id))
+                ->then
+                    ->object($this->testedInstance->getSepa())
+                        ->isInstanceOf(ild78\Sepa::class)
+
+                    ->string($this->testedInstance->getSepa()->getId())
+                        ->isIdenticalTo($id)
+
+                    ->object($this->testedInstance->sepa)
+                        ->isInstanceOf(ild78\Sepa::class)
+
+                    ->string($this->testedInstance->sepa->id)
+                        ->isIdenticalTo($id)
+        ;
+    }
+
     public function testGetStatus()
     {
         $this
