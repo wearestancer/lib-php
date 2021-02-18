@@ -14,7 +14,7 @@ interface HttpClientInterface
      *
      * @param string $method HTTP method.
      * @param string $uri URI string.
-     * @param array $options Request options to apply.
+     * @param mixed[] $options Request options to apply.
      *
      * @return Psr\Http\Message\ResponseInterface
      */

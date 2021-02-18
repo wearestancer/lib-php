@@ -2,7 +2,8 @@
 
 namespace ild78\Traits;
 
-use DateTime;
+use DatePeriod;
+use DateTimeInterface;
 use Generator;
 use ild78;
 
@@ -11,6 +12,8 @@ use ild78;
  */
 trait SearchTrait
 {
+    // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
+
     /**
      * List elements
      *
@@ -24,18 +27,24 @@ trait SearchTrait
      * `start` must be an integer, will be used as a pagination cursor, starts at 0.
      *
      * @param array $terms Search terms. May have `created`, `limit` or `start` key.
-     * @return Generator
+     * @return Generator<static>
      * @throws ild78\Exceptions\InvalidSearchFilterException When `$terms` is invalid.
      * @throws ild78\Exceptions\InvalidSearchCreationFilterException When `created` is invalid.
+     * @throws ild78\Exceptions\InvalidSearchCreationFilterException When `created` is a DatePeriod without end.
+     * @throws ild78\Exceptions\InvalidSearchCreationUntilFilterException When `created_until` is invalid.
      * @throws ild78\Exceptions\InvalidSearchLimitException When `limit` is invalid.
      * @throws ild78\Exceptions\InvalidSearchStartException When `start` is invalid.
+     *
+     * @phpstan-param SearchFilters $terms
      */
     public static function list(array $terms): Generator
     {
-        $allowed = array_flip(['created', 'limit', 'start']);
+        $allowed = array_flip(['created', 'created_until', 'limit', 'start']);
         $others = [];
+        $until = null;
 
         if (method_exists(static::class, 'filterListParams')) {
+            // @phpstan-ignore-next-line Method must be defined or we can not be there
             $others = static::filterListParams($terms);
         }
 
@@ -45,28 +54,38 @@ trait SearchTrait
             throw new ild78\Exceptions\InvalidSearchFilterException();
         }
 
+        $until = $params['created_until'] ?? null;
+
         if (array_key_exists('created', $terms)) {
+            $exception = ild78\Exceptions\InvalidSearchCreationFilterException::class;
+
             $created = $terms['created'];
 
-            if ($terms['created'] instanceof DateTime) {
-                $created = (int) $terms['created']->format('U');
+            if ($terms['created'] instanceof DatePeriod) {
+                $created = $terms['created']->getStartDate();
+
+                if (is_null($terms['created']->getEndDate())) {
+                    throw new $exception('DatePeriod must have an end to be used.');
+                }
+
+                if (!$until) {
+                    $until = $terms['created']->getEndDate();
+                }
             }
 
-            $params['created'] = $created;
+            $params['created'] = static::validateDateRelativeFilter($created, 'Created', $exception, true);
+        }
 
-            $type = gettype($created);
+        if (!is_null($until)) {
+            $exception = ild78\Exceptions\InvalidSearchCreationUntilFilterException::class;
+            $until = static::validateDateRelativeFilter($until, 'Created until', $exception);
+            unset($params['created_until']);
+        }
 
-            if (!$created || $type !== 'integer') {
-                $message = 'Created must be a position integer or a DateTime object.';
+        if ($until && array_key_exists('created', $params) && $params['created'] > $until) {
+            $message = 'Created until must be after created date.';
 
-                throw new ild78\Exceptions\InvalidSearchCreationFilterException($message);
-            }
-
-            if ($created > time()) {
-                $message = 'Created must be in the past.';
-
-                throw new ild78\Exceptions\InvalidSearchCreationFilterException($message);
-            }
+            throw new ild78\Exceptions\InvalidSearchCreationUntilFilterException($message);
         }
 
         if (array_key_exists('limit', $terms)) {
@@ -93,7 +112,9 @@ trait SearchTrait
         $element = new static(); // Mandatory for requests.
         $property = strtolower($element->getEntityName() . 's');
 
-        $gen = function () use ($request, $element, $params, $property) {
+        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
+        // @var callable(): Generator<static> $gen
+        $gen = function () use ($request, $element, $params, $property, $until): Generator {
             $more = true;
             $start = 0;
 
@@ -115,6 +136,11 @@ trait SearchTrait
                             $start += $results['range']['limit'];
 
                             foreach ($results[$property] as $data) {
+                                if ($until && $data['created'] > $until) {
+                                    $more = false;
+                                    break;
+                                }
+
                                 $obj = new static($data['id']);
 
                                 $obj->cleanModified = true;
@@ -131,5 +157,57 @@ trait SearchTrait
         };
 
         return $gen();
+    }
+
+    // phpcs:enable
+    // phpcs:disable Squiz.Functions.MultiLineFunctionDeclaration.NewlineBeforeOpenBrace
+
+    /**
+     * Validate date relative filter.
+     *
+     * @param mixed $value Parameter value.
+     * @param string $name Parameter name.
+     * @param string $exception Exception to throw.
+     * @param boolean $allowPeriod Allow DatePeriod object.
+     *
+     * @return integer Ready to use timestamp.
+     *
+     * @throws ild78\Exceptions\InvalidSearchFilterException When `created` is invalid.
+     *
+     * @phpstan-param class-string $exception Exception to throw.
+     */
+    protected static function validateDateRelativeFilter(
+        $value,
+        string $name,
+        string $exception,
+        bool $allowPeriod = false
+    ): int
+    {
+        // phpcs:enable
+        $timestamp = $value;
+
+        if ($value instanceof DateTimeInterface) {
+            $timestamp = $value->getTimestamp();
+        }
+
+        $type = gettype($timestamp);
+
+        if (!$timestamp || $type !== 'integer') {
+            $message = $name . ' must be a positive integer or a DateTime object.';
+
+            if ($allowPeriod) {
+                $message = $name . ' must be a positive integer, a DateTime object or a DatePeriod object.';
+            }
+
+            throw new $exception($message);
+        }
+
+        if ($timestamp > time()) {
+            $message = $name . ' must be in the past.';
+
+            throw new $exception($message);
+        }
+
+        return $timestamp;
     }
 }

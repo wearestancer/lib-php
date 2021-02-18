@@ -22,7 +22,7 @@ class InternalServerErrorException extends ild78\Tests\atoum
             ->if($class = $this->testedClass->getClass())
             ->then
                 ->string($class::getDefaultMessage())
-                    ->isIdenticalTo('Servor error, please leave a minute to repair it and try again')
+                    ->isIdenticalTo('Server error, please leave a minute to repair it and try again')
         ;
     }
 

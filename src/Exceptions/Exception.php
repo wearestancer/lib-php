@@ -20,38 +20,38 @@ class Exception extends \Exception implements ExceptionInterface
     /**
      * Construct the exception
      *
-     * @param string $message The Exception message to throw.
+     * @param string|null $message The Exception message to throw.
      * @param integer $code The Exception code.
-     * @param Throwable $previous The previous exception used for the exception chaining.
+     * @param Throwable|null $previous The previous exception used for the exception chaining.
      */
-    public function __construct(string $message = '', int $code = 0, Throwable $previous = null)
+    public function __construct(string $message = null, int $code = 0, Throwable $previous = null)
     {
-        parent::__construct($message ?: static::getDefaultMessage(), $code, $previous);
+        parent::__construct($message ?? static::getDefaultMessage(), $code, $previous);
     }
 
     /**
      * Create an instance from an array
      *
      * @param array $params Parameters, keys must correspond to exception properties.
-     * @return self
+     * @return static
+     *
+     * @phpstan-param CreateExceptionParameters $params
      */
     public static function create(array $params = []): self
     {
-        $keys = [
-            'message' => '',
+        $data = [
             'code' => 0,
+            'message' => null,
             'previous' => null,
         ];
 
-        foreach ($keys as $key => $default) {
-            $$key = $default;
-
+        foreach ($data as $key => $default) {
             if (array_key_exists($key, $params) && $params[$key]) {
-                $$key = $params[$key];
+                $data[$key] = $params[$key];
             }
         }
 
-        return new static($message, $code, $previous);
+        return new static($data['message'], $data['code'], $data['previous']);
     }
 
     /**

@@ -12,7 +12,7 @@ class Refund extends TestCase
     use ild78\Tests\Provider\Currencies;
 
     /**
-     * @dataProvider currencyDataProvider
+     * @dataProvider cardCurrencyDataProvider
      */
     public function testRefund($currency)
     {
@@ -62,7 +62,7 @@ class Refund extends TestCase
     }
 
     /**
-     * @dataProvider currencyDataProvider
+     * @dataProvider cardCurrencyDataProvider
      */
     public function testRefund_multiple($currency)
     {

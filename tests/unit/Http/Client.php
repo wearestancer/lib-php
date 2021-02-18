@@ -207,7 +207,7 @@ class Client extends ild78\Tests\atoum
         $this
             ->given($ressource = uniqid())
             ->and($this->function->curl_init = $ressource)
-            ->and($this->function->curl_close = true)
+            ->and($this->function->curl_close = uniqid())
             ->then
                 ->object($this->newTestedInstance)
                 ->function('curl_init')->wasCalled->once
@@ -282,10 +282,16 @@ class Client extends ild78\Tests\atoum
                 ->string($request->getMethod())
                     ->isIdenticalTo($method)
 
-                ->string($request->getUri())
-                    ->isIdenticalTo($query)
+                ->object($request->getUri())
+                    ->isInstanceOf(ild78\Http\Uri::class)
 
-                ->string($request->getBody())
+                ->castToString($request->getUri())
+                    ->isIdenticalTo($url)
+
+                ->object($request->getBody())
+                    ->isInstanceOf(ild78\Http\Stream::class)
+
+                ->castToString($request->getBody())
                     ->isIdenticalTo($options['body'])
 
                 ->array($request->getHeaders())
@@ -340,7 +346,10 @@ class Client extends ild78\Tests\atoum
                     ->object($response = $this->testedInstance->request($method, $host))
                         ->isInstanceOf(ild78\Http\Response::class)
 
-                    ->string($response->getBody())
+                    ->object($response->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+
+                    ->castToString($response->getBody())
                         ->isIdenticalTo($body)
 
                     ->function('curl_setopt')
@@ -379,12 +388,12 @@ class Client extends ild78\Tests\atoum
                 ->and($options = [
                     'timeout' => rand(1, 1000),
                     'headers' => [
-                        uniqid() => uniqid(),
-                        uniqid() => [uniqid(), uniqid()],
+                        $this->getRandomString(10) => uniqid(),
+                        $this->getRandomString(10) => [uniqid(), uniqid()],
                     ],
                     'body' => [
-                        uniqid() => uniqid(),
-                        uniqid() => uniqid(),
+                        $this->getRandomString(10) => uniqid(),
+                        $this->getRandomString(10) => uniqid(),
                     ],
                 ])
                 ->and($headers = [])
@@ -397,7 +406,10 @@ class Client extends ild78\Tests\atoum
                     ->object($response = $this->testedInstance->request($method, $host, $options))
                         ->isInstanceOf(ild78\Http\Response::class)
 
-                    ->string($response->getBody())
+                    ->object($response->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+
+                    ->castToString($response->getBody())
                         ->isIdenticalTo($body)
 
                     ->function('curl_setopt')
@@ -448,7 +460,10 @@ class Client extends ild78\Tests\atoum
                     ->object($response = $this->exception->getResponse())
                         ->isInstanceOf(ild78\Http\Response::class)
 
-                    ->string($response->getBody())
+                    ->object($response->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+
+                    ->castToString($response->getBody())
                         ->isIdenticalTo($body)
 
                     ->function('curl_setopt')
@@ -489,7 +504,10 @@ class Client extends ild78\Tests\atoum
                     ->object($response = $this->exception->getResponse())
                         ->isInstanceOf(ild78\Http\Response::class)
 
-                    ->string($response->getBody())
+                    ->object($response->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+
+                    ->castToString($response->getBody())
                         ->isIdenticalTo($body)
 
                     ->function('curl_setopt')
@@ -530,7 +548,10 @@ class Client extends ild78\Tests\atoum
                     ->object($response = $this->exception->getResponse())
                         ->isInstanceOf(ild78\Http\Response::class)
 
-                    ->string($response->getBody())
+                    ->object($response->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+
+                    ->castToString($response->getBody())
                         ->isIdenticalTo($body)
 
                     ->function('curl_setopt')
@@ -651,7 +672,7 @@ class Client extends ild78\Tests\atoum
                 ->and($this->function->curl_exec = $body = sprintf('"%s"', uniqid()))
                 ->and($this->function->curl_getinfo = $code)
                 ->and($this->function->curl_errno = $error)
-                ->and($this->function->curl_error = uniqid())
+                ->and($this->function->curl_error = '')
 
                 ->when(function () use ($code, &$logMessage, $config) {
                     if ($code === 401) {

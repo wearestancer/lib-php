@@ -11,26 +11,48 @@ class Message extends ild78\Tests\atoum
     {
         $this
             ->given($body = uniqid())
-            ->and($this->newTestedInstance($body))
             ->and($name = uniqid())
             ->and($value = uniqid())
-            ->then
-                ->object($this->testedInstance->addHeader($name, $value))
-                    ->isTestedInstance
+            ->assert('Body as a string')
+                ->if($this->newTestedInstance($body))
+                ->then
+                    ->object($this->testedInstance->addHeader($name, $value))
+                        ->isTestedInstance
 
-                ->array($this->testedInstance->getHeader($name))
-                    ->contains($value)
+                    ->array($this->testedInstance->getHeader($name))
+                        ->contains($value)
+
+            ->assert('Body as an object')
+                ->if($this->newTestedInstance(new ild78\Http\Stream($body)))
+                ->then
+                    ->object($this->testedInstance->addHeader($name, $value))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->getHeader($name))
+                        ->contains($value)
         ;
     }
 
     public function testGetBody()
     {
         $this
-            ->given($body = uniqid())
-            ->and($this->newTestedInstance($body))
-            ->then
-                ->string($this->testedInstance->getBody())
-                    ->isIdenticalTo($body)
+            ->given($bodyString = uniqid())
+            ->and($bodyObject = new ild78\Http\Stream(uniqid()))
+
+            ->assert('Body as a string')
+                ->if($this->newTestedInstance($bodyString))
+                ->then
+                    ->object($this->testedInstance->getBody())
+                        ->isInstanceOf($bodyObject)
+
+                    ->castToString($this->testedInstance->getBody())
+                        ->isIdenticalTo($bodyString)
+
+            ->assert('Body as an object')
+                ->if($this->newTestedInstance($bodyObject))
+                ->then
+                    ->object($this->testedInstance->getBody())
+                        ->isIdenticalTo($bodyObject)
         ;
     }
 
@@ -167,7 +189,7 @@ class Message extends ild78\Tests\atoum
     public function testWithAddedHeader()
     {
         $this
-            ->given($body = uniqid())
+            ->given($body = new ild78\Http\Stream(uniqid()))
             ->and($key = uniqid())
             ->and($value = uniqid())
             ->and($headers = [
@@ -191,7 +213,7 @@ class Message extends ild78\Tests\atoum
                         ->isIdenticalTo($headers)
 
                     // Check no diff on other properties
-                    ->string($this->testedInstance->getBody())
+                    ->object($this->testedInstance->getBody())
                         ->isIdenticalTo($obj->getBody())
                         ->isIdenticalTo($body)
 
@@ -212,7 +234,7 @@ class Message extends ild78\Tests\atoum
                         ->isIdenticalTo($headers)
 
                     // Check no diff on other properties
-                    ->string($this->testedInstance->getBody())
+                    ->object($this->testedInstance->getBody())
                         ->isIdenticalTo($obj->getBody())
                         ->isIdenticalTo($body)
 
@@ -225,7 +247,7 @@ class Message extends ild78\Tests\atoum
     public function testWithBody()
     {
         $this
-            ->given($body = uniqid())
+            ->given($body = new ild78\Http\Stream(uniqid()))
             ->and($key = uniqid())
             ->and($value = uniqid())
             ->and($headers = [
@@ -234,17 +256,16 @@ class Message extends ild78\Tests\atoum
             ->and($protocol = uniqid())
             ->and($this->newTestedInstance($body, $headers, $protocol))
 
-            ->if($changes = new mock\Psr\Http\Message\StreamInterface)
-            ->and($this->calling($changes)->__toString = $newBody = uniqid())
+            ->if($newBody = new ild78\Http\Stream(uniqid()))
             ->then
-                ->object($obj = $this->testedInstance->withBody($changes))
+                ->object($obj = $this->testedInstance->withBody($newBody))
                     ->isInstanceOfTestedClass
                     ->isNotTestedInstance
 
-                ->string($obj->getBody())
+                ->object($obj->getBody())
                     ->isIdenticalTo($newBody)
 
-                ->string($this->testedInstance->getBody())
+                ->object($this->testedInstance->getBody())
                     ->isIdenticalTo($body)
 
                 // Check no diff on other properties
@@ -261,7 +282,7 @@ class Message extends ild78\Tests\atoum
     public function testWithHeader()
     {
         $this
-            ->given($body = uniqid())
+            ->given($body = new ild78\Http\Stream(uniqid()))
             ->and($key = uniqid())
             ->and($value = uniqid())
             ->and($headers = [
@@ -285,7 +306,7 @@ class Message extends ild78\Tests\atoum
                         ->isIdenticalTo($headers)
 
                     // Check no diff on other properties
-                    ->string($this->testedInstance->getBody())
+                    ->object($this->testedInstance->getBody())
                         ->isIdenticalTo($obj->getBody())
                         ->isIdenticalTo($body)
 
@@ -306,7 +327,7 @@ class Message extends ild78\Tests\atoum
                         ->isIdenticalTo($headers)
 
                     // Check no diff on other properties
-                    ->string($this->testedInstance->getBody())
+                    ->object($this->testedInstance->getBody())
                         ->isIdenticalTo($obj->getBody())
                         ->isIdenticalTo($body)
 
@@ -320,7 +341,6 @@ class Message extends ild78\Tests\atoum
     {
         $this
             ->given($host = uniqid())
-            ->and($body = uniqid())
             ->and($key = uniqid())
             ->and($value = uniqid())
             ->and($headers = [
@@ -328,20 +348,27 @@ class Message extends ild78\Tests\atoum
                 'Host' => [$host],
             ])
             ->and($protocol = uniqid())
-            ->and($this->newTestedInstance($body, $headers, $protocol))
 
-            ->if($changes = uniqid())
+            ->if($in = uniqid())
+            ->and($out = uniqid())
+            ->and($body = new ild78\Http\Stream($in))
+
+            ->if($this->newTestedInstance($body, $headers, $protocol))
             ->then
                 ->assert('With two arguments')
-                    ->object($obj = $this->testedInstance->withModifiedBody($body, $changes))
+                    ->object($obj = $this->testedInstance->withModifiedBody($in, $out))
                         ->isInstanceOfTestedClass
                         ->isNotTestedInstance
 
-                    ->string($obj->getBody())
-                        ->isIdenticalTo($changes)
+                    ->object($obj->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+                        ->isNotIdenticalTo($body)
 
-                    ->string($this->testedInstance->getBody())
+                    ->object($this->testedInstance->getBody())
                         ->isIdenticalTo($body)
+
+                    ->castToString($obj->getBody())
+                        ->isIdenticalTo($out)
 
                     // Check no diff on other properties
                     ->array($this->testedInstance->getHeaders())
@@ -353,15 +380,19 @@ class Message extends ild78\Tests\atoum
                         ->isIdenticalTo($protocol)
 
                 ->assert('With one argument')
-                    ->object($obj = $this->testedInstance->withModifiedBody($body))
+                    ->object($obj = $this->testedInstance->withModifiedBody($in))
                         ->isInstanceOfTestedClass
                         ->isNotTestedInstance
 
-                    ->string($obj->getBody())
-                        ->isIdenticalTo('')
+                    ->object($obj->getBody())
+                        ->isInstanceOf(ild78\Http\Stream::class)
+                        ->isNotIdenticalTo($body)
 
-                    ->string($this->testedInstance->getBody())
+                    ->object($this->testedInstance->getBody())
                         ->isIdenticalTo($body)
+
+                    ->castToString($obj->getBody())
+                        ->isIdenticalTo('')
 
                     // Check no diff on other properties
                     ->array($this->testedInstance->getHeaders())
@@ -377,7 +408,7 @@ class Message extends ild78\Tests\atoum
     public function testWithoutHeader()
     {
         $this
-            ->given($body = uniqid())
+            ->given($body = new ild78\Http\Stream(uniqid()))
             ->and($key = uniqid())
             ->and($value = uniqid())
             ->and($headers = [
@@ -399,7 +430,7 @@ class Message extends ild78\Tests\atoum
                         ->isIdenticalTo($headers)
 
                     // Check no diff on other properties
-                    ->string($this->testedInstance->getBody())
+                    ->object($this->testedInstance->getBody())
                         ->isIdenticalTo($obj->getBody())
                         ->isIdenticalTo($body)
 
@@ -413,7 +444,7 @@ class Message extends ild78\Tests\atoum
                         ->isNotTestedInstance
 
                     // Check no diff on other properties
-                    ->string($this->testedInstance->getBody())
+                    ->object($this->testedInstance->getBody())
                         ->isIdenticalTo($obj->getBody())
                         ->isIdenticalTo($body)
 
@@ -430,7 +461,7 @@ class Message extends ild78\Tests\atoum
     public function testWithProtocolVersion()
     {
         $this
-            ->given($body = uniqid())
+            ->given($body = new ild78\Http\Stream(uniqid()))
             ->and($key = uniqid())
             ->and($value = uniqid())
             ->and($headers = [
@@ -452,7 +483,7 @@ class Message extends ild78\Tests\atoum
                     ->isIdenticalTo($protocol)
 
                 // Check no diff on other properties
-                ->string($this->testedInstance->getBody())
+                ->object($this->testedInstance->getBody())
                     ->isIdenticalTo($obj->getBody())
                     ->isIdenticalTo($body)
 

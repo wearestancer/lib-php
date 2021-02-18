@@ -1,0 +1,123 @@
+
+includes:
+  - phpstan-baseline.neon
+
+parameters:
+  ignoreErrors:
+    - '/Call to an undefined static method ild78\\Core\\AbstractObject::[gs]et\w+\(\)/'
+    - '/^Only booleans are allowed in/'
+
+    - message: '/Unsafe usage of new static/'
+      paths:
+        - src/Config.php
+        - src/Core/AbstractObject.php
+        - src/Exceptions/Exception.php
+        - src/Http/Uri.php
+        - src/Traits/SearchTrait.php
+        - src/Payment.php
+
+    - message: '/^Variable (property access|method call)/'
+      paths:
+        - src/Core/AbstractObject.php
+        - src/Core/Request.php
+        - src/Http/Client.php
+        - src/Payment.php
+
+  level: max
+
+  paths:
+    - src
+
+  typeAliases:
+    DataModel: '''
+      array{
+        allowedValues?: string[] | class-string,
+        coerce?: string,
+        exception?: class-string,
+        exportable?: bool,
+        format?: string,
+        list?: bool,
+        restricted?: bool,
+        required?: bool,
+        size?: array{
+          fixed?: int,
+          min?: int,
+          max?: int,
+        },
+        type: string,
+        value?: mixed,
+      }
+    '''
+
+    DataModelResolved: '''
+      array{
+        allowedValues: string[] | class-string | null,
+        coerce: ?callable,
+        exception: ?class-string,
+        exportable: bool,
+        format: ?callable,
+        list: bool,
+        restricted: bool,
+        required: bool,
+        size: array{
+          fixed: ?int,
+          min: ?int,
+          max: ?int,
+        },
+        type: string,
+        value: mixed,
+      }
+    '''
+
+    CreateExceptionParameters: '''
+      array{
+        code?: integer,
+        message?: string,
+        previous?: Throwable,
+        request?: Psr\Http\Message\RequestInterface,
+        response?: Psr\Http\Message\ResponseInterface,
+        status?: integer,
+      }
+    '''
+
+    PaymentChargeOptions: '''
+      array{
+        account_holder_name?: string,
+        account_number?: string,
+        id?: string,
+        source: string|array{
+          id?: string,
+        },
+      }
+    '''
+
+    SearchFilters: '''
+      array{
+        created?: DateTimeInterface|DatePeriod|int,
+        created_until?: DateTimeInterface|int,
+        limit?: int,
+        start?: int,
+      }
+    '''
+
+    UriComponents: '''
+      array{
+        fragment?: string,
+        host?: string,
+        path?: string,
+        pass?: string,
+        port?: integer|null,
+        query?: string,
+        scheme?: string,
+        user?: string,
+      }
+    '''
+
+  tmpDir: reports/phpstan
+
+
+services:
+  -
+    class: ild78\PHPStan\Types\AbstractObjectDynamicReturnTypeExtension
+    tags:
+      - phpstan.broker.dynamicMethodReturnTypeExtension

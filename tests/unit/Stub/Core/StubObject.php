@@ -371,20 +371,186 @@ class StubObject extends ild78\Tests\atoum
         ;
     }
 
-    /**
-     * @dataProvider validDataProvider
-     */
-    public function testDataModelAdderThrowsNotAList($property, $value)
+    public function testAllowedValues()
     {
         $this
-            ->given($this->newTestedInstance)
-            ->then
-                ->exception(function () use ($property, $value) {
-                    $this->testedInstance->dataModelAdder($property, $value);
-                })
-                    ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
-                    ->message
-                        ->isIdenticalTo('"' . $property . '" is not a list, you can not add elements in it.')
+            ->assert('Test with strings')
+                ->given($this->newTestedInstance)
+                ->if($value = 'foo')
+                ->then
+                    ->object($this->testedInstance->setString5($value))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getString5())
+                        ->isIdenticalTo($value)
+
+                ->if($value = 'bar')
+                ->then
+                    ->object($this->testedInstance->setString5($value))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getString5())
+                        ->isIdenticalTo($value)
+
+                ->if($value = uniqid())
+                ->then
+                    ->exception(function () use ($value) {
+                        $this->testedInstance->setString5($value);
+                    })
+                        ->isInstanceOf(Ild78\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo(vsprintf('"%s" is not a valid %s, please use one of the following : %s', [
+                                $value,
+                                'string5',
+                                'foo, bar',
+                            ]))
+
+            ->assert('Test with strings and lists')
+                ->given($this->newTestedInstance)
+                ->if($value = 'foo')
+                ->then
+                    ->object($this->testedInstance->setString6([$value]))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->getString6())
+                        ->hasSize(1)
+                        ->string[0]
+                            ->isIdenticalTo($value)
+
+                ->if($value = 'bar')
+                ->then
+                    ->object($this->testedInstance->setString6([$value]))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->getString6())
+                        ->hasSize(1)
+                        ->string[0]
+                            ->isIdenticalTo($value)
+
+                ->if($value = uniqid())
+                ->then
+                    ->exception(function () use ($value) {
+                        $this->testedInstance->setString6([$value]);
+                    })
+                        ->isInstanceOf(Ild78\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo(vsprintf('"%s" is not a valid %s, please use one of the following : %s', [
+                                $value,
+                                'string6',
+                                'foo, bar',
+                            ]))
+
+            ->assert('Test with objects\' constants (as string)')
+                ->given($this->newTestedInstance)
+                ->if($value = ild78\Stub\FakeStatus::DONE)
+                ->then
+                    ->object($this->testedInstance->setString7($value))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getString7())
+                        ->isIdenticalTo($value)
+
+                ->if($value = uniqid())
+                ->then
+                    ->exception(function () use ($value) {
+                        $this->testedInstance->setString7($value);
+                    })
+                        ->isInstanceOf(Ild78\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo(vsprintf('"%s" is not a valid %s, please use one of the following : %s', [
+                                $value,
+                                'string7',
+                                'ild78\Stub\FakeStatus::ACTIVE, ild78\Stub\FakeStatus::DONE, ild78\Stub\FakeStatus::PENDING',
+                            ]))
+
+            ->assert('Test with integers')
+                ->given($this->newTestedInstance)
+                ->if($value = 1)
+                ->then
+                    ->object($this->testedInstance->setInteger4($value))
+                        ->isTestedInstance
+
+                    ->integer($this->testedInstance->getInteger4())
+                        ->isIdenticalTo($value)
+
+                ->if($value = 2)
+                ->then
+                    ->object($this->testedInstance->setInteger4($value))
+                        ->isTestedInstance
+
+                    ->integer($this->testedInstance->getInteger4())
+                        ->isIdenticalTo($value)
+
+                ->if($value = rand(4, PHP_INT_MAX))
+                ->then
+                    ->exception(function () use ($value) {
+                        $this->testedInstance->setInteger4($value);
+                    })
+                        ->isInstanceOf(Ild78\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo(vsprintf('"%s" is not a valid %s, please use one of the following : %s', [
+                                $value,
+                                'integer4',
+                                '1, 2, 3',
+                            ]))
+
+            ->assert('Test with strings and lists')
+                ->given($this->newTestedInstance)
+                ->if($value = 1)
+                ->then
+                    ->object($this->testedInstance->setInteger5([$value]))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->getInteger5())
+                        ->hasSize(1)
+                        ->integer[0]
+                            ->isIdenticalTo($value)
+
+                ->if($value = 2)
+                ->then
+                    ->object($this->testedInstance->setInteger5([$value]))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->getInteger5())
+                        ->hasSize(1)
+                        ->integer[0]
+                            ->isIdenticalTo($value)
+
+                ->if($value = rand(10, PHP_INT_MAX))
+                ->then
+                    ->exception(function () use ($value) {
+                        $this->testedInstance->setInteger5([$value]);
+                    })
+                        ->isInstanceOf(Ild78\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo(vsprintf('"%s" is not a valid %s, please use one of the following : %s', [
+                                $value,
+                                'integer5',
+                                '1, 2, 3',
+                            ]))
+
+            ->assert('Test with objects\' constants (as integer)')
+                ->given($this->newTestedInstance)
+                ->if($value = ild78\Stub\FakeOptions::READ)
+                ->then
+                    ->object($this->testedInstance->setInteger6($value))
+                        ->isTestedInstance
+
+                    ->integer($this->testedInstance->getInteger6())
+                        ->isIdenticalTo($value)
+
+                ->if($value = rand(10, PHP_INT_MAX))
+                ->then
+                    ->exception(function () use ($value) {
+                        $this->testedInstance->setInteger6($value);
+                    })
+                        ->isInstanceOf(Ild78\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo(vsprintf('"%s" is not a valid %s, please use one of the following : %s', [
+                                $value,
+                                'integer6',
+                                'ild78\Stub\FakeOptions::READ, ild78\Stub\FakeOptions::WRITE',
+                            ]))
         ;
     }
 
@@ -405,6 +571,23 @@ class StubObject extends ild78\Tests\atoum
 
                 ->array($this->testedInstance->testOnlyGetModified())
                     ->contains($property)
+        ;
+    }
+
+    /**
+     * @dataProvider validDataProvider
+     */
+    public function testDataModelAdderThrowsNotAList($property, $value)
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->exception(function () use ($property, $value) {
+                    $this->testedInstance->dataModelAdder($property, $value);
+                })
+                    ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('"' . $property . '" is not a list, you can not add elements in it.')
         ;
     }
 
@@ -961,7 +1144,7 @@ class StubObject extends ild78\Tests\atoum
             ->and($this->calling($client)->request = $response)
 
             ->assert('Can be null')
-                ->given($this->calling($response)->getBody = '{}')
+                ->given($this->calling($response)->getBody = new ild78\Http\Stream('{}'))
 
                 ->if($this->newTestedInstance(uniqid()))
                 ->then
@@ -970,12 +1153,105 @@ class StubObject extends ild78\Tests\atoum
 
             ->assert('No date but an ID, it will populate data')
                 ->given($created = rand(946681200, 1893452400))
-                ->and($this->calling($response)->getBody = json_encode(compact('created')))
+                ->and($this->calling($response)->getBody = new ild78\Http\Stream(json_encode(compact('created'))))
 
                 ->if($this->newTestedInstance(uniqid()))
                 ->then
                     ->dateTime($this->testedInstance->getCreationDate())
                         ->isEqualTo(new DateTime('@' . $created))
+        ;
+    }
+
+    public function testGet()
+    {
+        $this
+            ->given($timestamp = rand(946681200, 1893452400))
+            ->and($string1 = $this->makeStringBetween(10, 20))
+            ->and($integer1 = $this->makeIntegerBetween(10, 20))
+            ->and($integer2 = $this->makeIntegerBetween(10, 20))
+            ->and($camelCaseProperty = $this->makeStringBetween(10, 20))
+            ->and($objectData = ['integer2' => $integer2])
+            ->and($object2 = $this->newTestedInstance($objectData))
+            ->and($unknownKey = uniqid())
+            ->and($unknownValue = uniqid())
+            ->and($data = [
+                'string1' => $string1,
+                'integer1' => $integer1,
+                'object2' => $objectData,
+                'camel_case_property' => $camelCaseProperty,
+                $unknownKey => $unknownValue,
+            ])
+
+            ->if($response = new mock\ild78\Http\Response(200))
+            ->and($this->calling($response)->getBody[] = new ild78\Http\Stream(json_encode($data)))
+
+            ->if($client = new mock\ild78\Http\Client)
+            ->and($this->calling($client)->request = $response)
+
+            ->if($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setDebug(false))
+            ->and($config->setHttpClient($client))
+
+            ->if($id = uniqid())
+            ->and($this->newTestedInstance($id))
+            ->then
+                ->assert('Default values')
+                    ->variable($this->testedInstance->get())
+                        ->isNull
+
+                    ->variable($this->testedInstance->get(uniqid()))
+                        ->isNull
+
+                    ->variable($this->testedInstance->get('string1'))
+                        ->isNull
+
+                    ->variable($this->testedInstance->get('integer1'))
+                        ->isNull
+
+                    ->variable($this->testedInstance->get('object2'))
+                        ->isNull
+
+                    ->variable($this->testedInstance->get('camel_case_property'))
+                        ->isNull
+
+                    ->variable($this->testedInstance->get('camelCaseProperty'))
+                        ->isNull
+
+                    ->variable($this->testedInstance->get($unknownKey))
+                        ->isNull
+
+                ->assert('After API call')
+                    ->if($this->testedInstance->populate())
+                    ->then
+                        ->array($this->testedInstance->get())
+                            ->isEqualTo($data)
+
+                        ->variable($this->testedInstance->get(uniqid()))
+                            ->isNull
+
+                        ->string($this->testedInstance->get('string1'))
+                            ->isIdenticalTo($string1)
+
+                        ->integer($this->testedInstance->get('integer1'))
+                            ->isIdenticalTo($integer1)
+
+                        ->array($this->testedInstance->get('object2'))
+                            ->isEqualTo($objectData)
+
+                        ->string($this->testedInstance->get('camel_case_property'))
+                            ->isIdenticalTo($camelCaseProperty)
+
+                        ->string($this->testedInstance->get('camelCaseProperty'))
+                            ->isIdenticalTo($camelCaseProperty)
+
+                        ->string($this->testedInstance->get($unknownKey))
+                            ->isIdenticalTo($unknownValue)
+
+                        ->array($this->testedInstance->getObject2()->get())
+                            ->isEqualTo($objectData)
+
+                        ->integer($this->testedInstance->getObject2()->get('integer2'))
+                            ->isIdenticalTo($integer2)
         ;
     }
 
@@ -998,8 +1274,7 @@ class StubObject extends ild78\Tests\atoum
                                 ->isIdenticalTo($fixed)
                         ;
                     })
-                    ->notHasKey('value')
-                    ->hasKeys(['restricted', 'required'])
+                    ->hasKeys(['restricted', 'required', 'value'])
 
                 ->array($this->testedInstance->getModel())
                     ->hasKey($property)
@@ -1015,8 +1290,7 @@ class StubObject extends ild78\Tests\atoum
                                         ->isIdenticalTo($fixed)
                                 ;
                             })
-                            ->notHasKey('value')
-                            ->hasKeys(['restricted', 'required'])
+                            ->hasKeys(['restricted', 'required', 'value'])
                         ;
                     })
         ;
@@ -1499,6 +1773,38 @@ class StubObject extends ild78\Tests\atoum
                                             ->isIdenticalTo($object2->getString1())
                                 ;
                             })
+
+                ->assert('Allow formatter')
+                    ->given($timestamp1 = rand(946681200, 1893452400))
+                    ->and($timestamp2 = rand(946681200, 1893452400))
+                    ->and($date1 = new DateTime('@' . $timestamp1))
+                    ->and($date2 = new DateTime('@' . $timestamp2))
+
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->setDate3($date1))
+                    ->and($this->testedInstance->setDate4([$date1, $date2]))
+
+                    ->then
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->hasSize(2)
+
+                            ->hasKey('date3')
+                            ->hasKey('date4')
+
+                            ->string['date3']
+                                ->isIdenticalTo($date1->format('Y-m-d'))
+
+                            ->child['date4'](function ($dt) use ($date1, $date2) {
+                                $dt
+                                    ->hasSize(2)
+
+                                    ->string[0]
+                                        ->isIdenticalTo($date1->format('Y-m-d'))
+
+                                    ->string[1]
+                                        ->isIdenticalTo($date2->format('Y-m-d'))
+                                ;
+                            })
         ;
     }
 
@@ -1895,7 +2201,7 @@ class StubObject extends ild78\Tests\atoum
 
                 ->if($response = new mock\ild78\Http\Response(200))
                 ->and($this->calling($client)->request = $response)
-                ->and($this->calling($response)->getBody = null)
+                ->and($this->calling($response)->getBody = new ild78\Http\Stream(''))
 
                 ->if($string1 = $this->makeStringBetween(10, 20))
                 ->and($integer1 = $this->makeIntegerBetween(10, 20))

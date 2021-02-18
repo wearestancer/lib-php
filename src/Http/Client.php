@@ -14,7 +14,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
     /** @var resource */
     protected $curl;
 
-    /** @var array */
+    /** @var mixed[] */
     protected $headers = [];
 
     /** @var ild78\Http\Request|null */
@@ -38,10 +38,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
      */
     public function __destruct()
     {
-        if ($this->curl) {
-            curl_close($this->curl);
-            $this->curl = null;
-        }
+        curl_close($this->curl);
     }
 
     /**
@@ -79,7 +76,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
     /**
      * Return parsed response header
      *
-     * @return array
+     * @return mixed[]
      */
     public function getResponseHeaders(): array
     {
@@ -128,7 +125,7 @@ class Client implements ild78\Interfaces\HttpClientInterface
      *
      * @param string $method HTTP method.
      * @param string $uri URI string.
-     * @param array $options Request options to apply.
+     * @param mixed[] $options Request options to apply.
      *
      * @return Psr\Http\Message\ResponseInterface
      *
@@ -196,10 +193,14 @@ class Client implements ild78\Interfaces\HttpClientInterface
 
         $body = curl_exec($this->curl);
         $error = curl_errno($this->curl);
-        $code = curl_getinfo($this->curl, CURLINFO_HTTP_CODE);
+        $code = (int) curl_getinfo($this->curl, CURLINFO_RESPONSE_CODE);
+
+        if (is_bool($body)) {
+            $body = null;
+        }
 
         $this->lastRequest = new Request($method, $uri, $options['headers'], $options['body']);
-        $this->lastResponse = new Response($code, $body ?: null, $this->getResponseHeaders());
+        $this->lastResponse = new Response($code, $body, $this->getResponseHeaders());
 
         if ($error || $code >= 400) {
             if ($error === CURLE_TOO_MANY_REDIRECTS) {
@@ -210,42 +211,40 @@ class Client implements ild78\Interfaces\HttpClientInterface
                 'code' => $code,
                 'request' => $this->lastRequest,
                 'response' => $this->lastResponse,
-                'status' => $code,
             ];
 
             $class = ild78\Exceptions\HttpException::getClassFromStatus($code);
 
-            if ($class::getStatus() != $code) {
+            if (intval($class::getStatus()) !== $code) {
                 $params['message'] = curl_error($this->curl);
+                $params['status'] = $code;
             }
 
-            if ($this->lastResponse instanceof Response) {
-                $json = json_decode((string) $this->lastResponse->getBody(), true);
+            $json = json_decode((string) $this->lastResponse->getBody(), true);
 
-                if (
-                    json_last_error() === JSON_ERROR_NONE
-                    && is_array($json)
-                    && array_key_exists('error', $json)
-                    && array_key_exists('message', $json['error'])
-                    && $json['error']['message']
-                ) {
-                    $params['message'] = $json['error']['message'];
+            if (
+                json_last_error() === JSON_ERROR_NONE
+                && is_array($json)
+                && array_key_exists('error', $json)
+                && array_key_exists('message', $json['error'])
+                && $json['error']['message']
+            ) {
+                $params['message'] = $json['error']['message'];
 
-                    if (is_array($json['error']['message'])) {
-                        $params['message'] = current($json['error']['message']);
-                        $id = '';
+                if (is_array($json['error']['message'])) {
+                    $params['message'] = current($json['error']['message']);
+                    $id = '';
 
-                        if (array_key_exists('id', $json['error']['message'])) {
-                            $id = $json['error']['message']['id'];
-                            $params['message'] = $json['error']['message']['id'];
-                        }
+                    if (array_key_exists('id', $json['error']['message'])) {
+                        $id = $json['error']['message']['id'];
+                        $params['message'] = $json['error']['message']['id'];
+                    }
 
-                        if (array_key_exists('error', $json['error']['message'])) {
-                            $params['message'] = $json['error']['message']['error'];
+                    if (array_key_exists('error', $json['error']['message'])) {
+                        $params['message'] = $json['error']['message']['error'];
 
-                            if ($id) {
-                                $params['message'] .= ' (' . $id . ')';
-                            }
+                        if ($id) {
+                            $params['message'] .= ' (' . $id . ')';
                         }
                     }
                 }

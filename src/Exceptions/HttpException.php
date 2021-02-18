@@ -31,11 +31,11 @@ class HttpException extends Exception implements ExceptionInterface
     /**
      * Construct the exception
      *
-     * @param string $message The Exception message to throw.
+     * @param string|null $message The Exception message to throw.
      * @param integer $code The Exception code.
-     * @param Throwable $previous The previous exception used for the exception chaining.
+     * @param Throwable|null $previous The previous exception used for the exception chaining.
      */
-    public function __construct(string $message = '', int $code = 0, Throwable $previous = null)
+    public function __construct(string $message = null, int $code = 0, Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
 
@@ -49,7 +49,9 @@ class HttpException extends Exception implements ExceptionInterface
      * Create an instance from an array
      *
      * @param array $params Parameters, keys must correspond to exception properties.
-     * @return self
+     * @return static
+     *
+     * @phpstan-param CreateExceptionParameters $params
      */
     public static function create(array $params = []): Exception
     {
@@ -63,15 +65,12 @@ class HttpException extends Exception implements ExceptionInterface
 
         $obj = parent::create($params);
 
-        $keys = [
-            'request',
-            'response',
-        ];
+        if (array_key_exists('request', $params) && $params['request']) {
+            $obj->request = $params['request'];
+        }
 
-        foreach ($keys as $key) {
-            if (array_key_exists($key, $params) && $params[$key]) {
-                $obj->$key = $params[$key];
-            }
+        if (array_key_exists('response', $params) && $params['response']) {
+            $obj->response = $params['response'];
         }
 
         return $obj;

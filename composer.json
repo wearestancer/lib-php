@@ -1,7 +1,7 @@
 {
     "name": "ild78/lib-php",
     "description": "Ild78 PHP library",
-    "version": "0.0.5",
+    "version": "0.0.6",
     "type": "library",
     "keywords": [
         "payments",
@@ -17,6 +17,7 @@
     },
     "autoload-dev": {
         "psr-4": {
+            "ild78\\PHPStan\\": "tests/stan",
             "ild78\\Stub\\": "tests/Stub",
             "ild78\\Tests\\": "tests/"
         }
@@ -33,9 +34,15 @@
         "atoum/reports-extension": "^3.0",
         "atoum/stubs": "^2.6",
         "atoum/visibility-extension": "^1.3",
-        "fzaninotto/faker": "^1.9",
-        "guzzlehttp/guzzle": "^6.3",
-        "ramsey/uuid": "^3.9",
+        "fakerphp/faker": "^1.13",
+        "guzzlehttp/guzzle": "^7.2",
+        "jdslv/atoum-report-cobertura": "^1.0",
+        "phpstan/extension-installer": "^1.0",
+        "phpstan/phpstan": "^0.12.77",
+        "phpstan/phpstan-deprecation-rules": "^0.12.5",
+        "phpstan/phpstan-strict-rules": "^0.12.5",
+        "ramsey/uuid": "^4.1",
+        "satesh/phpcs-gitlab-report": "^1.0",
         "squizlabs/php_codesniffer": "^3.3"
     },
     "suggest": {

@@ -1,7 +1,8 @@
 <?php
 declare(strict_types=1);
 
-// Next line is required, we can not force type in function signature, it triggers a fatal error.
+// Next lines are required, we can not force type in function signature, it triggers a fatal error.
+// phpcs:disable Squiz.Commenting.FunctionComment.InvalidNoReturn
 // phpcs:disable Squiz.Commenting.FunctionComment.ScalarTypeHintMissing
 
 namespace ild78\Http;
@@ -19,28 +20,35 @@ class Request implements Psr\Http\Message\RequestInterface
     /** @var string */
     protected $method;
 
-    /** @var string */
+    /** @var Psr\Http\Message\UriInterface */
     protected $uri;
 
     /**
      * Create a response instance
      *
-     * @param string $method HTTP method.
-     * @param string $uri URI.
-     * @param array $headers Request headers.
-     * @param string|null $body Request body.
+     * @param ild78\Http\Verb\AbstractVerb|string $method HTTP method.
+     * @param Psr\Http\Message\UriInterface|string $uri URI.
+     * @param mixed[] $headers Request headers.
+     * @param Psr\Http\Message\StreamInterface|string|mixed[]|null $body Request body.
      * @param string $version Protocol version.
      */
     public function __construct(
-        string $method,
-        string $uri,
+        $method,
+        $uri,
         array $headers = [],
         $body = null,
         $version = '1.1'
     ) {
-        $this->method = strtoupper($method);
-        $this->body = $body;
+        $this->method = strtoupper((string) $method);
         $this->protocol = $version;
+
+        if ($body instanceof Psr\Http\Message\StreamInterface) {
+            $this->body = $body;
+        } elseif (is_array($body)) {
+            $this->body = new Stream('Unsupported multipart form data');
+        } else {
+            $this->body = new Stream($body ?? '');
+        }
 
         foreach ($headers as $name => $value) {
             $this->addHeader($name, $value);
@@ -77,7 +85,21 @@ class Request implements Psr\Http\Message\RequestInterface
      */
     public function getRequestTarget(): string
     {
-        return $this->getUri();
+        $uri = $this->getUri();
+        $fragment = $uri->getFragment();
+        $query = $uri->getQuery();
+
+        $target = $uri->getPath();
+
+        if ($query) {
+            $target .= '?' . $query;
+        }
+
+        if ($fragment) {
+            $target .= '#' . $fragment;
+        }
+
+        return $target;
     }
 
     /**
@@ -86,29 +108,31 @@ class Request implements Psr\Http\Message\RequestInterface
      * We will not implement the real interface as we will not return an UriInterface.
      *
      * @link http://tools.ietf.org/html/rfc3986#section-4.3
-     * @return string Returns the URI of the request.
+     * @return Psr\Http\Message\UriInterface Returns the URI of the request.
      */
-    public function getUri(): string
+    public function getUri(): Psr\Http\Message\UriInterface
     {
         return $this->uri;
     }
 
     /**
-     * Update URI and host header
+     * Update URI and host header.
      *
-     * @param string $uri New URI.
-     * @return self
+     * @param Psr\Http\Message\UriInterface|string $uri New URI.
+     * @return $this
      */
-    public function updateUri(string $uri): self
+    public function updateUri($uri): self
     {
-        $matches = [];
-        $name = 'Host';
+        if (is_string($uri)) {
+            $this->uri = new Uri($uri);
+        } else {
+            $this->uri = $uri;
+        }
 
-        preg_match('!https?://([^/]+)(.*)!', $uri, $matches);
+        $host = $this->uri->getHost();
 
-        if (count($matches)) {
-            $this->removeHeader($name)->addHeader($name, $matches[1]);
-            $this->uri = $matches[2] ?: '/';
+        if ($host) {
+            $this->removeHeader('Host')->addHeader('Host', $host);
         }
 
         return $this;
@@ -126,7 +150,7 @@ class Request implements Psr\Http\Message\RequestInterface
      * changed request method.
      *
      * @param string $method Case-sensitive method.
-     * @return self
+     * @return static
      */
     public function withMethod($method): self
     {
@@ -142,13 +166,22 @@ class Request implements Psr\Http\Message\RequestInterface
      * @link http://tools.ietf.org/html/rfc7230#section-5.3 (for the various
      *     request-target forms allowed in request messages)
      * @param mixed $requestTarget New target.
-     * @return self
+     * @return static
      */
     public function withRequestTarget($requestTarget): self
     {
+        // phpcs:disable PEAR.Functions.FunctionCallSignature.SpaceAfterCloseBracket
+        // phpcs:disable Squiz.WhiteSpace.ObjectOperatorSpacing.Before
+        // phpcs:disable Squiz.WhiteSpace.SemicolonSpacing.Incorrect
+
+        $parse = new Uri($requestTarget);
         $obj = clone $this;
 
-        $obj->uri = $requestTarget;
+        $obj->uri = $this->uri
+            ->withPath($parse->getPath())
+            ->withQuery($parse->getQuery())
+            ->withFragment($parse->getFragment())
+        ;
 
         return $obj;
     }
@@ -181,8 +214,9 @@ class Request implements Psr\Http\Message\RequestInterface
      * @link http://tools.ietf.org/html/rfc3986#section-4.3
      * @param Psr\Http\Message\UriInterface $uri New request URI to use.
      * @param boolean $preserveHost Preserve the original state of the Host header.
-     * @return void
-     * @throws ild78\Exceptions\BadMethodCallException For everycall.
+     * @return static
+     * @throws ild78\Exceptions\BadMethodCallException For every call.
+     * @phpstan-return static
      */
     public function withUri(Psr\Http\Message\UriInterface $uri, $preserveHost = false): self
     {

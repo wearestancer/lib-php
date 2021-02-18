@@ -217,7 +217,7 @@ class AbstractObject extends ild78\Tests\atoum
 
             ->if($response = new mock\ild78\Http\Response(204))
             ->and($this->calling($client)->request = $response)
-            ->and($this->calling($response)->getBody = null)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream(''))
 
             ->if($id = uniqid())
 

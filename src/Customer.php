@@ -12,11 +12,11 @@ use ild78;
  * @method string getMobile()
  * @method string getName()
  *
- * @method self setEmail(string $email)
- * @method self setMobile(string $mobile)
- * @method self setName(string $name)
+ * @method $this setEmail(string $email)
+ * @method $this setMobile(string $mobile)
+ * @method $this setName(string $name)
  *
- * @property DateTime|null $created
+ * @property DateTimeImmutable|null $created
  * @property string $email
  * @property string $mobile
  * @property string $name
@@ -26,7 +26,10 @@ class Customer extends ild78\Core\AbstractObject
     /** @var string */
     protected $endpoint = 'customers';
 
-    /** @var array */
+    /**
+     * @var array
+     * @phpstan-var array<string, DataModel>
+     */
     protected $dataModel = [
         'email' => [
             'size' => [
@@ -61,7 +64,7 @@ class Customer extends ild78\Core\AbstractObject
      * Send a customer.
      *
      * @uses Request::post()
-     * @return self
+     * @return $this
      * @throws ild78\Exceptions\BadMethodCallException When trying to send a customer without an email
      *    or a phone number.
      */

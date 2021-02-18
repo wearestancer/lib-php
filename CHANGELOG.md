@@ -4,6 +4,39 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.0.6] - 2021-02-18
+
+### Added
+- `ild78\Sepa` validation
+- `ild78\Core\Object::get()`, return raw API data (even unknown properties)
+- `ild78\Payment::isError()` and `ild78\Payment::isNotError()`
+- New `created_until` parameter on `ild78\Payment::list()` and `ild78\Dispute::list()` methods
+- `ild78\Payment::$currency` and `ild78\Payment::$methodsAllowed` can throw exception when used with incompatible values
+- `ild78\Payment::$methodsAllowed`
+- `ild78\Payment::$responseAuthor`
+- `ild78\Payment\Status::CAPTURE_SENT`
+- `ild78\Http\Stream` and `ild78\Http\Uri` to complete internal PSR7 implementation
+- New supported currencies
+- PHPStan validation
+- Coverage report
+- PHPCS report
+
+### Changed
+- `ild78\Payment::list()` and `ild78\Dispute::list()` uses `DateTimeInterface` in parameters
+- `created` parameter accepts `DatePeriod` on `ild78\Payment::list()` and `ild78\Dispute::list()` methods
+- `ild78\Payment::isStatus()` and `ild78\Payment::isNotStatus()` are now based on status
+
+### Fixed
+- `ild78\Payment::$response` length
+- Misstype in `InternalServerErrorException` default message
+- PHPDoc
+- Tests / CI run
+
+### Removed
+- `ild78\Payment::$responseMessage`, please refer to documentation to obtain the full list
+- Guzzle version from header, they remove the constant `VERSION` from the package
+
+
 ## [0.0.5] - 2020-10-02
 
 ### Added
@@ -16,7 +49,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Date properties
 - Allow to reset default timezone
 
-### Changes
+### Changed
 - `created` uses date property mecanism
 - Magic setter can throw better exceptions
 
@@ -52,7 +85,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Setter aliases
 - Tests on PHP 7.4
 
-### Changes
+### Changed
 - `ild78\Payment::$status` is now editable
 - No automatic hydratation on `ild78\Device->new()`
 - Getters and setters handles snake_case and camelCase property correctly
@@ -83,7 +116,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - First implementation
 - Tests on 7.1, 7.2 and 7.3
 
-### Changes
+### Changed
 - `Object` renamed in `AbstractObject`
 
 ### Fixed

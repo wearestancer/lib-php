@@ -12,14 +12,17 @@ use ild78;
  * @method string getReturnUrl()
  * @method string getStatus()
  *
- * @property DateTime|null $created
+ * @property DateTimeImmutable|null $created
  * @property string|null $redirectUrl
  * @property string $returnUrl
  * @property string $status
  */
 class Auth extends ild78\Core\AbstractObject
 {
-    /** @var array */
+    /**
+     * @var array
+     * @phpstan-var array<string, DataModel>
+     */
     protected $dataModel = [
         'redirectUrl' => [
             'restricted' => true,
@@ -49,7 +52,7 @@ class Auth extends ild78\Core\AbstractObject
      * Update return URL
      *
      * @param string $url New HTTPS URL.
-     * @return self
+     * @return $this
      * @throws ild78\Exceptions\InvalidUrlException When URL is not an HTTPS URL.
      */
     public function setReturnUrl(string $url): self

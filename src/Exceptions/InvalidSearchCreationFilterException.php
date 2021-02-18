@@ -15,6 +15,6 @@ class InvalidSearchCreationFilterException extends InvalidSearchFilterException
      */
     public static function getDefaultMessage(): string
     {
-        return 'Created must be a position integer or a DateTime object and must be in the past.';
+        return 'Created must be a positive integer or a DateTime object and must be in the past.';
     }
 }

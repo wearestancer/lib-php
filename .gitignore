@@ -9,3 +9,6 @@ reports
 # macOS files
 .DS_Store
 ._*
+
+# IDE files
+*.swp

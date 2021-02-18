@@ -4,62 +4,71 @@ declare(strict_types=1);
 namespace ild78;
 
 use DateTime;
-use Generator;
+use DateTimeImmutable;
 use ild78;
 
 /**
- * Representation of a payment
+ * Representation of a payment.
  *
- * @method integer getAmount()
- * @method ild78\\Auth getAuth()
+ * @method integer|null getAmount()
+ * @method ild78\Auth|null getAuth()
  * @method boolean getCapture()
- * @method ild78\\Card getCard()
+ * @method ild78\Card|null getCard()
  * @method string|null getCountry()
  * @method string getCurrency()
- * @method ild78\\Customer getCustomer()
- * @method string getDateBank()
+ * @method ild78\Customer|null getCustomer()
+ * @method DateTimeImmutable|null getCreated()
+ * @method DateTimeImmutable|null getCreationDate()
+ * @method DateTimeImmutable|null getDateBank()
  * @method string|null getDescription()
- * @method ild78\\Device getDevice()
+ * @method ild78\Device|null getDevice()
  * @method string|null getMethod()
+ * @method string[]|null getMethodsAllowed()
  * @method string|null getOrderId()
- * @method ild78\\Refund[] getRefunds()
- * @method string getResponse()
+ * @method ild78\Refund[] getRefunds()
+ * @method string|null getResponse()
  * @method string|null getReturnUrl()
- * @method ild78\\Sepa getSepa()
+ * @method ild78\Sepa|null getSepa()
  * @method string|null getStatus()
  * @method string|null getUniqueId()
  *
- * @method Generator list(array $terms)
+ * @method Generator<static> list(SearchFilters $terms)
  *
- * @method self setAmount(integer $amount)
- * @method self setCapture(boolean $capture)
- * @method self setCountry(string $country)
- * @method self setCustomer(ild78\\Customer $customer)
- * @method self setDescription(string $description)
- * @method self setDevice(ild78\\Device $device)
- * @method self setOrderId(string $orderId)
- * @method self setStatus(string $status)
- * @method self setUniqueId(string $uniqueId)
+ * @method $this setAmount(integer $amount)
+ * @method $this setCapture(boolean $capture)
+ * @method $this setCountry(string $country)
+ * @method $this setCustomer(ild78\Customer $customer)
+ * @method $this setDescription(string $description)
+ * @method $this setDevice(ild78\Device $device)
+ * @method $this setMethodsAllowed(string[] $methods)
+ * @method $this setOrderId(string $orderId)
+ * @method $this setStatus(string $status)
+ * @method $this setUniqueId(string $uniqueId)
  *
- * @property integer $amount
- * @property ild78\\Auth $auth
+ * @property integer|null $amount
+ * @property ild78\Auth|null $auth
  * @property boolean $capture
- * @property ild78\\Card $card
- * @property string|null $country
- * @property DateTime|null $created
+ * @property ild78\Card|null $card
  * @property string $currency
- * @property ild78\\Customer $customer
- * @property string $dateBank
+ * @property ild78\Customer|null $customer
  * @property string|null $description
- * @property ild78\\Device $device
- * @property string|null $method
+ * @property ild78\Device|null $device
+ * @property string[]|null $methodsAllowed
  * @property string|null $orderId
- * @property ild78\\Refund[] $refunds
- * @property string $response
  * @property string|null $returnUrl
- * @property ild78\\Sepa $sepa
+ * @property ild78\Sepa|null $sepa
  * @property string|null $status
  * @property string|null $uniqueId
+ *
+ * @property-read string|null $country
+ * @property-read DateTimeImmutable|null $creationDate
+ * @property-read DateTimeImmutable|null $created
+ * @property-read DateTimeImmutable|null $dateBank
+ * @property-read string|null $method
+ * @property-read ild78\Refund[] $refunds
+ * @property-read string $response
+ *
+ * @phpstan-method $this addRefunds(ild78\Refund $refund)
  */
 class Payment extends ild78\Core\AbstractObject
 {
@@ -69,7 +78,10 @@ class Payment extends ild78\Core\AbstractObject
     /** @var string */
     protected $endpoint = 'checkout';
 
-    /** @var array */
+    /**
+     * @var array
+     * @phpstan-var array<string, DataModel>
+     */
     protected $dataModel = [
         'amount' => [
             'required' => true,
@@ -91,6 +103,20 @@ class Payment extends ild78\Core\AbstractObject
             'type' => self::STRING,
         ],
         'currency' => [
+            'allowedValues' => [
+                'aud',
+                'cad',
+                'chf',
+                'dkk',
+                'eur',
+                'gbp',
+                'jpy',
+                'nok',
+                'pln',
+                'sek',
+                'usd',
+            ],
+            'coerce' => ild78\Core\Type\Helper::TO_LOWER,
             'required' => true,
             'type' => self::STRING,
         ],
@@ -99,7 +125,7 @@ class Payment extends ild78\Core\AbstractObject
         ],
         'dateBank' => [
             'restricted' => true,
-            'type' => DateTime::class,
+            'type' => DateTimeImmutable::class,
         ],
         'description' => [
             'size' => [
@@ -113,6 +139,14 @@ class Payment extends ild78\Core\AbstractObject
         ],
         'method' => [
             'restricted' => true,
+            'type' => self::STRING,
+        ],
+        'methodsAllowed' => [
+            'allowedValues' => [
+                'card',
+                'sepa',
+            ],
+            'list' => true,
             'type' => self::STRING,
         ],
         'orderId' => [
@@ -130,7 +164,15 @@ class Payment extends ild78\Core\AbstractObject
         'response' => [
             'restricted' => true,
             'size' => [
-                'fixed' => 2,
+                'min' => 2,
+                'max' => 4,
+            ],
+            'type' => self::STRING,
+        ],
+        'responseAuthor' => [
+            'restricted' => true,
+            'size' => [
+                'fixed' => 6,
             ],
             'type' => self::STRING,
         ],
@@ -157,12 +199,36 @@ class Payment extends ild78\Core\AbstractObject
     ];
 
     /**
+     * Add an allowed method.
+     *
+     * @param string $method New method.
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When currency is EUR and trying to set "sepa" method.
+     */
+    public function addMethodsAllowed(string $method): self
+    {
+        $currency = $this->getCurrency();
+
+        if ($currency && $method && $method === 'sepa' && $currency !== 'eur') {
+            $message = sprintf('You can not use "%s" method with "%s" currency.', $method, $currency);
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
+        // @phpstan-ignore-next-line The method is not defined in parent object so it will trigger __call ...
+        return parent::addMethodsAllowed($method);
+        // ... and that's that we want
+    }
+
+    /**
      * Charge a card or a bank account.
      *
      * This method is Stripe compatible.
      *
      * @param array $options Charge options.
      * @return self
+     *
+     * @phpstan-param PaymentChargeOptions $options
      */
     public static function charge(array $options): self
     {
@@ -188,15 +254,21 @@ class Payment extends ild78\Core\AbstractObject
             $method = 'setSepa';
         }
 
+        // phpcs:disable Squiz.Commenting.BlockComment.WrongStart
+        // phpcs:disable Squiz.Commenting.InlineComment.DocBlock
+        /** @var PaymentChargeOptions $data */
         if (array_key_exists('account_holder_name', $data)) {
             $data['name'] = $data['account_holder_name'];
         }
 
+        /** @var PaymentChargeOptions $data */
         if (array_key_exists('account_number', $data)) {
             $data['iban'] = $data['account_number'];
             $class = Sepa::class;
             $method = 'setSepa';
         }
+        // phpcs:enable Squiz.Commenting.BlockComment.WrongStart
+        // phpcs:enable Squiz.Commenting.InlineComment.DocBlock
 
         $means = new $class($id);
 
@@ -209,6 +281,8 @@ class Payment extends ild78\Core\AbstractObject
      * @see self::refund()
      * @return void No return possible
      * @throws ild78\Exceptions\BadMethodCallException On every call, this method is not allowed in this context.
+     *
+     * @phpstan-return $this
      */
     public function delete(): ild78\Core\AbstractObject
     {
@@ -229,6 +303,9 @@ class Payment extends ild78\Core\AbstractObject
      * @return array
      * @throws ild78\Exceptions\InvalidSearchOrderIdFilterException When `order_id` is invalid.
      * @throws ild78\Exceptions\InvalidSearchUniqueIdFilterException When `unique_id` is invalid.
+     *
+     * @phpstan-param array{order_id?: string, unique_id?: string} $terms
+     * @phpstan-return array{order_id?: string, unique_id?: string}
      */
     public static function filterListParams(array $terms): array
     {
@@ -279,6 +356,8 @@ class Payment extends ild78\Core\AbstractObject
      * @throws ild78\Exceptions\MissingApiKeyException When no public key was given in configuration.
      * @throws ild78\Exceptions\MissingReturnUrlException When no return URL was given to payment data.
      * @throws ild78\Exceptions\MissingPaymentIdException When no payment has no ID.
+     *
+     * @phpstan-param array{lang?: string} $params Parameters to add to the URL.
      */
     public function getPaymentPageUrl(array $params = []): string
     {
@@ -322,7 +401,7 @@ class Payment extends ild78\Core\AbstractObject
      */
     public function getRefundableAmount(): int
     {
-        return $this->getAmount() - $this->getRefundedAmount();
+        return ($this->getAmount() ?? 0) - $this->getRefundedAmount();
     }
 
     /**
@@ -339,55 +418,71 @@ class Payment extends ild78\Core\AbstractObject
         $refunds = $this->getRefunds();
         $refunded = array_map($getAmounts, $refunds);
 
-        return array_sum($refunded);
+        return intval(array_sum($refunded));
     }
 
     /**
-     * Get a readable message of response code
+     * Indicates if payment is an error.
      *
-     * @return string
+     * @return boolean
      */
-    public function getResponseMessage(): string
+    public function isError(): bool
     {
-        $messages = [
-            '00' => 'OK',
-            '05' => 'Do not honor',
-            '41' => 'Lost card',
-            '42' => 'Stolen card',
-            '51' => 'Insufficient funds',
-        ];
-
-        $code = $this->getResponse();
-
-        if (array_key_exists($code, $messages)) {
-            return $messages[$code];
+        if (is_null($this->getStatus())) {
+            return false;
         }
 
-        return 'Unknown';
+        if ($this->getCapture() === false && $this->getStatus() === ild78\Payment\Status::AUTHORIZED) {
+            return false;
+        }
+
+        $allowed = [
+            ild78\Payment\Status::CAPTURE_SENT,
+            ild78\Payment\Status::CAPTURED,
+            ild78\Payment\Status::TO_CAPTURE,
+        ];
+
+        return !in_array($this->getStatus(), $allowed, true);
     }
 
     /**
-     * Indicates if payment is not a success
+     * Indicates if payment is not an error.
+     *
+     * @return boolean
+     */
+    public function isNotError(): bool
+    {
+        return !$this->isError();
+    }
+
+    /**
+     * Indicates if payment is not a success.
      *
      * @return boolean
      */
     public function isNotSuccess(): bool
     {
-        if (is_null($this->getResponse())) {
-            return false;
-        }
-
         return !$this->isSuccess();
     }
 
     /**
-     * Indicates if payment is a success or not
+     * Indicates if payment is a success.
      *
      * @return boolean
      */
     public function isSuccess(): bool
     {
-        return $this->getResponse() === '00';
+        if ($this->getCapture() === false && $this->getStatus() === ild78\Payment\Status::AUTHORIZED) {
+            return true;
+        }
+
+        $allowed = [
+            ild78\Payment\Status::CAPTURE_SENT,
+            ild78\Payment\Status::CAPTURED,
+            ild78\Payment\Status::TO_CAPTURE,
+        ];
+
+        return in_array($this->getStatus(), $allowed, true);
     }
 
     /**
@@ -415,7 +510,7 @@ class Payment extends ild78\Core\AbstractObject
      * Refund a payment, or part of it.
      *
      * @param integer|null $amount Amount to refund, if not present all paid amount will be refund.
-     * @return self
+     * @return $this
      * @throws ild78\Exceptions\InvalidAmountException When trying to refund more than paid.
      * @throws ild78\Exceptions\InvalidAmountException When the amount is invalid.
      * @throws ild78\Exceptions\MissingPaymentIdException When the payment has no ID.
@@ -433,6 +528,7 @@ class Payment extends ild78\Core\AbstractObject
             $params = [
                 $amount / 100,
                 strtoupper($this->getCurrency()),
+                // @phpstan-ignore-next-line Current object has an ID so it had been sent to the API and has an amount
                 $this->getAmount() / 100,
                 $this->getRefundedAmount() / 100,
             ];
@@ -487,7 +583,7 @@ class Payment extends ild78\Core\AbstractObject
      * Send the current object.
      *
      * @uses Request::post()
-     * @return self
+     * @return $this
      * @throws ild78\Exceptions\InvalidAmountException When no amount was given.
      * @throws ild78\Exceptions\InvalidCurrencyException When no currency was given.
      * @throws ild78\Exceptions\InvalidIpAddressException When no device was already given, authenticated payment
@@ -502,11 +598,14 @@ class Payment extends ild78\Core\AbstractObject
             return parent::send();
         }
 
-        if (!$this->getAmount()) {
+        $amount = $this->getAmount();
+        $currency = $this->getCurrency();
+
+        if (!$amount) {
             throw new ild78\Exceptions\InvalidAmountException();
         }
 
-        if (!$this->getCurrency()) {
+        if (!$currency) {
             throw new ild78\Exceptions\InvalidCurrencyException();
         }
 
@@ -545,6 +644,7 @@ class Payment extends ild78\Core\AbstractObject
         parent::send();
 
         $params = [
+            // @phpstan-ignore-next-line amount is defined or an exception should be thrown before
             $this->getAmount() / 100,
             $this->getCurrency(),
         ];
@@ -577,7 +677,7 @@ class Payment extends ild78\Core\AbstractObject
      * we will manage everything else for you.
      *
      * @param ild78\Auth|string|boolean $auth Authentication data.
-     * @return self
+     * @return $this
      */
     public function setAuth($auth): self
     {
@@ -602,7 +702,7 @@ class Payment extends ild78\Core\AbstractObject
      * Set a card.
      *
      * @param ild78\Card $card New card instance.
-     * @return self
+     * @return $this
      */
     public function setCard(Card $card): self
     {
@@ -613,43 +713,52 @@ class Payment extends ild78\Core\AbstractObject
     }
 
     /**
+     * Set allowed methods.
+     *
+     * @param string[] $methods New methods.
+     * @return self
+     * @throws ild78\Exceptions\InvalidArgumentException When currency is EUR and trying to set "sepa" method.
+     */
+    public function setMethodsAllowed(array $methods): self
+    {
+        $currency = $this->getCurrency();
+        $method = $this->getMethod();
+
+        if (!$method && $currency && $methods && in_array('sepa', $methods, true) && $currency !== 'eur') {
+            $message = sprintf('You can not use "%s" method with "%s" currency.', 'sepa', $currency);
+
+            throw new ild78\Exceptions\InvalidArgumentException($message);
+        }
+
+        return parent::setMethodsAllowed($methods);
+    }
+
+    /**
      * Set the currency.
      *
-     * @param string $currency The currency, must one in the following : EUR, USD, GBP.
+     * @param string $currency The currency.
      * @return self
-     * @throws ild78\Exceptions\InvalidCurrencyException When currency is not EUR, USD or GBP.
+     * @throws ild78\Exceptions\InvalidCurrencyException When currency is EUR and "sepa" is already allowed.
      */
     public function setCurrency(string $currency): self
     {
-        $cur = strtolower($currency);
+        $method = $this->getMethod();
+        $methods = $this->getMethodsAllowed();
 
-        $valid = [
-            'eur',
-            'usd',
-            'gbp',
-        ];
-
-        if (!in_array($cur, $valid, true)) {
-            $params = [
-                $currency,
-                strtoupper(implode(', ', $valid)),
-            ];
-            $message = vsprintf('"%s" is not a valid currency, please use one of the following : %s', $params);
+        if (!$method && $currency && $methods && in_array('sepa', $methods, true) && strtolower($currency) !== 'eur') {
+            $message = sprintf('You can not use "%s" currency with "%s" method.', strtolower($currency), 'sepa');
 
             throw new ild78\Exceptions\InvalidCurrencyException($message);
         }
 
-        $this->dataModel['currency']['value'] = $cur;
-        $this->modified[] = 'currency';
-
-        return $this;
+        return parent::setCurrency($currency);
     }
 
     /**
      * Update return URL
      *
      * @param string $url New HTTPS URL.
-     * @return self
+     * @return $this
      * @throws ild78\Exceptions\InvalidUrlException When URL is not an HTTPS URL.
      */
     public function setReturnUrl(string $url): self
@@ -665,7 +774,7 @@ class Payment extends ild78\Core\AbstractObject
      * Set a sepa account.
      *
      * @param ild78\Sepa $sepa New sepa instance.
-     * @return self
+     * @return $this
      */
     public function setSepa(Sepa $sepa): self
     {

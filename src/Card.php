@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace ild78;
 
 use DateInterval;
-use DateTime;
+use DateTimeImmutable;
 use ild78;
 
 /**
@@ -24,21 +24,21 @@ use ild78;
  *
  * @method boolean isTokenized()
  *
- * @method self setBrand(string $brand)
- * @method self setCountry(string $country)
- * @method self setCvc(string $cvc)
- * @method self setExpYear(integer $expYear)
- * @method self setFunding(string $funding)
- * @method self setLast4(string $last4)
- * @method self setName(string $name)
- * @method self setNature(string $nature)
- * @method self setNetwork(string $network)
- * @method self setTokenize(boolean $tokenize)
- * @method self setZipCode(string $zipCode)
+ * @method $this setBrand(string $brand)
+ * @method $this setCountry(string $country)
+ * @method $this setCvc(string $cvc)
+ * @method $this setExpYear(integer $expYear)
+ * @method $this setFunding(string $funding)
+ * @method $this setLast4(string $last4)
+ * @method $this setName(string $name)
+ * @method $this setNature(string $nature)
+ * @method $this setNetwork(string $network)
+ * @method $this setTokenize(boolean $tokenize)
+ * @method $this setZipCode(string $zipCode)
  *
  * @property string $brand
  * @property string $country
- * @property DateTime|null $created
+ * @property DateTimeImmutable|null $created
  * @property string $cvc
  * @property integer $expMonth
  * @property integer $expYear
@@ -54,7 +54,10 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
     /** @var string */
     protected $endpoint = 'cards';
 
-    /** @var array */
+    /**
+     * @var array
+     * @phpstan-var array<string, DataModel>
+     */
     protected $dataModel = [
         'brand' => [
             'restricted' => true,
@@ -122,7 +125,7 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
         ],
     ];
 
-    /** @var array */
+    /** @var array<string, string> */
     protected $aliases = [
         'isTokenized' => 'getTokenize',
     ];
@@ -161,11 +164,11 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
      *
      * The DateTime object is at last second of the last day in the expiration month.
      *
-     * @return DateTime
+     * @return DateTimeImmutable
      * @throws ild78\Exceptions\InvalidExpirationMonthException When month is not set.
      * @throws ild78\Exceptions\InvalidExpirationYearException When year is not set.
      */
-    public function getExpDate(): DateTime
+    public function getExpDate(): DateTimeImmutable
     {
         $month = $this->getExpMonth();
         $year = $this->getExpYear();
@@ -182,24 +185,21 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
             throw new ild78\Exceptions\InvalidExpirationYearException($message);
         }
 
-        $date = new DateTime(sprintf('%d-%d-01', $year, $month));
+        $date = new DateTimeImmutable(sprintf('%d-%d-01', $year, $month));
 
         $oneMonth = new DateInterval('P1M');
-        $date->add($oneMonth);
-
         $oneSecond = new DateInterval('PT1S');
-        $date->sub($oneSecond);
 
-        return $date;
+        return $date->add($oneMonth)->sub($oneSecond);
     }
 
     /**
      * Alias for `self::getExpDate()`
      *
      * @see self::getExpDate() Return the expiration date.
-     * @return DateTime
+     * @return DateTimeImmutable
      */
-    public function getExpirationDate(): DateTime
+    public function getExpirationDate(): DateTimeImmutable
     {
         return $this->getExpDate();
     }
@@ -229,13 +229,13 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
     /**
      * Return tokenize status
      *
-     * For every card sended to the API, you will get an ID representing it.
+     * For every card sent to the API, you will get an ID representing it.
      * This ID is not reusable, you can not use it for an other payment.
      *
      * If you needed to make later payment, you can set tokenize to true,
      * in that case, the card ID may be reuse for other payment.
      *
-     * This can be usefull for payments in multiple times.
+     * This can be useful for payments in multiple times.
      *
      * @return boolean
      */
@@ -255,7 +255,7 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
      *
      * @see self::setExpMonth() Return the expiration month.
      * @param integer $month The expiration month.
-     * @return self
+     * @return $this
      */
     public function setExpirationMonth(int $month): self
     {
@@ -267,7 +267,7 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
      *
      * @see self::setExpYear() Return the expiration year.
      * @param integer $year The expiration year.
-     * @return integer|null
+     * @return $this
      */
     public function setExpirationYear(int $year): self
     {
@@ -278,7 +278,7 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
      * Update the expiration month.
      *
      * @param integer $month The expiration month.
-     * @return self
+     * @return $this
      * @throws ild78\Exceptions\InvalidExpirationMonthException When expiration is invalid (not between 1 and 12).
      */
     public function setExpMonth(int $month): self
@@ -299,13 +299,20 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
      * Add a card number
      *
      * @param string $number A valid card number.
-     * @return self
+     * @return $this
      * @throws ild78\Exceptions\InvalidCardNumberException When the card number is invalid.
      */
     public function setNumber(string $number): self
     {
-        $number = preg_replace('`\s*`', '', $number);
-        $parts = str_split($number);
+        $numb = preg_replace('`\s*`', '', $number);
+
+        if (is_null($numb)) {
+            $message = sprintf('"%s" is not a valid credit card number.', $number);
+
+            throw new ild78\Exceptions\InvalidCardNumberException($message);
+        }
+
+        $parts = str_split($numb);
         $reversed = array_reverse($parts);
         $sum = 0;
         $calc = [
@@ -321,20 +328,20 @@ class Card extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
             9,
         ];
 
-        $manip = function ($n, $index) use (&$sum, $calc) {
+        $manip = function ($n, $index) use (&$sum, $calc): void {
             $sum += ($index % 2) ? $calc[$n] : (int) $n;
         };
 
         array_walk($reversed, $manip);
 
         if ($sum % 10) {
-            $message = sprintf('"%s" is not a valid credit card number.', $number);
+            $message = sprintf('"%s" is not a valid credit card number.', $numb);
 
             throw new ild78\Exceptions\InvalidCardNumberException($message);
         }
 
-        $this->dataModel['last4']['value'] = substr((string) $number, -4);
-        $this->dataModel['number']['value'] = $number;
+        $this->dataModel['last4']['value'] = substr($numb, -4);
+        $this->dataModel['number']['value'] = $numb;
         $this->modified[] = 'number';
 
         return $this;

@@ -32,6 +32,28 @@ class atoum extends \atoum\test
         return Faker\Factory::create();
     }
 
+    public function getRandomDate(int $min, int $max = null): string
+    {
+        if (!$max) {
+            $max = date('Y');
+        }
+
+        $year = random_int($min, $max);
+        $month = random_int(1, 12);
+
+        $dMax = 31;
+
+        if ($month == 2) {
+            $dMax = 27;
+        } else if (in_array($month, [4, 6, 9, 11])) {
+            $dMax = 30;
+        }
+
+        $day = random_int(1, $dMax);
+
+        return sprintf('%04d-%02d-%02d', $year, $month, $day);
+    }
+
     public function getRandomNumber(): string
     {
         // Simulate a french mobile phone number

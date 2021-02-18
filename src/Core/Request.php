@@ -34,7 +34,7 @@ class Request
      *
      * @see self::request() For full documentation.
      * @param ild78\Core\AbstractObject $object Object.
-     * @param array $params Query parameters.
+     * @param mixed[] $params Query parameters.
      * @return string
      */
     public function get(AbstractObject $object, array $params = []): string
@@ -112,7 +112,7 @@ class Request
      *
      * @param ild78\Core\AbstractObject $object Object used during call.
      * @param ild78\Exceptions\HttpException $exception Exception thrown during call.
-     * @return self
+     * @return $this
      */
     private function addCallWithDefaultClient(
         AbstractObject $object,
@@ -121,7 +121,7 @@ class Request
         $config = ild78\Config::getGlobal();
         $client = $config->getHttpClient();
 
-        if (!$config->getDebug()) {
+        if (!$config->getDebug() || !($client instanceof ild78\Http\Client)) {
             return $this;
         }
 
@@ -151,9 +151,18 @@ class Request
 
         $params = [
             'exception' => $exception,
-            'request' => $client->getLastRequest()->withModifiedBody($in, $out),
-            'response' => $client->getLastResponse()->withModifiedBody(),
         ];
+
+        $request = $client->getLastRequest();
+        $response = $client->getLastResponse();
+
+        if ($request) {
+            $params['request'] = $request->withModifiedBody($in, $out);
+        }
+
+        if ($response) {
+            $params['response'] = $response->withModifiedBody();
+        }
 
         $call = new ild78\Core\Request\Call($params);
         $config->addCall($call);
@@ -165,21 +174,21 @@ class Request
      * Add a new call made with other client
      *
      * @param Psr\Http\Message\RequestInterface $request Request.
-     * @param Psr\Http\Message\ResponseInterface $response Response.
+     * @param Psr\Http\Message\ResponseInterface|null $response Response.
      * @param ild78\Core\AbstractObject $object Object used during call.
      * @param ild78\Exceptions\HttpException $exception Exception thrown during call.
-     * @return self
+     * @return $this
      */
     private function addCallWithOtherClient(
         Psr\Http\Message\RequestInterface $request,
-        Psr\Http\Message\ResponseInterface $response,
+        $response,
         AbstractObject $object,
         ild78\Exceptions\HttpException $exception = null
     ): self {
         $config = ild78\Config::getGlobal();
         $client = $config->getHttpClient();
 
-        if (!$config->getDebug()) {
+        if (!$config->getDebug() || !($client instanceof GuzzleHttp\ClientInterface)) {
             return $this;
         }
 
@@ -191,7 +200,7 @@ class Request
 
         if ($object instanceof ild78\Payment) {
             $in = null;
-            $out = null;
+            $out = '';
 
             $card = $object->dataModelGetter('card', false);
             $sepa = $object->dataModelGetter('sepa', false);
@@ -217,7 +226,7 @@ class Request
                     $request->getMethod(),
                     $request->getUri(),
                     $request->getHeaders(),
-                    str_replace($in, $out, $request->getBody())
+                    str_replace($in, $out, (string) $request->getBody())
                 );
             }
         }
@@ -246,6 +255,8 @@ class Request
      * @throws ild78\Exceptions\ClientException On HTTP 4** errors.
      * @throws ild78\Exceptions\ServerException On HTTP 5** errors.
      * @throws ild78\Exceptions\Exception On every over exception.
+     *
+     * @phpstan-param array{headers?: mixed[], query?: mixed[], timeout?: integer} $options
      */
     public function request(ild78\Http\Verb\AbstractVerb $verb, AbstractObject $object, array $options = []): string
     {
@@ -288,28 +299,28 @@ class Request
 
         // Bypass for internal exceptions.
         } catch (ild78\Exceptions\Exception $exception) {
-            $this->addCallWithDefaultClient($object, $exception);
+            if ($exception instanceof ild78\Exceptions\HttpException) {
+                $this->addCallWithDefaultClient($object, $exception);
+            }
 
             throw $exception;
 
-        // HTTP 5**.
-        } catch (GuzzleHttp\Exception\ServerException $exception) {
-            $logMethod = 'critical';
-            $logMessage = 'HTTP 500 - Internal Server Error';
-            $excepClass = ild78\Exceptions\InternalServerErrorException::class;
-            $excepParams['previous'] = $exception;
-
-        // Too many redirection.
+        // Guzzle / Too many redirection.
         } catch (GuzzleHttp\Exception\TooManyRedirectsException $exception) {
             $logMethod = 'critical';
             $excepClass = ild78\Exceptions\TooManyRedirectsException::class;
             $excepParams['previous'] = $exception;
 
-        // HTTP 4**.
+        // Guzzle / HTTP 4**.
         } catch (GuzzleHttp\Exception\ClientException $exception) {
             $logMethod = 'error';
 
             $response = $exception->getResponse();
+
+            // @phpstan-ignore-next-line May be `null` before Guzzle 7.2
+            if (is_null($response)) {
+                throw new \Exception();
+            }
 
             $excepClass = ild78\Exceptions\ClientException::class;
             $excepParams['previous'] = $exception;
@@ -380,6 +391,13 @@ class Request
                 }
             }
 
+        // Guzzle / HTTP 5**.
+        } catch (GuzzleHttp\Exception\ServerException $exception) {
+            $logMethod = 'critical';
+            $logMessage = 'HTTP 500 - Internal Server Error';
+            $excepClass = ild78\Exceptions\InternalServerErrorException::class;
+            $excepParams['previous'] = $exception;
+
         // Others exceptions ...
         } catch (Exception $exception) {
             $logMethod = 'error';
@@ -392,7 +410,11 @@ class Request
 
         if ($logMethod) {
             if (!$logMessage) {
-                $logMessage = $excepParams['message'] ?? $excepClass::getDefaultMessage();
+                $logMessage = $excepParams['message'] ?? null;
+            }
+
+            if (!$logMessage && $excepClass) {
+                $logMessage = $excepClass::getDefaultMessage();
             }
 
             $logger->$logMethod($logMessage);
@@ -404,14 +426,13 @@ class Request
             $exception = $excepClass::create($excepParams);
         }
 
-        $params = [];
 
         if ($config->getDebug()) {
             if ($client instanceof ild78\Http\Client) {
                 $this->addCallWithDefaultClient($object, $exception);
             } else {
-                $body = array_key_exists('body', $options) ? $options['body'] : null;
-                $request = new GuzzleHttp\Psr7\Request((string) $verb, $location, $options['headers'], $body);
+                $body = $options['body'] ?? null;
+                $request = new GuzzleHttp\Psr7\Request((string) $verb, $location ?? '', $options['headers'], $body);
 
                 if (!$response && $exception instanceof ild78\Exceptions\HttpException) {
                     $response = $exception->getResponse();
@@ -423,6 +444,10 @@ class Request
 
         if ($exception) {
             throw $exception;
+        }
+
+        if (!$response) {
+            return '';
         }
 
         return (string) $response->getBody();

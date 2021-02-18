@@ -280,13 +280,13 @@ class Payment extends ild78\Tests\atoum
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-no-method.json'))
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
 
             ->and($config->setHttpClient($client))
 
             ->if($amount = rand(100, 999999))
-            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($currency = $this->cardCurrencyDataProvider(true))
 
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setAmount($amount))
@@ -389,18 +389,27 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
-    /**
-     * @dataProvider responseMessageDataProvider
-     */
-    public function testGetResponseMessage($code, $message)
+    public function testGetResponseAuthor()
     {
         $this
-            ->assert($code . ' / ' . $message)
-                ->given($this->newTestedInstance)
-                ->and($this->testedInstance->hydrate(['response' => $code]))
-                ->then
-                    ->string($this->testedInstance->getResponseMessage())
-                        ->isIdenticalTo($message)
+            ->given($author = $this->getRandomString(6))
+            ->if($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getResponseAuthor())
+                    ->isNull
+
+                ->exception(function () use ($author) {
+                    $this->testedInstance->setResponseAuthor($author);
+                })
+                    ->isInstanceOf(ild78\Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify "responseAuthor".')
+
+
+            ->if($this->testedInstance->hydrate(['response_author' => $author]))
+            ->then
+                ->string($this->testedInstance->getResponseAuthor())
+                    ->isIdenticalTo($author)
         ;
     }
 
@@ -430,27 +439,152 @@ class Payment extends ild78\Tests\atoum
         ;
     }
 
-    /**
-     * @dataProvider responseMessageDataProvider
-     */
-    public function testIsSuccess_IsNotSuccess($code, $message)
+    public function testIsSuccess_IsNotSuccess()
     {
         $this
-            ->assert($code . ' / ' . $message)
+            ->assert('Default values')
                 ->given($this->newTestedInstance)
                 ->then
                     ->boolean($this->testedInstance->isSuccess())
-                        ->isFalse
+                        ->isFalse('isSuccess')
 
                     ->boolean($this->testedInstance->isNotSuccess())
-                        ->isFalse
+                        ->isTrue('isNotSuccess')
 
-                ->if($this->testedInstance->hydrate(['response' => $code]))
+                    ->boolean($this->testedInstance->isError())
+                        ->isFalse('isError')
+
+                    ->boolean($this->testedInstance->isNotError())
+                        ->isTrue('isNotError')
+        ;
+
+        $oks = [
+            ild78\Payment\Status::CAPTURE_SENT,
+            ild78\Payment\Status::CAPTURED,
+            ild78\Payment\Status::TO_CAPTURE,
+        ];
+        $noks = [
+            ild78\Payment\Status::CANCELED,
+            ild78\Payment\Status::DISPUTED,
+            ild78\Payment\Status::EXPIRED,
+            ild78\Payment\Status::FAILED,
+        ];
+
+        foreach ($oks as $status) {
+            $this
+                ->assert('Captured payment, "' . $status . '" is success')
+                    ->given($this->newTestedInstance)
+                    ->and($this->testedInstance->hydrate(['capture' => true, 'status' => $status]))
+                    ->then
+                        ->boolean($this->testedInstance->isSuccess())
+                            ->isTrue('isSuccess')
+
+                        ->boolean($this->testedInstance->isNotSuccess())
+                            ->isFalse('isNotSuccess')
+
+                        ->boolean($this->testedInstance->isError())
+                            ->isFalse('isError')
+
+                        ->boolean($this->testedInstance->isNotError())
+                            ->isTrue('isNotError')
+            ;
+        }
+
+        $this
+            ->assert('Captured payment, "' . ild78\Payment\Status::AUTHORIZED . '" is an error')
+                ->given($this->newTestedInstance)
+                ->and($this->testedInstance->hydrate(['capture' => true, 'status' => ild78\Payment\Status::AUTHORIZED]))
                 ->then
                     ->boolean($this->testedInstance->isSuccess())
-                        ->isIdenticalTo($code === '00')
-                        ->isIdenticalTo(!$this->testedInstance->isNotSuccess())
+                        ->isFalse('isSuccess')
+
+                    ->boolean($this->testedInstance->isNotSuccess())
+                        ->isTrue('isNotSuccess')
+
+                    ->boolean($this->testedInstance->isError())
+                        ->isTrue('isError')
+
+                    ->boolean($this->testedInstance->isNotError())
+                        ->isFalse('isNotError')
         ;
+
+        foreach ($noks as $status) {
+            $this
+                ->assert('Captured payment, "' . $status . '" is an error')
+                    ->given($this->newTestedInstance)
+                    ->and($this->testedInstance->hydrate(['capture' => true, 'status' => $status]))
+                    ->then
+                        ->boolean($this->testedInstance->isSuccess())
+                            ->isFalse('isSuccess')
+
+                        ->boolean($this->testedInstance->isNotSuccess())
+                            ->isTrue('isNotSuccess')
+
+                        ->boolean($this->testedInstance->isError())
+                            ->isTrue('isError')
+
+                        ->boolean($this->testedInstance->isNotError())
+                            ->isFalse('isNotError')
+            ;
+        }
+
+        foreach ($oks as $status) {
+            $this
+                ->assert('Authorization only, "' . $status . '" is success')
+                    ->given($this->newTestedInstance)
+                    ->and($this->testedInstance->hydrate(['capture' => false, 'status' => $status]))
+                    ->then
+                        ->boolean($this->testedInstance->isSuccess())
+                            ->isTrue('isSuccess')
+
+                        ->boolean($this->testedInstance->isNotSuccess())
+                            ->isFalse('isNotSuccess')
+
+                        ->boolean($this->testedInstance->isError())
+                            ->isFalse('isError')
+
+                        ->boolean($this->testedInstance->isNotError())
+                            ->isTrue('isNotError')
+            ;
+        }
+
+        $this
+            ->assert('Authorization only, "' . ild78\Payment\Status::AUTHORIZED . '" is success')
+                ->given($this->newTestedInstance)
+                ->and($this->testedInstance->hydrate(['capture' => false, 'status' => ild78\Payment\Status::AUTHORIZED]))
+                ->then
+                    ->boolean($this->testedInstance->isSuccess())
+                        ->isTrue('isSuccess')
+
+                    ->boolean($this->testedInstance->isNotSuccess())
+                        ->isFalse('isNotSuccess')
+
+                    ->boolean($this->testedInstance->isError())
+                        ->isFalse('isError')
+
+                    ->boolean($this->testedInstance->isNotError())
+                        ->isTrue('isNotError')
+        ;
+
+        foreach ($noks as $status) {
+            $this
+                ->assert('Authorization only, "' . $status . '" is an error')
+                    ->given($this->newTestedInstance)
+                    ->and($this->testedInstance->hydrate(['capture' => false, 'status' => $status]))
+                    ->then
+                        ->boolean($this->testedInstance->isSuccess())
+                            ->isFalse('isSuccess')
+
+                        ->boolean($this->testedInstance->isNotSuccess())
+                            ->isTrue('isNotSuccess')
+
+                        ->boolean($this->testedInstance->isError())
+                            ->isTrue('isError')
+
+                        ->boolean($this->testedInstance->isNotError())
+                            ->isFalse('isNotError')
+            ;
+        }
     }
 
     public function testIssue7()
@@ -462,7 +596,7 @@ class Payment extends ild78\Tests\atoum
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($body = file_get_contents(__DIR__ . '/fixtures/issue/7.json'))
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
 
             ->and($config->setHttpClient($client))
@@ -483,7 +617,7 @@ class Payment extends ild78\Tests\atoum
             ->given($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/list.json'))
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
             ->and($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setHttpClient($client))
@@ -573,14 +707,14 @@ class Payment extends ild78\Tests\atoum
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilterException::class)
                     ->message
-                        ->isIdenticalTo('Created must be a position integer or a DateTime object.')
+                        ->isIdenticalTo('Created must be a positive integer, a DateTime object or a DatePeriod object.')
 
                 ->exception(function () {
                     testedClass::list(['created' => uniqid()]);
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidSearchCreationFilterException::class)
                     ->message
-                        ->isIdenticalTo('Created must be a position integer or a DateTime object.')
+                        ->isIdenticalTo('Created must be a positive integer, a DateTime object or a DatePeriod object.')
 
             ->assert('Invalid order id filter')
                 ->exception(function () {
@@ -679,7 +813,7 @@ class Payment extends ild78\Tests\atoum
                         'limit' => 10,
                     ],
                 ])
-                ->and($this->calling($response)->getBody = json_encode($body))
+                ->and($this->calling($response)->getBody = new ild78\Http\Stream(json_encode($body)))
 
                 ->if($limit = rand(1, 100))
                 ->and($terms = [
@@ -699,7 +833,7 @@ class Payment extends ild78\Tests\atoum
                                 ->once
 
             ->assert('Invalid response')
-                ->given($this->calling($response)->getBody = null)
+                ->given($this->calling($response)->getBody = new ild78\Http\Stream(''))
 
                 ->if($limit = rand(1, 100))
                 ->and($terms = [
@@ -718,6 +852,84 @@ class Payment extends ild78\Tests\atoum
                             ->withArguments('GET', $location, $options)
                                 ->once
         ;
+    }
+
+    /**
+     * @dataProvider cardCurrencyDataProvider
+     */
+    public function testMethodsAllowed($currency)
+    {
+        $this
+            ->given($methods = ['card', 'sepa'])
+
+            ->assert('Should return an empty array as default')
+                ->given($this->newTestedInstance)
+                ->then
+                    ->array($this->testedInstance->getMethodsAllowed())
+                        ->isEmpty
+
+            ->assert('Should allow array of strings')
+                ->given($this->newTestedInstance)
+                ->then
+                    ->object($this->testedInstance->setMethodsAllowed($methods))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->getMethodsAllowed())
+                        ->hasSize(2)
+                        ->string[0]
+                            ->isIdenticalTo('card')
+                        ->string[1]
+                            ->isIdenticalTo('sepa')
+
+            ->assert('Should only allow known methods')
+                ->given($this->newTestedInstance)
+                ->and($value = uniqid())
+                ->then
+                    ->exception(function () use ($value) {
+                        $this->testedInstance->setMethodsAllowed([$value]);
+                    })
+                        ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->contains($value)
+
+            ->assert('Should allow to add methods')
+                ->given($this->newTestedInstance)
+                ->then
+                    ->object($this->testedInstance->addMethodsAllowed($methods[0]))
+                        ->isTestedInstance
+
+                    ->array($this->testedInstance->getMethodsAllowed())
+                        ->hasSize(1)
+                        ->string[0]
+                            ->isIdenticalTo($methods[0])
+        ;
+
+        $lower = strtolower($currency);
+
+        if ($lower !== 'eur') {
+            $this
+                ->assert('Currency can be refused when using SEPA')
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->setCurrency($currency))
+                    ->then
+                        ->exception(function () {
+                            $this->testedinstance->addMethodsAllowed('sepa');
+                        })
+                            ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                            ->message
+                                ->isIdenticalTo(sprintf('You can not use "%s" method with "%s" currency.', 'sepa', $lower))
+
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->setCurrency($currency))
+                    ->then
+                        ->exception(function () use ($methods) {
+                            $this->testedinstance->setMethodsAllowed($methods);
+                        })
+                            ->isInstanceOf(ild78\Exceptions\InvalidArgumentException::class)
+                            ->message
+                                ->isIdenticalTo(sprintf('You can not use "%s" method with "%s" currency.', 'sepa', $lower))
+            ;
+        }
     }
 
     public function testPay()
@@ -802,7 +1014,7 @@ class Payment extends ild78\Tests\atoum
             ->and($notEnough = rand(1, 49))
             ->then
                 ->assert('Without refunds we get an empty array')
-                    ->if($this->calling($response)->getBody = json_encode($paymentData))
+                    ->if($this->calling($response)->getBody = new ild78\Http\Stream(json_encode($paymentData)))
                     ->then
                         ->array($this->testedInstance->getRefunds())
                             ->isEmpty
@@ -824,7 +1036,7 @@ class Payment extends ild78\Tests\atoum
                             ->isIdenticalTo('Amount must be greater than or equal to 50.')
 
                 ->assert('We can put a refund amount')
-                    ->if($this->calling($response)->getBody = json_encode($refund1Data))
+                    ->if($this->calling($response)->getBody = new ild78\Http\Stream(json_encode($refund1Data)))
                     ->then
                         ->object($this->testedInstance->refund($amount))
                             ->isTestedInstance
@@ -866,7 +1078,7 @@ class Payment extends ild78\Tests\atoum
                             ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $paid / 100) . ' EUR) more than paid (34.06 EUR with ' . sprintf('%.02f', $amount / 100) . ' EUR already refunded).')
 
                 ->assert('Without amount we will refund all')
-                    ->if($this->calling($response)->getBody = json_encode($refund2Data))
+                    ->if($this->calling($response)->getBody = new ild78\Http\Stream(json_encode($refund2Data)))
                     ->and($location = $this->testedInstance->getUri())
                     ->then
                         ->object($this->testedInstance->refund())
@@ -917,6 +1129,18 @@ class Payment extends ild78\Tests\atoum
                         ->isInstanceOf(ild78\Exceptions\MissingPaymentIdException::class)
                         ->message
                             ->isIdenticalTo('A payment ID is mandatory. Maybe you forgot to send the payment.')
+
+                ->assert('Should work with methods allowed (internal bug)')
+                    ->if($this->calling($response)->getBody = new ild78\Http\Stream(file_get_contents(__DIR__ . '/fixtures/payment/read-methods-allowed.json')))
+
+                    ->if($this->newTestedInstance('paym_QAM6fOpJnH5DvkYr3ezAVPpa'))
+                    ->then
+                        ->array($this->testedInstance->getMethodsAllowed())
+                            ->hasSize(2)
+                            ->containsValues(['card', 'sepa'])
+
+                        ->object($this->testedInstance->refund())
+                            ->isTestedInstance
         ;
     }
 
@@ -945,7 +1169,7 @@ class Payment extends ild78\Tests\atoum
                 })
                     ->isInstanceOf(ild78\Exceptions\InvalidCurrencyException::class)
 
-            ->if($this->testedInstance->setCurrency($this->currencyDataProvider(true)))
+            ->if($this->testedInstance->setCurrency($this->cardCurrencyDataProvider(true)))
             ->then
                 ->object($this->testedInstance->send())
                     ->isTestedInstance
@@ -1170,7 +1394,7 @@ class Payment extends ild78\Tests\atoum
 
     public function testSend_authenticatedPayment()
     {
-        $_SERVER['SERVER_ADDR'] = $ip = $this->ipDataProvider()[0];
+        $_SERVER['SERVER_ADDR'] = $ip = $this->ipDataProvider(true);
         $_SERVER['SERVER_PORT'] = $port = rand(1, 65535);
 
         $this
@@ -1180,13 +1404,13 @@ class Payment extends ild78\Tests\atoum
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-card-auth.json'))
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
 
             ->and($config->setHttpClient($client))
 
             ->if($amount = rand(10, 99999))
-            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($currency = $this->cardCurrencyDataProvider(true))
             ->and($description = uniqid())
             ->and($url = 'https://www.example.org?' . uniqid())
 
@@ -1320,20 +1544,20 @@ class Payment extends ild78\Tests\atoum
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-card-auth.json'))
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
 
             ->and($config->setHttpClient($client))
 
             ->if($amount = rand(10, 99999))
-            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($currency = $this->cardCurrencyDataProvider(true))
             ->and($description = uniqid())
             ->and($url = 'https://www.example.org?' . uniqid())
 
             ->if($auth = new ild78\Auth)
             ->and($auth->setReturnUrl($url))
 
-            ->if($ip = $this->ipDataProvider()[0])
+            ->if($ip = $this->ipDataProvider(true))
             ->and($port = rand(1, 65535))
             ->and($device = new ild78\Device(['ip' => $ip, 'port' => $port]))
 
@@ -1468,7 +1692,7 @@ class Payment extends ild78\Tests\atoum
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-no-method.json'))
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
 
             ->and($config->setHttpClient($client))
@@ -1479,7 +1703,7 @@ class Payment extends ild78\Tests\atoum
             ->and($customer->setMobile(uniqid()))
 
             ->if($amount = rand(100, 999999))
-            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($currency = $this->cardCurrencyDataProvider(true))
 
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setAmount($amount))
@@ -1559,13 +1783,13 @@ class Payment extends ild78\Tests\atoum
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-no-method-auth.json'))
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
 
             ->and($config->setHttpClient($client))
 
             ->if($amount = rand(100, 999999))
-            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($currency = $this->cardCurrencyDataProvider(true))
             ->and($description = uniqid())
 
             ->if($this->newTestedInstance)
@@ -1654,7 +1878,7 @@ class Payment extends ild78\Tests\atoum
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-no-method.json'))
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
 
             ->and($config->setHttpClient($client))
@@ -1665,7 +1889,7 @@ class Payment extends ild78\Tests\atoum
             ->and($customer->setMobile(uniqid()))
 
             ->if($amount = rand(100, 999999))
-            ->and($currency = $this->currencyDataProvider()[0])
+            ->and($currency = $this->cardCurrencyDataProvider(true))
 
             ->if($card = new ild78\Card)
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
@@ -1710,13 +1934,13 @@ class Payment extends ild78\Tests\atoum
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setDebug(false))
             ->and($port = rand(1, 65535))
-            ->and($addr = $this->ipDataProvider()[0])
+            ->and($addr = $this->ipDataProvider(true))
             ->and($url = 'https://www.example.org?' . uniqid())
 
             ->if($client = new mock\ild78\Http\Client)
             ->and($response = new mock\ild78\Http\Response(200))
             ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-card.json'))
-            ->and($this->calling($response)->getBody = $body)
+            ->and($this->calling($response)->getBody = new ild78\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
 
             ->and($config->setHttpClient($client))
@@ -1956,7 +2180,7 @@ class Payment extends ild78\Tests\atoum
     }
 
     /**
-     * @dataProvider currencyDataProvider
+     * @dataProvider cardCurrencyDataProvider
      */
     public function testSetCurrency($currency)
     {
@@ -2008,11 +2232,26 @@ class Payment extends ild78\Tests\atoum
                         ->message
                             ->contains('"' . $fakeCurrency . '" is not a valid currency')
                             ->contains('please use one of the following :')
-                            ->contains($upper)
+                            ->contains($lower)
 
                     ->boolean($this->testedInstance->isModified())
                         ->isFalse
         ;
+
+        if ($lower !== 'eur') {
+            $this
+                ->assert('Currency can be refused when using SEPA')
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->addMethodsAllowed('sepa'))
+                    ->then
+                        ->exception(function () use ($currency) {
+                            $this->testedInstance->setCurrency($currency);
+                        })
+                            ->isInstanceOf(ild78\Exceptions\InvalidCurrencyException::class)
+                            ->message
+                                ->isIdenticalTo(sprintf('You can not use "%s" currency with "%s" method.', $lower, 'sepa'))
+            ;
+        }
     }
 
     public function testSetDescription()

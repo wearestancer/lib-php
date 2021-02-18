@@ -4,47 +4,63 @@ declare(strict_types=1);
 namespace ild78;
 
 use ild78;
-use DateTime;
+use DateTimeImmutable;
+use DateTimeInterface;
 
 /**
  * Representation of a SEPA account
  *
  * @method string getBic()
  * @method string|null getCountry()
- * @method DateTime|null getDateMandate()
+ * @method DateTimeInterface|null getDateMandate()
+ * @method string|null getIban()
  * @method string getLast4()
  * @method string|null getMandate()
  * @method string getName()
  *
- * @method self setDateMandate(DateTime $dateMandate)
- * @method self setMandate(string $mandate)
- * @method self setName(string $name)
+ * @method $this setDateMandate(DateTimeInterface $dateMandate)
+ * @method $this setMandate(string $mandate)
+ * @method $this setName(string $name)
  *
  * @property string $bic
  * @property string|null $country
- * @property DateTime|null $created
- * @property DateTime|null $dateMandate
+ * @property DateTimeInterface|null $dateMandate
  * @property string $last4
  * @property string|null $mandate
  * @property string $name
+ *
+ * @property-read ild78\Sepa\Check|null $check
+ * @property-read DateTimeImmutable|null $created
+ * @property-read DateTimeImmutable|null $creationDate
  */
 class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\PaymentMeansInterface
 {
     /** @var string */
     protected $endpoint = 'sepa';
 
-    /** @var array */
+    /**
+     * @var array
+     * @phpstan-var array<string, DataModel>
+     */
     protected $dataModel = [
         'bic' => [
             'required' => true,
             'type' => self::STRING,
         ],
+        'check' => [
+            'restricted' => true,
+            'type' => ild78\Sepa\Check::class,
+        ],
         'country' => [
             'restricted' => true,
             'type' => self::STRING,
         ],
+        'dateBirth' => [
+            'format' => ild78\Core\Type\Helper::DATE_ONLY,
+            'type' => DateTimeInterface::class,
+        ],
         'dateMandate' => [
-            'type' => DateTime::class,
+            'type' => DateTimeInterface::class,
         ],
         'iban' => [
             'required' => true,
@@ -72,20 +88,50 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
     ];
 
     /**
-     * Return IBAN with usual readeable format (AAAA BBBB CCCC ...)
+     * Return verification results.
      *
-     * @return string
+     * @return ild78\Sepa\Check|null
      */
-    public function getFormattedIban(): string
+    public function getCheck(): ?ild78\Sepa\Check
     {
-        return trim(chunk_split($this->getIban(), 4, ' '));
+        if ($this->id) {
+            $check = $this->dataModelGetter('check', false);
+
+            if (!$check) {
+                $check = new ild78\Sepa\Check($this->id);
+            }
+
+            try {
+                $this->dataModel['check']['value'] = $check->populate();
+            } catch (ild78\Exceptions\NotFoundException $exception) {
+                return null;
+            }
+        }
+
+        return parent::getCheck();
     }
 
     /**
-     * Add or update a Bank Identifier Code (BIC)
+     * Return IBAN with usual readeable format (AAAA BBBB CCCC ...).
+     *
+     * @return string|null
+     */
+    public function getFormattedIban(): ?string
+    {
+        $iban = $this->getIban();
+
+        if (!$iban) {
+            return null;
+        }
+
+        return trim(chunk_split($iban, 4, ' '));
+    }
+
+    /**
+     * Add or update a Bank Identifier Code (BIC).
      *
      * @param string $bic A Bank Identifier Code.
-     * @return self
+     * @return $this
      * @throws ild78\Exceptions\InvalidBicException When BIC seems invalid.
      */
     public function setBic(string $bic): self
@@ -103,10 +149,10 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
     }
 
     /**
-     * Add or update an International Bank Account Number (IBAN)
+     * Add or update an International Bank Account Number (IBAN).
      *
      * @param string $iban An International Bank Account Number.
-     * @return self
+     * @return $this
      * @throws ild78\Exceptions\InvalidIbanException When IBAN is invalid.
      */
     public function setIban(string $iban): self
@@ -142,6 +188,23 @@ class Sepa extends ild78\Core\AbstractObject implements ild78\Interfaces\Payment
         $this->dataModel['iban']['value'] = $iban;
         $this->dataModel['last4']['value'] = substr($iban, -4);
         $this->modified[] = 'iban';
+
+        return $this;
+    }
+
+    /**
+     * Will ask for SEPA validation.
+     *
+     * @return $this
+     */
+    public function validate(): self
+    {
+        $check = new ild78\Sepa\Check(['sepa' => $this]);
+
+        $this->dataModel['check']['value'] = $check->send();
+        $this->id = $check->id;
+
+        $this->modified = [];
 
         return $this;
     }
