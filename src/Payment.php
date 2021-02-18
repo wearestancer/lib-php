@@ -32,7 +32,7 @@ use ild78;
  * @method string|null getStatus()
  * @method string|null getUniqueId()
  *
- * @method Generator<static> list(array $terms)
+ * @method Generator<static> list(SearchFilters $terms)
  *
  * @method $this setAmount(integer $amount)
  * @method $this setCapture(boolean $capture)

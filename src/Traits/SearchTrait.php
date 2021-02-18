@@ -33,7 +33,7 @@ trait SearchTrait
      * @throws ild78\Exceptions\InvalidSearchLimitException When `limit` is invalid.
      * @throws ild78\Exceptions\InvalidSearchStartException When `start` is invalid.
      *
-     * @phpstan-param array{ created?: DateTimeInterface|int, created_until?: DateTimeInterface|int, limit?: int, start?: int} $terms
+     * @phpstan-param SearchFilters $terms
      */
     public static function list(array $terms): Generator
     {
