@@ -12,6 +12,8 @@ use ild78;
  */
 trait SearchTrait
 {
+    // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
+
     /**
      * List elements
      *
@@ -157,6 +159,9 @@ trait SearchTrait
         return $gen();
     }
 
+    // phpcs:enable
+    // phpcs:disable Squiz.Functions.MultiLineFunctionDeclaration.NewlineBeforeOpenBrace
+
     /**
      * Validate date relative filter.
      *
@@ -178,6 +183,7 @@ trait SearchTrait
         bool $allowPeriod = false
     ): int
     {
+        // phpcs:enable
         $timestamp = $value;
 
         if ($value instanceof DateTimeInterface) {
