@@ -8,7 +8,7 @@ use DateTimeImmutable;
 use ild78;
 
 /**
- * Representation of a payment
+ * Representation of a payment.
  *
  * @method integer|null getAmount()
  * @method ild78\Auth|null getAuth()
@@ -32,7 +32,7 @@ use ild78;
  * @method string|null getStatus()
  * @method string|null getUniqueId()
  *
- * @method Generator<static> list(array $terms)
+ * @method Generator<static> list(SearchFilters $terms)
  *
  * @method $this setAmount(integer $amount)
  * @method $this setCapture(boolean $capture)

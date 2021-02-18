@@ -91,6 +91,15 @@ parameters:
       }
     '''
 
+    SearchFilters: '''
+      array{
+        created?: DateTimeInterface|DatePeriod|int,
+        created_until?: DateTimeInterface|int,
+        limit?: int,
+        start?: int,
+      }
+    '''
+
     UriComponents: '''
       array{
         fragment?: string,

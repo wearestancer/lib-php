@@ -14,7 +14,7 @@ use ild78;
  * @method ild78\Payment getPayment()
  * @method string getResponse()
  *
- * @method Generator list(array $terms)
+ * @method Generator list(SearchFilters $terms)
  *
  * @property integer $amount
  * @property DateTimeImmutable|null $created

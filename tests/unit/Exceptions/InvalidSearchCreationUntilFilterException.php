@@ -6,7 +6,7 @@ use atoum;
 use ild78;
 use Psr;
 
-class InvalidSearchCreationFilterException extends ild78\Tests\atoum
+class InvalidSearchCreationUntilFilterException extends ild78\Tests\atoum
 {
     public function testClass()
     {
@@ -22,7 +22,7 @@ class InvalidSearchCreationFilterException extends ild78\Tests\atoum
             ->if($class = $this->testedClass->getClass())
             ->then
                 ->string($class::getDefaultMessage())
-                    ->isIdenticalTo('Created must be a positive integer or a DateTime object and must be in the past.')
+                    ->isIdenticalTo('Created until must be a positive integer or a DateTime object and must be in the past.')
         ;
     }
 
