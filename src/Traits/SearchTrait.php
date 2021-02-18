@@ -2,7 +2,7 @@
 
 namespace ild78\Traits;
 
-use DateTime;
+use DateTimeInterface;
 use Generator;
 use ild78;
 
@@ -30,7 +30,7 @@ trait SearchTrait
      * @throws ild78\Exceptions\InvalidSearchLimitException When `limit` is invalid.
      * @throws ild78\Exceptions\InvalidSearchStartException When `start` is invalid.
      *
-     * @phpstan-param array{ created?: DateTime|int, limit?: int, start?: int} $terms
+     * @phpstan-param array{ created?: DateTimeInterface|int, limit?: int, start?: int} $terms
      */
     public static function list(array $terms): Generator
     {
@@ -51,7 +51,7 @@ trait SearchTrait
         if (array_key_exists('created', $terms)) {
             $created = $terms['created'];
 
-            if ($terms['created'] instanceof DateTime) {
+            if ($terms['created'] instanceof DateTimeInterface) {
                 $created = (int) $terms['created']->format('U');
             }
 

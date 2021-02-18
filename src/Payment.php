@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace ild78;
 
 use DateTime;
+use DateTimeImmutable;
 use ild78;
 
 /**
@@ -16,9 +17,9 @@ use ild78;
  * @method string|null getCountry()
  * @method string getCurrency()
  * @method ild78\Customer|null getCustomer()
- * @method DateTime|null getCreated()
- * @method DateTime|null getCreationDate()
- * @method DateTime|null getDateBank()
+ * @method DateTimeImmutable|null getCreated()
+ * @method DateTimeImmutable|null getCreationDate()
+ * @method DateTimeImmutable|null getDateBank()
  * @method string|null getDescription()
  * @method ild78\Device|null getDevice()
  * @method string|null getMethod()
@@ -60,9 +61,9 @@ use ild78;
  * @property string|null $uniqueId
  *
  * @property-read string|null $country
- * @property-read DateTime|null $creationDate
- * @property-read DateTime|null $created
- * @property-read DateTime|null $dateBank
+ * @property-read DateTimeImmutable|null $creationDate
+ * @property-read DateTimeImmutable|null $created
+ * @property-read DateTimeImmutable|null $dateBank
  * @property-read string|null $method
  * @property-read ild78\Refund[] $refunds
  * @property-read string $response
@@ -115,7 +116,7 @@ class Payment extends ild78\Core\AbstractObject
                 'sek',
                 'usd',
             ],
-            'coerce' => 'strtolower',
+            'coerce' => ild78\Core\Type\Helper::TO_LOWER,
             'required' => true,
             'type' => self::STRING,
         ],
@@ -124,7 +125,7 @@ class Payment extends ild78\Core\AbstractObject
         ],
         'dateBank' => [
             'restricted' => true,
-            'type' => DateTime::class,
+            'type' => DateTimeImmutable::class,
         ],
         'description' => [
             'size' => [

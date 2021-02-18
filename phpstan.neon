@@ -32,9 +32,10 @@ parameters:
     DataModel: '''
       array{
         allowedValues?: string[] | class-string,
-        coerce?: callable,
+        coerce?: string,
         exception?: class-string,
         exportable?: bool,
+        format?: string,
         list?: bool,
         restricted?: bool,
         required?: bool,
@@ -54,6 +55,7 @@ parameters:
         coerce: ?callable,
         exception: ?class-string,
         exportable: bool,
+        format: ?callable,
         list: bool,
         restricted: bool,
         required: bool,

@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace ild78\Core;
 
-use DateTime;
+use DateTimeImmutable;
 use DateTimeInterface;
 use ild78;
 use JsonSerializable;
@@ -14,12 +14,13 @@ use ReflectionClass;
  *
  * @throws ild78\Exceptions\BadMethodCallException when calling unknown method.
  *
- * @property-read DateTime|null $created
- * @property-read DateTime|null $creationDate
+ * @property-read DateTimeImmutable|null $created
+ * @property-read DateTimeImmutable|null $creationDate
  */
 abstract class AbstractObject implements JsonSerializable
 {
     public const BOOLEAN = 'boolean';
+    public const FLOAT = 'float';
     public const INTEGER = 'integer';
     public const STRING = 'string';
 
@@ -59,6 +60,7 @@ abstract class AbstractObject implements JsonSerializable
             'coerce' => null,
             'exception' => null,
             'exportable' => null,
+            'format' => null,
             'list' => false,
             'restricted' => false,
             'required' => false,
@@ -73,7 +75,7 @@ abstract class AbstractObject implements JsonSerializable
         $defaultValues = [
             'created' => [
                 'restricted' => true,
-                'type' => DateTime::class,
+                'type' => DateTimeImmutable::class,
             ],
         ];
 
@@ -87,25 +89,16 @@ abstract class AbstractObject implements JsonSerializable
                 $data['exportable'] = !$data['restricted'];
             }
 
-            if ($data['coerce'] === 'strtolower') {
-                $data['coerce'] = function ($value): string {
-                    return strtolower($value);
-                };
+            if (is_a($data['type'], DateTimeInterface::class, true)) {
+                $data['coerce'] = Type\Helper::PARSE_DATE_TIME;
+
+                if (!$data['format']) {
+                    $data['format'] = Type\Helper::UNIX_TIMESTAMP;
+                }
             }
 
-            if ($data['type'] === DateTime::class) {
-                $data['coerce'] = function ($value): ?DateTimeInterface {
-                    if ($value instanceof DateTime) {
-                        return $value;
-                    }
-
-                    if (!$value) {
-                        return null;
-                    }
-
-                    return new DateTime('@' . $value);
-                };
-            }
+            $data['coerce'] = Type\Helper::get($data['coerce']);
+            $data['format'] = Type\Helper::get($data['format']);
         }
 
         if (is_array($id)) {
@@ -323,16 +316,16 @@ abstract class AbstractObject implements JsonSerializable
             return [];
         }
 
-        if (!is_null($value) && $model['type'] === DateTime::class) {
+        if (!is_null($value) && is_a($model['type'], DateTimeInterface::class, true)) {
             $tz = ild78\Config::getGlobal()->getDefaultTimeZone();
 
             if ($tz) {
                 if ($model['list']) {
-                    foreach ($value as $val) {
-                        $val->setTimezone($tz);
+                    foreach ($value as &$val) {
+                        $val = $val->setTimezone($tz);
                     }
                 } else {
-                    $value->setTimezone($tz);
+                    $value = $value->setTimezone($tz);
                 }
             }
         }
@@ -445,9 +438,9 @@ abstract class AbstractObject implements JsonSerializable
     /**
      * Return creation date
      *
-     * @return DateTime|null
+     * @return DateTimeInterface|null
      */
-    public function getCreationDate(): ?DateTime
+    public function getCreationDate(): ?DateTimeInterface
     {
         return $this->created;
     }
@@ -498,6 +491,12 @@ abstract class AbstractObject implements JsonSerializable
         if ($property) {
             if (array_key_exists($property, $this->dataModel)) {
                 return $this->dataModel[$property];
+            }
+
+            $prop = $this->snakeCaseToCamelCase($property);
+
+            if ($prop !== $property) {
+                return $this->getModel($prop);
             }
 
             return null;
@@ -684,13 +683,13 @@ abstract class AbstractObject implements JsonSerializable
         foreach ($struct as $prop => $value) {
             $type = gettype($value);
 
-            if ($type === 'object' && $value->isModified()) {
+            if ($type === 'object' && $value instanceof self && $value->isModified()) {
                 return true;
             }
 
             if ($type === 'array') {
                 foreach ($value as $val) {
-                    if (gettype($val) === 'object' && $val->isModified()) {
+                    if (gettype($val) === 'object' && $val instanceof self && $val->isModified()) {
                         return true;
                     }
                 }
@@ -727,15 +726,17 @@ abstract class AbstractObject implements JsonSerializable
         foreach ($struct as $prop => &$value) {
             $type = gettype($value);
             $supp = !in_array($prop, $this->modified, true);
+            $model = $this->getModel($prop);
+            $format = $model['format'] ?? function ($v) {
+                return $v;
+            };
 
             if ($type === 'object') {
-                if (in_array($prop, $this->modified, true) || $value->isModified()) {
+                if (in_array($prop, $this->modified, true) || ($value instanceof self && $value->isModified())) {
                     $supp = false;
 
                     if (method_exists($value, 'jsonSerialize')) {
                         $value = $value->jsonSerialize();
-                    } elseif ($value instanceof DateTime) {
-                        $value = $value->getTimestamp();
                     }
                 }
             }
@@ -748,13 +749,15 @@ abstract class AbstractObject implements JsonSerializable
                         if ($val instanceof self) {
                             $keepIt |= $val->isModified();
                             $val = $val->jsonSerialize();
-                        } elseif ($val instanceof DateTime) {
-                            $val = $val->getTimestamp();
                         }
                     }
+
+                    $val = $format($val);
                 }
 
                 $supp &= !$keepIt;
+            } else {
+                $value = $format($value);
             }
 
             if ($supp) {
