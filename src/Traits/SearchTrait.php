@@ -61,7 +61,7 @@ trait SearchTrait
 
             $created = $terms['created'];
 
-            if ($created instanceof DatePeriod) {
+            if ($terms['created'] instanceof DatePeriod) {
                 $created = $terms['created']->getStartDate();
 
                 if (is_null($terms['created']->getEndDate())) {

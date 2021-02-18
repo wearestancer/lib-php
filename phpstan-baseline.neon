@@ -25,3 +25,13 @@ parameters:
 			count: 1
 			path: src/Http/Stream.php
 
+		-
+			message: "#^Call to function is_null\\(\\) with DateTimeInterface will always evaluate to false\\.$#"
+			count: 1
+			path: src/Dispute.php
+
+		-
+			message: "#^Call to function is_null\\(\\) with DateTimeInterface will always evaluate to false\\.$#"
+			count: 1
+			path: src/Payment.php
+
