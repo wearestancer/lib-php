@@ -24,11 +24,3 @@ include:
     file: '/registry/composer.yml'
   - project: 'stancer/ci-template'
     file: '/notifications/mattermost/library.yml'
-
-
-phpstan:
-  script:
-    - mkdir -p $(dirname $PHPSTAN_FILENAME)
-    - ./vendor/bin/phpstan analyse --no-progress --error-format=gitlab > $PHPSTAN_FILENAME || true
-    - php -r '$f = getenv("PHPSTAN_FILENAME"); $c = json_decode(file_get_contents($f), true); foreach ($c as $k => $v) { if ($v["description"] === "No error to ignore is reported on line 44.") unset($c[$k]); } file_put_contents($f, json_encode($c));'
-    - if [ "$(cat $PHPSTAN_FILENAME)" != '[]' ]; then exit 1; fi
