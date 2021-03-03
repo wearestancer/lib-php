@@ -24,3 +24,12 @@ include:
     file: '/registry/composer.yml'
   - project: 'stancer/ci-template'
     file: '/notifications/mattermost/library.yml'
+
+
+Hand job:
+  extends:
+    - atoum
+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      when: manual
