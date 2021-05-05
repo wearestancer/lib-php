@@ -13,7 +13,6 @@ trait Currencies
             'DKK',
             'EUR',
             'GBP',
-            'JPY',
             'NOK',
             'PLN',
             'SEK',
