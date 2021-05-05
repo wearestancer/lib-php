@@ -242,7 +242,7 @@ class Device extends ild78\Tests\atoum
                 ->and($this->function->getenv = function ($varname) use ($ip) {
                     $name = strtolower($varname);
 
-                    if ($name === 'server_addr') {
+                    if ($name === 'remote_addr') {
                         return $ip;
                     }
 
@@ -274,11 +274,11 @@ class Device extends ild78\Tests\atoum
                         return $agent;
                     }
 
-                    if ($name === 'server_addr') {
+                    if ($name === 'remote_addr') {
                         return $ip;
                     }
 
-                    if ($name === 'server_port') {
+                    if ($name === 'remote_port') {
                         return $port;
                     }
 

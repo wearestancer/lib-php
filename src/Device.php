@@ -83,12 +83,12 @@ class Device extends ild78\Core\AbstractObject
             $this->setLanguages(getenv('HTTP_ACCEPT_LANGUAGE'));
         }
 
-        if (!$this->getIp() && getenv('SERVER_ADDR')) {
-            $this->setIp(getenv('SERVER_ADDR'));
+        if (!$this->getIp() && getenv('REMOTE_ADDR')) {
+            $this->setIp(getenv('REMOTE_ADDR'));
         }
 
-        if (!$this->getPort() && getenv('SERVER_PORT')) {
-            $this->setPort((int) getenv('SERVER_PORT'));
+        if (!$this->getPort() && getenv('REMOTE_PORT')) {
+            $this->setPort((int) getenv('REMOTE_PORT'));
         }
 
         if (!$this->getUserAgent() && getenv('HTTP_USER_AGENT')) {

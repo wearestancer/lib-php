@@ -1394,9 +1394,6 @@ class Payment extends ild78\Tests\atoum
 
     public function testSend_authenticatedPayment()
     {
-        $_SERVER['SERVER_ADDR'] = $ip = $this->ipDataProvider(true);
-        $_SERVER['SERVER_PORT'] = $port = rand(1, 65535);
-
         $this
             ->given($config = ild78\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setDebug(false))
@@ -1408,6 +1405,22 @@ class Payment extends ild78\Tests\atoum
             ->and($this->calling($client)->request = $response)
 
             ->and($config->setHttpClient($client))
+
+            ->if($ip = $this->ipDataProvider(true))
+            ->and($port = rand(1, 65535))
+            ->and($this->function->getenv = function ($varname) use ($ip, $port) {
+                $name = strtolower($varname);
+
+                if ($name === 'remote_addr') {
+                    return $ip;
+                }
+
+                if ($name === 'remote_port') {
+                    return $port;
+                }
+
+                return null;
+            })
 
             ->if($amount = rand(10, 99999))
             ->and($currency = $this->cardCurrencyDataProvider(true))
@@ -1945,6 +1958,8 @@ class Payment extends ild78\Tests\atoum
 
             ->and($config->setHttpClient($client))
 
+            ->if($this->function->getenv = false)
+
             ->if($card = new ild78\Card)
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
             ->and($card->setExpMonth(rand(1, 12)))
@@ -1990,7 +2005,15 @@ class Payment extends ild78\Tests\atoum
                         ->isInstanceOf(ild78\Exceptions\InvalidIpAddressException::class)
 
                 ->assert('Must have an port in env')
-                    ->if($_SERVER['SERVER_ADDR'] = $addr)
+                    ->if($this->function->getenv = function ($varname) use ($addr) {
+                        $name = strtolower($varname);
+
+                        if ($name === 'remote_addr') {
+                            return $addr;
+                        }
+
+                        return null;
+                    })
                     ->then
                         ->exception(function () {
                             $this->testedInstance->send();
@@ -1998,7 +2021,19 @@ class Payment extends ild78\Tests\atoum
                             ->isInstanceOf(ild78\Exceptions\InvalidPortException::class)
 
                 ->assert('Should add a device')
-                    ->if($_SERVER['SERVER_PORT'] = $port)
+                    ->if($this->function->getenv = function ($varname) use ($addr, $port) {
+                        $name = strtolower($varname);
+
+                        if ($name === 'remote_addr') {
+                            return $addr;
+                        }
+
+                        if ($name === 'remote_port') {
+                            return $port;
+                        }
+
+                        return null;
+                    })
                     ->then
                         ->variable($this->testedInstance->getId())
                             ->isNull

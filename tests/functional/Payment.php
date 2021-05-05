@@ -233,7 +233,7 @@ class Payment extends TestCase
                 ->and($this->testedInstance->setCustomer($customer))
                 ->and($this->testedInstance->setDescription($description))
 
-                // You may not need to do that, we will use SERVER_ADDR and SERVER_PORT environment variable
+                // You may not need to do that, we will use REMOTE_ADDR and REMOTE_PORT environment variable
                 //  as IP and port (they are populated by Apache or nginx)
                 ->if($ip = $this->ipDataProvider(true))
                 ->and($port = rand(1, 65535))
