@@ -226,12 +226,9 @@ class Device extends ild78\Tests\atoum
             ->and($languages = uniqid())
             ->and($port = rand(1, 65535))
 
-            ->and($_SERVER['HTTP_ACCEPT'] = $accept)
-            ->and($_SERVER['HTTP_ACCEPT_LANGUAGE'] = $languages)
-            ->and($_SERVER['HTTP_USER_AGENT'] = $agent)
-
             ->assert('No IP')
                 ->if($this->newTestedInstance)
+                ->and($this->function->getenv = null)
                 ->then
                     ->exception(function () {
                         $this->testedInstance->hydrateFromEnvironment();
@@ -242,7 +239,16 @@ class Device extends ild78\Tests\atoum
 
             ->assert('No port')
                 ->if($this->newTestedInstance)
-                ->and($_SERVER['SERVER_ADDR'] = $ip)
+                ->and($this->function->getenv = function ($varname) use ($ip) {
+                    $name = strtolower($varname);
+
+                    if ($name === 'server_addr') {
+                        return $ip;
+                    }
+
+                    return null;
+                })
+
                 ->then
                     ->exception(function () {
                         $this->testedInstance->hydrateFromEnvironment();
@@ -253,8 +259,31 @@ class Device extends ild78\Tests\atoum
 
             ->assert('Got IP and port')
                 ->if($this->newTestedInstance)
-                ->and($_SERVER['SERVER_ADDR'] = $ip)
-                ->and($_SERVER['SERVER_PORT'] = $port)
+                ->and($this->function->getenv = function ($varname) use ($accept, $agent, $ip, $languages, $port) {
+                    $name = strtolower($varname);
+
+                    if ($name === 'http_accept') {
+                        return $accept;
+                    }
+
+                    if ($name === 'http_accept_language') {
+                        return $languages;
+                    }
+
+                    if ($name === 'http_user_agent') {
+                        return $agent;
+                    }
+
+                    if ($name === 'server_addr') {
+                        return $ip;
+                    }
+
+                    if ($name === 'server_port') {
+                        return $port;
+                    }
+
+                    return null;
+                })
                 ->then
                     ->variable($this->testedInstance->getCity())
                         ->isNull
