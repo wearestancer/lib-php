@@ -475,6 +475,8 @@ class Config
      *
      * @param self $instance Current API instance.
      * @return self
+     *
+     * @phpstan-param static $instance Current API instance.
      */
     public static function setGlobal(self $instance): self
     {

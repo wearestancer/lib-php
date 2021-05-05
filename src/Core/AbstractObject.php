@@ -735,7 +735,7 @@ abstract class AbstractObject implements JsonSerializable
                 if (in_array($prop, $this->modified, true) || ($value instanceof self && $value->isModified())) {
                     $supp = false;
 
-                    if (is_object($value) && method_exists($value, 'jsonSerialize')) {
+                    if ($value instanceof JsonSerializable) {
                         $value = $value->jsonSerialize();
                     }
                 }
