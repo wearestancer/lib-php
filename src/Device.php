@@ -75,24 +75,24 @@ class Device extends ild78\Core\AbstractObject
      */
     public function hydrateFromEnvironment()
     {
-        if (!$this->getHttpAccept() && array_key_exists('HTTP_ACCEPT', $_SERVER)) {
-            $this->setHttpAccept($_SERVER['HTTP_ACCEPT']);
+        if (!$this->getHttpAccept() && getenv('HTTP_ACCEPT')) {
+            $this->setHttpAccept(getenv('HTTP_ACCEPT'));
         }
 
-        if (!$this->getLanguages() && array_key_exists('HTTP_ACCEPT_LANGUAGE', $_SERVER)) {
-            $this->setLanguages($_SERVER['HTTP_ACCEPT_LANGUAGE']);
+        if (!$this->getLanguages() && getenv('HTTP_ACCEPT_LANGUAGE')) {
+            $this->setLanguages(getenv('HTTP_ACCEPT_LANGUAGE'));
         }
 
-        if (!$this->getIp() && array_key_exists('SERVER_ADDR', $_SERVER)) {
-            $this->setIp($_SERVER['SERVER_ADDR']);
+        if (!$this->getIp() && getenv('REMOTE_ADDR')) {
+            $this->setIp(getenv('REMOTE_ADDR'));
         }
 
-        if (!$this->getPort() && array_key_exists('SERVER_PORT', $_SERVER)) {
-            $this->setPort((int) $_SERVER['SERVER_PORT']);
+        if (!$this->getPort() && getenv('REMOTE_PORT')) {
+            $this->setPort((int) getenv('REMOTE_PORT'));
         }
 
-        if (!$this->getUserAgent() && array_key_exists('HTTP_USER_AGENT', $_SERVER)) {
-            $this->setUserAgent($_SERVER['HTTP_USER_AGENT']);
+        if (!$this->getUserAgent() && getenv('HTTP_USER_AGENT')) {
+            $this->setUserAgent(getenv('HTTP_USER_AGENT'));
         }
 
         if (!$this->getIp()) {
