@@ -15,7 +15,7 @@ class Config
 {
     public const LIVE_MODE = 'live';
     public const TEST_MODE = 'test';
-    public const VERSION = '0.0.6';
+    public const VERSION = '0.0.7';
 
     /** @var ild78\Core\Request\Call[] */
     protected $calls = [];
@@ -475,6 +475,8 @@ class Config
      *
      * @param self $instance Current API instance.
      * @return self
+     *
+     * @phpstan-param static $instance Current API instance.
      */
     public static function setGlobal(self $instance): self
     {

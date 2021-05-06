@@ -1,4 +1,13 @@
 
+stages:
+  - lint
+  - test
+  - coverage
+  - build
+  - publish
+  - notification
+  - manual
+
 variables:
   ATOUM_COVERAGE_FILENAME: "reports/${PHP_VERSION}-coverage.xml"
   ATOUM_XUNIT_FILENAME: "reports/${PHP_VERSION}-xunit.xml"
@@ -24,3 +33,14 @@ include:
     file: '/registry/composer.yml'
   - project: 'stancer/ci-template'
     file: '/notifications/mattermost/library.yml'
+
+
+Hand job:
+  extends:
+    - atoum
+
+  stage: manual
+
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "develop"'
+      when: manual
