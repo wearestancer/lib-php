@@ -1,0 +1,63 @@
+parameters:
+	ignoreErrors:
+		-
+			message: "#^Invalid type object to throw\\.$#"
+			count: 4
+			path: src/Core/AbstractObject.php
+
+		-
+			message: "#^Negated boolean expression is always false\\.$#"
+			count: 4
+			path: src/Core/AbstractObject.php
+
+		-
+			message: "#^Property Stancer\\\\Core\\\\AbstractObject\\:\\:\\$apiData \\(array\\<string, mixed\\>\\) does not accept mixed\\.$#"
+			count: 1
+			path: src/Core/AbstractObject.php
+
+		-
+			message: "#^Call to function is_null\\(\\) with DateTimeInterface will always evaluate to false\\.$#"
+			count: 1
+			path: src/Dispute.php
+
+		-
+			message: "#^Invalid type object to throw\\.$#"
+			count: 2
+			path: src/Dispute.php
+
+		-
+			message: "#^Method Stancer\\\\Dispute\\:\\:list\\(\\) has parameter \\$terms with no value type specified in iterable type DatePeriod\\.$#"
+			count: 1
+			path: src/Dispute.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of static method Stancer\\\\Dispute\\:\\:validateDateRelativeFilter\\(\\) expects DateTimeInterface\\|int, DatePeriod\\|DateTimeInterface\\|int given\\.$#"
+			count: 1
+			path: src/Dispute.php
+
+
+		-
+			message: "#^Call to function is_null\\(\\) with DateTimeInterface will always evaluate to false\\.$#"
+			count: 1
+			path: src/Payment.php
+
+		-
+			message: "#^Invalid type object to throw\\.$#"
+			count: 2
+			path: src/Payment.php
+
+		-
+			message: "#^Method Stancer\\\\Payment\\:\\:list\\(\\) has parameter \\$terms with no value type specified in iterable type DatePeriod\\.$#"
+			count: 1
+			path: src/Payment.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of static method Stancer\\\\Payment\\:\\:validateDateRelativeFilter\\(\\) expects DateTimeInterface\\|int, DatePeriod\\|DateTimeInterface\\|int given\\.$#"
+			count: 1
+			path: src/Payment.php
+
+		-
+			message: "#^Parameter \\#1 \\$value of static method Stancer\\\\Payment\\:\\:validateDateRelativeFilter\\(\\) expects DateTimeInterface\\|int, DatePeriod\\|DateTimeInterface\\|int\\|string given\\.$#"
+			count: 1
+			path: src/Payment.php
+

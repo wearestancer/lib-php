@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<ruleset name="PHPCS ruleset">
+  <file>src/</file>
+  <exclude-pattern>tests/*</exclude-pattern>
+
+  <arg name="colors" />
+  <arg value="sp" />
+
+  <rule ref="PSR2" />
+  <rule ref="PSR12" />
+
+  <rule ref="PSR12">
+    <exclude name="PSR12.Files.FileHeader.SpacingAfterBlock" /> <!-- Space between `<?php` and `declare` -->
+  </rule>
+
+  <rule ref="Squiz">
+    <exclude name="Generic.Commenting.DocComment.ContentAfterOpen" />
+    <exclude name="Generic.Commenting.DocComment.ContentBeforeClose" />
+    <exclude name="Generic.Commenting.DocComment.MissingShort" />
+    <exclude name="Generic.Commenting.DocComment.NonParamGroup" />
+    <exclude name="Generic.Commenting.DocComment.TagValueIndent" />
+
+    <exclude name="Generic.Formatting.MultipleStatementAlignment.NotSame" />
+
+    <exclude name="Generic.PHP.LowerCaseType.ParamTypeFound" />
+
+    <!-- Remove for multiline condition -->
+    <exclude name="PEAR.ControlStructures.MultiLineCondition.SpacingAfterOpenBrace" />
+    <exclude name="PEAR.ControlStructures.MultiLineCondition.StartWithBoolean" />
+    <exclude name="PSR2.ControlStructures.ControlStructureSpacing.SpacingAfterOpenBrace" />
+
+    <exclude name="Squiz.Arrays.ArrayDeclaration.DoubleArrowNotAligned" />
+    <exclude name="Squiz.Arrays.ArrayDeclaration.MultiLineNotAllowed" />
+
+    <exclude name="Squiz.Commenting.BlockComment.WrongStart" />
+    <exclude name="Squiz.Commenting.ClassComment.TagNotAllowed" />
+    <exclude name="Squiz.Commenting.ClosingDeclarationComment.Missing" />
+    <exclude name="Squiz.Commenting.FileComment.Missing" />
+    <exclude name="Squiz.Commenting.FunctionComment.SpacingAfterParamName" />
+    <exclude name="Squiz.Commenting.FunctionComment.SpacingAfterParamType" />
+    <exclude name="Squiz.Commenting.InlineComment.DocBlock" />
+    <exclude name="Squiz.Commenting.LongConditionClosingComment.Missing" />
+    <exclude name="Squiz.Commenting.PostStatementComment.Found" />
+    <exclude name="Squiz.Commenting.VariableComment.TagNotAllowed" />
+
+    <exclude name="Squiz.ControlStructures.ElseIfDeclaration.NotAllowed" />
+    <exclude name="Squiz.ControlStructures.InlineIfDeclaration.NoBrackets" />
+    <exclude name="Squiz.ControlStructures.SwitchDeclaration.BreakIndent" />
+
+    <exclude name="Squiz.Files.FileExtension.ClassFound" />
+
+    <exclude name="Squiz.Formatting.OperatorBracket.MissingBrackets" />
+
+    <exclude name="Squiz.PHP.DisallowComparisonAssignment.AssignedBool" />
+    <exclude name="Squiz.PHP.DisallowComparisonAssignment.AssignedComparison" />
+    <exclude name="Squiz.PHP.DisallowInlineIf.Found" />
+
+    <exclude name="Squiz.Operators.ComparisonOperatorUsage.ImplicitTrue" />
+    <exclude name="Squiz.Operators.ComparisonOperatorUsage.NotAllowed" />
+
+    <exclude name="Squiz.WhiteSpace.FunctionClosingBraceSpace.SpacingBeforeClose" />
+    <exclude name="Squiz.WhiteSpace.MemberVarSpacing.FirstIncorrect" />
+  </rule>
+
+  <rule ref="Generic.PHP.ForbiddenFunctions">
+    <properties>
+      <property name="forbiddenFunctions" type="array">
+        <element key="sizeof" value="count" />
+        <element key="delete" value="unset" />
+        <element key="print" value="echo" />
+        <element key="create_function" value="null" />
+      </property>
+    </properties>
+  </rule>
+
+  <rule ref="Squiz.Strings.ConcatenationSpacing">
+    <properties>
+      <property name="spacing" value="1" /> <!-- echo $foo . $bar; instead of echo $foo.$bar; -->
+    </properties>
+  </rule>
+
+  <rule ref="Squiz.WhiteSpace.FunctionSpacing">
+    <properties>
+      <property name="spacing" value="1" /> <!-- One line before and after a function declaration -->
+      <property name="spacingBeforeFirst" value="0" /> <!-- Exception for the first one ... -->
+      <property name="spacingAfterLast" value="0" /> <!-- ... and last one -->
+    </properties>
+  </rule>
+</ruleset>

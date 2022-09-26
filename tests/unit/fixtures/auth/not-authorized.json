@@ -1,0 +1,6 @@
+{
+  "error": {
+    "type": "invalid_request_error",
+    "message": "You are not authorized to access that resource"
+  }
+}

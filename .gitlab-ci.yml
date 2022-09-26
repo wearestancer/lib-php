@@ -1,0 +1,10 @@
+
+variables:
+  ATOUM_COVERAGE_FILENAME: coverage.xml
+  ATOUM_XUNIT_FILENAME: xunit.xml
+  PHP_BUILD_FILENAME: "lib-php-${CI_COMMIT_TAG}.tar.gz"
+
+
+include:
+  - project: stancer/ci-template
+    file: /run.yml

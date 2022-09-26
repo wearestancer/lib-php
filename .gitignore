@@ -1,0 +1,15 @@
+
+# composer
+vendor
+composer.lock
+
+# Tests report
+.cache
+reports
+
+# macOS files
+.DS_Store
+._*
+
+# IDE files
+*.swp
