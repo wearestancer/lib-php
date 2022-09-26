@@ -1,0 +1,25 @@
+{
+  "amount": 3406,
+  "card": {
+    "brand": "visa",
+    "country": "US",
+    "exp_month": 3,
+    "exp_year": 2021,
+    "id": "card_jSmaDq5t5lMnz6H8tCZ0AbRG",
+    "last4": "4242",
+    "name": null,
+    "zip_code": null
+  },
+  "country": "FR",
+  "created": 1538492150.0,
+  "currency": "eur",
+  "description": null,
+  "id": "paym_SKMLflt8NBATuiUzgvTYqsw5",
+  "customer": null,
+  "refunds" : [],
+  "live_mode": false,
+  "method": "card",
+  "order_id": "815730837",
+  "response": "00",
+  "status": "to_capture"
+}
