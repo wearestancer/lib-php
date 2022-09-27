@@ -96,7 +96,7 @@ There is a simple example :
 
 $payment = new Stancer\Payment('paym_KIVaaHi7G8QAYMQpQOYBrUQE');
 
-$payment->refund(); // To refund the all payment
+$payment->refund(); // To refund the full payment
 // or
 $payment->refund($amount); // To refund a particular amount
 
