@@ -11,7 +11,7 @@ To keep it simple, we uses [Composer](http://getcomposer.org/).
 You only need to run the following commmand :
 
 ```bash
-composer require Stancer/lib-php
+composer require stancer/stancer
 ```
 
 The library uses [cURL](https://secure.php.net/manual/fr/book.curl.php) internaly to connect to the API.
