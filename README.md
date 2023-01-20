@@ -24,7 +24,7 @@ You only need to provider the client instance to the API config.
 ```php
 <?php
 
-$config = Stancer\Api\Config::init($key);
+$config = Stancer\Config::init($key);
 $config->setHttpClient($guzzle);
 ```
 
@@ -38,16 +38,16 @@ All you need is a valid API key.
 
 $key = 'my_api_key_kSp7hBH3hyDQ36izsyKR';
 
-Stancer\Api\Config::init($key);
+Stancer\Config::init($key);
 
-$card = new Stancer\Card;
+$card = new Stancer\Card();
 $card->setNumber('4111111111111111');
 $card->setExpMonth(12);
 $card->setExpYear(2022);
 $card->setCvc('999');
 $card->setName('John Doe');
 
-$payment = new Stancer\Payment;
+$payment = new Stancer\Payment();
 $payment->setCard($card);
 $payment->setAmmount(1000); // You must put an integer, here we wanted USD$10.00
 $payment->setCurrency('USD');
@@ -74,7 +74,7 @@ To create an object, like a payment, use the `save` method.
 ```php
 <?php
 
-$payment = new Stancer\Payment;
+$payment = new Stancer\Payment();
 
 $payment->setCard($card); // Pay with a card
 // or

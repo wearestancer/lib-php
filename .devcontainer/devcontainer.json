@@ -1,25 +1,24 @@
 {
-  "name": "PHP",
-  "build": {
-    "dockerfile": "Dockerfile",
-    "args": {
-      "VERSION": "7.4",
-    },
-  },
-  "extensions": [
-    "bmewburn.vscode-intelephense-client",
-    "editorconfig.editorconfig",
-    "felixfbecker.php-debug",
-    "kasik96.latte",
-    "mrmlnc.vscode-apache",
-  ],
-  "postCreateCommand": "composer install",
-  "remoteUser": "vscode",
-  "settings": {
-    "editor.rulers": [
-      120,
-    ],
-    "intelephense.environment.phpVersion": "7.4.0",
-    "php.validate.executablePath": "/usr/local/bin/php",
-  },
+	"name": "Stancer PHP library",
+	"build": {
+	"dockerfile": "Dockerfile",
+	"args": {
+		"VERSION": "7.4"
+	}
+	},
+	"extensions": [
+		"bmewburn.vscode-intelephense-client",
+		"editorconfig.editorconfig",
+		"felixfbecker.php-debug",
+		"kasik96.latte",
+		"mrmlnc.vscode-apache"
+	],
+	"postCreateCommand": "composer install",
+	"settings": {
+	"editor.rulers": [
+		120
+	],
+	"intelephense.environment.phpVersion": "7.4.0",
+	"php.validate.executablePath": "/usr/local/bin/php"
+}
 }
