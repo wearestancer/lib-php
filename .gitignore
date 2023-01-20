@@ -13,3 +13,6 @@ reports
 
 # IDE files
 *.swp
+
+# Local files
+*.local.php
