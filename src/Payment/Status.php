@@ -17,5 +17,6 @@ class Status
     public const DISPUTED = 'disputed';
     public const EXPIRED = 'expired';
     public const FAILED = 'failed';
+    public const REFUSED = 'refused';
     public const TO_CAPTURE = 'to_capture';
 }

@@ -55,6 +55,11 @@ class Status extends Stancer\Tests\atoum
                     ->isEqualTo('failed')
 
             ->currentlyTestedClass
+                ->hasConstant('REFUSED')
+                ->constant('REFUSED')
+                    ->isEqualTo('refused')
+
+            ->currentlyTestedClass
                 ->hasConstant('TO_CAPTURE')
                 ->constant('TO_CAPTURE')
                     ->isEqualTo('to_capture')
