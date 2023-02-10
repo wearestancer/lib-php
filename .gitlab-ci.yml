@@ -87,8 +87,8 @@ phpcs:
   stage: test
 
   script:
-    - phpcs --cache --report=full
-    - phpcs --cache --report=\\Satesh\\Phpcs\\GitLabReport --report-file=codequality.json
+    - ./vendor/bin/phpcs --cache --report=full
+    - ./vendor/bin/phpcs --cache --report=\\Satesh\\Phpcs\\GitLabReport --report-file=codequality.json
 
   artifacts:
     reports:
@@ -102,8 +102,8 @@ phpstan:
   stage: test
 
   script:
-    - phpstan analyse --no-progress || true
-    - phpstan analyse --no-progress --error-format=gitlab > codequality.json
+    - ./vendor/bin/phpstan analyse --no-progress || true
+    - ./vendor/bin/phpstan analyse --no-progress --error-format=gitlab > codequality.json
 
   artifacts:
     reports:
