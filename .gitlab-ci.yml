@@ -5,6 +5,14 @@ variables:
   PHP_BUILD_FILENAME: "lib-php-${CI_COMMIT_TAG}.tar.gz"
 
 
+workflow:
+  rules:
+    - if: '$CI_COMMIT_REF_PROTECTED == "true"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
+      when: never
+    - when: always
+
 
 .php::base:
   image: php:$VERSION
