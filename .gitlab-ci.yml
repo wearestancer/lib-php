@@ -5,6 +5,102 @@ variables:
   PHP_BUILD_FILENAME: "lib-php-${CI_COMMIT_TAG}.tar.gz"
 
 
-include:
-  - project: stancer/ci-template
-    file: /run.yml
+
+.php::base:
+  image: php:$VERSION
+
+  before_script:
+    - apt-get update -yqq
+    - apt-get install -yqq git libpq-dev libcurl4-gnutls-dev libicu-dev libvpx-dev libjpeg-dev libpng-dev libxpm-dev zlib1g-dev libfreetype6-dev libxml2-dev libexpat1-dev libbz2-dev libgmp3-dev libldap2-dev unixodbc-dev libsqlite3-dev libaspell-dev libsnmp-dev libpcre3-dev libtidy-dev libonig-dev libzip-dev unzip
+
+    # Install PHP extensions
+    - docker-php-ext-install mbstring pdo_pgsql curl intl gd xml zip bz2 opcache
+
+    # Install & enable Xdebug for code coverage reports
+    - pecl install xdebug
+    - docker-php-ext-enable xdebug
+
+    # Install Composer
+    - curl -sS https://getcomposer.org/installer | php
+    - mv composer.phar /usr/local/bin/composer
+
+    - php -v
+    - composer --version
+    - if [[ "$COMPOSER_PREFER" == "lowest" ]]; then export COMPOSER_PREFER='--prefer-lowest'; else export COMPOSER_PREFER= ; fi
+    - composer update --no-progress --prefer-stable ${COMPOSER_PREFER}
+
+  cache:
+    paths:
+      - vendor/
+
+
+.php::all-versions:
+  extends:
+    - .php::base
+
+  parallel:
+    matrix:
+      - COMPOSER_PREFER:
+          - latest
+          - lowest
+        VERSION:
+          - '7.4'
+          - '8.0'
+          - '8.1'
+          - '8.2'
+
+.php::stable-version:
+  extends:
+    - .php::base
+
+  variables:
+    VERSION: '8.2'
+
+
+atoum:
+  extends:
+    - .php::all-versions
+
+  stage: test
+
+  script:
+    - ./vendor/bin/atoum --max-children-number 1
+
+  coverage: '/Code coverage value: \d+\.\d+%/'
+
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: $ATOUM_COVERAGE_FILENAME
+      junit: $ATOUM_XUNIT_FILENAME
+
+
+phpcs:
+  extends:
+    - .php::stable-version
+
+  stage: test
+
+  script:
+    - phpcs --cache --report=full
+    - phpcs --cache --report=\\Satesh\\Phpcs\\GitLabReport --report-file=codequality.json
+
+  artifacts:
+    reports:
+      codequality: codequality.json
+
+
+phpstan:
+  extends:
+    - .php::stable-version
+
+  stage: test
+
+  script:
+    - phpstan analyse --no-progress || true
+    - phpstan analyse --no-progress --error-format=gitlab > codequality.json
+
+  artifacts:
+    reports:
+      codequality: codequality.json
