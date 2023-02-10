@@ -76,7 +76,7 @@ workflow:
     - !reference ['.prereqs', start]
 
   variables:
-    VERSION: '8.2'
+    VERSION: '7.4'
 
 
 atoum:
