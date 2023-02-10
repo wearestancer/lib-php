@@ -11,6 +11,132 @@ use mock;
 
 class SearchTrait extends Stancer\Tests\atoum
 {
+    public function testIssue2()
+    {
+        $this
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($response = new mock\Stancer\Http\Response(200))
+            ->and($this->calling($response)->getBody[] = new Stancer\Http\Stream(file_get_contents(__DIR__ . '/../../fixtures/stub/list-1.json')))
+            ->and($this->calling($response)->getBody[] = new Stancer\Http\Stream(file_get_contents(__DIR__ . '/../../fixtures/stub/list-2.json')))
+            ->and($this->calling($response)->getBody[] = new Stancer\Http\Stream(file_get_contents(__DIR__ . '/../../fixtures/stub/list-3.json')))
+            ->and($this->calling($response)->getBody[] = new Stancer\Http\Stream(file_get_contents(__DIR__ . '/../../fixtures/stub/list-4.json')))
+            ->and($this->calling($client)->request = $response)
+            ->and($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config->setHttpClient($client))
+            ->and($config->setDebug(false))
+
+            ->and($options = [
+                'headers' => [
+                    'Authorization' => $config->getBasicAuthHeader(),
+                    'Content-Type' => 'application/json',
+                    'User-Agent' => $config->getDefaultUserAgent(),
+                ],
+                'timeout' => $config->getTimeout(),
+            ])
+
+            ->if($location = $this->newTestedInstance->getUri())
+            ->and($location1 = $location . '?' . http_build_query(['limit' => 2, 'start' => 0]))
+            ->and($location2 = $location . '?' . http_build_query(['limit' => 2, 'start' => 2]))
+            ->and($location3 = $location . '?' . http_build_query(['limit' => 2, 'start' => 4]))
+            ->and($location4 = $location . '?' . http_build_query(['limit' => 2, 'start' => 6]))
+            ->and($location5 = $location . '?' . http_build_query(['limit' => 2, 'start' => 8]))
+
+            ->then
+                ->generator($gen = testedClass::list(['limit' => 2]))
+                    ->yields
+                        ->object
+                            ->isInstanceOf(testedClass::class)
+                            ->toString
+                                ->isIdenticalTo('"stub_ItejQGbS2nH8mRJwramVgqC5"') // From json sample
+
+                ->mock($client)
+                    ->call('request')
+                        ->withArguments('GET', $location1, $options)->once
+                        ->withArguments('GET', $location2, $options)->never
+                        ->withArguments('GET', $location3, $options)->never
+                        ->withArguments('GET', $location4, $options)->never
+                        ->withArguments('GET', $location5, $options)->never
+
+                ->generator($gen)
+                    ->yields
+                        ->object
+                            ->isInstanceOf(testedClass::class)
+                            ->toString
+                                ->isIdenticalTo('"stub_9PP2Ps1u2nNks5zJmIAHai24"') // From json sample
+                    ->yields
+                        ->object
+                            ->isInstanceOf(testedClass::class)
+                            ->toString
+                                ->isIdenticalTo('"stub_lvR3PkFan8dTWTTzkbbR0H74"') // From json sample
+
+                ->mock($client)
+                    ->call('request')
+                        ->withArguments('GET', $location1, $options)->once
+                        ->withArguments('GET', $location2, $options)->once
+                        ->withArguments('GET', $location3, $options)->never
+                        ->withArguments('GET', $location4, $options)->never
+                        ->withArguments('GET', $location5, $options)->never
+
+                ->generator($gen)
+                    ->yields
+                        ->object
+                            ->isInstanceOf(testedClass::class)
+                            ->toString
+                                ->isIdenticalTo('"stub_N1DDSO8zL71mt6byGIEv4x31"') // From json sample
+                    ->yields
+                        ->object
+                            ->isInstanceOf(testedClass::class)
+                            ->toString
+                                ->isIdenticalTo('"stub_IV92PD8IaiVui4wJORmEiU09"') // From json sample
+
+                ->mock($client)
+                    ->call('request')
+                        ->withArguments('GET', $location1, $options)->once
+                        ->withArguments('GET', $location2, $options)->once
+                        ->withArguments('GET', $location3, $options)->once
+                        ->withArguments('GET', $location4, $options)->never
+                        ->withArguments('GET', $location5, $options)->never
+
+                ->generator($gen)
+                    ->yields
+                        ->object
+                            ->isInstanceOf(testedClass::class)
+                            ->toString
+                                ->isIdenticalTo('"stub_gWaePaC4pOkBbz7DUHm7LsS3"') // From json sample
+                    ->yields
+                        ->object
+                            ->isInstanceOf(testedClass::class)
+                            ->toString
+                                ->isIdenticalTo('"stub_DgTidk8n9UrKdimRfg34qJ87"') // From json sample
+
+                ->mock($client)
+                    ->call('request')
+                        ->withArguments('GET', $location1, $options)->once
+                        ->withArguments('GET', $location2, $options)->once
+                        ->withArguments('GET', $location3, $options)->once
+                        ->withArguments('GET', $location4, $options)->once
+                        ->withArguments('GET', $location5, $options)->never
+
+                ->generator($gen)
+                    ->yields
+                        ->object
+                            ->isInstanceOf(testedClass::class)
+                            ->toString
+                                ->isIdenticalTo('"stub_66t9TXtC3uk03UfKhmalDDO5"') // From json sample
+                    ->yields
+                        ->variable
+                            ->isNull
+
+                ->mock($client)
+                    ->call('request')
+                        ->withArguments('GET', $location1, $options)->once
+                        ->withArguments('GET', $location2, $options)->once
+                        ->withArguments('GET', $location3, $options)->once
+                        ->withArguments('GET', $location4, $options)->once
+                        ->withArguments('GET', $location5, $options)->never
+        ;
+    }
+
     public function testList()
     {
         $this
@@ -178,7 +304,7 @@ class SearchTrait extends Stancer\Tests\atoum
                 ->and($terms2 = [
                     'created' => $created,
                     'limit' => $limit,
-                    'start' => $start + 2, // Forced in json sample
+                    'start' => $start + 2, // Based on json sample
                 ])
                 ->and($location2 = $location . '?' . http_build_query($terms2))
                 ->then

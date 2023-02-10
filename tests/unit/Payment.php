@@ -766,7 +766,7 @@ class Payment extends Stancer\Tests\atoum
                 ->and($terms2 = [
                     'created' => $created,
                     'limit' => $limit,
-                    'start' => $start + 2, // Forced in json sample
+                    'start' => $start + 2, // Based on json sample
                     'order_id' => $orderId,
                     'unique_id' => $uniqueId,
                 ])

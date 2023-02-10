@@ -1,0 +1,17 @@
+{
+  "live_mode": true,
+  "searchtraits": [
+    {
+      "id": "stub_lvR3PkFan8dTWTTzkbbR0H74"
+    },
+    {
+      "id": "stub_N1DDSO8zL71mt6byGIEv4x31"
+    }
+  ],
+  "range": {
+    "end": 3,
+    "has_more": true,
+    "limit": 2,
+    "start": 2
+  }
+}
