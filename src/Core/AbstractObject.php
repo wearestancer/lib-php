@@ -913,7 +913,8 @@ abstract class AbstractObject implements JsonSerializable
 
         $this->modified = [];
 
-        Stancer\Config::getGlobal()->getLogger()->info(sprintf('%s "%s" %s', $this->getEntityName(), $this->id, $action));
+        $message = sprintf('%s "%s" %s', $this->getEntityName(), $this->id, $action);
+        Stancer\Config::getGlobal()->getLogger()->info($message);
 
         return $this;
     }

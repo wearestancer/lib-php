@@ -457,7 +457,9 @@ class Config
             try {
                 $zone = new DateTimeZone($tz);
             } catch (\Exception $exception) {
-                throw new Stancer\Exceptions\InvalidArgumentException($message, (int) $exception->getCode(), $exception);
+                $code = (int) $exception->getCode();
+
+                throw new Stancer\Exceptions\InvalidArgumentException($message, $code, $exception);
             }
         }
 
