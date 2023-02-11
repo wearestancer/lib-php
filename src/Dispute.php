@@ -6,7 +6,7 @@ namespace Stancer;
 use Stancer;
 
 /**
- * Representation of a dispute
+ * Representation of a dispute.
  *
  * @method integer getAmount()
  * @method string getCurrency()

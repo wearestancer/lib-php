@@ -7,7 +7,7 @@ use Stancer;
 use Psr;
 
 /**
- * Basic HTTP client
+ * Basic HTTP client.
  */
 class Client implements Stancer\Interfaces\HttpClientInterface
 {
@@ -27,9 +27,9 @@ class Client implements Stancer\Interfaces\HttpClientInterface
     protected $lastResponse;
 
     /**
-     * Creation of a new client instance
+     * Creation of a new client instance.
      *
-     * This only start a new cURL ressource
+     * This only start a new cURL ressource.
      */
     public function __construct()
     {
@@ -37,7 +37,7 @@ class Client implements Stancer\Interfaces\HttpClientInterface
     }
 
     /**
-     * Close cURL ressource on destruction
+     * Close cURL ressource on destruction.
      */
     public function __destruct()
     {
@@ -45,7 +45,7 @@ class Client implements Stancer\Interfaces\HttpClientInterface
     }
 
     /**
-     * Return cURL resource
+     * Return cURL resource.
      *
      * This is mainly use for testing purpose. Be carefull if you need to use it.
      *
@@ -57,7 +57,7 @@ class Client implements Stancer\Interfaces\HttpClientInterface
     }
 
     /**
-     * Return the last response
+     * Return the last response.
      *
      * @return Stancer\Http\Response|null
      */
@@ -67,7 +67,7 @@ class Client implements Stancer\Interfaces\HttpClientInterface
     }
 
     /**
-     * Return the last request
+     * Return the last request.
      *
      * @return Stancer\Http\Request|null
      */
@@ -77,7 +77,7 @@ class Client implements Stancer\Interfaces\HttpClientInterface
     }
 
     /**
-     * Return parsed response header
+     * Return parsed response header.
      *
      * @return mixed[]
      *
@@ -89,7 +89,7 @@ class Client implements Stancer\Interfaces\HttpClientInterface
     }
 
     /**
-     * Parse response header line to pass it to `Response` object
+     * Parse response header line to pass it to `Response` object.
      *
      * As written in documentation "Return the number of bytes written.".
      *
@@ -199,7 +199,7 @@ class Client implements Stancer\Interfaces\HttpClientInterface
 
         $body = curl_exec($this->curl);
         $error = curl_errno($this->curl);
-        $code = (int) curl_getinfo($this->curl, CURLINFO_RESPONSE_CODE);
+        $code = curl_getinfo($this->curl, CURLINFO_RESPONSE_CODE);
 
         if (is_bool($body)) {
             $body = null;

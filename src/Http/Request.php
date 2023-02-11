@@ -11,7 +11,7 @@ use Stancer;
 use Psr;
 
 /**
- * Basic HTTP request
+ * Basic HTTP request.
  */
 class Request implements Psr\Http\Message\RequestInterface
 {
@@ -24,7 +24,7 @@ class Request implements Psr\Http\Message\RequestInterface
     protected $uri;
 
     /**
-     * Create a response instance
+     * Create a response instance.
      *
      * @param Stancer\Http\Verb\AbstractVerb|string $method HTTP method.
      * @param Psr\Http\Message\UriInterface|string $uri URI.

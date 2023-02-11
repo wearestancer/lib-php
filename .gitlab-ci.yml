@@ -5,6 +5,124 @@ variables:
   PHP_BUILD_FILENAME: "lib-php-${CI_COMMIT_TAG}.tar.gz"
 
 
-include:
-  - project: stancer/ci-template
-    file: /run.yml
+workflow:
+  rules:
+    - if: '$CI_COMMIT_REF_PROTECTED == "true"'
+    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
+    - if: '$CI_COMMIT_BRANCH && $CI_OPEN_MERGE_REQUESTS'
+      when: never
+    - when: always
+
+
+.prereqs:
+  apt:
+    - apt-get update -yqq
+    - apt-get install -yqq git libpq-dev libcurl4-gnutls-dev libicu-dev libvpx-dev libjpeg-dev libpng-dev libxpm-dev zlib1g-dev libfreetype6-dev libxml2-dev libexpat1-dev libbz2-dev libgmp3-dev libldap2-dev unixodbc-dev libsqlite3-dev libaspell-dev libsnmp-dev libpcre3-dev libtidy-dev libonig-dev libzip-dev unzip
+  php:
+    - cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini && sed -i 's/^;*memory_limit =.*/memory_limit = 512M/' $PHP_INI_DIR/php.ini && sed -i 's/^;*date.timezone =.*/date.timezone = UTC/' $PHP_INI_DIR/php.ini
+    - docker-php-ext-install mbstring curl zip
+  xdebug:
+    - if [ -n "${XDEBUG_VERSION:-}" ]; then pecl install "xdebug-${XDEBUG_VERSION}"; else pecl install xdebug; fi
+    - docker-php-ext-enable xdebug
+    - echo 'xdebug.mode=coverage' >> $PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini
+  composer:
+    - curl -sS https://getcomposer.org/installer | php
+    - mv composer.phar /usr/local/bin/composer
+  start:
+    - php -v
+    - composer --version
+    - if [[ "$COMPOSER_PREFER" == "lowest" ]]; then export COMPOSER_PREFER='--prefer-lowest'; else export COMPOSER_PREFER= ; fi
+    - composer update --no-progress --prefer-stable ${COMPOSER_PREFER}
+
+
+.php::base:
+  image: php:$VERSION
+
+  before_script:
+    - !reference ['.prereqs', apt]
+    - !reference ['.prereqs', php]
+    - !reference ['.prereqs', xdebug]
+    - !reference ['.prereqs', composer]
+    - !reference ['.prereqs', start]
+
+  cache:
+    paths:
+      - vendor/
+
+  rules:
+    - if: $VERSION == '7.4'
+      variables:
+        XDEBUG_VERSION: '3.1.6'
+    - when: on_success
+
+
+.php::all-versions:
+  extends:
+    - .php::base
+
+  parallel:
+    matrix:
+      - COMPOSER_PREFER:
+          - latest
+          - lowest
+        VERSION:
+          - '7.4'
+          - '8.0'
+          - '8.1'
+          - '8.2'
+
+.php::stable-version:
+  extends:
+    - .php::base
+
+  variables:
+    VERSION: '7.4'
+
+
+atoum:
+  extends:
+    - .php::all-versions
+
+  stage: test
+
+  script:
+    - ./vendor/bin/atoum --max-children-number 1
+
+  coverage: '/Code coverage value: \d+\.\d+%/'
+
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: $ATOUM_COVERAGE_FILENAME
+      junit: $ATOUM_XUNIT_FILENAME
+
+
+phpcs:
+  extends:
+    - .php::stable-version
+
+  stage: test
+
+  script:
+    - ./vendor/bin/phpcs --cache --report=full
+    - ./vendor/bin/phpcs --cache --report=\\Satesh\\Phpcs\\GitLabReport --report-file=codequality.json
+
+  artifacts:
+    reports:
+      codequality: codequality.json
+
+
+phpstan:
+  extends:
+    - .php::stable-version
+
+  stage: test
+
+  script:
+    - ./vendor/bin/phpstan analyse --no-progress --xdebug || true
+    - ./vendor/bin/phpstan analyse --no-progress --xdebug --error-format=gitlab > codequality.json
+
+  artifacts:
+    reports:
+      codequality: codequality.json

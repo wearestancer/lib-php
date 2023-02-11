@@ -3,7 +3,7 @@
 namespace Stancer\Interfaces;
 
 /**
- * Representing every payment means
+ * Representing every payment means.
  */
 interface PaymentMeansInterface
 {

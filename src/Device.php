@@ -6,7 +6,7 @@ namespace Stancer;
 use Stancer;
 
 /**
- * Device data for authenticated payment
+ * Device data for authenticated payment.
  *
  * @method string getCity()
  * @method string getCountry()
@@ -67,7 +67,7 @@ class Device extends Stancer\Core\AbstractObject
     ];
 
     /**
-     * Hydrate from environment
+     * Hydrate from environment.
      *
      * @return $this
      * @throws Stancer\Exceptions\InvalidIpAddressException When no IP address was given.
@@ -107,7 +107,7 @@ class Device extends Stancer\Core\AbstractObject
     }
 
     /**
-     * Update customer's IP address
+     * Update customer's IP address.
      *
      * We allow IPv4 and IPv6 addresses.
      *

@@ -11,7 +11,7 @@ use Stancer\Interfaces\ExceptionInterface;
 class InvalidSearchStartException extends InvalidArgumentException implements ExceptionInterface
 {
     /**
-     * Return default message for that kind of exception
+     * Return default message for that kind of exception.
      *
      * @return string
      */

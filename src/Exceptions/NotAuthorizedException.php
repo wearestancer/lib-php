@@ -23,7 +23,7 @@ class NotAuthorizedException extends ClientException implements ExceptionInterfa
     protected static $status = '401';
 
     /**
-     * Return default message for that kind of exception
+     * Return default message for that kind of exception.
      *
      * @return string
      */

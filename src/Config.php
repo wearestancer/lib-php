@@ -9,7 +9,7 @@ use Stancer;
 use Psr;
 
 /**
- * Handle configuration, connection and credential to API
+ * Handle configuration, connection and credential to API.
  */
 class Config
 {
@@ -59,7 +59,7 @@ class Config
     protected $version = 1;
 
     /**
-     * Create an API configuration
+     * Create an API configuration.
      *
      * An authentication key is required to make a new instance. It will be used on every API call.
      * You needed to set a configuration as global to be used on every API call.
@@ -86,7 +86,7 @@ class Config
     }
 
     /**
-     * Return HTTP "basic" authentication header's value
+     * Return HTTP "basic" authentication header's value.
      *
      * @return string
      */
@@ -120,7 +120,7 @@ class Config
     }
 
     /**
-     * Return default time zone
+     * Return default time zone.
      *
      * @return DateTimeZone|null
      */
@@ -130,7 +130,7 @@ class Config
     }
 
     /**
-     * Return default user agent
+     * Return default user agent.
      *
      * @return string
      */
@@ -182,7 +182,7 @@ class Config
     }
 
     /**
-     * Return API host
+     * Return API host.
      *
      * Default : api.stancer.com
      *
@@ -194,7 +194,7 @@ class Config
     }
 
     /**
-     * Return an instance of HTTP client
+     * Return an instance of HTTP client.
      *
      * You can give your instance of `Stancer\Http\Client` or `GuzzleHttp\ClientInterface`
      * with `Api::setHttpClient()` method.
@@ -216,7 +216,7 @@ class Config
     }
 
     /**
-     * Return a valid and PSR3 compatible logger instance
+     * Return a valid and PSR3 compatible logger instance.
      *
      * @return Psr\Log\LoggerInterface
      */
@@ -234,7 +234,7 @@ class Config
     }
 
     /**
-     * Return API mode (test or live)
+     * Return API mode (test or live).
      *
      * Default : test
      *
@@ -248,7 +248,7 @@ class Config
     }
 
     /**
-     * Return API port
+     * Return API port.
      *
      * Default : 443 (HTTPS)
      *
@@ -262,7 +262,7 @@ class Config
     }
 
     /**
-     * Return public API key
+     * Return public API key.
      *
      * @return string
      * @throws Stancer\Exceptions\MissingApiKeyException When no key is found.
@@ -287,7 +287,7 @@ class Config
     }
 
     /**
-     * Return secret API key
+     * Return secret API key.
      *
      * @return string
      * @throws Stancer\Exceptions\MissingApiKeyException When no key is found.
@@ -312,7 +312,7 @@ class Config
     }
 
     /**
-     * Return API timeout
+     * Return API timeout.
      *
      * Default : 5 (seconds)
      *
@@ -324,7 +324,7 @@ class Config
     }
 
     /**
-     * Return API URI
+     * Return API URI.
      *
      * Default : 1
      *
@@ -349,7 +349,7 @@ class Config
     }
 
     /**
-     * Return API version
+     * Return API version.
      *
      * Default : 1
      *
@@ -375,7 +375,7 @@ class Config
     }
 
     /**
-     * Indicate if API is in live mode
+     * Indicate if API is in live mode.
      *
      * @return boolean
      */
@@ -385,7 +385,7 @@ class Config
     }
 
     /**
-     * Indicate if API is not in live mode
+     * Indicate if API is not in live mode.
      *
      * @return boolean
      */
@@ -395,7 +395,7 @@ class Config
     }
 
     /**
-     * Indicate if API is not in test mode
+     * Indicate if API is not in test mode.
      *
      * @return boolean
      */
@@ -405,7 +405,7 @@ class Config
     }
 
     /**
-     * Indicate if API is in test mode
+     * Indicate if API is in test mode.
      *
      * @return boolean
      */
@@ -415,7 +415,7 @@ class Config
     }
 
     /**
-     * Reset default time zone
+     * Reset default time zone.
      *
      * @return $this
      */
@@ -440,7 +440,7 @@ class Config
     }
 
     /**
-     * Update default time zone
+     * Update default time zone.
      *
      * @param string|DateTimeZone $tz New time zone.
      * @return $this
@@ -457,7 +457,9 @@ class Config
             try {
                 $zone = new DateTimeZone($tz);
             } catch (\Exception $exception) {
-                throw new Stancer\Exceptions\InvalidArgumentException($message, (int) $exception->getCode(), $exception);
+                $code = (int) $exception->getCode();
+
+                throw new Stancer\Exceptions\InvalidArgumentException($message, $code, $exception);
             }
         }
 
@@ -471,7 +473,7 @@ class Config
     }
 
     /**
-     * Register a configuration for deferred API call
+     * Register a configuration for deferred API call.
      *
      * @param self $instance Current API instance.
      * @return self
@@ -486,7 +488,7 @@ class Config
     }
 
     /**
-     * Update API host
+     * Update API host.
      *
      * @param string $host New host.
      * @return $this
@@ -499,7 +501,7 @@ class Config
     }
 
     /**
-     * Update HTTP client instance
+     * Update HTTP client instance.
      *
      * Be careful, no limitation is done on this method to allow you to use your own
      * implementation of an HTTP client.
@@ -515,7 +517,7 @@ class Config
     }
 
     /**
-     * Update authentication keys
+     * Update authentication keys.
      *
      * @param string|string[] $keys One or more keys to update.
      *
@@ -546,7 +548,7 @@ class Config
     }
 
     /**
-     * Update logger handler
+     * Update logger handler.
      *
      * @param Psr\Log\LoggerInterface $logger A PSR3 compatible logger.
      * @return $this
@@ -559,9 +561,9 @@ class Config
     }
 
     /**
-     * Update API mode
+     * Update API mode.
      *
-     * You should use class constant `LIVE_MODE` and `TEST_MODE` to be sure
+     * You should use class constant `LIVE_MODE` and `TEST_MODE` to be sure.
      *
      * @param string $mode New mode. Should be class constant `LIVE_MODE` or `TEST_MODE`.
      * @return $this
@@ -586,7 +588,7 @@ class Config
     }
 
     /**
-     * Update API port
+     * Update API port.
      *
      * @param integer $port New port.
      * @return $this
@@ -599,7 +601,7 @@ class Config
     }
 
     /**
-     * Update API timeout
+     * Update API timeout.
      *
      * @param integer $timeout New timeout.
      * @return $this
@@ -631,7 +633,7 @@ class Config
     }
 
     /**
-     * Update API version
+     * Update API version.
      *
      * @param integer $version New version.
      * @return $this

@@ -15,7 +15,7 @@ class InvalidDescriptionException extends InvalidArgumentException implements Ex
     protected static $logLevel = Psr\Log\LogLevel::DEBUG;
 
     /**
-     * Return default message for that kind of exception
+     * Return default message for that kind of exception.
      *
      * @return string
      */

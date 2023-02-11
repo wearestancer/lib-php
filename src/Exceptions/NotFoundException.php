@@ -23,7 +23,7 @@ class NotFoundException extends ClientException implements ExceptionInterface
     protected static $status = '404';
 
     /**
-     * Return default message for that kind of exception
+     * Return default message for that kind of exception.
      *
      * @return string
      */

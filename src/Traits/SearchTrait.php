@@ -15,7 +15,7 @@ trait SearchTrait
     // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
 
     /**
-     * List elements
+     * List elements.
      *
      * `$terms` must be an associative array with one of the following key : `created`, `limit` or `start`.
      *

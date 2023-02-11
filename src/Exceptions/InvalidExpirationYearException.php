@@ -12,7 +12,7 @@ use Psr;
 class InvalidExpirationYearException extends InvalidExpirationException implements ExceptionInterface
 {
     /**
-     * Return default message for that kind of exception
+     * Return default message for that kind of exception.
      *
      * @return string
      */

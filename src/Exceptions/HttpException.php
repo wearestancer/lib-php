@@ -29,7 +29,7 @@ class HttpException extends Exception implements ExceptionInterface
     protected static $status;
 
     /**
-     * Construct the exception
+     * Construct the exception.
      *
      * @param string|null $message The Exception message to throw.
      * @param integer $code The Exception code.
@@ -46,7 +46,7 @@ class HttpException extends Exception implements ExceptionInterface
     }
 
     /**
-     * Create an instance from an array
+     * Create an instance from an array.
      *
      * @param array $params Parameters, keys must correspond to exception properties.
      * @return static
@@ -77,7 +77,7 @@ class HttpException extends Exception implements ExceptionInterface
     }
 
     /**
-     * Return classname for a given HTTP status
+     * Return classname for a given HTTP status.
      *
      * @param integer $status HTTP status.
      * @return string
@@ -120,7 +120,7 @@ class HttpException extends Exception implements ExceptionInterface
     }
 
     /**
-     * Return default message for that kind of exception
+     * Return default message for that kind of exception.
      *
      * @return string
      */
@@ -136,7 +136,7 @@ class HttpException extends Exception implements ExceptionInterface
     }
 
     /**
-     * Get the request that caused the exception
+     * Get the request that caused the exception.
      *
      * @return Psr\Http\Message\RequestInterface|null
      */
@@ -146,7 +146,7 @@ class HttpException extends Exception implements ExceptionInterface
     }
 
     /**
-     * Get the associated response
+     * Get the associated response.
      *
      * @return Psr\Http\Message\ResponseInterface|null
      */
@@ -156,7 +156,7 @@ class HttpException extends Exception implements ExceptionInterface
     }
 
     /**
-     * Return HTTP status code for this kind of exception
+     * Return HTTP status code for this kind of exception.
      *
      * @return string|null
      */

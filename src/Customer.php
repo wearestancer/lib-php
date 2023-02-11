@@ -6,7 +6,7 @@ namespace Stancer;
 use Stancer;
 
 /**
- * Representation of a customer
+ * Representation of a customer.
  *
  * @method string getEmail()
  * @method string getMobile()

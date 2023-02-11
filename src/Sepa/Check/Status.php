@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Stancer\Sepa\Check;
 
 /**
- * List of a sepa check status
+ * List of a sepa check status.
  */
 class Status
 {

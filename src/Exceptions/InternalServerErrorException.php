@@ -23,7 +23,7 @@ class InternalServerErrorException extends ServerException implements ExceptionI
     protected static $status = '500';
 
     /**
-     * Return default message for that kind of exception
+     * Return default message for that kind of exception.
      *
      * @return string
      */

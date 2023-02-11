@@ -28,7 +28,7 @@
         "psr/log": "^1.0"
     },
     "require-dev": {
-        "atoum/atoum": "~4.0.3",
+        "atoum/atoum": "~4.1",
         "atoum/autoloop-extension": "dev-master",
         "atoum/stubs": "^2.6",
         "atoum/visibility-extension": "^2.0",
@@ -39,7 +39,6 @@
         "phpstan/phpstan": "^1.2",
         "phpstan/phpstan-deprecation-rules": "^1.0",
         "phpstan/phpstan-strict-rules": "^1.0",
-        "ramsey/uuid": "^4.1",
         "satesh/phpcs-gitlab-report": "^1.0",
         "squizlabs/php_codesniffer": "^3.3"
     },

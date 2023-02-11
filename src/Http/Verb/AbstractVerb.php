@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Stancer\Http\Verb;
 
 /**
- * Abstraction for every verb
+ * Abstraction for every verb.
  */
 abstract class AbstractVerb
 {
@@ -12,7 +12,7 @@ abstract class AbstractVerb
     protected $isAllowed = false;
 
     /**
-     * Return the HTTP verb
+     * Return the HTTP verb.
      *
      * @return string
      */
@@ -25,7 +25,7 @@ abstract class AbstractVerb
     }
 
     /**
-     * Indicate if the verb is allowed on the API
+     * Indicate if the verb is allowed on the API.
      *
      * @return boolean
      */
@@ -35,7 +35,7 @@ abstract class AbstractVerb
     }
 
     /**
-     * Indicate if the verb is not allowed on the API
+     * Indicate if the verb is not allowed on the API.
      *
      * @return boolean
      */

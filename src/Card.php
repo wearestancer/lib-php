@@ -8,7 +8,7 @@ use DateTimeImmutable;
 use Stancer;
 
 /**
- * Representation of a card
+ * Representation of a card.
  *
  * @method string getBrand()
  * @method string getCountry()
@@ -131,7 +131,7 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
     ];
 
     /**
-     * Return real brand name
+     * Return real brand name.
      *
      * Whereas `Card::getBrand()` returns brand as a simple normalized string like "amex",
      * `Card::getBrandName()` will return a complete and real brand name, like "American Express".
@@ -227,7 +227,7 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
     }
 
     /**
-     * Return tokenize status
+     * Return tokenize status.
      *
      * For every card sent to the API, you will get an ID representing it.
      * This ID is not reusable, you can not use it for an other payment.
@@ -296,7 +296,7 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
     }
 
     /**
-     * Add a card number
+     * Add a card number.
      *
      * @param string $number A valid card number.
      * @return $this

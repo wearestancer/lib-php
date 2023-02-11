@@ -15,7 +15,7 @@ class MissingPaymentMethodException extends BadMethodCallException implements Ex
     protected static $logLevel = Psr\Log\LogLevel::ERROR;
 
     /**
-     * Return default message for that kind of exception
+     * Return default message for that kind of exception.
      *
      * @return string
      */

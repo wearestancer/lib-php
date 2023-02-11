@@ -7,7 +7,6 @@ parameters:
     - '/^Call to an undefined static method Stancer\\Core\\AbstractObject::[gs]et\w+\(\)/'
     - '/^Only booleans are allowed in/'
     - '/^Short ternary operator is not allowed/'
-    - '/^Cannot cast mixed to int\.$/'
 
     - message: '/^Right side of && is always true/'
       paths:

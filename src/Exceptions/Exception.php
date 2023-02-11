@@ -10,7 +10,7 @@ use Throwable;
 /**
  * Base exception class for all Stancer exceptions.
  *
- * Created for grouping purpose
+ * Created for grouping purpose.
  */
 class Exception extends \Exception implements ExceptionInterface
 {
@@ -18,7 +18,7 @@ class Exception extends \Exception implements ExceptionInterface
     protected static $logLevel = Psr\Log\LogLevel::NOTICE;
 
     /**
-     * Construct the exception
+     * Construct the exception.
      *
      * @param string|null $message The Exception message to throw.
      * @param integer $code The Exception code.
@@ -30,7 +30,7 @@ class Exception extends \Exception implements ExceptionInterface
     }
 
     /**
-     * Create an instance from an array
+     * Create an instance from an array.
      *
      * @param array $params Parameters, keys must correspond to exception properties.
      * @return static
@@ -59,7 +59,7 @@ class Exception extends \Exception implements ExceptionInterface
     }
 
     /**
-     * Return default message for that kind of exception
+     * Return default message for that kind of exception.
      *
      * @return string
      */
@@ -69,7 +69,7 @@ class Exception extends \Exception implements ExceptionInterface
     }
 
     /**
-     * Return default log level for that kind of exception
+     * Return default log level for that kind of exception.
      *
      * @return string
      */

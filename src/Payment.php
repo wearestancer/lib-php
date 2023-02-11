@@ -272,7 +272,7 @@ class Payment extends Stancer\Core\AbstractObject
     }
 
     /**
-     * Delete the current object in the API
+     * Delete the current object in the API.
      *
      * @see self::refund()
      * @return void No return possible
@@ -288,7 +288,7 @@ class Payment extends Stancer\Core\AbstractObject
     }
 
     /**
-     * Filter for list method
+     * Filter for list method.
      *
      * `$terms` must be an associative array with one of the following key : `order_id`, `unique_id`.
      *
@@ -391,7 +391,7 @@ class Payment extends Stancer\Core\AbstractObject
     // phpcs:enable
 
     /**
-     * Return the refundable amount
+     * Return the refundable amount.
      *
      * @return integer
      */
@@ -401,7 +401,7 @@ class Payment extends Stancer\Core\AbstractObject
     }
 
     /**
-     * Return the already refunded amount
+     * Return the already refunded amount.
      *
      * @return integer
      */
@@ -482,7 +482,7 @@ class Payment extends Stancer\Core\AbstractObject
     }
 
     /**
-     * Quick way to make a simple payment
+     * Quick way to make a simple payment.
      *
      * @param integer $amount Amount.
      * @param string $currency Currency.
@@ -664,7 +664,7 @@ class Payment extends Stancer\Core\AbstractObject
     }
 
     /**
-     * Set an authenticated payment
+     * Set an authenticated payment.
      *
      * You supposed to give an `Stancer\Auth` object to start an authenticated payment.
      * To simplify your workflow, we allow you to pass directly the return URL used in authenticated payment.
@@ -751,7 +751,7 @@ class Payment extends Stancer\Core\AbstractObject
     }
 
     /**
-     * Update return URL
+     * Update return URL.
      *
      * @param string $url New HTTPS URL.
      * @return $this

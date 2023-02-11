@@ -7,7 +7,7 @@ use Stancer;
 use Psr;
 
 /**
- * Register API call
+ * Register API call.
  */
 class Call extends Stancer\Core\AbstractObject
 {

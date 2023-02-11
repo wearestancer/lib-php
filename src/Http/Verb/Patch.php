@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Stancer\Http\Verb;
 
 /**
- * HTTP PATCH
+ * HTTP PATCH.
  */
 class Patch extends AbstractVerb
 {
