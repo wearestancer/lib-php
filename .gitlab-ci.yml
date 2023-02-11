@@ -22,7 +22,7 @@ workflow:
     - cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini && sed -i 's/^;*memory_limit =.*/memory_limit = 512M/' $PHP_INI_DIR/php.ini && sed -i 's/^;*date.timezone =.*/date.timezone = UTC/' $PHP_INI_DIR/php.ini
     - docker-php-ext-install mbstring curl zip
   xdebug:
-    - pecl install xdebug
+    - if [ -n "${XDEBUG_VERSION:-}" ]; then pecl install "xdebug-${XDEBUG_VERSION}"; else pecl install xdebug; fi
     - docker-php-ext-enable xdebug
     - echo 'xdebug.mode=coverage' >> $PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini
   composer:
@@ -48,6 +48,12 @@ workflow:
   cache:
     paths:
       - vendor/
+
+  rules:
+    - if: $VERSION == '7.4'
+      variables:
+        XDEBUG_VERSION: '3.1.6'
+    - when: on_success
 
 
 .php::all-versions:
