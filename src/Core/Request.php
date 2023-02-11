@@ -129,12 +129,12 @@ class Request
      * Add a new call made with default client.
      *
      * @param Stancer\Core\AbstractObject $object Object used during call.
-     * @param Stancer\Exceptions\HttpException $exception Exception thrown during call.
+     * @param Stancer\Exceptions\Exception $exception Exception thrown during call.
      * @return $this
      */
     private function addCallWithDefaultClient(
         AbstractObject $object,
-        Stancer\Exceptions\HttpException $exception = null
+        Stancer\Exceptions\Exception $exception = null
     ): self {
         $config = Stancer\Config::getGlobal();
         $client = $config->getHttpClient();
@@ -204,14 +204,14 @@ class Request
      * @param Psr\Http\Message\RequestInterface $request Request.
      * @param Psr\Http\Message\ResponseInterface|null $response Response.
      * @param Stancer\Core\AbstractObject $object Object used during call.
-     * @param Stancer\Exceptions\HttpException $exception Exception thrown during call.
+     * @param Stancer\Exceptions\Exception $exception Exception thrown during call.
      * @return $this
      */
     private function addCallWithOtherClient(
         Psr\Http\Message\RequestInterface $request,
         $response,
         AbstractObject $object,
-        Stancer\Exceptions\HttpException $exception = null
+        Stancer\Exceptions\Exception $exception = null
     ): self {
         $config = Stancer\Config::getGlobal();
         $client = $config->getHttpClient();

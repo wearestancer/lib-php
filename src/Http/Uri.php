@@ -36,20 +36,23 @@ class Uri implements Psr\Http\Message\UriInterface
                 'fragment',
                 'host',
                 'path',
-                'port',
                 'query',
                 'scheme',
                 'user',
             ];
 
             foreach ($keys as $key) {
-                if (array_key_exists($key, $parts) && $parts[$key]) {
+                if (array_key_exists($key, $parts) && $parts[$key] && is_string($parts[$key])) {
                     $this->components[$key] = $parts[$key];
                 }
             }
 
             if (array_key_exists('pass', $parts)) {
                 $this->components['user'] = ($this->components['user'] ?? '') . ':' . $parts['pass'];
+            }
+
+            if (array_key_exists('port', $parts) && $parts['port']) {
+                $this->components['port'] = $parts['port'];
             }
 
             if ($this->getHost()) {

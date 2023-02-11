@@ -92,13 +92,11 @@ abstract class AbstractObject implements JsonSerializable
                 $data['exportable'] = !$data['restricted'];
             }
 
-            if (is_string($data['type'])) {
-                if (is_a($data['type'], DateTimeInterface::class, true)) {
-                    $data['coerce'] = Type\Helper::PARSE_DATE_TIME;
+            if (is_a($data['type'], DateTimeInterface::class, true)) {
+                $data['coerce'] = Type\Helper::PARSE_DATE_TIME;
 
-                    if (!$data['format']) {
-                        $data['format'] = Type\Helper::UNIX_TIMESTAMP;
-                    }
+                if (!$data['format']) {
+                    $data['format'] = Type\Helper::UNIX_TIMESTAMP;
                 }
             }
 

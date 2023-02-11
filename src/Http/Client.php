@@ -199,7 +199,7 @@ class Client implements Stancer\Interfaces\HttpClientInterface
 
         $body = curl_exec($this->curl);
         $error = curl_errno($this->curl);
-        $code = (int) curl_getinfo($this->curl, CURLINFO_RESPONSE_CODE);
+        $code = curl_getinfo($this->curl, CURLINFO_RESPONSE_CODE);
 
         if (is_bool($body)) {
             $body = null;
