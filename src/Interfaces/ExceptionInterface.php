@@ -5,12 +5,12 @@ namespace Stancer\Interfaces;
 use Throwable;
 
 /**
- * Regrouping every exceptions
+ * Regrouping every exceptions.
  */
 interface ExceptionInterface
 {
     /**
-     * Construct the exception
+     * Construct the exception.
      *
      * @param string|null $message The Exception message to throw.
      * @param integer $code The Exception code.
@@ -19,14 +19,14 @@ interface ExceptionInterface
     public function __construct(string $message = null, int $code = 0, Throwable $previous = null);
 
     /**
-     * Return default message for that kind of exception
+     * Return default message for that kind of exception.
      *
      * @return string
      */
     public static function getDefaultMessage(): string;
 
     /**
-     * Return default log level for that kind of exception
+     * Return default log level for that kind of exception.
      *
      * @return string
      */

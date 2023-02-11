@@ -11,12 +11,12 @@ use Stancer;
 use Psr;
 
 /**
- * Handle request on API
+ * Handle request on API.
  */
 class Request
 {
     /**
-     * Simple proxy for a DELETE request
+     * Simple proxy for a DELETE request.
      *
      * @see self::request() For full documentation.
      * @param Stancer\Core\AbstractObject $object Object.
@@ -30,7 +30,7 @@ class Request
     }
 
     /**
-     * Simple proxy for a GET request
+     * Simple proxy for a GET request.
      *
      * @see self::request() For full documentation.
      * @param Stancer\Core\AbstractObject $object Object.
@@ -51,7 +51,7 @@ class Request
     }
 
     /**
-     * Simple proxy for a PATCH request
+     * Simple proxy for a PATCH request.
      *
      * @see self::request() For full documentation.
      * @param Stancer\Core\AbstractObject $object Object.
@@ -72,7 +72,7 @@ class Request
     }
 
     /**
-     * Simple proxy for a POST request
+     * Simple proxy for a POST request.
      *
      * @see self::request() For full documentation.
      * @param Stancer\Core\AbstractObject $object Object.
@@ -93,7 +93,7 @@ class Request
     }
 
     /**
-     * Simple proxy for a PUT request
+     * Simple proxy for a PUT request.
      *
      * @see self::request() For full documentation.
      * @param Stancer\Core\AbstractObject $object Object.
@@ -114,7 +114,7 @@ class Request
     }
 
     /**
-     * Alias for patch method
+     * Alias for patch method.
      *
      * @see self::patch() The patch method.
      * @param Stancer\Core\AbstractObject $object Object.
@@ -126,7 +126,7 @@ class Request
     }
 
     /**
-     * Add a new call made with default client
+     * Add a new call made with default client.
      *
      * @param Stancer\Core\AbstractObject $object Object used during call.
      * @param Stancer\Exceptions\HttpException $exception Exception thrown during call.
@@ -199,7 +199,7 @@ class Request
     }
 
     /**
-     * Add a new call made with other client
+     * Add a new call made with other client.
      *
      * @param Psr\Http\Message\RequestInterface $request Request.
      * @param Psr\Http\Message\ResponseInterface|null $response Response.
@@ -279,7 +279,7 @@ class Request
     // Prevent PHPCS warning due to `thrown new $class`.
 
     /**
-     * Make a call to API
+     * Make a call to API.
      *
      * @uses Stancer\Config
      * @param Stancer\Http\Verb\AbstractVerb $verb HTTP verb for the call.

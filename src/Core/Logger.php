@@ -10,7 +10,7 @@ use Stancer;
 use Psr\Log\LoggerInterface;
 
 /**
- * Basic and useless logger
+ * Basic and useless logger.
  */
 class Logger implements LoggerInterface
 {
@@ -53,7 +53,7 @@ class Logger implements LoggerInterface
     }
 
     /**
-     * Runtime errors that do not require immediate action but should typically
+     * Runtime errors that do not require immediate action but should typically.
      * be logged and monitored.
      *
      * @param string $message The log message.

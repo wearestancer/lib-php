@@ -5,7 +5,7 @@ namespace Stancer\Interfaces;
 use Psr;
 
 /**
- * HTTP client requirement
+ * HTTP client requirement.
  */
 interface HttpClientInterface
 {

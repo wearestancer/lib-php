@@ -165,7 +165,6 @@ class SearchTrait extends Stancer\Tests\atoum
             ->assert('Make request')
                 ->if($limit = rand(1, 100))
                 ->and($start = rand(0, PHP_INT_MAX))
-                ->and($orderId = uniqid())
                 ->and($created = time() - rand(10, 1000000))
 
                 ->and($location = $this->testedInstance->getUri())

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Stancer\Http\Verb;
 
 /**
- * HTTP POST
+ * HTTP POST.
  */
 class Post extends AbstractVerb
 {

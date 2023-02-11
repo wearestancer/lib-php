@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Stancer\Refund;
 
 /**
- * List of a refund status
+ * List of a refund status.
  */
 class Status
 {

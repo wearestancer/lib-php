@@ -10,7 +10,7 @@ use Stancer;
 use Psr;
 
 /**
- * Basic HTTP response
+ * Basic HTTP response.
  */
 class Response implements Psr\Http\Message\ResponseInterface
 {
@@ -89,7 +89,7 @@ class Response implements Psr\Http\Message\ResponseInterface
     ];
 
     /**
-     * Create a response instance
+     * Create a response instance.
      *
      * @param integer $code Status code.
      * @param Psr\Http\Message\StreamInterface|string|null $body Response body.

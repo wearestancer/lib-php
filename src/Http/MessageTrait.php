@@ -10,7 +10,7 @@ use Stancer;
 use Psr;
 
 /**
- * Common HTTP message method
+ * Common HTTP message method.
  */
 trait MessageTrait
 {
@@ -27,7 +27,7 @@ trait MessageTrait
     protected $protocol;
 
     /**
-     * Add a value to an header
+     * Add a value to an header.
      *
      * @param string $name Header name.
      * @param string|string[] $value Header value.
@@ -152,7 +152,7 @@ trait MessageTrait
     }
 
     /**
-     * Remove header by name
+     * Remove header by name.
      *
      * @param string $name Header name to remove.
      * @return $this

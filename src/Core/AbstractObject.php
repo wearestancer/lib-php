@@ -167,7 +167,7 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Aliases
+     * Aliases.
      *
      * @param string $property Property called.
      * @return mixed
@@ -198,7 +198,7 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Setter alias
+     * Setter alias.
      *
      * @param string $property Property to modify.
      * @param mixed $value New value.
@@ -230,7 +230,7 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Convert `camelCase` text to `snake_case`
+     * Convert `camelCase` text to `snake_case`.
      *
      * @param string $text Text to convert.
      *
@@ -252,7 +252,7 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Create a fresh instance of an API object
+     * Create a fresh instance of an API object.
      *
      * @param mixed[] $data Additional data for creation.
      * @return static
@@ -410,7 +410,7 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Delete the current object in the API
+     * Delete the current object in the API.
      *
      * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When configuration is missing.
@@ -449,7 +449,7 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Return creation date
+     * Return creation date.
      *
      * @return DateTimeInterface|null
      */
@@ -459,7 +459,7 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Return API endpoint
+     * Return API endpoint.
      *
      * @return string
      */
@@ -469,7 +469,7 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Return entity name
+     * Return entity name.
      *
      * @return string
      */
@@ -482,7 +482,7 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Return object ID
+     * Return object ID.
      *
      * @return string|null
      */
@@ -492,7 +492,7 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Return property model
+     * Return property model.
      *
      * @param string|null $property Property name.
      * @return array|null
@@ -708,7 +708,7 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Indicate if the current object is modified
+     * Indicate if the current object is modified.
      *
      * This exists only to perform a deeper search into the current object to find inner updated object.
      *
@@ -740,7 +740,7 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Indicate if the current object is not modified
+     * Indicate if the current object is not modified.
      *
      * @return boolean
      */
@@ -849,7 +849,7 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Retrieve an API object
+     * Retrieve an API object.
      *
      * Added to simply transition from Stripe.
      *
@@ -919,7 +919,7 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Convert `snake_case` text to `camelCase`
+     * Convert `snake_case` text to `camelCase`.
      *
      * @param string $text Text to convert.
      *
@@ -1000,7 +1000,7 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Validate a value in a defined model
+     * Validate a value in a defined model.
      *
      * We do not handle array here, this method only check one value.
      * Array are checked in `self::dataModelSetter()`.

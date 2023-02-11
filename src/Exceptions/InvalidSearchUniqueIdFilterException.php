@@ -9,7 +9,7 @@ namespace Stancer\Exceptions;
 class InvalidSearchUniqueIdFilterException extends InvalidSearchFilterException
 {
     /**
-     * Return default message for that kind of exception
+     * Return default message for that kind of exception.
      *
      * @return string
      */

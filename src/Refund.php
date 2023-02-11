@@ -7,7 +7,7 @@ use DateTimeImmutable;
 use Stancer;
 
 /**
- * Representation of a refund
+ * Representation of a refund.
  *
  * @method integer getAmount()
  * @method string getCurrency()

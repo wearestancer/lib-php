@@ -8,7 +8,7 @@ use DateTimeImmutable;
 use DateTimeInterface;
 
 /**
- * Representation of a SEPA account
+ * Representation of a SEPA account.
  *
  * @method string getBic()
  * @method string|null getCountry()

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Stancer\Payment;
 
 /**
- * List of a payment status
+ * List of a payment status.
  */
 class Status
 {

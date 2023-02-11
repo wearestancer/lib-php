@@ -6,7 +6,6 @@ declare(strict_types=1);
 
 namespace Stancer\Http;
 
-use Stancer;
 use Psr;
 
 /**

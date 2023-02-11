@@ -5,12 +5,12 @@ namespace Stancer\Traits;
 use Stancer;
 
 /**
- * Simple trait to handle everything around amounts
+ * Simple trait to handle everything around amounts.
  */
 trait AmountTrait
 {
     /**
-     * Update amount
+     * Update amount.
      *
      * We allow float as input to prevent error during converting to integer.
      * We will not use the floating part.

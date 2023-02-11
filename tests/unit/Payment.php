@@ -587,7 +587,7 @@ class Payment extends Stancer\Tests\atoum
         }
     }
 
-    public function testIssue7()
+    public function testIssue7_old()
     {
         $this
             ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))

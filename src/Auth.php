@@ -6,7 +6,7 @@ namespace Stancer;
 use Stancer;
 
 /**
- * Data for authenticated payment
+ * Data for authenticated payment.
  *
  * @method string|null getRedirectUrl()
  * @method string getReturnUrl()
@@ -49,7 +49,7 @@ class Auth extends Stancer\Core\AbstractObject
     ];
 
     /**
-     * Update return URL
+     * Update return URL.
      *
      * @param string $url New HTTPS URL.
      * @return $this

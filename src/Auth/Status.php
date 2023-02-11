@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace Stancer\Auth;
 
 /**
- * List of a auth status
+ * List of a auth status.
  */
 class Status
 {
