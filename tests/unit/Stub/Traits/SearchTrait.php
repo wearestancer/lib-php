@@ -561,7 +561,7 @@ class SearchTrait extends Stancer\Tests\atoum
             ->assert('Period without an end')
                 ->if($start = new DateTime('@' . $created))
                 ->and($interval = new DateInterval('P1D'))
-                ->and($recurrences = rand(0, 100))
+                ->and($recurrences = rand(1, 100))
                 ->and($period = new DatePeriod($start, $interval, $recurrences))
 
                 ->then
