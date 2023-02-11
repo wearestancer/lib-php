@@ -8,9 +8,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Allow to add app data in user agent
+- `Payout` [GitHub#5](https://github.com/wearestancer/lib-php/issues/5)
+- `Refund::list()`
 
 ### Fixed
-- `SearchTrait::List()` may miss some items [#2](https://gitlab.com/wearestancer/library/lib-php/-/issues/2)
+- `SearchTrait::List()` may miss some items [GitLab#2](https://gitlab.com/wearestancer/library/lib-php/-/issues/2)
 - CI
 
 
