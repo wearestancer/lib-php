@@ -38,6 +38,13 @@ workflow:
 .php::base:
   image: php:$VERSION
 
+  before_script:
+    - !reference ['.prereqs', apt]
+    - !reference ['.prereqs', php]
+    - !reference ['.prereqs', xdebug]
+    - !reference ['.prereqs', composer]
+    - !reference ['.prereqs', start]
+
   cache:
     paths:
       - vendor/
@@ -46,13 +53,6 @@ workflow:
 .php::all-versions:
   extends:
     - .php::base
-
-  before_script:
-    - !reference ['.prereqs', apt]
-    - !reference ['.prereqs', php]
-    - !reference ['.prereqs', xdebug]
-    - !reference ['.prereqs', composer]
-    - !reference ['.prereqs', start]
 
   parallel:
     matrix:
@@ -68,12 +68,6 @@ workflow:
 .php::stable-version:
   extends:
     - .php::base
-
-  before_script:
-    - !reference ['.prereqs', apt]
-    - !reference ['.prereqs', php]
-    - !reference ['.prereqs', composer]
-    - !reference ['.prereqs', start]
 
   variables:
     VERSION: '7.4'
@@ -120,8 +114,8 @@ phpstan:
   stage: test
 
   script:
-    - ./vendor/bin/phpstan analyse --no-progress || true
-    - ./vendor/bin/phpstan analyse --no-progress --error-format=gitlab > codequality.json
+    - ./vendor/bin/phpstan analyse --no-progress --xdebug || true
+    - ./vendor/bin/phpstan analyse --no-progress --xdebug --error-format=gitlab > codequality.json
 
   artifacts:
     reports:
