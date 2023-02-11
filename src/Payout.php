@@ -21,6 +21,8 @@ use Stancer;
  * @method string getStatus()
  * @method string getStatementDescription()
  *
+ * @method static Generator<static> list(SearchFilters $terms)
+ *
  * @property-read integer $amount
  * @property-read DateTimeImmutable $creationDate
  * @property-read DateTimeImmutable $created
@@ -34,6 +36,8 @@ use Stancer;
  */
 class Payout extends Stancer\Core\AbstractObject
 {
+    use Stancer\Traits\SearchTrait;
+
     /** @var string */
     protected $endpoint = 'payouts';
 

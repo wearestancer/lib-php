@@ -1,0 +1,35 @@
+{
+  "live_mode": true,
+  "payouts": [
+  {
+    "amount": 9400,
+    "created": 1642744806,
+    "currency": "eur",
+    "date_bank": null,
+    "date_paym": 1642633200,
+    "fees": 100,
+    "id": "pout_GexV3lpllrBkyRny15qfsMC0",
+    "live_mode": true,
+    "payments": {
+      "amount": 15000
+    },
+    "refunds": {
+      "amount": 5000
+    },
+    "disputes": {
+      "amount": 500
+    },
+    "statement_description": "Stancer Payout Statement",
+    "status": "paid"
+  }
+  ],
+  "range": {
+    "created": 1585127453,
+    "end": 0,
+    "has_more": true,
+    "limit": 1,
+    "order_id": null,
+    "start": 0,
+    "unique_id": null
+  }
+}

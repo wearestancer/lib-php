@@ -3,6 +3,7 @@
 namespace Stancer\tests\unit;
 
 use Stancer;
+use Stancer\Payout as testedClass;
 use mock;
 
 class Payout extends Stancer\Tests\atoum
@@ -12,6 +13,7 @@ class Payout extends Stancer\Tests\atoum
         $this
             ->currentlyTestedClass()
                 ->isSubclassOf(Stancer\Core\AbstractObject::class)
+                ->hasTrait(Stancer\Traits\SearchTrait::class)
         ;
     }
 
@@ -221,6 +223,40 @@ class Payout extends Stancer\Tests\atoum
 
                 ->string($this->testedInstance->status)
                     ->isIdenticalTo(Stancer\Payout\Status::PAID)
+        ;
+    }
+
+    public function testList()
+    {
+        $this
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($config = $this->mockConfig($client))
+            ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'list'))
+            ->and($options = $this->mockRequestOptions($config))
+
+            ->assert('Make request')
+                ->if($limit = rand(1, 100))
+                ->and($start = rand(0, PHP_INT_MAX))
+                ->and($created = time() - rand(10, 1000000))
+
+                ->and($terms = [
+                    'created' => $created,
+                    'limit' => $limit,
+                    'start' => $start,
+                ])
+                ->and($location = $this->newTestedInstance->getUri() . '?' . http_build_query($terms))
+
+                ->then
+                    ->generator(testedClass::list($terms))
+                        ->yields
+                            ->object
+                                ->isInstanceOf(testedClass::class)
+                                ->toString
+                                    ->isIdenticalTo('"pout_GexV3lpllrBkyRny15qfsMC0"') // From json sample
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location, $options)->once
         ;
     }
 }
