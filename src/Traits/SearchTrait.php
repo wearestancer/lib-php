@@ -39,6 +39,31 @@ trait SearchTrait
      */
     public static function list(array $terms): Generator
     {
+        $element = new static(); // Mandatory for requests.
+        $property = strtolower($element->getEntityName() . 's');
+
+        return $element->search(static::class, $property, $terms);
+    }
+
+    /**
+     * Inner wrapper for `list` method.
+     *
+     * @param string $class Base class.
+     * @param string $property Searched property.
+     * @param array $terms Search terms.
+     * @return Generator<Stancer\Core\AbstractObject>
+     * @throws Stancer\Exceptions\InvalidSearchFilterException When `$terms` is invalid.
+     * @throws Stancer\Exceptions\InvalidSearchCreationFilterException When `created` is invalid.
+     * @throws Stancer\Exceptions\InvalidSearchCreationFilterException When `created` is a DatePeriod without end.
+     * @throws Stancer\Exceptions\InvalidSearchCreationUntilFilterException When `created_until` is invalid.
+     * @throws Stancer\Exceptions\InvalidSearchLimitException When `limit` is invalid.
+     * @throws Stancer\Exceptions\InvalidSearchStartException When `start` is invalid.
+     *
+     * @phpstan-param class-string<Stancer\Core\AbstractObject> $class
+     * @phpstan-param SearchFilters $terms
+     */
+    protected function search(string $class, string $property, array $terms): Generator
+    {
         $allowed = array_flip(['created', 'created_until', 'limit', 'start']);
         $others = [];
         $until = null;
@@ -109,17 +134,15 @@ trait SearchTrait
         }
 
         $request = new Stancer\Core\Request();
-        $element = new static(); // Mandatory for requests.
-        $property = strtolower($element->getEntityName() . 's');
 
         // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
         // @var callable(): Generator<static> $gen
-        $gen = function () use ($request, $element, $params, $property, $until): Generator {
+        $gen = function () use ($class, $request, $params, $property, $until): Generator {
             $more = true;
 
             do {
                 try {
-                    $tmp = $request->get($element, $params);
+                    $tmp = $request->get($this, $params);
 
                     if (!$tmp) {
                         $more = false;
@@ -138,7 +161,7 @@ trait SearchTrait
                                     break;
                                 }
 
-                                $obj = new static($data['id']);
+                                $obj = new $class($data['id']);
 
                                 $obj->cleanModified = true;
                                 $obj->hydrate($data);

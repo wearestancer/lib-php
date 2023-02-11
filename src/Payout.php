@@ -17,6 +17,7 @@ use Stancer;
  * @method DateTimeImmutable getDateBank()
  * @method DateTimeImmutable getDatePaym()
  * @method DateTimeImmutable getDatePayment()
+ * @method Stancer\Payout\Details getDetails()
  * @method integer getFees()
  * @method string getStatus()
  * @method string getStatementDescription()
@@ -30,6 +31,7 @@ use Stancer;
  * @property-read DateTimeImmutable $dateBank
  * @property-read DateTimeImmutable $datePaym
  * @property-read DateTimeImmutable $datePayment
+ * @property-read Stancer\Payout\Details $details
  * @property-read integer $fees
  * @property-read string $status
  * @property-read string $statementDescription
@@ -70,6 +72,10 @@ class Payout extends Stancer\Core\AbstractObject
             'restricted' => true,
             'type' => DateTimeImmutable::class,
         ],
+        'details' => [
+            'restricted' => true,
+            'type' => Stancer\Payout\Details::class,
+        ],
         'fees' => [
             'restricted' => true,
             'type' => self::INTEGER,
@@ -83,4 +89,35 @@ class Payout extends Stancer\Core\AbstractObject
             'type' => self::STRING,
         ],
     ];
+
+    /**
+     * Hydrate the current object.
+     *
+     * Overrided to handle details.
+     *
+     * @param array<string, mixed> $data Data for hydration.
+     * @return $this
+     *
+     * @phpstan-param PayoutResponse $data
+     */
+    public function hydrate(array $data): self
+    {
+        $data['details'] = [];
+        $items = [
+            'disputes',
+            'payments',
+            'refunds',
+        ];
+
+        foreach ($items as $item) {
+            if (array_key_exists($item, $data)) {
+                $data['details'][$item] = $data[$item];
+                $data['details'][$item]['currency'] = $data['currency'];
+                $data['details'][$item]['parent'] = $this;
+                $data['details'][$item]['type'] = $item;
+            }
+        }
+
+        return parent::hydrate($data);
+    }
 }

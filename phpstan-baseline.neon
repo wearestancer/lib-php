@@ -24,3 +24,8 @@ parameters:
 			message: "#^Parameter \\#1 \\$value of static method Stancer\\\\Payment\\:\\:validateDateRelativeFilter\\(\\) expects DateTimeInterface\\|int, DatePeriod\\|DateTimeInterface\\|int\\|string given\\.$#"
 			count: 1
 			path: src/Payment.php
+
+		-
+			message: "#^Parameter \\#1 \\$data \\(array\\{amount\\: int, created\\: int, currency\\: string, date_bank\\?\\: int, date_paym\\: int, fees\\?\\: int, id\\: string, live_mode\\: bool, \\.\\.\\.\\}\\) of method Stancer\\\\Payout\\:\\:hydrate\\(\\) should be contravariant with parameter \\$data \\(array\\<string, mixed\\>\\) of method Stancer\\\\Core\\\\AbstractObject\\:\\:hydrate\\(\\)$#"
+			count: 1
+			path: src/Payout.php

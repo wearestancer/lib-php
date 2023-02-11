@@ -10,6 +10,7 @@ parameters:
 
     - message: '/has parameter \$terms with no value type specified in iterable type DatePeriod\.$/'
       paths:
+        - src/Payout/Details/Inner.php
         - src/Traits/SearchTrait.php
 
     - message: '/^Right side of && is always true/'
@@ -97,6 +98,30 @@ parameters:
         source: string|array{
           id?: string,
         },
+      }
+    '''
+
+    PayoutResponse: '''
+      array{
+        amount: integer,
+        created: integer,
+        currency: string,
+        date_bank?: integer,
+        date_paym: integer,
+        fees?: integer,
+        id: string,
+        live_mode: bool,
+        payments?: array{
+          amount: integer,
+        },
+        refunds?: array{
+          amount: integer,
+        },
+        disputes?: array{
+          amount: integer,
+        },
+        statement_description: string,
+        status: string,
       }
     '''
 
