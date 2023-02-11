@@ -116,11 +116,8 @@ trait SearchTrait
         // @var callable(): Generator<static> $gen
         $gen = function () use ($request, $element, $params, $property, $until): Generator {
             $more = true;
-            $start = 0;
 
             do {
-                $params['start'] += $start;
-
                 try {
                     $tmp = $request->get($element, $params);
 
@@ -133,7 +130,7 @@ trait SearchTrait
                             $more = false;
                         } else {
                             $more = $results['range']['has_more'];
-                            $start += $results['range']['limit'];
+                            $params['start'] += $results['range']['limit'];
 
                             foreach ($results[$property] as $data) {
                                 if ($until && $data['created'] > $until) {
