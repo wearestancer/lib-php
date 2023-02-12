@@ -464,7 +464,6 @@ class Request
             $exception = $excepClass::create($excepParams);
         }
 
-
         if ($config->getDebug()) {
             if ($client instanceof Stancer\Http\Client) {
                 $this->addCallWithDefaultClient($object, $exception);

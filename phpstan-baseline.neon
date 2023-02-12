@@ -16,37 +16,7 @@ parameters:
 			path: src/Core/AbstractObject.php
 
 		-
-			message: "#^Invalid type object to throw\\.$#"
-			count: 2
-			path: src/Dispute.php
-
-		-
-			message: "#^Method Stancer\\\\Dispute\\:\\:list\\(\\) has parameter \\$terms with no value type specified in iterable type DatePeriod\\.$#"
-			count: 1
-			path: src/Dispute.php
-
-		-
-			message: "#^Parameter \\#1 \\$value of static method Stancer\\\\Dispute\\:\\:validateDateRelativeFilter\\(\\) expects DateTimeInterface\\|int, DatePeriod\\|DateTimeInterface\\|int given\\.$#"
-			count: 1
-			path: src/Dispute.php
-
-		-
 			message: "#^Call to function method_exists\\(\\) with class\\-string\\<static\\(Stancer\\\\Payment\\)\\> and 'filterListParams' will always evaluate to true\\.$#"
-			count: 1
-			path: src/Payment.php
-
-		-
-			message: "#^Invalid type object to throw\\.$#"
-			count: 2
-			path: src/Payment.php
-
-		-
-			message: "#^Method Stancer\\\\Payment\\:\\:list\\(\\) has parameter \\$terms with no value type specified in iterable type DatePeriod\\.$#"
-			count: 1
-			path: src/Payment.php
-
-		-
-			message: "#^Parameter \\#1 \\$value of static method Stancer\\\\Payment\\:\\:validateDateRelativeFilter\\(\\) expects DateTimeInterface\\|int, DatePeriod\\|DateTimeInterface\\|int given\\.$#"
 			count: 1
 			path: src/Payment.php
 

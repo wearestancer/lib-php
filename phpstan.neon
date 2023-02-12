@@ -8,6 +8,10 @@ parameters:
     - '/^Only booleans are allowed in/'
     - '/^Short ternary operator is not allowed/'
 
+    - message: '/has parameter \$terms with no value type specified in iterable type DatePeriod\.$/'
+      paths:
+        - src/Traits/SearchTrait.php
+
     - message: '/^Right side of && is always true/'
       paths:
         - src/Exceptions/Exception.php
@@ -18,8 +22,8 @@ parameters:
         - src/Config.php
         - src/Core/AbstractObject.php
         - src/Http/Uri.php
-        - src/Traits/SearchTrait.php
         - src/Payment.php
+        - src/Traits/SearchTrait.php
 
     - message: '/^Variable (property access|method call)/'
       paths:

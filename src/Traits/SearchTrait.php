@@ -27,7 +27,7 @@ trait SearchTrait
      * `start` must be an integer, will be used as a pagination cursor, starts at 0.
      *
      * @param array $terms Search terms. May have `created`, `limit` or `start` key.
-     * @return Generator<static>
+     * @return Generator<Stancer\Core\AbstractObject>
      * @throws Stancer\Exceptions\InvalidSearchFilterException When `$terms` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchCreationFilterException When `created` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchCreationFilterException When `created` is a DatePeriod without end.
@@ -60,9 +60,9 @@ trait SearchTrait
         if (array_key_exists('created', $terms)) {
             $exception = Stancer\Exceptions\InvalidSearchCreationFilterException::class;
 
-            $created = $terms['created'];
-
-            if ($terms['created'] instanceof DatePeriod) {
+            if (!($terms['created'] instanceof DatePeriod)) {
+                $created = $terms['created'];
+            } else {
                 $created = $terms['created']->getStartDate();
 
                 if (is_null($terms['created']->getEndDate())) {
@@ -172,7 +172,7 @@ trait SearchTrait
      * @throws Stancer\Exceptions\InvalidSearchFilterException When `created` is invalid.
      *
      * @phpstan-param DateTimeInterface|integer $value Parameter value.
-     * @phpstan-param class-string $exception Exception to throw.
+     * @phpstan-param class-string<Stancer\Exceptions\Exception> $exception Exception to throw.
      */
     protected static function validateDateRelativeFilter(
         $value,
