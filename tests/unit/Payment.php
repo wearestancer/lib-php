@@ -4,10 +4,6 @@ namespace Stancer\tests\unit;
 
 use DateTime;
 use DateInterval;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
 use Stancer;
 use Stancer\Payment as testedClass;
 use mock;
@@ -42,9 +38,8 @@ class Payment extends Stancer\Tests\atoum
             ->if($client = new mock\GuzzleHttp\Client)
             ->and($response = new mock\GuzzleHttp\Psr7\Response)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-            ->and($config->setHttpClient($client))
-            ->and($config->setDebug(false))
+
+            ->and($this->mockConfig($client))
 
             ->assert('Test with a card token')
                 ->given($options = [
@@ -278,9 +273,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($config->setDebug(false))
 
             ->if($client = new mock\Stancer\Http\Client)
-            ->and($response = new mock\Stancer\Http\Response(200))
-            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-no-method.json'))
-            ->and($this->calling($response)->getBody = new Stancer\Http\Stream($body))
+            ->and($response = $this->mockJsonResponse('payment', 'create-no-method'))
             ->and($this->calling($client)->request = $response)
 
             ->and($config->setHttpClient($client))
@@ -345,18 +338,15 @@ class Payment extends Stancer\Tests\atoum
     public function testGetRefundableAmount()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-            ->and($client = new mock\Stancer\Http\Client)
-            ->and($config->setHttpClient($client))
-            ->and($config->setDebug(false))
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($this->mockConfig($client))
 
-            ->if($body = file_get_contents(__DIR__ . '/fixtures/payment/read.json'))
-            ->and($responsePayment = new Stancer\Http\Response(200, $body))
-            ->and($this->calling($client)->request = $responsePayment)
+            ->if($response = $this->mockJsonResponse('payment', 'read'))
+            ->and($this->calling($client)->request = $response)
 
-            ->and($paymentData = json_decode($body, true))
-            ->and($paid = $paymentData['amount'])
-            ->and($id = $paymentData['id'])
+            ->if($data = $this->getFixtureData('payment', 'read'))
+            ->and($paid = $data['amount'])
+            ->and($id = $data['id'])
 
             ->if($completeRefund = new Stancer\Refund())
             ->and($completeRefund->setAmount($paid))
@@ -590,16 +580,11 @@ class Payment extends Stancer\Tests\atoum
     public function testIssueTaiga7()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-            ->and($config->setDebug(false))
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($this->mockConfig($client))
 
-            ->if($client = new mock\Stancer\Http\Client)
-            ->and($response = new mock\Stancer\Http\Response(200))
-            ->and($body = file_get_contents(__DIR__ . '/fixtures/issue/7.json'))
-            ->and($this->calling($response)->getBody = new Stancer\Http\Stream($body))
+            ->if($response = $this->mockJsonResponse('issue', 'taiga-7'))
             ->and($this->calling($client)->request = $response)
-
-            ->and($config->setHttpClient($client))
 
             ->if($this->newTestedInstance('paym_T3xKVkOq17DCjBEHsAefovuJ'))
             ->then
@@ -615,22 +600,10 @@ class Payment extends Stancer\Tests\atoum
     {
         $this
             ->given($client = new mock\Stancer\Http\Client)
-            ->and($response = new mock\Stancer\Http\Response(200))
-            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/list.json'))
-            ->and($this->calling($response)->getBody = new Stancer\Http\Stream($body))
+            ->and($response = $this->mockJsonResponse('payment', 'list'))
             ->and($this->calling($client)->request = $response)
-            ->and($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-            ->and($config->setHttpClient($client))
-            ->and($config->setDebug(false))
-
-            ->and($options = [
-                'headers' => [
-                    'Authorization' => $config->getBasicAuthHeader(),
-                    'Content-Type' => 'application/json',
-                    'User-Agent' => $config->getDefaultUserAgent(),
-                ],
-                'timeout' => $config->getTimeout(),
-            ])
+            ->and($config = $this->mockConfig($client))
+            ->and($options = $this->mockRequestOptions($config))
 
             ->assert('Invalid limit')
                 ->exception(function () {
@@ -938,9 +911,7 @@ class Payment extends Stancer\Tests\atoum
             ->given($client = new mock\GuzzleHttp\Client)
             ->and($response = new mock\GuzzleHttp\Psr7\Response)
             ->and($this->calling($client)->request = $response)
-            ->and($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-            ->and($config->setHttpClient($client))
-            ->and($config->setDebug(false))
+            ->and($this->mockConfig($client))
 
             ->then
                 ->assert('Pay with card')
@@ -952,8 +923,7 @@ class Payment extends Stancer\Tests\atoum
                     ->and($card->setNumber('4111111111111111'))
                     ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
 
-                    ->if($file = __DIR__ . '/fixtures/payment/create-card.json')
-                    ->and($this->calling($response)->getBody = new Stancer\Http\Stream(file_get_contents($file)))
+                    ->if($this->mockJsonResponse('payment', 'create-card', $response))
                     ->then
                         ->object($this->newTestedInstance->pay(rand(50, 9999), 'EUR', $card))
                             ->isTestedInstance
@@ -968,8 +938,7 @@ class Payment extends Stancer\Tests\atoum
                     ->and($sepa->setIban('DE91 1000 0000 0123 4567 89')) // Thx Wikipedia
                     ->and($sepa->setName(uniqid()))
 
-                    ->if($file = __DIR__ . '/fixtures/payment/create-sepa.json')
-                    ->and($this->calling($response)->getBody = new Stancer\Http\Stream(file_get_contents($file)))
+                    ->if($this->mockJsonResponse('payment', 'create-sepa', $response))
                     ->then
                         ->object($this->newTestedInstance->pay(rand(50, 9999), 'EUR', $sepa))
                             ->isTestedInstance
@@ -986,25 +955,21 @@ class Payment extends Stancer\Tests\atoum
             ->given($client = new mock\Stancer\Http\Client)
             ->and($response = new mock\Stancer\Http\Response(200))
             ->and($this->calling($client)->request = $response)
-            ->and($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-            ->and($config->setHttpClient($client))
-            ->and($config->setDebug(false))
+            ->and($config = $this->mockConfig($client))
             // Behavior modification are done in assert part to prevent confusion on multiple calls mocking
 
             ->and($logger = new mock\Stancer\Core\Logger)
             ->and($config->setLogger($logger))
 
-            ->if($body = file_get_contents(__DIR__ . '/fixtures/payment/read.json'))
-            ->and($paymentData = json_decode($body, true))
+            ->and($paymentData = $this->getFixtureData('payment', 'read'))
             ->and($paid = $paymentData['amount'])
 
             ->if($amount = rand(50, $paid - 50))
-            ->and($body = file_get_contents(__DIR__ . '/fixtures/refund/read.json'))
-            ->and($refund1Data = json_decode($body, true))
+            ->and($refund1Data = $this->getFixtureData('refund', 'read'))
             ->and($refund1Data['amount'] = $amount)
 
             ->if($lastPart = $paid - $amount)
-            ->and($refund2Data = json_decode($body, true))
+            ->and($refund2Data = $this->getFixtureData('refund', 'read'))
             ->and($refund2Data['amount'] = $lastPart)
             ->and($refund2Data['status'] = 'refunded')
 
@@ -1131,9 +1096,8 @@ class Payment extends Stancer\Tests\atoum
                             ->isIdenticalTo('A payment ID is mandatory. Maybe you forgot to send the payment.')
 
                 ->assert('Should work with methods allowed (internal bug)')
-                    ->if($this->calling($response)->getBody = new Stancer\Http\Stream(file_get_contents(__DIR__ . '/fixtures/payment/read-methods-allowed.json')))
-
-                    ->if($this->newTestedInstance('paym_QAM6fOpJnH5DvkYr3ezAVPpa'))
+                    ->if($this->mockJsonResponse('payment', 'read-methods-allowed', $response))
+                    ->and($this->newTestedInstance('paym_QAM6fOpJnH5DvkYr3ezAVPpa'))
                     ->then
                         ->array($this->testedInstance->getMethodsAllowed())
                             ->hasSize(2)
@@ -1147,13 +1111,11 @@ class Payment extends Stancer\Tests\atoum
     public function testSend_exceptions()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-            ->and($config->setDebug(false))
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($this->mockConfig($client))
 
-            ->if($client = new mock\Stancer\Http\Client)
-            ->and($response = new mock\Stancer\Http\Response(200))
+            ->if($response = new mock\Stancer\Http\Response(200))
             ->and($this->calling($client)->request = $response)
-            ->and($config->setHttpClient($client))
 
             ->if($this->newTestedInstance)
             ->then
@@ -1180,13 +1142,10 @@ class Payment extends Stancer\Tests\atoum
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client)
-            ->and($response = new mock\GuzzleHttp\Psr7\Response)
-            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-card.json'))
-            ->and($this->calling($response)->getBody = new Stancer\Http\Stream($body))
+            ->and($config = $this->mockConfig($client))
+
+            ->if($response = $this->mockJsonResponse('payment', 'create-card'))
             ->and($this->calling($client)->request = $response)
-            ->and($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-            ->and($config->setHttpClient($client))
-            ->and($config->setDebug(false))
 
             ->if($card = new Stancer\Card)
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
@@ -1223,16 +1182,9 @@ class Payment extends Stancer\Tests\atoum
                         ->isIdenticalTo('Card expiration is invalid.')
 
             ->if($card->setExpYear(date('Y') + rand(1, 10)))
-            ->and($json = json_encode($this->testedInstance))
-            ->and($options = [
-                'body' => $json,
-                'headers' => [
-                    'Authorization' => $config->getBasicAuthHeader(),
-                    'Content-Type' => 'application/json',
-                    'User-Agent' => $config->getDefaultUserAgent(),
-                ],
-                'timeout' => $config->getTimeout(),
-            ])
+            ->and($options = $this->mockRequestOptions($config, [
+                'body' => json_encode($this->testedInstance),
+            ]))
             ->then
                 ->variable($this->testedInstance->getId())
                     ->isNull
@@ -1306,13 +1258,10 @@ class Payment extends Stancer\Tests\atoum
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client)
-            ->and($response = new mock\GuzzleHttp\Psr7\Response)
-            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-sepa.json'))
-            ->and($this->calling($response)->getBody = new Stancer\Http\Stream($body))
+            ->and($config = $this->mockConfig($client))
+
+            ->if($response = $this->mockJsonResponse('payment', 'create-sepa'))
             ->and($this->calling($client)->request = $response)
-            ->and($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-            ->and($config->setHttpClient($client))
-            ->and($config->setDebug(false))
 
             ->if($sepa = new Stancer\Sepa)
             ->and($sepa->setBic('DEUTDEFF')) // Thx Wikipedia
@@ -1330,16 +1279,9 @@ class Payment extends Stancer\Tests\atoum
             ->and($config->setLogger($logger))
             ->and($logMessage = 'Payment of 1.00 eur with IBAN "2606" / BIC "ILADFRPP"')
 
-            ->and($json = json_encode($this->testedInstance))
-            ->and($options = [
-                'body' => $json,
-                'headers' => [
-                    'Authorization' => $config->getBasicAuthHeader(),
-                    'Content-Type' => 'application/json',
-                    'User-Agent' => $config->getDefaultUserAgent(),
-                ],
-                'timeout' => $config->getTimeout(),
-            ])
+            ->and($options = $this->mockRequestOptions($config, [
+                'body' => json_encode($this->testedInstance),
+            ]))
             ->and($location = $this->testedInstance->getUri())
             ->then
                 ->variable($this->testedInstance->getId())
@@ -1395,16 +1337,11 @@ class Payment extends Stancer\Tests\atoum
     public function testSend_authenticatedPayment()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-            ->and($config->setDebug(false))
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($config = $this->mockConfig($client))
 
-            ->if($client = new mock\Stancer\Http\Client)
-            ->and($response = new mock\Stancer\Http\Response(200))
-            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-card-auth.json'))
-            ->and($this->calling($response)->getBody = new Stancer\Http\Stream($body))
+            ->if($response = $this->mockJsonResponse('payment', 'create-card-auth'))
             ->and($this->calling($client)->request = $response)
-
-            ->and($config->setHttpClient($client))
 
             ->if($ip = $this->ipDataProvider(true))
             ->and($port = rand(1, 65535))
@@ -1459,15 +1396,9 @@ class Payment extends Stancer\Tests\atoum
                     'port' => $port,
                 ],
             ]))
-            ->and($options = [
+            ->and($options = $this->mockRequestOptions($config, [
                 'body' => $json,
-                'headers' => [
-                    'Authorization' => $config->getBasicAuthHeader(),
-                    'Content-Type' => 'application/json',
-                    'User-Agent' => $config->getDefaultUserAgent(),
-                ],
-                'timeout' => $config->getTimeout(),
-            ])
+            ]))
             ->and($location = $this->testedInstance->getUri())
 
             ->then
@@ -1551,16 +1482,11 @@ class Payment extends Stancer\Tests\atoum
     public function testSend_fullyCustomAuthenticatedPayment()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-            ->and($config->setDebug(false))
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($config = $this->mockConfig($client))
 
-            ->if($client = new mock\Stancer\Http\Client)
-            ->and($response = new mock\Stancer\Http\Response(200))
-            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-card-auth.json'))
-            ->and($this->calling($response)->getBody = new Stancer\Http\Stream($body))
+            ->if($response = $this->mockJsonResponse('payment', 'create-card-auth'))
             ->and($this->calling($client)->request = $response)
-
-            ->and($config->setHttpClient($client))
 
             ->if($amount = rand(10, 99999))
             ->and($currency = $this->cardCurrencyDataProvider(true))
@@ -1607,15 +1533,9 @@ class Payment extends Stancer\Tests\atoum
                     'port' => $port,
                 ],
             ]))
-            ->and($options = [
+            ->and($options = $this->mockRequestOptions($config, [
                 'body' => $json,
-                'headers' => [
-                    'Authorization' => $config->getBasicAuthHeader(),
-                    'Content-Type' => 'application/json',
-                    'User-Agent' => $config->getDefaultUserAgent(),
-                ],
-                'timeout' => $config->getTimeout(),
-            ])
+            ]))
             ->and($location = $this->testedInstance->getUri())
 
             ->then
@@ -1699,16 +1619,11 @@ class Payment extends Stancer\Tests\atoum
     public function testSend_withoutCardOrSepa()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-            ->and($config->setDebug(false))
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($config = $this->mockConfig($client))
 
-            ->if($client = new mock\Stancer\Http\Client)
-            ->and($response = new mock\Stancer\Http\Response(200))
-            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-no-method.json'))
-            ->and($this->calling($response)->getBody = new Stancer\Http\Stream($body))
+            ->if($response = $this->mockJsonResponse('payment', 'create-no-method'))
             ->and($this->calling($client)->request = $response)
-
-            ->and($config->setHttpClient($client))
 
             ->if($customer = new Stancer\Customer)
             ->and($customer->setName(uniqid()))
@@ -1729,16 +1644,9 @@ class Payment extends Stancer\Tests\atoum
             ->and($config->setLogger($logger))
             ->and($logMessage = 'Payment of 100.00 eur without payment method')
 
-            ->and($json = json_encode($this->testedInstance))
-            ->and($options = [
-                'body' => $json,
-                'headers' => [
-                    'Authorization' => $config->getBasicAuthHeader(),
-                    'Content-Type' => 'application/json',
-                    'User-Agent' => $config->getDefaultUserAgent(),
-                ],
-                'timeout' => $config->getTimeout(),
-            ])
+            ->and($options = $this->mockRequestOptions($config, [
+                'body' => json_encode($this->testedInstance),
+            ]))
             ->and($location = $this->testedInstance->getUri())
             ->then
                 ->variable($this->testedInstance->getId())
@@ -1790,16 +1698,11 @@ class Payment extends Stancer\Tests\atoum
     public function testSend_authenticationAndPaymentPage()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-            ->and($config->setDebug(false))
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($config = $this->mockConfig($client))
 
-            ->if($client = new mock\Stancer\Http\Client)
-            ->and($response = new mock\Stancer\Http\Response(200))
-            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-no-method-auth.json'))
-            ->and($this->calling($response)->getBody = new Stancer\Http\Stream($body))
+            ->if($response = $this->mockJsonResponse('payment', 'create-no-method-auth'))
             ->and($this->calling($client)->request = $response)
-
-            ->and($config->setHttpClient($client))
 
             ->if($amount = rand(100, 999999))
             ->and($currency = $this->cardCurrencyDataProvider(true))
@@ -1819,15 +1722,9 @@ class Payment extends Stancer\Tests\atoum
                 'currency' => strtolower($currency),
                 'description' => $description,
             ]))
-            ->and($options = [
+            ->and($options = $this->mockRequestOptions($config, [
                 'body' => $json,
-                'headers' => [
-                    'Authorization' => $config->getBasicAuthHeader(),
-                    'Content-Type' => 'application/json',
-                    'User-Agent' => $config->getDefaultUserAgent(),
-                ],
-                'timeout' => $config->getTimeout(),
-            ])
+            ]))
             ->and($location = $this->testedInstance->getUri())
             ->then
                 ->variable($this->testedInstance->getId())
@@ -1885,16 +1782,11 @@ class Payment extends Stancer\Tests\atoum
     public function testSend_status()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-            ->and($config->setDebug(false))
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($config = $this->mockConfig($client))
 
-            ->if($client = new mock\Stancer\Http\Client)
-            ->and($response = new mock\Stancer\Http\Response(200))
-            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-no-method.json'))
-            ->and($this->calling($response)->getBody = new Stancer\Http\Stream($body))
+            ->if($response = $this->mockJsonResponse('payment', 'create-no-method'))
             ->and($this->calling($client)->request = $response)
-
-            ->and($config->setHttpClient($client))
 
             ->if($customer = new Stancer\Customer)
             ->and($customer->setName(uniqid()))
@@ -1908,7 +1800,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
             ->and($card->setExpMonth(rand(1, 12)))
             ->and($card->setExpYear(rand(date('Y'), 3000)))
-            ->and($card->setNumber($number = '4111111111111111'))
+            ->and($card->setNumber('4111111111111111'))
 
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setAmount($amount))
@@ -1920,15 +1812,9 @@ class Payment extends Stancer\Tests\atoum
 
             ->if($status = Stancer\Payment\Status::AUTHORIZE)
 
-            ->and($options = [
+            ->and($options = $this->mockRequestOptions($config, [
                 'body' => json_encode(['status' => $status]),
-                'headers' => [
-                    'Authorization' => $config->getBasicAuthHeader(),
-                    'Content-Type' => 'application/json',
-                    'User-Agent' => $config->getDefaultUserAgent(),
-                ],
-                'timeout' => $config->getTimeout(),
-            ])
+            ]))
             ->and($location = $this->testedInstance->getUri())
             ->then
                 ->object($this->testedInstance->setStatus($status)->send())
@@ -1944,19 +1830,15 @@ class Payment extends Stancer\Tests\atoum
     public function testSend_device()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-            ->and($config->setDebug(false))
-            ->and($port = rand(1, 65535))
-            ->and($addr = $this->ipDataProvider(true))
-            ->and($url = 'https://www.example.org?' . uniqid())
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($config = $this->mockConfig($client))
 
-            ->if($client = new mock\Stancer\Http\Client)
-            ->and($response = new mock\Stancer\Http\Response(200))
-            ->and($body = file_get_contents(__DIR__ . '/fixtures/payment/create-card.json'))
-            ->and($this->calling($response)->getBody = new Stancer\Http\Stream($body))
+            ->if($response = $this->mockJsonResponse('payment', 'create-card'))
             ->and($this->calling($client)->request = $response)
 
-            ->and($config->setHttpClient($client))
+            ->if($port = rand(1, 65535))
+            ->and($addr = $this->ipDataProvider(true))
+            ->and($url = 'https://www.example.org?' . uniqid())
 
             ->if($this->function->getenv = false)
 
@@ -1965,7 +1847,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($card->setExpMonth(rand(1, 12)))
             ->and($card->setExpYear(rand(date('Y'), 3000)))
             ->and($card->setName(uniqid()))
-            ->and($card->setNumber($number = '4111111111111111'))
+            ->and($card->setNumber('4111111111111111'))
             ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
 
             ->if($customer = new Stancer\Customer)
@@ -1987,15 +1869,9 @@ class Payment extends Stancer\Tests\atoum
                     'port' => $port,
                 ],
             ])))
-            ->and($options = [
+            ->and($options = $this->mockRequestOptions($config, [
                 'body' => $json,
-                'headers' => [
-                    'Authorization' => $config->getBasicAuthHeader(),
-                    'Content-Type' => 'application/json',
-                    'User-Agent' => $config->getDefaultUserAgent(),
-                ],
-                'timeout' => $config->getTimeout(),
-            ])
+            ]))
             ->and($location = $this->testedInstance->getUri())
             ->then
                 ->assert('Must have an IP address in env')

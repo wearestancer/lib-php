@@ -42,7 +42,7 @@ class Sepa extends Stancer\Tests\atoum
             ->assert('With ID and with validation data')
                 ->given($client = new mock\Stancer\Http\Client)
                 ->and($response = new mock\Stancer\Http\Response(200))
-                ->and($body = file_get_contents(__DIR__ . '/fixtures/sepa/check/read.json'))
+                ->and($body = file_get_contents(__DIR__ . '/../fixtures/sepa/check/read.json'))
                 ->and($this->calling($response)->getBody = new Stancer\Http\Stream($body))
                 ->and($this->calling($client)->request = $response)
                 ->and($config->setHttpClient($client))
@@ -512,11 +512,11 @@ class Sepa extends Stancer\Tests\atoum
                 ->and($this->newTestedInstance($data))
 
                 ->if($checkResponse = new mock\Stancer\Http\Response(200))
-                ->and($body = file_get_contents(__DIR__ . '/fixtures/sepa/check/create.json'))
+                ->and($body = file_get_contents(__DIR__ . '/../fixtures/sepa/check/create.json'))
                 ->and($this->calling($checkResponse)->getBody = new Stancer\Http\Stream($body))
 
                 ->and($sepaResponse = new mock\Stancer\Http\Response(200))
-                ->and($body = file_get_contents(__DIR__ . '/fixtures/sepa/read.json'))
+                ->and($body = file_get_contents(__DIR__ . '/../fixtures/sepa/read.json'))
                 ->and($this->calling($sepaResponse)->getBody = new Stancer\Http\Stream($body))
 
                 ->if($client = new mock\Stancer\Http\Client)
@@ -601,11 +601,11 @@ class Sepa extends Stancer\Tests\atoum
                 ->and($this->newTestedInstance($id))
 
                 ->if($checkResponse = new mock\Stancer\Http\Response(200))
-                ->and($body = file_get_contents(__DIR__ . '/fixtures/sepa/check/read.json'))
+                ->and($body = file_get_contents(__DIR__ . '/../fixtures/sepa/check/read.json'))
                 ->and($this->calling($checkResponse)->getBody = new Stancer\Http\Stream($body))
 
                 ->and($sepaResponse = new mock\Stancer\Http\Response(200))
-                ->and($body = file_get_contents(__DIR__ . '/fixtures/sepa/read.json'))
+                ->and($body = file_get_contents(__DIR__ . '/../fixtures/sepa/read.json'))
                 ->and($this->calling($sepaResponse)->getBody = new Stancer\Http\Stream($body))
 
                 ->if($client = new mock\Stancer\Http\Client)
