@@ -349,7 +349,7 @@ class Client extends Stancer\Tests\atoum
     public function testRequest()
     {
         $this
-            ->given($config = Stancer\Config::init([]))
+            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
             ->assert('Basic request')
                 ->given($this->newTestedInstance)

@@ -4,7 +4,6 @@ namespace Stancer\tests\unit;
 
 use DateTime;
 use Stancer;
-use Stancer\Refund as testedClass;
 
 class Refund extends Stancer\Tests\atoum
 {
@@ -14,6 +13,7 @@ class Refund extends Stancer\Tests\atoum
             ->currentlyTestedClass()
                 ->isSubclassOf(Stancer\Core\AbstractObject::class)
                 ->hasTrait(Stancer\Traits\AmountTrait::class)
+                ->hasTrait(Stancer\Traits\SearchTrait::class)
         ;
     }
 

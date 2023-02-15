@@ -30,15 +30,12 @@ class Refund extends Stancer\Tests\atoum
         $this
             ->assert('With amount')
                 ->given($client = new mock\Stancer\Http\Client)
-                ->and($response = new mock\Stancer\Http\Response(200))
-                ->and($this->calling($client)->request = $response)
-                ->and($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-                ->and($config->setHttpClient($client))
-                ->and($config->setDebug(false))
+                ->and($config = $this->mockConfig($client))
 
+                ->if($response = new mock\Stancer\Http\Response(200))
+                ->and($this->calling($client)->request = $response)
                 ->and($this->calling($response)->getBody[] = new Stancer\Http\Stream('{}'))
-                ->and($body = file_get_contents(__DIR__ . '/../fixtures/refund/read.json'))
-                ->and($this->calling($response)->getBody[] = new Stancer\Http\Stream($body))
+                ->and($this->calling($response)->getBody[] = new Stancer\Http\Stream($this->getFixture('refund', 'read')))
 
                 ->if($paym = 'paym_' . bin2hex(random_bytes(12)))
                 ->and($payment = new Stancer\Payment($paym))
@@ -52,16 +49,11 @@ class Refund extends Stancer\Tests\atoum
 
                 ->and($location = $this->testedInstance->getUri())
 
-                ->if($options = [])
-                ->and($options['headers'] = [
-                    'Authorization' => $config->getBasicAuthHeader(),
-                    'Content-Type' => 'application/json',
-                    'User-Agent' => $config->getDefaultUserAgent(),
-                ])
-                ->and($options['timeout'] = $config->getTimeout())
-                ->and($options['body'] = json_encode([
-                    'amount' => $amount,
-                    'payment' => $paym,
+                ->if($options = $this->mockRequestOptions($config, [
+                    'body' => json_encode([
+                        'amount' => $amount,
+                        'payment' => $paym,
+                    ]),
                 ]))
 
                 ->then
@@ -88,15 +80,12 @@ class Refund extends Stancer\Tests\atoum
 
             ->assert('Without amount')
                 ->given($client = new mock\Stancer\Http\Client)
-                ->and($response = new mock\Stancer\Http\Response(200))
-                ->and($this->calling($client)->request = $response)
-                ->and($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-                ->and($config->setHttpClient($client))
-                ->and($config->setDebug(false))
+                ->and($config = $this->mockConfig($client))
 
+                ->if($response = new mock\Stancer\Http\Response(200))
+                ->and($this->calling($client)->request = $response)
                 ->and($this->calling($response)->getBody[] = new Stancer\Http\Stream('{}'))
-                ->and($body = file_get_contents(__DIR__ . '/../fixtures/refund/read.json'))
-                ->and($this->calling($response)->getBody[] = new Stancer\Http\Stream($body))
+                ->and($this->calling($response)->getBody[] = new Stancer\Http\Stream($this->getFixture('refund', 'read')))
 
                 ->if($paym = 'paym_' . bin2hex(random_bytes(12)))
                 ->and($payment = new Stancer\Payment($paym))
@@ -107,15 +96,8 @@ class Refund extends Stancer\Tests\atoum
 
                 ->and($location = $this->testedInstance->getUri())
 
-                ->if($options = [])
-                ->and($options['headers'] = [
-                    'Authorization' => $config->getBasicAuthHeader(),
-                    'Content-Type' => 'application/json',
-                    'User-Agent' => $config->getDefaultUserAgent(),
-                ])
-                ->and($options['timeout'] = $config->getTimeout())
-                ->and($options['body'] = json_encode([
-                    'payment' => $paym,
+                ->if($options = $this->mockRequestOptions($config, [
+                    'body' => json_encode(['payment' => $paym]),
                 ]))
 
                 ->then

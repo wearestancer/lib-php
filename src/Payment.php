@@ -709,27 +709,6 @@ class Payment extends Stancer\Core\AbstractObject
     }
 
     /**
-     * Set allowed methods.
-     *
-     * @param string[] $methods New methods.
-     * @return self
-     * @throws Stancer\Exceptions\InvalidArgumentException When currency is EUR and trying to set "sepa" method.
-     */
-    public function setMethodsAllowed(array $methods): self
-    {
-        $currency = $this->getCurrency();
-        $method = $this->getMethod();
-
-        if (!$method && $currency && $methods && in_array('sepa', $methods, true) && $currency !== 'eur') {
-            $message = sprintf('You can not use "%s" method with "%s" currency.', 'sepa', $currency);
-
-            throw new Stancer\Exceptions\InvalidArgumentException($message);
-        }
-
-        return parent::setMethodsAllowed($methods);
-    }
-
-    /**
      * Set the currency.
      *
      * @param string $currency The currency.
@@ -748,6 +727,27 @@ class Payment extends Stancer\Core\AbstractObject
         }
 
         return parent::setCurrency($currency);
+    }
+
+    /**
+     * Set allowed methods.
+     *
+     * @param string[] $methods New methods.
+     * @return self
+     * @throws Stancer\Exceptions\InvalidArgumentException When currency is EUR and trying to set "sepa" method.
+     */
+    public function setMethodsAllowed(array $methods): self
+    {
+        $currency = $this->getCurrency();
+        $method = $this->getMethod();
+
+        if (!$method && $currency && $methods && in_array('sepa', $methods, true) && $currency !== 'eur') {
+            $message = sprintf('You can not use "%s" method with "%s" currency.', 'sepa', $currency);
+
+            throw new Stancer\Exceptions\InvalidArgumentException($message);
+        }
+
+        return parent::setMethodsAllowed($methods);
     }
 
     /**

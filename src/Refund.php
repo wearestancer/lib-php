@@ -31,6 +31,7 @@ use Stancer;
 class Refund extends Stancer\Core\AbstractObject
 {
     use Stancer\Traits\AmountTrait;
+    use Stancer\Traits\SearchTrait;
 
     /** @var string */
     protected $endpoint = 'refunds';

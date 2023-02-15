@@ -5,7 +5,6 @@ namespace Stancer\tests\unit\Core;
 use Exception;
 use GuzzleHttp;
 use Stancer;
-use Stancer\Core\Request as testedClass;
 use mock;
 
 class Request extends Stancer\Tests\atoum
@@ -18,7 +17,8 @@ class Request extends Stancer\Tests\atoum
     {
         $this
             ->assert('With card')
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->given($client = new mock\Stancer\Http\Client)
+                ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
                 ->if($number = $this->cardNumberDataProvider(true))
@@ -28,11 +28,8 @@ class Request extends Stancer\Tests\atoum
 
                 ->if($request = new Stancer\Http\Request($this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
                 ->and($response = new mock\Stancer\Http\Response(200))
-
-                ->if($client = new mock\Stancer\Http\Client)
                 ->and($this->calling($client)->getLastRequest = $request)
                 ->and($this->calling($client)->getLastResponse = $response)
-                ->and($config->setHttpClient($client))
                 ->then
                     ->object($this->invoke($this->newTestedInstance)->addCallWithDefaultClient($payment))
                         ->isTestedInstance
@@ -62,7 +59,8 @@ class Request extends Stancer\Tests\atoum
                         ->isNotIdenticalTo($response) // Returns clone
 
             ->assert('With SEPA')
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->given($client = new mock\Stancer\Http\Client)
+                ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
                 ->if($iban = $this->ibanDataProvider(true))
@@ -72,11 +70,8 @@ class Request extends Stancer\Tests\atoum
 
                 ->if($request = new Stancer\Http\Request($this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
                 ->and($response = new mock\Stancer\Http\Response(200))
-
-                ->if($client = new mock\Stancer\Http\Client)
                 ->and($this->calling($client)->getLastRequest = $request)
                 ->and($this->calling($client)->getLastResponse = $response)
-                ->and($config->setHttpClient($client))
                 ->then
                     ->object($this->invoke($this->newTestedInstance)->addCallWithDefaultClient($payment))
                         ->isTestedInstance
@@ -106,7 +101,8 @@ class Request extends Stancer\Tests\atoum
                         ->isNotIdenticalTo($response) // Returns clone
 
             ->assert('With card but without number')
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->given($client = new mock\Stancer\Http\Client)
+                ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
                 ->if($id = 'card_' . bin2hex(random_bytes(12)))
@@ -115,11 +111,8 @@ class Request extends Stancer\Tests\atoum
 
                 ->if($request = new Stancer\Http\Request($this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
                 ->and($response = new mock\Stancer\Http\Response(200))
-
-                ->if($client = new mock\Stancer\Http\Client)
                 ->and($this->calling($client)->getLastRequest = $request)
                 ->and($this->calling($client)->getLastResponse = $response)
-                ->and($config->setHttpClient($client))
                 ->then
                     ->when(function () use ($payment) {
                         $this
@@ -154,7 +147,8 @@ class Request extends Stancer\Tests\atoum
                         ->isNotIdenticalTo($response) // Returns clone
 
             ->assert('With SEPA but without IBAN')
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->given($client = new mock\Stancer\Http\Client)
+                ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
                 ->if($id = 'sepa_' . bin2hex(random_bytes(12)))
@@ -163,11 +157,8 @@ class Request extends Stancer\Tests\atoum
 
                 ->if($request = new Stancer\Http\Request($this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
                 ->and($response = new mock\Stancer\Http\Response(200))
-
-                ->if($client = new mock\Stancer\Http\Client)
                 ->and($this->calling($client)->getLastRequest = $request)
                 ->and($this->calling($client)->getLastResponse = $response)
-                ->and($config->setHttpClient($client))
                 ->then
                     ->when(function () use ($payment) {
                         $this
@@ -201,9 +192,9 @@ class Request extends Stancer\Tests\atoum
                         ->isInstanceOf(Stancer\Http\Response::class)
                         ->isNotIdenticalTo($response) // Returns clone
 
-            ->assert('With card')
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-                ->and($config->setDebug(false))
+            ->assert('Without debug mode')
+                ->given($client = new mock\Stancer\Http\Client)
+                ->and($config = $this->mockConfig($client))
 
                 ->if($number = $this->cardNumberDataProvider(true))
                 ->and($card = new Stancer\Card(['number' => $number]))
@@ -211,11 +202,8 @@ class Request extends Stancer\Tests\atoum
 
                 ->if($request = new Stancer\Http\Request($this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
                 ->and($response = new mock\Stancer\Http\Response(200))
-
-                ->if($client = new mock\Stancer\Http\Client)
                 ->and($this->calling($client)->getLastRequest = $request)
                 ->and($this->calling($client)->getLastResponse = $response)
-                ->and($config->setHttpClient($client))
                 ->then
                     ->object($this->invoke($this->newTestedInstance)->addCallWithDefaultClient($payment))
                         ->isTestedInstance
@@ -229,7 +217,8 @@ class Request extends Stancer\Tests\atoum
     {
         $this
             ->assert('With card')
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->given($client = new mock\GuzzleHttp\Client)
+                ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
                 ->if($number = $this->cardNumberDataProvider(true))
@@ -239,9 +228,6 @@ class Request extends Stancer\Tests\atoum
 
                 ->if($request = new GuzzleHttp\Psr7\Request((string) $this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
                 ->and($response = new mock\GuzzleHttp\Psr7\Response)
-
-                ->if($client = new mock\GuzzleHttp\Client)
-                ->and($config->setHttpClient($client))
                 ->then
                     ->object($this->invoke($this->newTestedInstance)->addCallWithOtherClient($request, $response, $payment))
                         ->isTestedInstance
@@ -268,7 +254,8 @@ class Request extends Stancer\Tests\atoum
                         ->isIdenticalTo($response)
 
             ->assert('With SEPA')
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->given($client = new mock\GuzzleHttp\Client)
+                ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
                 ->if($iban = $this->ibanDataProvider(true))
@@ -278,9 +265,6 @@ class Request extends Stancer\Tests\atoum
 
                 ->if($request = new GuzzleHttp\Psr7\Request((string) $this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
                 ->and($response = new mock\GuzzleHttp\Psr7\Response)
-
-                ->if($client = new mock\GuzzleHttp\Client)
-                ->and($config->setHttpClient($client))
                 ->then
                     ->object($this->invoke($this->newTestedInstance)->addCallWithOtherClient($request, $response, $payment))
                         ->isTestedInstance
@@ -307,7 +291,8 @@ class Request extends Stancer\Tests\atoum
                         ->isIdenticalTo($response)
 
             ->assert('With card but without number')
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->given($client = new mock\GuzzleHttp\Client)
+                ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
                 ->if($id = 'card_' . bin2hex(random_bytes(12)))
@@ -316,9 +301,6 @@ class Request extends Stancer\Tests\atoum
 
                 ->if($request = new GuzzleHttp\Psr7\Request((string) $this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
                 ->and($response = new mock\GuzzleHttp\Psr7\Response)
-
-                ->if($client = new mock\GuzzleHttp\Client)
-                ->and($config->setHttpClient($client))
                 ->then
                     ->when(function () use ($request, $response, $payment) {
                         $this
@@ -350,7 +332,8 @@ class Request extends Stancer\Tests\atoum
                         ->isIdenticalTo($response)
 
             ->assert('With SEPA but without IBAN')
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->given($client = new mock\GuzzleHttp\Client)
+                ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
                 ->if($id = 'sepa_' . bin2hex(random_bytes(12)))
@@ -359,9 +342,6 @@ class Request extends Stancer\Tests\atoum
 
                 ->if($request = new GuzzleHttp\Psr7\Request((string) $this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
                 ->and($response = new mock\GuzzleHttp\Psr7\Response)
-
-                ->if($client = new mock\GuzzleHttp\Client)
-                ->and($config->setHttpClient($client))
                 ->then
                     ->when(function () use ($request, $response, $payment) {
                         $this
@@ -393,8 +373,8 @@ class Request extends Stancer\Tests\atoum
                         ->isIdenticalTo($response)
 
             ->assert('Without debug mode')
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-                ->and($config->setDebug(false))
+                ->given($client = new mock\GuzzleHttp\Client)
+                ->and($config = $this->mockConfig($client))
 
                 ->if($number = $this->cardNumberDataProvider(true))
                 ->and($card = new Stancer\Card(['number' => $number]))
@@ -402,9 +382,6 @@ class Request extends Stancer\Tests\atoum
 
                 ->if($request = new GuzzleHttp\Psr7\Request((string) $this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
                 ->and($response = new mock\GuzzleHttp\Psr7\Response)
-
-                ->if($client = new mock\GuzzleHttp\Client)
-                ->and($config->setHttpClient($client))
                 ->then
                     ->object($this->invoke($this->newTestedInstance)->addCallWithOtherClient($request, $response, $payment))
                         ->isTestedInstance
@@ -417,16 +394,13 @@ class Request extends Stancer\Tests\atoum
     public function testRequest_workingWithDefaultClient()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-            ->and($config->setDebug(false))
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($config = $this->mockConfig($client))
 
-            ->if($client = new mock\Stancer\Http\Client)
-            ->and($response = new mock\Stancer\Http\Response(200))
+            ->if($response = new mock\Stancer\Http\Response(200))
             ->and($body = uniqid())
             ->and($this->calling($response)->getBody = new Stancer\Http\Stream($body))
             ->and($this->calling($client)->request = $response)
-
-            ->and($config->setHttpClient($client))
 
             ->if($this->newTestedInstance)
             ->and($method = new Stancer\Http\Verb\Get)
@@ -434,7 +408,6 @@ class Request extends Stancer\Tests\atoum
 
             ->if($logger = new mock\Stancer\Core\Logger)
             ->and($config->setLogger($logger))
-
             ->then
                 ->assert('No query params')
                     ->if($debugMessage = 'API call : ' . $method . ' ' . $object->getUri())
@@ -480,8 +453,7 @@ class Request extends Stancer\Tests\atoum
             ->and($config->setDebug(false))
 
             ->assert('With bad credential')
-                ->given($content = file_get_contents(__DIR__ . '/../fixtures/auth/not-authorized.json'))
-                ->and($this->function->curl_exec = $content)
+                ->given($this->function->curl_exec = $this->getFixture('auth', 'not-authorized'))
                 ->and($this->function->curl_getinfo = 401)
                 ->and($this->function->curl_errno = rand(100, 200))
 
@@ -548,17 +520,13 @@ class Request extends Stancer\Tests\atoum
     public function testRequest_withGuzzle()
     {
         $this
-            ->if($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-            ->and($config->setDebug(false))
-
             ->assert('Use test of client')
                 ->given($client = new mock\GuzzleHttp\Client)
+                ->and($config = $this->mockConfig($client))
                 ->and($response = new mock\GuzzleHttp\Psr7\Response)
                 ->and($body = uniqid())
                 ->and($this->calling($response)->getBody = new Stancer\Http\Stream($body))
                 ->and($this->calling($client)->request = $response)
-
-                ->and($config->setHttpClient($client))
 
                 ->if($this->newTestedInstance)
                 ->and($method = new Stancer\Http\Verb\Get)
@@ -583,12 +551,11 @@ class Request extends Stancer\Tests\atoum
 
             ->assert('With query parameters')
                 ->given($client = new mock\GuzzleHttp\Client)
+                ->and($config = $this->mockConfig($client))
                 ->and($response = new mock\GuzzleHttp\Psr7\Response)
                 ->and($body = uniqid())
                 ->and($this->calling($response)->getBody = new Stancer\Http\Stream($body))
                 ->and($this->calling($client)->request = $response)
-
-                ->and($config->setHttpClient($client))
 
                 ->if($this->newTestedInstance)
                 ->and($method = new Stancer\Http\Verb\Get)
@@ -619,8 +586,7 @@ class Request extends Stancer\Tests\atoum
                         ->call('notice')->never
 
             ->assert('With bad credential')
-                ->given($content = file_get_contents(__DIR__ . '/../fixtures/auth/not-authorized.json'))
-                ->and($response = new GuzzleHttp\Psr7\Response(401, [], $content))
+                ->given($response = new GuzzleHttp\Psr7\Response(401, [], $this->getFixture('auth', 'not-authorized')))
                 ->and($mock = new GuzzleHttp\Handler\MockHandler([$response]))
                 ->and($handler = GuzzleHttp\HandlerStack::create($mock))
                 ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
@@ -764,8 +730,7 @@ class Request extends Stancer\Tests\atoum
                             ->isIdenticalTo($body['error']['message'])
 
             ->assert('Every Guzzle exceptions (except the ones below)')
-                ->given($content = file_get_contents(__DIR__ . '/../fixtures/auth/not-authorized.json'))
-                ->and($exceptionMessage = uniqid())
+                ->given($exceptionMessage = uniqid())
                 ->and($response = new Exception($exceptionMessage))
                 ->and($mock = new GuzzleHttp\Handler\MockHandler([$response]))
                 ->and($handler = GuzzleHttp\HandlerStack::create($mock))

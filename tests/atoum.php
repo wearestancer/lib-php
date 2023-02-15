@@ -5,6 +5,8 @@ namespace Stancer\Tests;
 use atoum\atoum as base;
 use Stancer;
 use Faker;
+use Psr;
+use mock;
 
 class atoum extends base\test
 {
@@ -30,6 +32,16 @@ class atoum extends base\test
     public function fake(): Faker\Generator
     {
         return Faker\Factory::create();
+    }
+
+    public function getFixture(string $dir, string $file): string
+    {
+        return file_get_contents(__DIR__ . '/fixtures/' . $dir . '/' . $file . '.json');
+    }
+
+    public function getFixtureData(string $dir, string $file): array
+    {
+        return json_decode($this->getFixture($dir, $file), true);
     }
 
     public function getRandomDate(int $min, int $max = null): string
@@ -93,5 +105,71 @@ class atoum extends base\test
         $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
 
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
+    }
+
+    /**
+     * @param Psr\Http\Client\ClientInterface|mock\Psr\Http\Client\ClientInterface $client
+     */
+    public function mockConfig($client): Stancer\Config
+    {
+        $config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]);
+        $config->setHttpClient($client);
+        $config->setDebug(false);
+
+        return $config;
+    }
+
+    public function mockEmptyJsonResponse(
+        Psr\Http\Message\ResponseInterface $response = null
+    ): Psr\Http\Message\ResponseInterface
+    {
+        return $this->mockResponse('{}', $response);
+    }
+
+    public function mockJsonResponse(
+        string $dir,
+        string $file,
+        Psr\Http\Message\ResponseInterface $response = null
+    ): Psr\Http\Message\ResponseInterface
+    {
+        return $this->mockResponse($this->getFixture($dir, $file), $response);
+    }
+
+    public function mockJsonResponses(
+        array $files,
+        Psr\Http\Message\ResponseInterface $response = null
+    ): Psr\Http\Message\ResponseInterface
+    {
+        $resp = $response ?? new mock\Stancer\Http\Response(200);
+
+        foreach ($files as $file) {
+            $this->calling($resp)->getBody[] = new Stancer\Http\Stream($this->getFixture(...$file));
+        }
+
+        return $resp;
+    }
+
+    public function mockResponse(
+        string $body,
+        Psr\Http\Message\ResponseInterface $response = null
+    ): Psr\Http\Message\ResponseInterface
+    {
+        $resp = $response ?? new mock\Stancer\Http\Response(200);
+
+        $this->calling($resp)->getBody = new Stancer\Http\Stream($body);
+
+        return $resp;
+    }
+
+    public function mockRequestOptions(Stancer\Config $config, array $more = []): array
+    {
+        return array_merge([
+            'headers' => [
+                'Authorization' => $config->getBasicAuthHeader(),
+                'Content-Type' => 'application/json',
+                'User-Agent' => $config->getDefaultUserAgent(),
+            ],
+            'timeout' => $config->getTimeout(),
+        ], $more);
     }
 }

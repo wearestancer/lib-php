@@ -8,6 +8,11 @@ parameters:
     - '/^Only booleans are allowed in/'
     - '/^Short ternary operator is not allowed/'
 
+    - message: '/has parameter \$terms with no value type specified in iterable type DatePeriod\.$/'
+      paths:
+        - src/Payout/Details/Inner.php
+        - src/Traits/SearchTrait.php
+
     - message: '/^Right side of && is always true/'
       paths:
         - src/Exceptions/Exception.php
@@ -18,8 +23,8 @@ parameters:
         - src/Config.php
         - src/Core/AbstractObject.php
         - src/Http/Uri.php
-        - src/Traits/SearchTrait.php
         - src/Payment.php
+        - src/Traits/SearchTrait.php
 
     - message: '/^Variable (property access|method call)/'
       paths:
@@ -93,6 +98,30 @@ parameters:
         source: string|array{
           id?: string,
         },
+      }
+    '''
+
+    PayoutResponse: '''
+      array{
+        amount: integer,
+        created: integer,
+        currency: string,
+        date_bank?: integer,
+        date_paym: integer,
+        fees?: integer,
+        id: string,
+        live_mode: bool,
+        payments?: array{
+          amount: integer,
+        },
+        refunds?: array{
+          amount: integer,
+        },
+        disputes?: array{
+          amount: integer,
+        },
+        statement_description: string,
+        status: string,
       }
     '''
 

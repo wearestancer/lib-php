@@ -3,10 +3,6 @@
 namespace Stancer\tests\unit;
 
 use DateTime;
-use GuzzleHttp\Client;
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
 use Stancer;
 use Stancer\Customer as testedClass;
 use mock;
@@ -60,29 +56,20 @@ class Customer extends Stancer\Tests\atoum
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client)
-            ->and($response = new mock\GuzzleHttp\Psr7\Response)
-            ->and($body = file_get_contents(__DIR__ . '/fixtures/customers/create.json'))
-            ->and($this->calling($response)->getBody = new Stancer\Http\Stream($body))
+            ->and($response = $this->mockJsonResponse('customers', 'create', new mock\GuzzleHttp\Psr7\Response))
             ->and($this->calling($client)->request = $response)
-            ->and($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-            ->and($config->setHttpClient($client))
-            ->and($config->setDebug(false))
+
+            ->and($config = $this->mockConfig($client))
 
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setEmail(uniqid()))
             ->and($this->testedInstance->setMobile(uniqid()))
             ->and($this->testedInstance->setName(uniqid()))
 
-            ->and($json = json_encode($this->testedInstance))
-            ->and($options = [
-                'body' => $json,
-                'headers' => [
-                    'Authorization' => $config->getBasicAuthHeader(),
-                    'Content-Type' => 'application/json',
-                    'User-Agent' => $config->getDefaultUserAgent(),
-                ],
-                'timeout' => $config->getTimeout(),
-            ])
+            ->and($options = $this->mockRequestOptions($config, [
+                'body' => json_encode($this->testedInstance),
+            ]))
+
             ->and($location = $this->testedInstance->getUri())
             ->then
                 ->variable($this->testedInstance->getId())
@@ -163,30 +150,20 @@ class Customer extends Stancer\Tests\atoum
     public function testSend_forUpdate()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-            ->and($client = new mock\Stancer\Http\Client)
-            ->and($config->setHttpClient($client))
-            ->and($config->setDebug(false))
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($config = $this->mockConfig($client))
 
             ->then
                 ->assert('Modify a fresh and not populated instance, will send only known data')
-                    ->if($response = new mock\Stancer\Http\Response(200))
-                    ->and($this->calling($response)->getBody = new Stancer\Http\Stream('{}'))
-                    ->and($this->calling($client)->request = $response)
+                    ->if($this->calling($client)->request = $this->mockEmptyJsonResponse())
 
                     ->if($this->newTestedInstance(uniqid()))
                     ->and($name = uniqid())
                     ->and($this->testedInstance->setName($name))
 
-                    ->and($options = [
+                    ->and($options = $this->mockRequestOptions($config, [
                         'body' => json_encode(['name' => $name]),
-                        'headers' => [
-                            'Authorization' => $config->getBasicAuthHeader(),
-                            'Content-Type' => 'application/json',
-                            'User-Agent' => $config->getDefaultUserAgent(),
-                        ],
-                        'timeout' => $config->getTimeout(),
-                    ])
+                    ]))
 
                     ->then
                         ->object($this->testedInstance->send())
@@ -199,7 +176,7 @@ class Customer extends Stancer\Tests\atoum
 
                 ->assert('Modify a populated instance will send everything known')
                     ->if($response = new mock\Stancer\Http\Response(200))
-                    ->and($body = file_get_contents(__DIR__ . '/fixtures/customers/read.json'))
+                    ->and($body = $this->getFixture('customers', 'read'))
                     ->and($this->calling($response)->getBody[] = new Stancer\Http\Stream($body)) // default response
                     ->and($this->calling($response)->getBody[2] = new Stancer\Http\Stream('{}'))
                     ->and($this->calling($client)->request = $response)
@@ -208,17 +185,9 @@ class Customer extends Stancer\Tests\atoum
                     ->and($name = str_rot13($this->testedInstance->getName()))
                     ->and($this->testedInstance->setName($name))
 
-                    ->and($body = json_decode($body, true))
-
-                    ->and($options = [
+                    ->and($options = $this->mockRequestOptions($config, [
                         'body' => json_encode(['name' => $name]),
-                        'headers' => [
-                            'Authorization' => $config->getBasicAuthHeader(),
-                            'Content-Type' => 'application/json',
-                            'User-Agent' => $config->getDefaultUserAgent(),
-                        ],
-                        'timeout' => $config->getTimeout(),
-                    ])
+                    ]))
 
                     ->then
                         ->object($this->testedInstance->send())
