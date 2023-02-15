@@ -2,7 +2,7 @@
 
 ## Requirement
 
-We only support current PHP version, so this library needs at least PHP 7.1.
+We only support current PHP version, so this library needs at least PHP 7.4.
 
 
 ## Installation
