@@ -1422,13 +1422,13 @@ class Payment extends Stancer\Tests\atoum
                 return null;
             })
 
-            ->if($amount = rand(10, 99999))
+            ->if($amount = rand(50, 99999))
             ->and($currency = $this->cardCurrencyDataProvider(true))
             ->and($description = uniqid())
             ->and($url = 'https://www.example.org?' . uniqid())
 
             ->if($card = new Stancer\Card)
-            ->and($card->setCvc(substr(uniqid(), 0, 3)))
+            ->and($card->setCvc((string) rand(100, 999)))
             ->and($card->setExpMonth(rand(1, 12)))
             ->and($card->setExpYear(rand(date('Y'), 3000)))
             ->and($card->setNumber($number = '5555555555554444'))

@@ -63,11 +63,11 @@ class Helper
      */
     public static function integerToPercentage(?int $value): ?float
     {
-        if ($value) {
-            return $value / 100;
+        if (is_null($value)) {
+            return $value;
         }
 
-        return $value;
+        return $value / 100;
     }
 
     /**

@@ -106,7 +106,7 @@ class Check extends Stancer\Tests\atoum
                     ->message
                         ->isIdenticalTo('You are not allowed to modify "scoreName".')
 
-            ->if($score = rand(1, 100))
+            ->if($score = rand(0, 100))
             ->and($this->testedInstance->hydrate(['scoreName' => $score]))
             ->then
                 ->float($this->testedInstance->getScoreName())
@@ -114,6 +114,22 @@ class Check extends Stancer\Tests\atoum
 
                 ->float($this->testedInstance->scoreName)
                     ->isIdenticalTo($score / 100)
+
+            ->if($this->testedInstance->hydrate(['scoreName' => 1]))
+            ->then
+                ->float($this->testedInstance->getScoreName())
+                    ->isIdenticalTo(0.01)
+
+                ->float($this->testedInstance->scoreName)
+                    ->isIdenticalTo(0.01)
+
+            ->if($this->testedInstance->hydrate(['scoreName' => 100]))
+            ->then
+                ->float($this->testedInstance->getScoreName())
+                    ->isIdenticalTo((float) 1)
+
+                ->float($this->testedInstance->scoreName)
+                    ->isIdenticalTo((float) 1)
         ;
     }
 

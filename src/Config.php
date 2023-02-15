@@ -17,6 +17,9 @@ class Config
     public const TEST_MODE = 'test';
     public const VERSION = '1.0.1';
 
+    /** @var non-empty-array<string|null>[] */
+    protected $app = [];
+
     /** @var Stancer\Core\Request\Call[] */
     protected $calls = [];
 
@@ -70,6 +73,23 @@ class Config
     public function __construct(array $keys)
     {
         $this->setKeys($keys);
+    }
+
+    /**
+     * Define application data (name and version).
+     *
+     * @param string $name Application name.
+     * @param string $version Application version.
+     * @return self
+     */
+    public function addAppData(string $name, string $version = null): self
+    {
+        $this->app[] = [
+            $name,
+            $version,
+        ];
+
+        return $this;
     }
 
     /**
@@ -136,13 +156,7 @@ class Config
      */
     public function getDefaultUserAgent(): string
     {
-        $params = [
-            static::VERSION,
-            PHP_OS,
-            php_uname('m'),
-            php_uname('r'),
-            PHP_VERSION,
-        ];
+        $params = [];
         $client = $this->getHttpClient();
 
         if ($client instanceof Stancer\Http\Client) {
@@ -153,14 +167,26 @@ class Config
                 $version = $curl['version'];
             }
 
-            array_unshift($params, 'curl/' . $version);
+            $params[] = 'curl/' . $version;
         }
 
         if ($client instanceof GuzzleHttp\ClientInterface) {
-            array_unshift($params, 'GuzzleHttp');
+            $params[] = 'GuzzleHttp';
         }
 
-        return vsprintf('%s libstancer-php/%s (%s %s %s; php %s)', $params);
+        $params[] = 'libstancer-php/' . static::VERSION;
+
+        foreach ($this->app as $app) {
+            if (!$app[1]) {
+                $params[] = $app[0];
+            } else {
+                $params[] = join('/', $app);
+            }
+        }
+
+        $params[] = sprintf('(%s %s %s; php %s)', PHP_OS, php_uname('m'), php_uname('r'), PHP_VERSION);
+
+        return join(' ', $params);
     }
 
     /**
@@ -412,6 +438,18 @@ class Config
     public function isTestMode(): bool
     {
         return $this->getMode() === static::TEST_MODE;
+    }
+
+    /**
+     * Reset app data.
+     *
+     * @return $this
+     */
+    public function resetAppData(): self
+    {
+        $this->app = [];
+
+        return $this;
     }
 
     /**

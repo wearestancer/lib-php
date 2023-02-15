@@ -31,6 +31,62 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    public function testAddAppData()
+    {
+        $this
+            ->given($name1 = uniqid())
+            ->and($version = uniqid())
+            ->and($name2 = uniqid())
+
+            ->and($agent0 = vsprintf('libstancer-php/%s (%s %s %s; php %s)', [
+                testedClass::VERSION,
+                PHP_OS,
+                php_uname('m'),
+                php_uname('r'),
+                PHP_VERSION,
+            ]))
+            ->and($agent1 = vsprintf('libstancer-php/%s %s/%s (%s %s %s; php %s)', [
+                testedClass::VERSION,
+                $name1,
+                $version,
+                PHP_OS,
+                php_uname('m'),
+                php_uname('r'),
+                PHP_VERSION,
+            ]))
+            ->and($agent2 = vsprintf('libstancer-php/%s %s/%s %s (%s %s %s; php %s)', [
+                testedClass::VERSION,
+                $name1,
+                $version,
+                $name2,
+                PHP_OS,
+                php_uname('m'),
+                php_uname('r'),
+                PHP_VERSION,
+            ]))
+
+            ->if($this->newTestedInstance([]))
+            ->then
+                ->object($this->testedInstance->addAppData($name1, $version))
+                    ->isTestedInstance
+
+                ->string($this->testedInstance->getDefaultUserAgent())
+                    ->contains($agent1)
+
+                ->object($this->testedInstance->addAppData($name2))
+                    ->isTestedInstance
+
+                ->string($this->testedInstance->getDefaultUserAgent())
+                    ->contains($agent2)
+
+                ->object($this->testedInstance->resetAppData())
+                    ->isTestedInstance
+
+                ->string($this->testedInstance->getDefaultUserAgent())
+                    ->contains($agent0)
+        ;
+    }
+
     public function testGetBasicAuthHeader()
     {
         $this

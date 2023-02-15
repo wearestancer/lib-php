@@ -61,7 +61,7 @@ class Stream extends Stancer\Tests\atoum
 
             ->assert('From a position')
                 ->if($this->newTestedInstance($content))
-                ->and($offset = rand(0, $len - 5))
+                ->and($offset = rand(1, $len - 5))
                 ->and($this->testedInstance->seek($offset))
                 ->then
                     ->integer($this->testedInstance->tell())
