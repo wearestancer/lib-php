@@ -1907,7 +1907,14 @@ class StubObject extends Stancer\Tests\atoum
                 ->and($this->testedInstance->setInteger1($integer1))
                 ->then
                     ->object($this->testedInstance->populate())
-                    ->object($this->testedInstance->send())
+                        ->isTestedInstance
+
+                    ->exception(function () {
+                        $this->testedInstance->send();
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
+                        ->message
+                            ->isIdenticalTo('The object you tried to send is empty.')
 
                     ->mock($client)
                         ->call('request')
