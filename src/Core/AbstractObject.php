@@ -869,7 +869,7 @@ abstract class AbstractObject implements JsonSerializable
     public function send(): self
     {
         if ($this->isNotModified()) {
-            return $this;
+            throw new Stancer\Exceptions\BadMethodCallException('The object you tried to send is empty.');
         }
 
         $request = new Request();

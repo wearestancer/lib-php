@@ -99,9 +99,12 @@ class Customer extends Stancer\Tests\atoum
                     ->isIdenticalTo('David Coaster')
 
                 // Check it was not called twice
-                ->object($this->testedInstance->send())
-                    ->isTestedInstance
-                    ->isInstanceOf($this->testedInstance->send())
+                ->exception(function () {
+                    $this->testedInstance->send();
+                })
+                    ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('The object you tried to send is empty.')
 
                 ->mock($client)
                     ->call('request')
@@ -120,8 +123,14 @@ class Customer extends Stancer\Tests\atoum
                     ->if($this->newTestedInstance(uniqid()))
                     ->and($this->testedInstance->setName(uniqid()))
                     ->and($this->testedInstance->populate())
-                    ->and($this->testedInstance->send())
                     ->then
+                        ->exception(function () {
+                            $this->testedInstance->send();
+                        })
+                            ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
+                            ->message
+                                ->isIdenticalTo('The object you tried to send is empty.')
+
                         ->mock($client)
                             ->call('request')
                                 ->withAtLeastArguments(['POST'])
@@ -201,8 +210,12 @@ class Customer extends Stancer\Tests\atoum
                 ->assert('Unmodified instance will not trigger an update')
                     ->if($this->newTestedInstance(uniqid()))
                     ->then
-                        ->object($this->testedInstance->send())
-                            ->isTestedInstance
+                        ->exception(function () {
+                            $this->testedInstance->send();
+                        })
+                            ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
+                            ->message
+                                ->isIdenticalTo('The object you tried to send is empty.')
 
                         ->mock($client)
                             ->call('request')
