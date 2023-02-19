@@ -1,7 +1,7 @@
 {
     "name": "stancer/stancer",
     "description": "Stancer PHP library",
-    "version": "1.1.0",
+    "homepage": "https://stancer.com",
     "type": "library",
     "keywords": [
         "payments",
@@ -50,5 +50,10 @@
             "phpstan/extension-installer": true
         },
         "sort-packages": true
+    },
+    "support": {
+        "docs": "https://stancer.com/documentation/api/",
+        "issues": "https://gitlab.com/wearestancer/library/lib-php/-/issues",
+        "source": "https://gitlab.com/wearestancer/library/lib-php"
     }
 }

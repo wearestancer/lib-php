@@ -8,7 +8,6 @@ use GuzzleHttp;
 use Stancer;
 use Stancer\Config as testedClass;
 use mock;
-use Psr;
 
 class Config extends Stancer\Tests\atoum
 {
@@ -19,15 +18,10 @@ class Config extends Stancer\Tests\atoum
     public function testClass()
     {
         $this
-            ->given($package = json_decode(file_get_contents(__DIR__ . '/../../composer.json'), true))
-            ->then
-                ->currentlyTestedClass
-                    ->hasConstant('LIVE_MODE')
-                    ->hasConstant('TEST_MODE')
-                    ->hasConstant('VERSION')
-
-                    ->constant('VERSION')
-                        ->isEqualTo($package['version'])
+            ->currentlyTestedClass
+                ->hasConstant('LIVE_MODE')
+                ->hasConstant('TEST_MODE')
+                ->hasConstant('VERSION')
         ;
     }
 
