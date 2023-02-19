@@ -864,6 +864,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @uses Stancer\Core\Request::post()
      * @return $this
+     * @throws Stancer\Exceptions\BadMethodCallException When the method is called on an empty object.
      * @throws Stancer\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
     public function send(): self
