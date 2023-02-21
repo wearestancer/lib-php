@@ -1,0 +1,20 @@
+{
+  "created": 1674886288,
+  "currency": "eur",
+  "date_bank": 1675465200,
+  "date_paym": 1674774000,
+  "disputes": {
+    "amount": null
+  },
+  "fees": 42,
+  "id": "pout_526V1uCVod680MSe7vMYOBXd",
+  "live_mode": true,
+  "payments": {
+    "amount": 198
+  },
+  "refunds": {
+    "amount": null
+  },
+  "statement_description": "Stancer Payout 56930 of 2023-01-27",
+  "status": "paid"
+}

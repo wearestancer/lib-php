@@ -110,7 +110,7 @@ class Payout extends Stancer\Core\AbstractObject
         ];
 
         foreach ($items as $item) {
-            if (array_key_exists($item, $data)) {
+            if (array_key_exists($item, $data) && $data[$item]['amount']) {
                 $data['details'][$item] = $data[$item];
                 $data['details'][$item]['currency'] = $data['currency'];
                 $data['details'][$item]['parent'] = $this;

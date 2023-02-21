@@ -515,6 +515,52 @@ class Payout extends Stancer\Tests\atoum
         ;
     }
 
+    public function testGitlabIssue3()
+    {
+        $this
+            ->if($value = uniqid())
+            ->then
+                ->variable($this->newTestedInstance->getDetails())
+                    ->isNull
+
+                ->exception(function () use ($value) {
+                    $this->newTestedInstance->setDetails($value);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify "details".')
+
+            ->if($client = new mock\Stancer\Http\Client)
+            ->and($this->mockConfig($client))
+            ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'gitlab-3'))
+            ->and($this->newTestedInstance(uniqid()))
+            ->then
+                ->object($this->testedInstance->getDetails())
+                    ->isInstanceOf(Stancer\Payout\Details::class)
+
+                ->object($this->testedInstance->details)
+                    ->isInstanceOf(Stancer\Payout\Details::class)
+
+                // disputes
+                ->variable($this->testedInstance->details->disputes)
+                    ->isNull
+
+                // payments
+                ->object($this->testedInstance->details->payments)
+                    ->isInstanceOf(Stancer\Payout\Details\Inner::class)
+
+                ->integer($this->testedInstance->details->payments->amount)
+                    ->isIdenticalTo(198)
+
+                ->string($this->testedInstance->details->payments->currency)
+                    ->isIdenticalTo('eur')
+
+                // refunds
+                ->variable($this->testedInstance->details->refunds)
+                    ->isNull
+        ;
+    }
+
     public function testList()
     {
         $this
