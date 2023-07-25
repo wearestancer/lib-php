@@ -9,6 +9,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Changed
 - `AbstractObject->send()` will now throw `BadMethodCallException` if use on an empty object
 
+### Fixed
+- Typo
+
 
 ## [1.1.0] - 2023-02-15
 

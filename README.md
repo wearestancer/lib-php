@@ -49,10 +49,10 @@ $card->setName('John Doe');
 
 $payment = new Stancer\Payment();
 $payment->setCard($card);
-$payment->setAmmount(1000); // You must put an integer, here we wanted USD$10.00
+$payment->setAmount(1000); // You must put an integer, here we wanted USD$10.00
 $payment->setCurrency('USD');
 $payment->description('My first payment');
-$payment->save();
+$payment->send();
 ```
 
 
@@ -69,7 +69,7 @@ $payment = new Stancer\Payment('paym_KIVaaHi7G8QAYMQpQOYBrUQE');
 
 ### Creating an object
 
-To create an object, like a payment, use the `save` method.
+To create an object, like a payment, use the `send` method.
 
 ```php
 <?php
@@ -82,7 +82,7 @@ $payment->setSepa($sepa); // Pay with a bank account (SEPA, uses BIC and IBAN)
 
 // Do not forget to complete your payment informations
 
-$payment->save();
+$payment->send();
 ```
 
 
