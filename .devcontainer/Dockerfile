@@ -14,7 +14,7 @@ RUN cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini \
  && sed -i 's/^;*date.timezone =.*/date.timezone = UTC/' $PHP_INI_DIR/php.ini
 
 # Add PHP extensions
-RUN pecl install xdebug zip \
+RUN pecl install xdebug-3.1.5 zip \
  && docker-php-ext-enable xdebug zip
 
 # Configure xdebug
