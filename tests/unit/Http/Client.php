@@ -36,7 +36,7 @@ class Client extends Stancer\Tests\atoum
             Stancer\Exceptions\NotAuthorizedException::class,
             Stancer\Exceptions\NotAuthorizedException::getDefaultMessage(),
             'critical',
-            'HTTP 401 - Invalid credential : %s',
+            'HTTP 401 - Invalid credential: %s',
         ];
 
         $datas[] = [

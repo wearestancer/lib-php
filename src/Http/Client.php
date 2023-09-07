@@ -261,7 +261,7 @@ class Client implements Stancer\Interfaces\HttpClientInterface
 
             switch ($code) {
                 case 401:
-                    $logMessage = 'HTTP 401 - Invalid credential : ' . $config->getSecretKey();
+                    $logMessage = 'HTTP 401 - Invalid credential: ' . $config->getSecretKey();
                     break;
 
                 case 404:
