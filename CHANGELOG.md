@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `AbstractObject->send()` will now throw `BadMethodCallException` if use on an empty object
 
 ### Fixed
+- `RequestTimeoutException` is thrown on curl timeout
 - Typo
 
 

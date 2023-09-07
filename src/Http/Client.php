@@ -213,13 +213,17 @@ class Client implements Stancer\Interfaces\HttpClientInterface
                 $code = 310;
             }
 
+            if ($error === CURLE_OPERATION_TIMEDOUT) {
+                $code = 408;
+            }
+
+            $class = Stancer\Exceptions\HttpException::getClassFromStatus($code);
+
             $params = [
                 'code' => $code,
                 'request' => $this->lastRequest,
                 'response' => $this->lastResponse,
             ];
-
-            $class = Stancer\Exceptions\HttpException::getClassFromStatus($code);
 
             if (intval($class::getStatus()) !== $code) {
                 $params['message'] = curl_error($this->curl);
