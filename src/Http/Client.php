@@ -230,31 +230,35 @@ class Client implements Stancer\Interfaces\HttpClientInterface
                 $params['status'] = $code;
             }
 
-            $json = json_decode((string) $this->lastResponse->getBody(), true);
+            $body = $this->lastResponse->getBody();
 
-            if (
-                json_last_error() === JSON_ERROR_NONE
-                && is_array($json)
-                && array_key_exists('error', $json)
-                && array_key_exists('message', $json['error'])
-                && $json['error']['message']
-            ) {
-                $params['message'] = $json['error']['message'];
+            if ($body->getSize()) {
+                $json = json_decode((string) $body, true);
 
-                if (is_array($json['error']['message'])) {
-                    $params['message'] = current($json['error']['message']);
-                    $id = '';
+                if (
+                    json_last_error() === JSON_ERROR_NONE
+                    && is_array($json)
+                    && array_key_exists('error', $json)
+                    && array_key_exists('message', $json['error'])
+                    && $json['error']['message']
+                ) {
+                    $params['message'] = $json['error']['message'];
 
-                    if (array_key_exists('id', $json['error']['message'])) {
-                        $id = $json['error']['message']['id'];
-                        $params['message'] = $json['error']['message']['id'];
-                    }
+                    if (is_array($json['error']['message'])) {
+                        $params['message'] = current($json['error']['message']);
+                        $id = '';
 
-                    if (array_key_exists('error', $json['error']['message'])) {
-                        $params['message'] = $json['error']['message']['error'];
+                        if (array_key_exists('id', $json['error']['message'])) {
+                            $id = $json['error']['message']['id'];
+                            $params['message'] = $json['error']['message']['id'];
+                        }
 
-                        if ($id) {
-                            $params['message'] .= ' (' . $id . ')';
+                        if (array_key_exists('error', $json['error']['message'])) {
+                            $params['message'] = $json['error']['message']['error'];
+
+                            if ($id) {
+                                $params['message'] .= ' (' . $id . ')';
+                            }
                         }
                     }
                 }
