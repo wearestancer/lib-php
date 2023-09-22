@@ -469,7 +469,7 @@ class Request extends Stancer\Tests\atoum
                     (string) $method,
                     $object->getUri(),
                 ]))
-                ->and($criticalMessage = vsprintf('HTTP 401 - Invalid credential : %s', [
+                ->and($criticalMessage = vsprintf('HTTP 401 - Invalid credential: %s', [
                     $config->getSecretKey(),
                 ]))
 

@@ -36,7 +36,7 @@ class Client extends Stancer\Tests\atoum
             Stancer\Exceptions\NotAuthorizedException::class,
             Stancer\Exceptions\NotAuthorizedException::getDefaultMessage(),
             'critical',
-            'HTTP 401 - Invalid credential : %s',
+            'HTTP 401 - Invalid credential: %s',
         ];
 
         $datas[] = [
@@ -674,6 +674,48 @@ class Client extends Stancer\Tests\atoum
                         ->isInstanceOf(Stancer\Exceptions\BadRequestException::class)
                         ->message
                             ->isIdenticalTo($body['error']['message'])
+
+            ->assert('Timeout')
+                ->given($this->newTestedInstance)
+                ->and($curl = $this->testedInstance->getCurlResource())
+                ->if($this->function->curl_setopt = true)
+                ->and($this->function->curl_exec = $body = uniqid())
+                ->and($this->function->curl_getinfo = rand(600, 999))
+                ->and($this->function->curl_errno = 28)
+                ->and($this->function->curl_error = uniqid())
+                ->and($method = 'GET')
+                ->and($host = uniqid())
+                ->then
+                    ->exception(function () use ($method, $host) {
+                        $this->testedInstance->request($method, $host);
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\RequestTimeoutException::class)
+                        ->hasCode(408)
+                        ->message
+                            ->isIdenticalTo('HTTP 408 - Request Timeout')
+
+                    ->object($this->exception->getRequest())
+                        ->isInstanceOf(Stancer\Http\Request::class)
+
+                    ->object($response = $this->exception->getResponse())
+                        ->isInstanceOf(Stancer\Http\Response::class)
+
+                    ->object($response->getBody())
+                        ->isInstanceOf(Stancer\Http\Stream::class)
+
+                    ->castToString($response->getBody())
+                        ->isIdenticalTo($body)
+
+                    ->function('curl_setopt')
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_URL, $host)
+                            ->once
+
+                        ->wasCalledWithIdenticalArguments($curl, CURLOPT_CUSTOMREQUEST, $method)
+                            ->once
+
+                    ->function('curl_exec')
+                        ->wasCalled
+                            ->once
         ;
     }
 

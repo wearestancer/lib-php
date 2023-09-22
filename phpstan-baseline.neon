@@ -6,11 +6,6 @@ parameters:
 			path: src/Core/AbstractObject.php
 
 		-
-			message: "#^Negated boolean expression is always false\\.$#"
-			count: 4
-			path: src/Core/AbstractObject.php
-
-		-
 			message: "#^Property Stancer\\\\Core\\\\AbstractObject\\:\\:\\$apiData \\(array\\<string, mixed\\>\\) does not accept mixed\\.$#"
 			count: 1
 			path: src/Core/AbstractObject.php

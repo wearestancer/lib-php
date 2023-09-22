@@ -120,8 +120,8 @@ phpstan:
   stage: test
 
   script:
-    - ./vendor/bin/phpstan analyse --no-progress --xdebug || true
-    - ./vendor/bin/phpstan analyse --no-progress --xdebug --error-format=gitlab > codequality.json
+    - ./vendor/bin/phpstan analyse --no-progress || true
+    - ./vendor/bin/phpstan analyse --no-progress --error-format=gitlab > codequality.json
 
   artifacts:
     reports:

@@ -213,44 +213,52 @@ class Client implements Stancer\Interfaces\HttpClientInterface
                 $code = 310;
             }
 
+            if ($error === CURLE_OPERATION_TIMEDOUT) {
+                $code = 408;
+            }
+
+            $class = Stancer\Exceptions\HttpException::getClassFromStatus($code);
+
             $params = [
                 'code' => $code,
                 'request' => $this->lastRequest,
                 'response' => $this->lastResponse,
             ];
 
-            $class = Stancer\Exceptions\HttpException::getClassFromStatus($code);
-
             if (intval($class::getStatus()) !== $code) {
                 $params['message'] = curl_error($this->curl);
                 $params['status'] = $code;
             }
 
-            $json = json_decode((string) $this->lastResponse->getBody(), true);
+            $body = $this->lastResponse->getBody();
 
-            if (
-                json_last_error() === JSON_ERROR_NONE
-                && is_array($json)
-                && array_key_exists('error', $json)
-                && array_key_exists('message', $json['error'])
-                && $json['error']['message']
-            ) {
-                $params['message'] = $json['error']['message'];
+            if ($body->getSize()) {
+                $json = json_decode((string) $body, true);
 
-                if (is_array($json['error']['message'])) {
-                    $params['message'] = current($json['error']['message']);
-                    $id = '';
+                if (
+                    json_last_error() === JSON_ERROR_NONE
+                    && is_array($json)
+                    && array_key_exists('error', $json)
+                    && array_key_exists('message', $json['error'])
+                    && $json['error']['message']
+                ) {
+                    $params['message'] = $json['error']['message'];
 
-                    if (array_key_exists('id', $json['error']['message'])) {
-                        $id = $json['error']['message']['id'];
-                        $params['message'] = $json['error']['message']['id'];
-                    }
+                    if (is_array($json['error']['message'])) {
+                        $params['message'] = current($json['error']['message']);
+                        $id = '';
 
-                    if (array_key_exists('error', $json['error']['message'])) {
-                        $params['message'] = $json['error']['message']['error'];
+                        if (array_key_exists('id', $json['error']['message'])) {
+                            $id = $json['error']['message']['id'];
+                            $params['message'] = $json['error']['message']['id'];
+                        }
 
-                        if ($id) {
-                            $params['message'] .= ' (' . $id . ')';
+                        if (array_key_exists('error', $json['error']['message'])) {
+                            $params['message'] = $json['error']['message']['error'];
+
+                            if ($id) {
+                                $params['message'] .= ' (' . $id . ')';
+                            }
                         }
                     }
                 }
@@ -261,7 +269,7 @@ class Client implements Stancer\Interfaces\HttpClientInterface
 
             switch ($code) {
                 case 401:
-                    $logMessage = 'HTTP 401 - Invalid credential : ' . $config->getSecretKey();
+                    $logMessage = 'HTTP 401 - Invalid credential: ' . $config->getSecretKey();
                     break;
 
                 case 404:

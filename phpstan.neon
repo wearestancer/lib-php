@@ -13,11 +13,6 @@ parameters:
         - src/Payout/Details/Inner.php
         - src/Traits/SearchTrait.php
 
-    - message: '/^Right side of && is always true/'
-      paths:
-        - src/Exceptions/Exception.php
-        - src/Exceptions/HttpException.php
-
     - message: '/Unsafe usage of new static/'
       paths:
         - src/Config.php
@@ -37,6 +32,8 @@ parameters:
 
   paths:
     - src
+
+  treatPhpDocTypesAsCertain: false
 
   typeAliases:
     DataModel: '''
