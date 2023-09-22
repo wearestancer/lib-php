@@ -15,7 +15,7 @@ class Config
 {
     public const LIVE_MODE = 'live';
     public const TEST_MODE = 'test';
-    public const VERSION = '1.1.0';
+    public const VERSION = '1.1.1';
 
     /** @var non-empty-array<string|null>[] */
     protected $app = [];
