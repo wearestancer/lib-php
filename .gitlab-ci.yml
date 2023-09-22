@@ -1,4 +1,9 @@
 
+stages:
+  - lint
+  - test
+
+
 variables:
   ATOUM_COVERAGE_FILENAME: coverage.xml
   ATOUM_XUNIT_FILENAME: xunit.xml
@@ -71,6 +76,7 @@ workflow:
           - '8.1'
           - '8.2'
 
+
 .php::stable-version:
   extends:
     - .php::base
@@ -102,7 +108,7 @@ phpcs:
   extends:
     - .php::stable-version
 
-  stage: test
+  stage: lint
 
   script:
     - ./vendor/bin/phpcs --cache --report=full
@@ -117,7 +123,7 @@ phpstan:
   extends:
     - .php::stable-version
 
-  stage: test
+  stage: lint
 
   script:
     - ./vendor/bin/phpstan analyse --no-progress || true
