@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## Unreleased
 
 ### Changed
+- A payment without capture can be done with `amount = 0`
 - `AbstractObject->send()` will now throw `BadMethodCallException` if use on an empty object
 
 ### Fixed

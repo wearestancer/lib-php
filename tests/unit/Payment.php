@@ -1124,17 +1124,37 @@ class Payment extends Stancer\Tests\atoum
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
 
-            ->if($this->testedInstance->setAmount(rand(100, 999999)))
+            ->if($this->newTestedInstance->setAmount(rand(100, 999999)))
             ->then
                 ->exception(function () {
                     $this->testedInstance->send();
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidCurrencyException::class)
 
-            ->if($this->testedInstance->setCurrency($this->cardCurrencyDataProvider(true)))
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount(rand(100, 999999)))
+            ->and($this->testedInstance->setCurrency($this->cardCurrencyDataProvider(true)))
             ->then
                 ->object($this->testedInstance->send())
                     ->isTestedInstance
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount(0))
+            ->and($this->testedInstance->setCurrency($this->cardCurrencyDataProvider(true)))
+            ->and($this->testedInstance->setCapture(false))
+            ->then
+                ->object($this->testedInstance->send())
+                    ->isTestedInstance
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount(0))
+            ->and($this->testedInstance->setCurrency($this->cardCurrencyDataProvider(true)))
+            ->and($this->testedInstance->setCapture(true))
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->send();
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
         ;
     }
 
@@ -1929,66 +1949,68 @@ class Payment extends Stancer\Tests\atoum
     public function testSetAmount()
     {
         $this
-            ->given($this->newTestedInstance)
-            ->then
-                ->assert('0 is not a valid amount')
-                    ->exception(function () {
-                        $this->testedInstance->setAmount(0);
-                    })
-                        ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
-                        ->message
-                            ->isIdenticalTo('Amount must be greater than or equal to 50.')
+            ->assert('0 is valid')
+                ->object($this->newTestedInstance->setAmount(0))
+                    ->isTestedInstance
+                ->integer($this->testedInstance->getAmount())
+                    ->isEqualTo(0)
 
-                    ->boolean($this->testedInstance->isModified())
-                        ->isFalse
+                ->boolean($this->testedInstance->isModified())
+                    ->isTrue
 
-                ->assert('49 is not a valid amount')
-                    ->exception(function () {
-                        $this->testedInstance->setAmount(49);
-                    })
-                        ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
-                        ->message
-                            ->isIdenticalTo('Amount must be greater than or equal to 50.')
+                ->array($this->testedInstance->jsonSerialize())
+                    ->hasSize(1)
+                    ->hasKey('amount')
+                    ->integer['amount']
+                        ->isEqualTo(0)
 
-                    ->boolean($this->testedInstance->isModified())
-                        ->isFalse
+            ->assert('49 is not a valid amount')
+                ->exception(function () {
+                    $this->newTestedInstance->setAmount(49);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
+                    ->message
+                        ->isIdenticalTo('Amount must be greater than or equal to 50.')
 
-                ->assert('50 is valid')
-                    ->object($this->newTestedInstance->setAmount(50))
-                        ->isTestedInstance
-                    ->integer($this->testedInstance->getAmount())
+                ->boolean($this->testedInstance->isModified())
+                    ->isFalse
+
+            ->assert('50 is valid')
+                ->object($this->newTestedInstance->setAmount(50))
+                    ->isTestedInstance
+                ->integer($this->testedInstance->getAmount())
+                    ->isEqualTo(50)
+
+                ->boolean($this->testedInstance->isModified())
+                    ->isTrue
+
+                ->array($this->testedInstance->jsonSerialize())
+                    ->hasSize(1)
+                    ->hasKey('amount')
+                    ->integer['amount']
                         ->isEqualTo(50)
 
-                    ->boolean($this->testedInstance->isModified())
-                        ->isTrue
+            ->assert('random value')
+                ->object($this->newTestedInstance->setAmount($amount = rand(50, 999999)))
+                    ->isTestedInstance
+                ->integer($this->testedInstance->getAmount())
+                    ->isEqualTo($amount)
 
-                    ->array($this->testedInstance->jsonSerialize())
-                        ->hasSize(1)
-                        ->hasKey('amount')
-                        ->integer['amount']
-                            ->isEqualTo(50)
+                ->boolean($this->testedInstance->isModified())
+                    ->isTrue
 
-                ->assert('random value')
-                    ->object($this->newTestedInstance->setAmount($amount = rand(50, 999999)))
-                        ->isTestedInstance
-                    ->integer($this->testedInstance->getAmount())
+                ->array($this->testedInstance->jsonSerialize())
+                    ->hasSize(1)
+                    ->hasKey('amount')
+                    ->integer['amount']
                         ->isEqualTo($amount)
 
-                    ->boolean($this->testedInstance->isModified())
-                        ->isTrue
+            ->assert('Beware of the unexpected floating number')
+                ->object($this->newTestedInstance->setAmount(34.8 * 100))
+                    ->isTestedInstance
 
-                    ->array($this->testedInstance->jsonSerialize())
-                        ->hasSize(1)
-                        ->hasKey('amount')
-                        ->integer['amount']
-                            ->isEqualTo($amount)
-
-                ->assert('Beware of the unexpected floating number')
-                    ->object($this->newTestedInstance->setAmount(34.8 * 100))
-                        ->isTestedInstance
-
-                    ->integer($this->testedInstance->getAmount())
-                        ->isEqualTo(3480)
+                ->integer($this->testedInstance->getAmount())
+                    ->isEqualTo(3480)
         ;
     }
 
