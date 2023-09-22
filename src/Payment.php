@@ -85,9 +85,6 @@ class Payment extends Stancer\Core\AbstractObject
     protected $dataModel = [
         'amount' => [
             'required' => true,
-            'size' => [
-                'min' => 50,
-            ],
             'type' => self::INTEGER,
         ],
         'auth' => [
@@ -597,12 +594,16 @@ class Payment extends Stancer\Core\AbstractObject
         $amount = $this->getAmount();
         $currency = $this->getCurrency();
 
-        if (!$amount) {
+        if (is_null($amount)) {
             throw new Stancer\Exceptions\InvalidAmountException();
         }
 
         if (!$currency) {
             throw new Stancer\Exceptions\InvalidCurrencyException();
+        }
+
+        if ($amount === 0 && $this->getCapture() !== false) {
+            throw new Stancer\Exceptions\InvalidAmountException();
         }
 
         $auth = $this->getAuth();

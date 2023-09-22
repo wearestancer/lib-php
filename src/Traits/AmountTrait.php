@@ -21,6 +21,12 @@ trait AmountTrait
      */
     public function setAmount(float $amount): self
     {
-        return parent::setAmount(intval(strval($amount)));
+        $fixed = intval(strval($amount));
+
+        if ($fixed > 0 && $fixed < 50) {
+            throw new Stancer\Exceptions\InvalidAmountException();
+        }
+
+        return parent::setAmount($fixed);
     }
 }
