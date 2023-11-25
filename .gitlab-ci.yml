@@ -36,12 +36,6 @@ workflow:
     paths:
       - vendor/
 
-  rules:
-    - if: $VERSION == '7.4'
-      variables:
-        XDEBUG_VERSION: '3.1.6'
-    - when: on_success
-
 
 .php::all-versions:
   extends:
@@ -53,10 +47,9 @@ workflow:
           - latest
           - lowest
         VERSION:
-          - '7.4'
-          - '8.0'
           - '8.1'
           - '8.2'
+          - '8.3'
 
 
 .php::stable-version:
@@ -64,7 +57,7 @@ workflow:
     - .php::base
 
   variables:
-    VERSION: '7.4'
+    VERSION: '8.1'
 
 
 atoum:
