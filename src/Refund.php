@@ -130,7 +130,7 @@ class Refund extends Stancer\Core\AbstractObject
      * @throws Stancer\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
     #[Override]
-    public function send(): Stancer\Core\AbstractObject
+    public function send(): static
     {
         $payment = $this->getPayment();
         $modified = $payment->modified;

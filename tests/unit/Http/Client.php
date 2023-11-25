@@ -223,23 +223,7 @@ class Client extends Stancer\Tests\atoum
         ;
     }
 
-    /**
-     * @php < 8.0
-     */
-    public function testGetCurlResource_as_resource()
-    {
-        $this
-            ->if($this->newTestedInstance)
-            ->then
-                ->resource($this->testedInstance->getCurlResource())
-                    ->isOfType('curl')
-        ;
-    }
-
-    /**
-     * @php 8.0
-     */
-    public function testGetCurlResource_as_object()
+    public function testGetCurlResource()
     {
         $this
             ->if($this->newTestedInstance)
@@ -252,12 +236,12 @@ class Client extends Stancer\Tests\atoum
     public function testGetLastRequest_LastResponse()
     {
         $this
-            ->given($config = Stancer\Config::init([]))
+            ->given(Stancer\Config::init([]))
 
             ->if($this->newTestedInstance)
-            ->and($curl = $this->testedInstance->getCurlResource())
+            ->and($this->testedInstance->getCurlResource())
 
-            ->if($this->function->curl_exec = $body = uniqid())
+            ->if($this->function->curl_exec = uniqid())
             ->and($this->function->curl_getinfo = 200)
             ->and($this->function->curl_errno = 0)
             ->and($this->function->curl_error = '')

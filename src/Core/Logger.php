@@ -6,8 +6,8 @@ declare(strict_types=1);
 
 namespace Stancer\Core;
 
-use Stancer;
 use Psr\Log\LoggerInterface;
+use Stancer;
 
 /**
  * Basic and useless logger.
@@ -129,7 +129,7 @@ class Logger implements LoggerInterface
      * @return void
      * @throws Stancer\Exceptions\BadMethodCallException Every time, on every call ! Do not use this method.
      */
-    public function log($level, $message, array $context = []): void
+    public function log(mixed $level, $message, array $context = []): void
     {
         throw new Stancer\Exceptions\BadMethodCallException('This method is not allowed');
     }

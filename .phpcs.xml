@@ -22,13 +22,6 @@
 
     <exclude name="Generic.Formatting.MultipleStatementAlignment.NotSame" />
 
-    <!--
-      Temporary, will be remove with PHP7 support.
-
-      We can not write attributes on multiple line with PHP7 to keep it on one line be considered as a comment.
-    -->
-    <exclude name="Generic.Files.LineLength.TooLong" />
-
     <exclude name="Generic.PHP.LowerCaseType.ParamTypeFound" />
 
     <!-- Remove for multiline condition -->

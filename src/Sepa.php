@@ -3,9 +3,10 @@ declare(strict_types=1);
 
 namespace Stancer;
 
-use Stancer;
 use DateTimeImmutable;
 use DateTimeInterface;
+use SensitiveParameter;
+use Stancer;
 
 /**
  * Representation of a SEPA account.
@@ -136,7 +137,6 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      *
      * @return Stancer\Sepa\Check|null
      */
-    #[Stancer\WillChange\PHP8_0\NonCapturingCatch]
     public function getCheck(): ?Stancer\Sepa\Check
     {
         if ($this->id) {
@@ -148,7 +148,7 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
 
             try {
                 $this->dataModel['check']['value'] = $check->populate();
-            } catch (Stancer\Exceptions\NotFoundException $exception) {
+            } catch (Stancer\Exceptions\NotFoundException) {
                 return null;
             }
         }
@@ -202,7 +202,7 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      * @throws Stancer\Exceptions\InvalidIbanException When IBAN is invalid.
      */
     public function setIban(
-        #[\SensitiveParameter]
+        #[SensitiveParameter]
         string $iban
     ): self {
         $iban = str_replace(' ', '', $iban);

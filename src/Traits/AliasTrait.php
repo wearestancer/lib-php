@@ -19,8 +19,7 @@ trait AliasTrait
      * @return mixed
      * @throws Stancer\Exceptions\BadMethodCallException When an unhandled method is called.
      */
-    #[ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
-    public function __call(string $method, array $arguments)
+    public function __call(string $method, array $arguments): mixed
     {
         $name = Stancer\Helper::snakeCaseToCamelCase($method);
 
@@ -49,8 +48,7 @@ trait AliasTrait
      * @return mixed
      * @throws Stancer\Exceptions\BadMethodCallException When an unhandled method is called.
      */
-    #[ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
-    public static function __callStatic(string $method, array $arguments)
+    public static function __callStatic(string $method, array $arguments): mixed
     {
         $name = Stancer\Helper::snakeCaseToCamelCase($method);
 
@@ -69,8 +67,7 @@ trait AliasTrait
      * @param string $property Property called.
      * @return mixed
      */
-    #[ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
-    public function __get(string $property)
+    public function __get(string $property): mixed
     {
         $prop = Stancer\Helper::snakeCaseToCamelCase($property);
 
@@ -99,8 +96,7 @@ trait AliasTrait
      * @return void
      * @throws Stancer\Exceptions\BadPropertyAccessException When an unhandled property is called.
      */
-    #[Stancer\WillChange\PHP8_0\MixedType]
-    public function __set(string $property, $value): void
+    public function __set(string $property, mixed $value): void
     {
         $prop = Stancer\Helper::snakeCaseToCamelCase($property);
         $method = 'set' . $prop;

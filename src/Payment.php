@@ -11,7 +11,7 @@ use Stancer;
 /**
  * Representation of a payment.
  *
- * @method $this add_methods_allowed(string $method) Add an allowed method.
+ * @method static add_methods_allowed(string $method) Add an allowed method.
  * @method static array filter_list_params(array $terms) Filter for list method.
  * @method ?integer getAmount() Get transaction amount.
  * @method ?\Stancer\Auth getAuth() Get auth object, must be set for 3-D Secure card payments.
@@ -140,7 +140,23 @@ use Stancer;
  */
 #[Stancer\Core\Documentation\AddMethod('addRefunds', ['Stancer\Refund $refund'], '$this', stan: true)]
 #[Stancer\Core\Documentation\AddMethod('list', ['SearchFilters $terms'], 'static Generator<static>')]
-#[Stancer\Core\Documentation\AddProperty('auth', property: ['type' => [Stancer\Auth::class, 'bool', 'string']], setter: ['type' => [Stancer\Auth::class, 'bool', 'string']])]
+#[Stancer\Core\Documentation\AddProperty(
+    'auth',
+    property: [
+        'type' => [
+            Stancer\Auth::class,
+            'bool',
+            'string',
+        ],
+    ],
+    setter: [
+        'type' => [
+            Stancer\Auth::class,
+            'bool',
+            'string',
+        ],
+    ],
+)]
 #[Stancer\Core\Documentation\AddProperty('refunds', restricted: true)]
 class Payment extends Stancer\Core\AbstractObject
 {
@@ -291,10 +307,10 @@ class Payment extends Stancer\Core\AbstractObject
      * Add an allowed method.
      *
      * @param string $method New method.
-     * @return self
+     * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When currency is EUR and trying to set "sepa" method.
      */
-    public function addMethodsAllowed(string $method): self
+    public function addMethodsAllowed(string $method): static
     {
         $currency = $this->getCurrency();
 
@@ -315,11 +331,11 @@ class Payment extends Stancer\Core\AbstractObject
      * This method is Stripe compatible.
      *
      * @param array $options Charge options.
-     * @return self
+     * @return $this
      *
      * @phpstan-param PaymentChargeOptions $options
      */
-    public static function charge(array $options): self
+    public static function charge(array $options): static
     {
         trigger_error('Method ' . __METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 
@@ -372,7 +388,7 @@ class Payment extends Stancer\Core\AbstractObject
      * @phpstan-return $this
      */
     #[Override]
-    public function delete(): Stancer\Core\AbstractObject
+    public function delete(): static
     {
         $message = 'You are not allowed to delete a payment, you need to refund it instead.';
 
@@ -579,9 +595,9 @@ class Payment extends Stancer\Core\AbstractObject
      * @param integer $amount Amount.
      * @param string $currency Currency.
      * @param Stancer\Interfaces\PaymentMeansInterface $means Payment means.
-     * @return self
+     * @return $this
      */
-    public function pay(int $amount, string $currency, Stancer\Interfaces\PaymentMeansInterface $means): self
+    public function pay(int $amount, string $currency, Stancer\Interfaces\PaymentMeansInterface $means): static
     {
         trigger_error('Method ' . __METHOD__ . ' is deprecated', E_USER_DEPRECATED);
 
@@ -605,7 +621,7 @@ class Payment extends Stancer\Core\AbstractObject
      * @throws Stancer\Exceptions\InvalidAmountException When the amount is invalid.
      * @throws Stancer\Exceptions\MissingPaymentIdException When the payment has no ID.
      */
-    public function refund(int $amount = null): self
+    public function refund(int $amount = null): static
     {
         if (!$this->getId()) {
             throw new Stancer\Exceptions\MissingPaymentIdException();
@@ -680,7 +696,7 @@ class Payment extends Stancer\Core\AbstractObject
      * @throws Stancer\Exceptions\InvalidExpirationException When card's expiration is invalid.
      */
     #[Override]
-    public function send(): Stancer\Core\AbstractObject
+    public function send(): static
     {
         if ($this->getId() && $this->isModified()) {
             return parent::send();
@@ -771,7 +787,7 @@ class Payment extends Stancer\Core\AbstractObject
      * @param Stancer\Auth|string|boolean $auth Authentication data.
      * @return $this
      */
-    public function setAuth($auth): self
+    public function setAuth($auth): static
     {
         if ($auth === false) {
             return $this;
@@ -796,7 +812,7 @@ class Payment extends Stancer\Core\AbstractObject
      * @param Stancer\Card $card New card instance.
      * @return $this
      */
-    public function setCard(Card $card): self
+    public function setCard(Card $card): static
     {
         parent::setCard($card);
         $this->dataModel['method']['value'] = 'card';
@@ -808,10 +824,10 @@ class Payment extends Stancer\Core\AbstractObject
      * Set the currency.
      *
      * @param string $currency The currency.
-     * @return self
+     * @return $this
      * @throws Stancer\Exceptions\InvalidCurrencyException When currency is EUR and "sepa" is already allowed.
      */
-    public function setCurrency(string $currency): self
+    public function setCurrency(string $currency): static
     {
         $method = $this->getMethod();
         $methods = $this->getMethodsAllowed();
@@ -829,10 +845,10 @@ class Payment extends Stancer\Core\AbstractObject
      * Set allowed methods.
      *
      * @param string[] $methods New methods.
-     * @return self
+     * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When currency is EUR and trying to set "sepa" method.
      */
-    public function setMethodsAllowed(array $methods): self
+    public function setMethodsAllowed(array $methods): static
     {
         $currency = $this->getCurrency();
         $method = $this->getMethod();
@@ -853,7 +869,7 @@ class Payment extends Stancer\Core\AbstractObject
      * @return $this
      * @throws Stancer\Exceptions\InvalidUrlException When URL is not an HTTPS URL.
      */
-    public function setReturnUrl(string $url): self
+    public function setReturnUrl(string $url): static
     {
         if (strpos($url, 'https://') !== 0) {
             throw new Stancer\Exceptions\InvalidUrlException('You must provide an HTTPS URL.');
@@ -868,7 +884,7 @@ class Payment extends Stancer\Core\AbstractObject
      * @param Stancer\Sepa $sepa New sepa instance.
      * @return $this
      */
-    public function setSepa(Sepa $sepa): self
+    public function setSepa(Sepa $sepa): static
     {
         parent::setSepa($sepa);
         $this->dataModel['method']['value'] = 'sepa';

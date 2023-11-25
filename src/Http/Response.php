@@ -12,6 +12,12 @@ use Psr;
 /**
  * Basic HTTP response.
  *
+ * @method static with_body(Psr\Http\Message\StreamInterface $body) Return an instance with the specified message body.
+ * @method static with_modified_body($in, $out) Return an instance with obfuscated message body.
+ * @method static with_status($code, $reason_phrase) Return an instance with the specified status code and,
+ *   optionally, reason phrase.
+ * @method static with_header($name, $value) Return an instance with the provided value replacing the specified header.
+ * @method static with_protocol_version($version) Return an instance with the specified HTTP protocol version.
  * @method $this add_header(string $name, $value) Add a value to an header.
  * @method Psr\Http\Message\StreamInterface get_body() Gets the body of the message.
  * @method array get_header($name) Retrieves a message header value by the given case-insensitive name.
@@ -22,19 +28,6 @@ use Psr;
  * @method int get_status_code() Gets the response status code.
  * @method boolean has_header($name) Checks if a header exists by the given case-insensitive name.
  * @method $this remove_header($name) Remove header by name.
- * @method Psr\Http\Message\MessageInterface with_added_header($name, $value) Return an instance with the
- *   specified header appended with the given value.
- * @method Psr\Http\Message\MessageInterface with_body(Psr\Http\Message\StreamInterface $body) Return an instance
- *   with the specified message body.
- * @method Psr\Http\Message\MessageInterface with_header($name, $value) Return an instance with the provided
- *   value replacing the specified header.
- * @method Psr\Http\Message\MessageInterface with_modified_body($in, $out) Return an instance with obfuscated
- *   message body.
- * @method Psr\Http\Message\MessageInterface with_protocol_version($version) Return an instance with the
- *   specified HTTP protocol version.
- * @method $this with_status($code, $reason_phrase) Return an instance with the specified status code and,
- *   optionally, reason phrase.
- * @method Psr\Http\Message\MessageInterface without_header($name) Return an instance without the specified header.
  */
 class Response implements Psr\Http\Message\ResponseInterface
 {
@@ -203,8 +196,7 @@ class Response implements Psr\Http\Message\ResponseInterface
      *     use the defaults as suggested in the HTTP specification.
      * @return static
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public function withStatus($code, $reasonPhrase = ''): self
+    public function withStatus($code, $reasonPhrase = ''): static
     {
         $obj = clone $this;
         $obj->code = $code;

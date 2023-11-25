@@ -38,8 +38,8 @@ use Stancer;
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
- * @property-read mixed $jsonSerialize Alias for `Stancer\Sepa\Check::jsonSerialize()`.
- * @property-read mixed $json_serialize Alias for `Stancer\Sepa\Check::jsonSerialize()`.
+ * @property-read ?mixed $jsonSerialize Alias for `Stancer\Sepa\Check::jsonSerialize()`.
+ * @property-read ?mixed $json_serialize Alias for `Stancer\Sepa\Check::jsonSerialize()`.
  * @property-read ?string $response
  * @property-read ?float $scoreName
  * @property-read ?float $score_name
@@ -109,8 +109,7 @@ class Check extends Stancer\Core\AbstractObject
      * @return string|integer|boolean|null|array<string, mixed>
      */
     #[Override]
-    #[ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $sepa = $this->getSepa();
 
@@ -134,7 +133,7 @@ class Check extends Stancer\Core\AbstractObject
      * @throws Stancer\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
     #[Override]
-    public function send(): Stancer\Core\AbstractObject
+    public function send(): static
     {
         $this->modified[] = 'sepa'; // Mandatory, force `parent::send()` to work.
 

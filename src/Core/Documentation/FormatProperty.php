@@ -26,21 +26,23 @@ class FormatProperty
      * @param array|false|null $setter Setter data.
      * @param string|string[] $type Property types.
      * @param mixed $value Property default value.
+     *
+     * @phpstan-param DocumentationPropertyParameters|false|null $getter
+     * @phpstan-param DocumentationPropertyParameters|false|null $property
+     * @phpstan-param DocumentationPropertyParameters|false|null $setter
      */
-    #[Stancer\WillChange\PHP8_0\UnionType]
-    #[Stancer\WillChange\PHP8_0\MixedType]
     public function __construct(
         protected ?string $description = null,
         protected ?string $fullDescription = null,
-        protected $getter = null,
+        protected array|false|null $getter = null,
         protected ?bool $list = null,
         protected ?bool $nullable = null,
-        protected $property = null,
+        protected array|false|null $property = null,
         protected ?bool $required = null,
         protected ?bool $restricted = null,
-        protected $setter = null,
-        protected $type = null,
-        protected $value = null,
+        protected array|false|null $setter = null,
+        protected string|array|null $type = null,
+        protected mixed $value = null,
     ) {
     }
 

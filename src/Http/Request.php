@@ -13,6 +13,13 @@ use Psr;
 /**
  * Basic HTTP request.
  *
+ * @method static with_body(Psr\Http\Message\StreamInterface $body) Return an instance with the specified message body.
+ * @method static with_modified_body($in, $out) Return an instance with obfuscated message body.
+ * @method static with_request_target(mixed $request_target) Return an instance with the specific request-target.
+ * @method static with_uri(Psr\Http\Message\UriInterface $uri, $preserve_host) Returns an instance with the
+ *   provided URI.
+ * @method static with_header($name, $value) Return an instance with the provided value replacing the specified header.
+ * @method static with_protocol_version($version) Return an instance with the specified HTTP protocol version.
  * @method $this add_header(string $name, $value) Add a value to an header.
  * @method Psr\Http\Message\StreamInterface get_body() Gets the body of the message.
  * @method array get_header($name) Retrieves a message header value by the given case-insensitive name.
@@ -25,20 +32,6 @@ use Psr;
  * @method boolean has_header($name) Checks if a header exists by the given case-insensitive name.
  * @method $this remove_header($name) Remove header by name.
  * @method $this update_uri($uri) Update URI and host header.
- * @method Psr\Http\Message\MessageInterface with_added_header($name, $value) Return an instance with the
- *   specified header appended with the given value.
- * @method Psr\Http\Message\MessageInterface with_body(Psr\Http\Message\StreamInterface $body) Return an instance
- *   with the specified message body.
- * @method Psr\Http\Message\MessageInterface with_header($name, $value) Return an instance with the provided
- *   value replacing the specified header.
- * @method $this with_method($method) Return an instance with the provided HTTP method.
- * @method Psr\Http\Message\MessageInterface with_modified_body($in, $out) Return an instance with obfuscated
- *   message body.
- * @method Psr\Http\Message\MessageInterface with_protocol_version($version) Return an instance with the
- *   specified HTTP protocol version.
- * @method $this with_request_target($request_target) Return an instance with the specific request-target.
- * @method $this with_uri(Psr\Http\Message\UriInterface $uri, $preserve_host) Returns an instance with the provided URI.
- * @method Psr\Http\Message\MessageInterface without_header($name) Return an instance without the specified header.
  */
 class Request implements Psr\Http\Message\RequestInterface
 {
@@ -182,8 +175,7 @@ class Request implements Psr\Http\Message\RequestInterface
      * @param string $method Case-sensitive method.
      * @return static
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public function withMethod($method): self
+    public function withMethod($method): static
     {
         $obj = clone $this;
         $obj->method = strtoupper($method);
@@ -199,9 +191,7 @@ class Request implements Psr\Http\Message\RequestInterface
      * @param mixed $requestTarget New target.
      * @return static
      */
-    #[Stancer\WillChange\PHP8_0\MixedType]
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public function withRequestTarget($requestTarget): self
+    public function withRequestTarget(mixed $requestTarget): static
     {
         // phpcs:disable PEAR.Functions.FunctionCallSignature.SpaceAfterCloseBracket
         // phpcs:disable Squiz.WhiteSpace.ObjectOperatorSpacing.Before
@@ -251,8 +241,7 @@ class Request implements Psr\Http\Message\RequestInterface
      * @return static
      * @throws Stancer\Exceptions\BadMethodCallException For every call.
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public function withUri(Psr\Http\Message\UriInterface $uri, $preserveHost = false): self
+    public function withUri(Psr\Http\Message\UriInterface $uri, $preserveHost = false): static
     {
         $message = 'This method is not implemented for now';
 

@@ -148,7 +148,7 @@ class Payout extends Stancer\Core\AbstractObject
      * @phpstan-param PayoutResponse $data
      */
     #[Override]
-    public function hydrate(array $data): self
+    public function hydrate(array $data): static
     {
         $data['details'] = [];
         $items = [

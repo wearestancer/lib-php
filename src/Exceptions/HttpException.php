@@ -53,8 +53,7 @@ class HttpException extends Exception implements Stancer\Interfaces\ExceptionInt
      *
      * @phpstan-param CreateExceptionParameters $params
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public static function create(array $params = []): Exception
+    public static function create(array $params = []): static
     {
         if (array_key_exists('status', $params)) {
             $class = static::getClassFromStatus($params['status']);

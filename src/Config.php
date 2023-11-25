@@ -5,8 +5,9 @@ namespace Stancer;
 
 use DateTimeZone;
 use GuzzleHttp;
-use Stancer;
 use Psr;
+use SensitiveParameter;
+use Stancer;
 
 /**
  * Handle configuration, connection and credential to API.
@@ -18,7 +19,7 @@ use Psr;
  * @method boolean get_debug() Get debug mode.
  * @method ?\DateTimeZone get_default_time_zone() Get default time zone.
  * @method string get_default_user_agent() Get default user agent.
- * @method static self get_global() Return current instance.
+ * @method static static get_global() Return current instance.
  * @method string get_host() Get API host.
  * @method \Stancer\Http\Client|\GuzzleHttp\ClientInterface get_http_client() Get HTTP client instance.
  * @method \Psr\Log\LoggerInterface get_logger() Get logger handler.
@@ -148,7 +149,7 @@ class Config
      * @param string[] $keys Authentication keys.
      */
     public function __construct(
-        #[\SensitiveParameter]
+        #[SensitiveParameter]
         array $keys
     ) {
         $this->setKeys($keys);
@@ -189,7 +190,11 @@ class Config
      *
      * @return string
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'HTTP "basic" authentication header\'s value', nullable: false, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'HTTP "basic" authentication header\'s value',
+        nullable: false,
+        restricted: true,
+    )]
     public function getBasicAuthHeader(): string
     {
         return 'Basic ' . base64_encode($this->getSecretKey() . ':');
@@ -200,7 +205,12 @@ class Config
      *
      * @return Stancer\Core\Request\Call[]
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Request list recorded on debug mode', list: true, restricted: true, type: Stancer\Core\Request\Call::class)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Request list recorded on debug mode',
+        list: true,
+        restricted: true,
+        type: Stancer\Core\Request\Call::class,
+    )]
     public function getCalls(): array
     {
         return $this->calls;
@@ -211,7 +221,11 @@ class Config
      *
      * @return boolean
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Debug mode', nullable: false, type: Stancer\Core\AbstractObject::BOOLEAN)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Debug mode',
+        nullable: false,
+        type: Stancer\Core\AbstractObject::BOOLEAN,
+    )]
     public function getDebug(): bool
     {
         if (!is_null($this->debug)) {
@@ -282,8 +296,7 @@ class Config
      * @return static
      * @throws Stancer\Exceptions\InvalidArgumentException When no previous instance was stored (use `Config::init()`).
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public static function getGlobal(): self
+    public static function getGlobal(): static
     {
         if (static::$instance instanceof static) {
             return static::$instance;
@@ -314,9 +327,15 @@ class Config
      *
      * @return Stancer\Http\Client|GuzzleHttp\ClientInterface
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'HTTP client instance', nullable: false, type: [Stancer\Http\Client::class, GuzzleHttp\ClientInterface::class])]
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\ReturnTypeWithUnion]
-    public function getHttpClient()
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'HTTP client instance',
+        nullable: false,
+        type: [
+            Stancer\Http\Client::class,
+            GuzzleHttp\ClientInterface::class,
+        ],
+    )]
+    public function getHttpClient(): Stancer\Http\Client|GuzzleHttp\ClientInterface
     {
         if ($this->httpClient) {
             return $this->httpClient;
@@ -334,7 +353,11 @@ class Config
      *
      * @return Psr\Log\LoggerInterface
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Logger handler', nullable: false, type: Psr\Log\LoggerInterface::class)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Logger handler',
+        nullable: false,
+        type: Psr\Log\LoggerInterface::class,
+    )]
     public function getLogger(): Psr\Log\LoggerInterface
     {
         if ($this->logger) {
@@ -490,7 +513,7 @@ class Config
      * @return self
      */
     public static function init(
-        #[\SensitiveParameter]
+        #[SensitiveParameter]
         array $keys
     ): self {
         $obj = new static($keys);
@@ -660,7 +683,7 @@ class Config
      * @return $this
      */
     public function setKeys(
-        #[\SensitiveParameter]
+        #[SensitiveParameter]
         $keys
     ): self {
         if (!is_array($keys)) {
