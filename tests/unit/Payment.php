@@ -2,11 +2,11 @@
 
 namespace Stancer\tests\unit;
 
-use DateTime;
 use DateInterval;
+use DateTime;
+use mock;
 use Stancer;
 use Stancer\Payment as testedClass;
-use mock;
 
 class Payment extends Stancer\Tests\atoum
 {
@@ -616,7 +616,7 @@ class Payment extends Stancer\Tests\atoum
 
         foreach ($oks as $status) {
             $this
-                ->assert('Captured payment, "' . $status . '" is success')
+                ->assert('Captured payment, "' . $status->value . '" is success')
                     ->given($this->newTestedInstance)
                     ->and($this->testedInstance->hydrate(['capture' => true, 'status' => $status]))
                     ->then
@@ -635,7 +635,7 @@ class Payment extends Stancer\Tests\atoum
         }
 
         $this
-            ->assert('Captured payment, "' . Stancer\Payment\Status::AUTHORIZED . '" is an error')
+            ->assert('Captured payment, "' . Stancer\Payment\Status::AUTHORIZED->value . '" is an error')
                 ->given($this->newTestedInstance)
                 ->and($this->testedInstance->hydrate(['capture' => true, 'status' => Stancer\Payment\Status::AUTHORIZED]))
                 ->then
@@ -654,7 +654,7 @@ class Payment extends Stancer\Tests\atoum
 
         foreach ($noks as $status) {
             $this
-                ->assert('Captured payment, "' . $status . '" is an error')
+                ->assert('Captured payment, "' . $status->value . '" is an error')
                     ->given($this->newTestedInstance)
                     ->and($this->testedInstance->hydrate(['capture' => true, 'status' => $status]))
                     ->then
@@ -674,7 +674,7 @@ class Payment extends Stancer\Tests\atoum
 
         foreach ($oks as $status) {
             $this
-                ->assert('Authorization only, "' . $status . '" is success')
+                ->assert('Authorization only, "' . $status->value . '" is success')
                     ->given($this->newTestedInstance)
                     ->and($this->testedInstance->hydrate(['capture' => false, 'status' => $status]))
                     ->then
@@ -693,7 +693,7 @@ class Payment extends Stancer\Tests\atoum
         }
 
         $this
-            ->assert('Authorization only, "' . Stancer\Payment\Status::AUTHORIZED . '" is success')
+            ->assert('Authorization only, "' . Stancer\Payment\Status::AUTHORIZED->value . '" is success')
                 ->given($this->newTestedInstance)
                 ->and($this->testedInstance->hydrate(['capture' => false, 'status' => Stancer\Payment\Status::AUTHORIZED]))
                 ->then
@@ -712,7 +712,7 @@ class Payment extends Stancer\Tests\atoum
 
         foreach ($noks as $status) {
             $this
-                ->assert('Authorization only, "' . $status . '" is an error')
+                ->assert('Authorization only, "' . $status->value . '" is an error')
                     ->given($this->newTestedInstance)
                     ->and($this->testedInstance->hydrate(['capture' => false, 'status' => $status]))
                     ->then
@@ -1003,10 +1003,12 @@ class Payment extends Stancer\Tests\atoum
 
                     ->array($this->testedInstance->getMethodsAllowed())
                         ->hasSize(2)
-                        ->string[0]
-                            ->isIdenticalTo('card')
-                        ->string[1]
-                            ->isIdenticalTo('sepa')
+                        ->object[0]
+                            ->isInstanceOf(Stancer\Payment\MethodsAllowed::class)
+                            ->isIdenticalTo(Stancer\Payment\MethodsAllowed::CARD)
+                        ->object[1]
+                            ->isInstanceOf(Stancer\Payment\MethodsAllowed::class)
+                            ->isIdenticalTo(Stancer\Payment\MethodsAllowed::SEPA)
 
             ->assert('Should only allow known methods')
                 ->given($this->newTestedInstance)
@@ -1027,8 +1029,9 @@ class Payment extends Stancer\Tests\atoum
 
                     ->array($this->testedInstance->getMethodsAllowed())
                         ->hasSize(1)
-                        ->string[0]
-                            ->isIdenticalTo($methods[0])
+                        ->object[0]
+                            ->isInstanceOf(Stancer\Payment\MethodsAllowed::class)
+                            ->isIdenticalTo(Stancer\Payment\MethodsAllowed::CARD)
         ;
 
         $lower = strtolower($currency);
@@ -1300,7 +1303,7 @@ class Payment extends Stancer\Tests\atoum
                     ->then
                         ->array($this->newTestedInstance($id)->getMethodsAllowed())
                             ->hasSize(2)
-                            ->containsValues(['card', 'sepa'])
+                            ->containsValues([Stancer\Payment\MethodsAllowed::CARD, Stancer\Payment\MethodsAllowed::SEPA])
 
                         ->object($this->testedInstance->refund())
                             ->isTestedInstance
@@ -1431,8 +1434,8 @@ class Payment extends Stancer\Tests\atoum
                 ->object($this->testedInstance->getCard())
                     ->isIdenticalTo($card)
 
-                ->string($this->testedInstance->getCurrency())
-                    ->isIdenticalTo('eur')
+                ->enum($this->testedInstance->getCurrency())
+                    ->isIdenticalTo(Stancer\Currency::EUR)
 
                 ->object($this->testedInstance->getCustomer())
                     ->isIdenticalTo($customer)
@@ -1529,8 +1532,8 @@ class Payment extends Stancer\Tests\atoum
                 ->object($this->testedInstance->getSepa())
                     ->isInstanceOf($sepa)
 
-                ->string($this->testedInstance->getCurrency())
-                    ->isIdenticalTo('eur')
+                ->enum($this->testedInstance->getCurrency())
+                    ->isIdenticalTo(Stancer\Currency::EUR)
 
                 ->string($this->testedInstance->getDescription())
                     ->isIdenticalTo('le test restfull v1')
@@ -1645,8 +1648,8 @@ class Payment extends Stancer\Tests\atoum
                 ->object($this->testedInstance->getCard())
                     ->isIdenticalTo($card)
 
-                ->string($this->testedInstance->getCurrency())
-                    ->isIdenticalTo('eur')
+                ->enum($this->testedInstance->getCurrency())
+                    ->isIdenticalTo(Stancer\Currency::EUR)
 
                 ->string($this->testedInstance->getDescription())
                     ->isIdenticalTo('Auth test')
@@ -1680,7 +1683,7 @@ class Payment extends Stancer\Tests\atoum
                 ->string($auth->getReturnUrl())
                     ->isIdenticalTo('https://www.free.fr')
 
-                ->string($auth->getStatus())
+                ->enum($auth->getStatus())
                     ->isIdenticalTo(Stancer\Auth\Status::AVAILABLE)
 
                 // Device object
@@ -1782,8 +1785,8 @@ class Payment extends Stancer\Tests\atoum
                 ->object($this->testedInstance->getCard())
                     ->isIdenticalTo($card)
 
-                ->string($this->testedInstance->getCurrency())
-                    ->isIdenticalTo('eur')
+                ->enum($this->testedInstance->getCurrency())
+                    ->isIdenticalTo(Stancer\Currency::EUR)
 
                 ->string($this->testedInstance->getDescription())
                     ->isIdenticalTo('Auth test')
@@ -1817,7 +1820,7 @@ class Payment extends Stancer\Tests\atoum
                 ->string($auth->getReturnUrl())
                     ->isIdenticalTo('https://www.free.fr')
 
-                ->string($auth->getStatus())
+                ->enum($auth->getStatus())
                     ->isIdenticalTo(Stancer\Auth\Status::AVAILABLE)
 
                 // Device object
@@ -1891,8 +1894,8 @@ class Payment extends Stancer\Tests\atoum
                 ->integer($this->testedInstance->getAmount())
                     ->isIdenticalTo(10000)
 
-                ->string($this->testedInstance->getCurrency())
-                    ->isIdenticalTo('eur')
+                ->enum($this->testedInstance->getCurrency())
+                    ->isIdenticalTo(Stancer\Currency::EUR)
 
                 ->object($this->testedInstance->getCustomer())
                     ->isIdenticalTo($customer)
@@ -1966,8 +1969,8 @@ class Payment extends Stancer\Tests\atoum
                 ->integer($this->testedInstance->getAmount())
                     ->isIdenticalTo(1337)
 
-                ->string($this->testedInstance->getCurrency())
-                    ->isIdenticalTo('eur')
+                ->enum($this->testedInstance->getCurrency())
+                    ->isIdenticalTo(Stancer\Currency::EUR)
 
                 ->string($this->testedInstance->getDescription())
                     ->isIdenticalTo('Auth test')
@@ -2246,7 +2249,7 @@ class Payment extends Stancer\Tests\atoum
                     ->string($this->testedInstance->getAuth()->getReturnUrl())
                         ->isIdenticalTo($https)
 
-                    ->string($this->testedInstance->getAuth()->getStatus())
+                    ->enum($this->testedInstance->getAuth()->getStatus())
                         ->isIdenticalTo(Stancer\Auth\Status::REQUEST)
 
                     ->exception(function () use ($http) {
@@ -2271,7 +2274,7 @@ class Payment extends Stancer\Tests\atoum
                     ->variable($this->testedInstance->getAuth()->getReturnUrl())
                         ->isNull
 
-                    ->string($this->testedInstance->getAuth()->getStatus())
+                    ->enum($this->testedInstance->getAuth()->getStatus())
                         ->isIdenticalTo(Stancer\Auth\Status::REQUEST)
 
             ->assert('With false')
@@ -2328,8 +2331,8 @@ class Payment extends Stancer\Tests\atoum
                     ->object($this->testedInstance->setCurrency($upper))
                         ->isTestedInstance
 
-                    ->string($this->testedInstance->getCurrency())
-                        ->isIdenticalTo($lower)
+                    ->enum($this->testedInstance->getCurrency())
+                        ->isIdenticalTo(Stancer\Currency::from($lower))
 
                     ->boolean($this->testedInstance->isModified())
                         ->isTrue
@@ -2338,14 +2341,14 @@ class Payment extends Stancer\Tests\atoum
                         ->hasSize(1)
                         ->hasKey('currency')
                         ->string['currency']
-                            ->isEqualTo($lower)
+                            ->isIdenticalTo($lower)
 
                 ->assert('Valid currency : ' . $lower)
                     ->object($this->newTestedInstance->setCurrency($lower))
                         ->isTestedInstance
 
-                    ->string($this->testedInstance->getCurrency())
-                        ->isIdenticalTo($lower)
+                    ->enum($this->testedInstance->getCurrency())
+                        ->isIdenticalTo(Stancer\Currency::from($lower))
 
                     ->boolean($this->testedInstance->isModified())
                         ->isTrue
@@ -2354,7 +2357,7 @@ class Payment extends Stancer\Tests\atoum
                         ->hasSize(1)
                         ->hasKey('currency')
                         ->string['currency']
-                            ->isEqualTo($lower)
+                            ->isIdenticalTo($lower)
 
                 ->assert('Invalid currency')
                     ->exception(function () use ($fakeCurrency) {

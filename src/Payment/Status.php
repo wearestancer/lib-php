@@ -8,18 +8,17 @@ use Stancer;
 /**
  * List of a payment status.
  */
-#[Stancer\WillChange\PHP8_1\Enumeration]
-class Status
+enum Status: string
 {
-    public const AUTHORIZE = 'authorize';
-    public const AUTHORIZED = 'authorized';
-    public const CANCELED = 'canceled';
-    public const CAPTURE = 'capture';
-    public const CAPTURE_SENT = 'capture_sent';
-    public const CAPTURED = 'captured';
-    public const DISPUTED = 'disputed';
-    public const EXPIRED = 'expired';
-    public const FAILED = 'failed';
-    public const REFUSED = 'refused';
-    public const TO_CAPTURE = 'to_capture';
+    case AUTHORIZE = 'authorize';
+    case AUTHORIZED = 'authorized';
+    case CANCELED = 'canceled';
+    case CAPTURE = 'capture';
+    case CAPTURE_SENT = 'capture_sent';
+    case CAPTURED = 'captured';
+    case DISPUTED = 'disputed';
+    case EXPIRED = 'expired';
+    case FAILED = 'failed';
+    case REFUSED = 'refused';
+    case TO_CAPTURE = 'to_capture';
 }

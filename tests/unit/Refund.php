@@ -101,7 +101,7 @@ class Refund extends Stancer\Tests\atoum
             $this
                 ->if($this->testedInstance->hydrate(['status' => $status]))
                 ->then
-                    ->string($this->testedInstance->getStatus())
+                    ->enum($this->testedInstance->getStatus())
                         ->isIdenticalTo($this->testedInstance->status)
                         ->isIdenticalTo($status)
             ;

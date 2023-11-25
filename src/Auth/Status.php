@@ -8,16 +8,15 @@ use Stancer;
 /**
  * List of a auth status.
  */
-#[Stancer\WillChange\PHP8_1\Enumeration]
-class Status
+enum Status: string
 {
-    public const ATTEMPTED = 'attempted';
-    public const AVAILABLE = 'available';
-    public const DECLINED = 'declined';
-    public const EXPIRED = 'expired';
-    public const FAILED = 'failed';
-    public const REQUEST = 'request';
-    public const REQUESTED = 'requested';
-    public const SUCCESS = 'success';
-    public const UNAVAILABLE = 'unavailable';
+    case ATTEMPTED = 'attempted';
+    case AVAILABLE = 'available';
+    case DECLINED = 'declined';
+    case EXPIRED = 'expired';
+    case FAILED = 'failed';
+    case REQUEST = 'request';
+    case REQUESTED = 'requested';
+    case SUCCESS = 'success';
+    case UNAVAILABLE = 'unavailable';
 }

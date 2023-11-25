@@ -29,6 +29,11 @@ class atoum extends base\test
         }
     }
 
+    public function choose(array $items): mixed
+    {
+        return $items[array_rand($items)];
+    }
+
     public function fake(): Faker\Generator
     {
         return Faker\Factory::create();

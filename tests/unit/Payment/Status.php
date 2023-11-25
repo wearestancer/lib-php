@@ -10,6 +10,9 @@ class Status extends Stancer\Tests\atoum
     {
         $this
             ->currentlyTestedClass
+                ->isBackedEnum()
+
+            ->currentlyTestedClass
                 ->hasConstant('AUTHORIZE')
                 ->constant('AUTHORIZE')
                     ->isEqualTo('authorize')

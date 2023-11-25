@@ -28,6 +28,9 @@ class StubObject extends Stancer\Core\AbstractObject
             'list' => true,
             'type' => DateTimeInterface::class,
         ],
+        'enum' => [
+            'type' => Stancer\Stub\FakeStatus::class,
+        ],
         'string1' => [
             'required' => true,
             'type' => self::STRING,
@@ -63,10 +66,6 @@ class StubObject extends Stancer\Core\AbstractObject
             'list' => true,
             'type' => self::STRING,
         ],
-        'string7' => [
-            'allowedValues' => Stancer\Stub\FakeStatus::class,
-            'type' => self::STRING,
-        ],
         'integer1' => [
             'required' => true,
             'type' => self::INTEGER,
@@ -94,10 +93,6 @@ class StubObject extends Stancer\Core\AbstractObject
         'integer5' => [
             'allowedValues' => [1, 2, 3],
             'list' => true,
-            'type' => self::INTEGER,
-        ],
-        'integer6' => [
-            'allowedValues' => Stancer\Stub\FakeOptions::class,
             'type' => self::INTEGER,
         ],
         'object1' => [

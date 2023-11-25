@@ -8,12 +8,11 @@ use Stancer;
 /**
  * List of a payout status.
  */
-#[Stancer\WillChange\PHP8_1\Enumeration]
-class Status
+enum Status: string
 {
-    public const FAILED = 'failed';
-    public const PAID = 'paid';
-    public const PENDING = 'pending';
-    public const SENT = 'sent';
-    public const TO_PAY = 'to_pay';
+    case FAILED = 'failed';
+    case PAID = 'paid';
+    case PENDING = 'pending';
+    case SENT = 'sent';
+    case TO_PAY = 'to_pay';
 }

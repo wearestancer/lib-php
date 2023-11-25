@@ -3,12 +3,19 @@
 namespace Stancer\Tests\asserters;
 
 use atoum;
+use BackedEnum;
 
 class currentlyTestedClass extends atoum\atoum\asserters\testedClass
 {
     public function constant($constant, $failMessage = null)
     {
-        return parent::hasConstant($constant, $failMessage);
+        $asserter = parent::hasConstant($constant, $failMessage);
+
+        if ($this->classIsSet()->class->isEnum() === true) {
+            return $this->generator->constant($this->class->getConstant($constant)->value);
+        }
+
+        return $asserter;
     }
 
     public function hasConstant($constant, $failMessage = null)
@@ -29,7 +36,31 @@ class currentlyTestedClass extends atoum\atoum\asserters\testedClass
                 $this->fail($failMessage ?? $this->_('%s does not uses trait %s', $this, $trait));
             }
         } catch (\reflectionException $exception) {
-            throw new exceptions\logic('Argument of ' . __METHOD__ . '() must be a trait', null, $exception);
+            throw new atoum\atoum\exceptions\logic('Argument of ' . __METHOD__ . '() must be a trait', previous: $exception);
+        }
+
+        return $this;
+    }
+
+    public function isBackedEnum(string $failMessage = null): self
+    {
+        $className = $this->isEnum($failMessage)->class->getName();
+
+        if (is_a($className, BackedEnum::class, true)) {
+            $this->pass();
+        } else {
+            $this->fail($failMessage ?: $this->_('%s is not a backed enum', $this));
+        }
+
+        return $this;
+    }
+
+    public function isEnum(string $failMessage = null): self
+    {
+        if ($this->classIsSet()->class->isEnum() === true) {
+            $this->pass();
+        } else {
+            $this->fail($failMessage ?: $this->_('%s is not an enum', $this));
         }
 
         return $this;

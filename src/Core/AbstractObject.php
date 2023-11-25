@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Stancer\Core;
 
+use BackedEnum;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Stancer;
@@ -562,6 +563,10 @@ abstract class AbstractObject implements JsonSerializable
                     $coerce = $model['coerce'];
                 }
 
+                if (is_a($model['type'], BackedEnum::class, true)) {
+                    $coerce = fn($data) => is_string($data) ? $model['type']::from($data) : $data;
+                }
+
                 if ($value && !in_array($model['type'], $types, true) && !is_object($value)) {
                     $class = $model['type'];
 
@@ -760,7 +765,9 @@ abstract class AbstractObject implements JsonSerializable
             };
 
             if (is_object($value)) {
-                if (in_array($prop, $this->modified, true) || ($value instanceof self && $value->isModified())) {
+                if (is_a($value, BackedEnum::class)) {
+                    $value = $value->value;
+                } elseif (in_array($prop, $this->modified, true) || ($value instanceof self && $value->isModified())) {
                     $supp = false;
 
                     if ($value instanceof JsonSerializable) {
@@ -993,6 +1000,10 @@ abstract class AbstractObject implements JsonSerializable
             if ($except && class_exists($except)) {
                 $exceptionClass = $except;
             }
+        }
+
+        if (is_a($model['type'], BackedEnum::class, true) && gettype($value) === 'string') {
+            $value = $model['type']::from($value);
         }
 
         $type = gettype($value);

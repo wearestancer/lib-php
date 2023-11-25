@@ -440,28 +440,15 @@ class StubObject extends Stancer\Tests\atoum
                                 'foo, bar',
                             ]))
 
-            ->assert('Test with objects\' constants (as string)')
+            ->assert('Test with objects\' constants')
                 ->given($this->newTestedInstance)
                 ->if($value = Stancer\Stub\FakeStatus::DONE)
                 ->then
-                    ->object($this->testedInstance->setString7($value))
+                    ->object($this->testedInstance->setEnum($value))
                         ->isTestedInstance
 
-                    ->string($this->testedInstance->getString7())
+                    ->enum($this->testedInstance->getEnum())
                         ->isIdenticalTo($value)
-
-                ->if($value = uniqid())
-                ->then
-                    ->exception(function () use ($value) {
-                        $this->testedInstance->setString7($value);
-                    })
-                        ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
-                        ->message
-                            ->isIdenticalTo(vsprintf('"%s" is not a valid %s, please use one of the following : %s', [
-                                $value,
-                                'string7',
-                                'Stancer\Stub\FakeStatus::ACTIVE, Stancer\Stub\FakeStatus::DONE, Stancer\Stub\FakeStatus::PENDING',
-                            ]))
 
             ->assert('Test with integers')
                 ->given($this->newTestedInstance)
@@ -527,29 +514,6 @@ class StubObject extends Stancer\Tests\atoum
                                 $value,
                                 'integer5',
                                 '1, 2, 3',
-                            ]))
-
-            ->assert('Test with objects\' constants (as integer)')
-                ->given($this->newTestedInstance)
-                ->if($value = Stancer\Stub\FakeOptions::READ)
-                ->then
-                    ->object($this->testedInstance->setInteger6($value))
-                        ->isTestedInstance
-
-                    ->integer($this->testedInstance->getInteger6())
-                        ->isIdenticalTo($value)
-
-                ->if($value = rand(10, PHP_INT_MAX))
-                ->then
-                    ->exception(function () use ($value) {
-                        $this->testedInstance->setInteger6($value);
-                    })
-                        ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
-                        ->message
-                            ->isIdenticalTo(vsprintf('"%s" is not a valid %s, please use one of the following : %s', [
-                                $value,
-                                'integer6',
-                                'Stancer\Stub\FakeOptions::READ, Stancer\Stub\FakeOptions::WRITE',
                             ]))
         ;
     }
@@ -1606,10 +1570,13 @@ class StubObject extends Stancer\Tests\atoum
             ->given($object2 = $this->newTestedInstance(uniqid()))
             ->and($object2->setString1($this->makeStringBetween(10, 20)))
 
+            ->if($enum = $this->choose(Stancer\Stub\FakeStatus::cases()))
+
             ->if($this->newTestedInstance($id = uniqid()))
             ->and($this->testedInstance->setCamelCaseProperty($camelCase = uniqid()))
             ->and($this->testedInstance->forceRestricted1(uniqid()))
             ->and($this->testedInstance->setObject2($object2))
+            ->and($this->testedInstance->setEnum($enum))
             ->then
                 ->assert('An unmodified object with an ID should return only the ID')
                     ->if($this->testedInstance->testOnlyResetModified())
@@ -1620,6 +1587,7 @@ class StubObject extends Stancer\Tests\atoum
 
                 ->assert('A modified object with an ID return a body (without id)')
                     ->if($this->testedInstance->testOnlyAddModified('camel_case_property'))
+                    ->and($this->testedInstance->testOnlyAddModified('enum'))
                     ->and($this->testedInstance->testOnlyAddModified('object2'))
                     ->and($object2->testOnlyResetModified())
                     ->then
@@ -1631,6 +1599,10 @@ class StubObject extends Stancer\Tests\atoum
                             ->hasKey('camel_case_property')
                             ->string['camel_case_property']
                                 ->isIdenticalTo($camelCase)
+
+                            ->hasKey('enum')
+                            ->string['enum']
+                                ->isIdenticalTo($enum->value) // enum are translated
 
                             ->hasKey('object2')
                             ->string['object2']

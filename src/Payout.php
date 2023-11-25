@@ -18,7 +18,7 @@ use Stancer;
  * @method \Stancer\Payout\Details getDetails() Get payout details.
  * @method integer getFees() Get the fees you paid for processing the payments.
  * @method ?string getStatementDescription() Get the statement description, will be used on the transfer.
- * @method string getStatus() Get payout status.
+ * @method \Stancer\Payout\Status getStatus() Get payout status.
  * @method integer get_amount() Get the total credit transfer amount you will receive.
  * @method ?\DateTimeImmutable get_created() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
@@ -32,7 +32,7 @@ use Stancer;
  * @method integer get_fees() Get the fees you paid for processing the payments.
  * @method ?string get_id() Get object ID.
  * @method ?string get_statement_description() Get the statement description, will be used on the transfer.
- * @method string get_status() Get payout status.
+ * @method \Stancer\Payout\Status get_status() Get payout status.
  * @method string get_uri() Get entity resource location.
  *
  * @property-read integer $amount The total credit transfer amount you will receive.
@@ -54,7 +54,7 @@ use Stancer;
  * @property-read ?string $id Object ID.
  * @property-read ?string $statementDescription The statement description, will be used on the transfer.
  * @property-read ?string $statement_description The statement description, will be used on the transfer.
- * @property-read string $status Payout status.
+ * @property-read \Stancer\Payout\Status $status Payout status.
  * @property-read string $uri Entity resource location.
  */
 class Payout extends Stancer\Core\AbstractObject
@@ -112,16 +112,16 @@ class Payout extends Stancer\Core\AbstractObject
             'restricted' => true,
             'type' => self::INTEGER,
         ],
-        'status' => [
-            'desc' => 'Payout status',
-            'nullable' => false,
-            'restricted' => true,
-            'type' => self::STRING,
-        ],
         'statementDescription' => [
             'desc' => 'The statement description, will be used on the transfer',
             'restricted' => true,
             'type' => self::STRING,
+        ],
+        'status' => [
+            'desc' => 'Payout status',
+            'nullable' => false,
+            'restricted' => true,
+            'type' => Stancer\Payout\Status::class,
         ],
     ];
 

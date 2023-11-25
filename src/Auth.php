@@ -11,7 +11,7 @@ use Stancer;
  * @method ?\DateTimeImmutable getCreated() Get creation date.
  * @method ?string getRedirectUrl() Get the redirection URL to start an authentification session.
  * @method ?string getReturnUrl() Get the return URL at end of the authentification session.
- * @method string getStatus() Get the authentification status.
+ * @method \Stancer\Auth\Status getStatus() Get the authentification status.
  * @method ?\DateTimeImmutable get_created() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_endpoint() Get API endpoint.
@@ -19,7 +19,7 @@ use Stancer;
  * @method ?string get_id() Get object ID.
  * @method ?string get_redirect_url() Get the redirection URL to start an authentification session.
  * @method ?string get_return_url() Get the return URL at end of the authentification session.
- * @method string get_status() Get the authentification status.
+ * @method \Stancer\Auth\Status get_status() Get the authentification status.
  * @method string get_uri() Get entity resource location.
  * @method $this set_return_url(string $return_url) Set the return URL at end of the authentification session.
  *
@@ -35,7 +35,7 @@ use Stancer;
  * @property-read ?string $id Object ID.
  * @property-read ?string $redirectUrl The redirection URL to start an authentification session.
  * @property-read ?string $redirect_url The redirection URL to start an authentification session.
- * @property-read string $status The authentification status.
+ * @property-read \Stancer\Auth\Status $status The authentification status.
  * @property-read string $uri Entity resource location.
  */
 class Auth extends Stancer\Core\AbstractObject
@@ -62,7 +62,7 @@ class Auth extends Stancer\Core\AbstractObject
             'desc' => 'The authentification status',
             'exportable' => true,
             'restricted' => true,
-            'type' => self::STRING,
+            'type' => Stancer\Auth\Status::class,
             'value' => Stancer\Auth\Status::REQUEST,
         ],
     ];

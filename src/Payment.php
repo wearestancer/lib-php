@@ -7,11 +7,12 @@ use DateTime;
 use DateTimeImmutable;
 use Override;
 use Stancer;
+use ValueError;
 
 /**
  * Representation of a payment.
  *
- * @method static add_methods_allowed(string $method) Add an allowed method.
+ * @method static add_methods_allowed($method) Add an allowed method.
  * @method static array filter_list_params(array $terms) Filter for list method.
  * @method ?integer getAmount() Get transaction amount.
  * @method ?\Stancer\Auth getAuth() Get auth object, must be set for 3-D Secure card payments.
@@ -19,20 +20,20 @@ use Stancer;
  * @method ?\Stancer\Card getCard() Get card object.
  * @method ?string getCountry()
  * @method ?\DateTimeImmutable getCreated() Get creation date.
- * @method 'aud'|'cad'|'chf'|'dkk'|'eur'|'gbp'|'jpy'|'nok'|'pln'|'sek'|'usd'|null getCurrency() Get processed currency.
+ * @method ?\Stancer\Currency getCurrency() Get processed currency.
  * @method ?\Stancer\Customer getCustomer() Get customer object.
  * @method ?\DateTimeImmutable getDateBank() Get delivery date of the funds traded by the bank.
  * @method ?string getDescription() Get payment description.
  * @method ?\Stancer\Device getDevice() Get customer's device object.
  * @method ?string getMethod() Get payment method used.
- * @method array<'card'|'sepa'> getMethodsAllowed() Get list of payment methods allowed for this payment.
+ * @method Stancer\Payment\MethodsAllowed[] getMethodsAllowed() Get list of payment methods allowed for this payment.
  * @method ?string getOrderId() Get order identifier.
  * @method Stancer\Refund[] getRefunds() Get array of refund objects.
  * @method ?string getResponse() Get response of the bank processing.
  * @method ?string getResponseAuthor()
  * @method ?string getReturnUrl() Get URL to redirect back your customer after processing the payment.
  * @method ?\Stancer\Sepa getSepa() Get SEPA object.
- * @method ?string getStatus() Get status of the payment.
+ * @method ?\Stancer\Payment\Status getStatus() Get status of the payment.
  * @method ?string getUniqueId() Get unicity key.
  * @method ?integer get_amount() Get transaction amount.
  * @method ?\Stancer\Auth get_auth() Get auth object, must be set for 3-D Secure card payments.
@@ -41,7 +42,7 @@ use Stancer;
  * @method ?string get_country()
  * @method ?\DateTimeImmutable get_created() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
- * @method 'aud'|'cad'|'chf'|'dkk'|'eur'|'gbp'|'jpy'|'nok'|'pln'|'sek'|'usd'|null get_currency() Get processed currency.
+ * @method ?\Stancer\Currency get_currency() Get processed currency.
  * @method ?\Stancer\Customer get_customer() Get customer object.
  * @method ?\DateTimeImmutable get_date_bank() Get delivery date of the funds traded by the bank.
  * @method ?string get_description() Get payment description.
@@ -50,7 +51,7 @@ use Stancer;
  * @method string get_entity_name() Get entity name.
  * @method ?string get_id() Get object ID.
  * @method ?string get_method() Get payment method used.
- * @method array<'card'|'sepa'> get_methods_allowed() Get list of payment methods allowed for this payment.
+ * @method Stancer\Payment\MethodsAllowed[] get_methods_allowed() Get list of payment methods allowed for this payment.
  * @method ?string get_order_id() Get order identifier.
  * @method string get_payment_page_url(array $params = []) Return the URL for Stancer payment page.
  * @method int get_refundable_amount() Return the refundable amount.
@@ -60,7 +61,7 @@ use Stancer;
  * @method ?string get_response_author()
  * @method ?string get_return_url() Get URL to redirect back your customer after processing the payment.
  * @method ?\Stancer\Sepa get_sepa() Get SEPA object.
- * @method ?string get_status() Get status of the payment.
+ * @method ?\Stancer\Payment\Status get_status() Get status of the payment.
  * @method ?string get_unique_id() Get unicity key.
  * @method string get_uri() Get entity resource location.
  * @method boolean is_error() Indicates if payment is an error.
@@ -74,22 +75,23 @@ use Stancer;
  * @method $this setDescription(string $description) Set payment description.
  * @method $this setDevice(\Stancer\Device $device) Set customer's device object.
  * @method $this setOrderId(string $orderId) Set order identifier.
- * @method $this setStatus(string $status) Set status of the payment.
+ * @method $this setStatus(\Stancer\Payment\Status $status) Set status of the payment.
  * @method $this setUniqueId(string $uniqueId) Set unicity key.
  * @method $this set_amount(integer $amount) Set transaction amount.
  * @method $this set_auth(\Stancer\Auth|boolean|string $auth) Set auth object, must be set for 3-D Secure card payments.
  * @method $this set_capture(boolean $capture) Set capture immediately the payment.
  * @method $this set_card(\Stancer\Card $card) Set card object.
  * @method $this set_country(string $country)
- * @method $this set_currency(string $currency) Set processed currency.
+ * @method $this set_currency(\Stancer\Currency $currency) Set processed currency.
  * @method $this set_customer(\Stancer\Customer $customer) Set customer object.
  * @method $this set_description(string $description) Set payment description.
  * @method $this set_device(\Stancer\Device $device) Set customer's device object.
- * @method $this set_methods_allowed(string[] $methods_allowed) Set list of payment methods allowed for this payment.
+ * @method $this set_methods_allowed(Stancer\Payment\MethodsAllowed[] $methods_allowed) Set list of payment
+ *   methods allowed for this payment.
  * @method $this set_order_id(string $order_id) Set order identifier.
  * @method $this set_return_url(string $return_url) Set URL to redirect back your customer after processing the payment.
  * @method $this set_sepa(\Stancer\Sepa $sepa) Set SEPA object.
- * @method $this set_status(string $status) Set status of the payment.
+ * @method $this set_status(\Stancer\Payment\Status $status) Set status of the payment.
  * @method $this set_unique_id(string $unique_id) Set unicity key.
  *
  * @phpstan-method $this addRefunds(Stancer\Refund $refund)
@@ -99,18 +101,18 @@ use Stancer;
  * @property ?boolean $capture Capture immediately the payment.
  * @property ?\Stancer\Card $card Card object.
  * @property ?string $country
- * @property 'aud'|'cad'|'chf'|'dkk'|'eur'|'gbp'|'jpy'|'nok'|'pln'|'sek'|'usd'|null $currency Processed currency.
+ * @property ?\Stancer\Currency $currency Processed currency.
  * @property ?\Stancer\Customer $customer Customer object.
  * @property ?string $description Payment description.
  * @property ?\Stancer\Device $device Customer's device object.
- * @property array<'card'|'sepa'> $methodsAllowed List of payment methods allowed for this payment.
- * @property array<'card'|'sepa'> $methods_allowed List of payment methods allowed for this payment.
+ * @property Stancer\Payment\MethodsAllowed[] $methodsAllowed List of payment methods allowed for this payment.
+ * @property Stancer\Payment\MethodsAllowed[] $methods_allowed List of payment methods allowed for this payment.
  * @property ?string $orderId Order identifier.
  * @property ?string $order_id Order identifier.
  * @property ?string $returnUrl URL to redirect back your customer after processing the payment.
  * @property ?string $return_url URL to redirect back your customer after processing the payment.
  * @property ?\Stancer\Sepa $sepa SEPA object.
- * @property ?string $status Status of the payment.
+ * @property ?\Stancer\Payment\Status $status Status of the payment.
  * @property ?string $uniqueId Unicity key.
  * @property ?string $unique_id Unicity key.
  *
@@ -170,8 +172,6 @@ class Payment extends Stancer\Core\AbstractObject
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    #[Stancer\WillChange\PHP8_1\Enumeration('Currency will change')]
-    #[Stancer\WillChange\PHP8_1\Enumeration('Methods allowed will change')]
     protected $dataModel = [
         'amount' => [
             'desc' => 'Transaction amount',
@@ -195,22 +195,8 @@ class Payment extends Stancer\Core\AbstractObject
         ],
         'currency' => [
             'desc' => 'Processed currency',
-            'allowedValues' => [
-                'aud',
-                'cad',
-                'chf',
-                'dkk',
-                'eur',
-                'gbp',
-                'jpy',
-                'nok',
-                'pln',
-                'sek',
-                'usd',
-            ],
-            'coerce' => Stancer\Core\Type\Helper::TO_LOWER,
             'required' => true,
-            'type' => self::STRING,
+            'type' => Stancer\Currency::class,
         ],
         'customer' => [
             'desc' => 'Customer object',
@@ -240,12 +226,8 @@ class Payment extends Stancer\Core\AbstractObject
         ],
         'methodsAllowed' => [
             'desc' => 'List of payment methods allowed for this payment',
-            'allowedValues' => [
-                'card',
-                'sepa',
-            ],
             'list' => true,
-            'type' => self::STRING,
+            'type' => Stancer\Payment\MethodsAllowed::class,
         ],
         'orderId' => [
             'desc' => 'Order identifier',
@@ -291,7 +273,7 @@ class Payment extends Stancer\Core\AbstractObject
         ],
         'status' => [
             'desc' => 'Status of the payment',
-            'type' => self::STRING,
+            'type' => Stancer\Payment\Status::class,
         ],
         'uniqueId' => [
             'desc' => 'Unicity key',
@@ -306,16 +288,16 @@ class Payment extends Stancer\Core\AbstractObject
     /**
      * Add an allowed method.
      *
-     * @param string $method New method.
+     * @param Stancer\Payment\MethodsAllowed|string $method New method.
      * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When currency is EUR and trying to set "sepa" method.
      */
-    public function addMethodsAllowed(string $method): static
+    public function addMethodsAllowed(Stancer\Payment\MethodsAllowed|string $method): static
     {
         $currency = $this->getCurrency();
 
-        if ($currency && $method && $method === 'sepa' && $currency !== 'eur') {
-            $message = sprintf('You can not use "%s" method with "%s" currency.', $method, $currency);
+        if ($currency && $method && $method === 'sepa' && $currency->value !== 'eur') {
+            $message = sprintf('You can not use "%s" method with "%s" currency.', $method, $currency->value);
 
             throw new Stancer\Exceptions\InvalidArgumentException($message);
         }
@@ -631,9 +613,10 @@ class Payment extends Stancer\Core\AbstractObject
         $refund->hydrate(['payment' => $this]);
 
         if ($amount) {
+            $currency = $this->getCurrency();
             $params = [
                 $amount / 100,
-                strtoupper($this->getCurrency() ?? ''),
+                $currency ? strtoupper($currency->value) : '',
                 ($this->getAmount() ?? 0) / 100,
                 $this->getRefundedAmount() / 100,
             ];
@@ -754,7 +737,8 @@ class Payment extends Stancer\Core\AbstractObject
         $params = [
             // @phpstan-ignore-next-line amount is defined or an exception should be thrown before
             $this->getAmount() / 100,
-            $this->getCurrency(),
+            // @phpstan-ignore-next-line same for currency
+            $this->getCurrency()->value,
         ];
         $message = vsprintf('Payment of %.02f %s without payment method', $params);
 
@@ -823,43 +807,86 @@ class Payment extends Stancer\Core\AbstractObject
     /**
      * Set the currency.
      *
-     * @param string $currency The currency.
+     * @param Stancer\Currency|string $currency The currency.
      * @return $this
      * @throws Stancer\Exceptions\InvalidCurrencyException When currency is EUR and "sepa" is already allowed.
+     * @throws Stancer\Exceptions\InvalidCurrencyException When the currency is invalid.
      */
-    public function setCurrency(string $currency): static
+    public function setCurrency(Stancer\Currency|string $currency): static
     {
-        $method = $this->getMethod();
+        try {
+            if (is_string($currency)) {
+                $new = Stancer\Currency::from(strtolower($currency));
+            } else {
+                $new = $currency;
+            }
+        } catch (ValueError $exception) {
+            $params = [
+                $currency,
+                implode(', ', array_map(fn(Stancer\Currency $case): string => $case->value, Stancer\Currency::cases())),
+            ];
+            $message = vsprintf('"%s" is not a valid currency, please use one of the following : %s', $params);
+
+            throw new Stancer\Exceptions\InvalidCurrencyException($message, previous: $exception);
+        }
+
         $methods = $this->getMethodsAllowed();
 
-        if (!$method && $currency && $methods && in_array('sepa', $methods, true) && strtolower($currency) !== 'eur') {
-            $message = sprintf('You can not use "%s" currency with "%s" method.', strtolower($currency), 'sepa');
+        if (in_array(Stancer\Payment\MethodsAllowed::SEPA, $methods, true) && $new->value !== 'eur') {
+            $message = sprintf('You can not use "%s" currency with "%s" method.', $new->value, 'sepa');
 
             throw new Stancer\Exceptions\InvalidCurrencyException($message);
         }
 
-        return parent::setCurrency($currency);
+        return parent::setCurrency($new);
     }
 
     /**
      * Set allowed methods.
      *
-     * @param string[] $methods New methods.
+     * @param non-empty-array<Stancer\Currency|string> $methods New methods.
      * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When currency is EUR and trying to set "sepa" method.
+     * @throws Stancer\Exceptions\InvalidArgumentException When the method is invalid.
      */
     public function setMethodsAllowed(array $methods): static
     {
+        $new = [];
+        $cast = fn(Stancer\Payment\MethodsAllowed $case): string => $case->value;
+
+        foreach ($methods as $method) {
+            try {
+                if (is_string($method)) {
+                    $new[] = Stancer\Payment\MethodsAllowed::from(strtolower($method));
+                } else {
+                    $new[] = $method;
+                }
+            } catch (ValueError $exception) {
+                $params = [
+                    $method,
+                    implode(', ', array_map($cast, Stancer\Payment\MethodsAllowed::cases())),
+                ];
+                $message = vsprintf('"%s" is not a valid method, please use one of the following : %s', $params);
+
+                throw new Stancer\Exceptions\InvalidArgumentException($message, previous: $exception);
+            }
+        }
+
         $currency = $this->getCurrency();
         $method = $this->getMethod();
 
-        if (!$method && $currency && $methods && in_array('sepa', $methods, true) && $currency !== 'eur') {
-            $message = sprintf('You can not use "%s" method with "%s" currency.', 'sepa', $currency);
+        if (
+            !$method
+            && $currency
+            && in_array(Stancer\Payment\MethodsAllowed::SEPA, $new, true)
+            && $currency->value !== 'eur'
+        ) {
+            $message = sprintf('You can not use "%s" method with "%s" currency.', 'sepa', $currency->value);
 
             throw new Stancer\Exceptions\InvalidArgumentException($message);
         }
 
-        return parent::setMethodsAllowed($methods);
+        return parent::setMethodsAllowed($new);
     }
 
     /**

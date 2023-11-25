@@ -8,12 +8,11 @@ use Stancer;
 /**
  * List of a sepa check status.
  */
-#[Stancer\WillChange\PHP8_1\Enumeration]
-class Status
+enum Status: string
 {
-    public const AVAILABLE = 'available';
-    public const CHECK_ERROR = 'check_error';
-    public const CHECK_SENT = 'check_sent';
-    public const CHECKED = 'checked';
-    public const UNAVAILABLE = 'unavailable';
+    case AVAILABLE = 'available';
+    case CHECKED = 'checked';
+    case ERROR = 'check_error';
+    case SENT = 'check_sent';
+    case UNAVAILABLE = 'unavailable';
 }

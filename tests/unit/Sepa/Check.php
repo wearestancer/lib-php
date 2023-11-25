@@ -6,6 +6,11 @@ use Stancer;
 
 class Check extends Stancer\Tests\atoum
 {
+    public function randomStatus(): Stancer\Sepa\Check\Status
+    {
+        return $this->choose(Stancer\Sepa\Check\Status::cases());
+    }
+
     public function testClass()
     {
         $this
@@ -187,13 +192,13 @@ class Check extends Stancer\Tests\atoum
                     ->message
                         ->isIdenticalTo('You are not allowed to modify "status".')
 
-            ->if($status = uniqid())
+            ->if($status = $this->randomStatus())
             ->and($this->testedInstance->hydrate(['status' => $status]))
             ->then
-                ->string($this->testedInstance->getStatus())
+                ->enum($this->testedInstance->getStatus())
                     ->isIdenticalTo($status)
 
-                ->string($this->testedInstance->status)
+                ->enum($this->testedInstance->status)
                     ->isIdenticalTo($status)
         ;
     }
@@ -289,7 +294,7 @@ class Check extends Stancer\Tests\atoum
                 ->given($response = $this->getRandomString(2))
                 ->and($score = rand(1, 100))
                 ->and($birth = rand(0, 50) > 50)
-                ->and($status = $this->getRandomString(10))
+                ->and($status = $this->randomStatus())
 
                 ->if($data = [
                     'date_birth' => $birth,

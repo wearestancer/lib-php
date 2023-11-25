@@ -16,7 +16,7 @@ use Stancer;
  * @method ?boolean getDateBirth()
  * @method ?string getResponse()
  * @method ?float getScoreName()
- * @method ?string getStatus()
+ * @method ?\Stancer\Sepa\Check\Status getStatus()
  * @method ?\DateTimeImmutable get_created() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method ?boolean get_date_birth()
@@ -26,7 +26,7 @@ use Stancer;
  * @method ?string get_response()
  * @method ?float get_score_name()
  * @method ?\Stancer\Sepa get_sepa()
- * @method ?string get_status()
+ * @method ?\Stancer\Sepa\Check\Status get_status()
  * @method string get_uri() Get entity resource location.
  *
  * @property-read ?\DateTimeImmutable $created Creation date.
@@ -44,7 +44,7 @@ use Stancer;
  * @property-read ?float $scoreName
  * @property-read ?float $score_name
  * @property-read ?\Stancer\Sepa $sepa
- * @property-read ?string $status
+ * @property-read ?\Stancer\Sepa\Check\Status $status
  * @property-read string $uri Entity resource location.
  */
 class Check extends Stancer\Core\AbstractObject
@@ -80,7 +80,7 @@ class Check extends Stancer\Core\AbstractObject
         ],
         'status' => [
             'restricted' => true,
-            'type' => self::STRING,
+            'type' => Stancer\Sepa\Check\Status::class,
         ],
     ];
 
