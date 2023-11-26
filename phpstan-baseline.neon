@@ -11,11 +11,6 @@ parameters:
 			path: src/Core/AbstractObject.php
 
 		-
-			message: "#^Property Stancer\\\\Core\\\\AbstractObject\\:\\:\\$apiData \\(array\\<string, mixed\\>\\) does not accept mixed\\.$#"
-			count: 1
-			path: src/Core/AbstractObject.php
-
-		-
 			message: "#^Call to function method_exists\\(\\) with class\\-string\\<static\\(Stancer\\\\Payment\\)\\> and 'filterListParams' will always evaluate to true\\.$#"
 			count: 1
 			path: src/Payment.php

@@ -1211,13 +1211,11 @@ class StubObject extends Stancer\Tests\atoum
     public function testGet()
     {
         $this
-            ->given($timestamp = rand(946681200, 1893452400))
-            ->and($string1 = $this->makeStringBetween(10, 20))
+            ->given($string1 = $this->makeStringBetween(10, 20))
             ->and($integer1 = $this->makeIntegerBetween(10, 20))
             ->and($integer2 = $this->makeIntegerBetween(10, 20))
             ->and($camelCaseProperty = $this->makeStringBetween(10, 20))
             ->and($objectData = ['integer2' => $integer2])
-            ->and($object2 = $this->newTestedInstance($objectData))
             ->and($unknownKey = uniqid())
             ->and($unknownValue = uniqid())
             ->and($data = [

@@ -68,8 +68,11 @@ abstract class AbstractObject implements JsonSerializable
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     public const STRING = 'string';
 
-    /** @var array<string, mixed> */
-    protected $apiData;
+    /**
+     * @var array|string
+     * @phpstan-var array<string, mixed>|string
+     */
+    protected $apiData = [];
 
     /** @var string */
     #[Stancer\WillChange\PHP8_1\FinalClassConstants]
@@ -371,12 +374,10 @@ abstract class AbstractObject implements JsonSerializable
             }
 
             foreach ($value as $val) {
-                $coercedValues[] = $coerce($val);
-                $this->validateDataModel($property, $coerce($val));
+                $coercedValues[] = $this->validateDataModel($property, $coerce($val));
             }
         } else {
-            $coercedValues = $coerce($value);
-            $this->validateDataModel($property, $coerce($value));
+            $coercedValues = $this->validateDataModel($property, $coerce($value));
         }
 
         $this->dataModel[$property]['value'] = $coercedValues;
@@ -416,14 +417,18 @@ abstract class AbstractObject implements JsonSerializable
         if ($attr && $this->apiData) {
             $prop = Stancer\Helper::camelCaseToSnakeCase($attr);
 
-            if (array_key_exists($prop, $this->apiData)) {
-                return $this->apiData[$prop];
+            if (is_array($this->apiData) && array_key_exists($prop, $this->apiData)) {
+                return $this->apiData[$prop] ?? null;
             }
 
             return null;
         }
 
-        return $this->apiData;
+        if ($this->apiData) {
+            return $this->apiData;
+        }
+
+        return null;
     }
 
     /**
@@ -809,23 +814,26 @@ abstract class AbstractObject implements JsonSerializable
 
         $request = new Request();
         $response = $request->get($this);
-        /** @phpstan-var array<string, mixed> $body */
+        /** @var array<string, array<string, string>|string> $body */
         $body = json_decode($response, true);
 
         $this->cleanModified = true;
         $this->populated = true;
-        $this->apiData = $body;
 
-        $this->hydrate($body);
+        if ($body) {
+            $this->apiData = $body;
 
-        $struct = $this->toArray();
+            $this->hydrate($body);
 
-        foreach ($struct as $prop => $value) {
-            if (is_object($value) && $value instanceof self) {
-                $tmp = Stancer\Helper::camelCaseToSnakeCase($prop);
+            $struct = $this->toArray();
 
-                if (array_key_exists($tmp, $body)) {
-                    $value->apiData = $body[$tmp];
+            foreach ($struct as $prop => $value) {
+                if (is_object($value) && $value instanceof self) {
+                    $tmp = Stancer\Helper::camelCaseToSnakeCase($prop);
+
+                    if (array_key_exists($tmp, $body)) {
+                        $value->apiData = $body[$tmp];
+                    }
                 }
             }
         }
@@ -968,12 +976,12 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @param string $property Property reference.
      * @param mixed $value Value to validate.
-     * @return $this
+     * @return mixed Validated value.
      * @throws Stancer\Exceptions\InvalidArgumentException When the value do not match expected pattern.
      */
     #[Stancer\WillChange\PHP8_0\MixedType]
     #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    protected function validateDataModel(string $property, $value): self
+    protected function validateDataModel(string $property, $value)
     {
         $model = $this->getModel($property);
 
@@ -1122,6 +1130,6 @@ abstract class AbstractObject implements JsonSerializable
             throw new $exceptionClass($message);
         }
 
-        return $this;
+        return $value;
     }
 }

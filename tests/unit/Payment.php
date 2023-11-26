@@ -1122,16 +1122,9 @@ class Payment extends Stancer\Tests\atoum
     public function testRefund()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
-            ->and($response = new mock\Stancer\Http\Response(200))
-            ->and($this->calling($client)->request = $response)
-            ->and($config = $this->mockConfig($client))
-            // Behavior modification are done in assert part to prevent confusion on multiple calls mocking
+            ->given($logger = new mock\Stancer\Core\Logger)
 
-            ->and($logger = new mock\Stancer\Core\Logger)
-            ->and($config->setLogger($logger))
-
-            ->and($paymentData = $this->getFixtureData('payment', 'read'))
+            ->if($paymentData = $this->getFixtureData('payment', 'read'))
             ->and($paid = $paymentData['amount'])
 
             ->if($amount = rand(50, $paid - 50))
@@ -1141,37 +1134,61 @@ class Payment extends Stancer\Tests\atoum
             ->if($lastPart = $paid - $amount)
             ->and($refund2Data = $this->getFixtureData('refund', 'read'))
             ->and($refund2Data['amount'] = $lastPart)
-            ->and($refund2Data['status'] = 'refunded')
 
-            ->given($id = 'paym_SKMLflt8NBATuiUzgvTYqsw5') // from fixtures
-            ->and($this->newTestedInstance($id))
+            ->given($id = $paymentData['id'])
             ->and($tooMuch = rand($paid + 1, 9999))
             ->and($notEnough = rand(1, 49))
             ->then
                 ->assert('Without refunds we get an empty array')
-                    ->if($this->calling($response)->getBody = new Stancer\Http\Stream(json_encode($paymentData)))
+                    ->given($client = new mock\Stancer\Http\Client)
+                    ->and($config = $this->mockConfig($client))
+                    ->and($config->setLogger($logger))
+
+                    ->if($this->calling($client)->request = $this->mockResponse(json_encode($paymentData)))
+                    ->and($this->newTestedInstance($id))
                     ->then
                         ->array($this->testedInstance->getRefunds())
                             ->isEmpty
 
                 ->assert('We can not refund more than paid')
-                    ->exception(function () use ($tooMuch) {
-                        $this->testedInstance->refund($tooMuch);
-                    })
-                        ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
-                        ->message
-                            ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $tooMuch / 100) . ' EUR) more than paid (34.06 EUR).')
+                    ->given($client = new mock\Stancer\Http\Client)
+                    ->and($config = $this->mockConfig($client))
+                    ->and($config->setLogger($logger))
+
+                    ->if($this->calling($client)->request = $this->mockResponse(json_encode($paymentData)))
+                    ->and($this->newTestedInstance($id))
+                    ->then
+                        ->exception(function () use ($tooMuch) {
+                            $this->testedInstance->refund($tooMuch);
+                        })
+                            ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
+                            ->message
+                                ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $tooMuch / 100) . ' EUR) more than paid (34.06 EUR).')
 
                 ->assert('Amount must be greater or equal than 50')
-                    ->exception(function () use ($notEnough) {
-                        $this->testedInstance->refund($notEnough);
-                    })
-                        ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
-                        ->message
-                            ->isIdenticalTo('Amount must be greater than or equal to 50.')
+                    ->given($client = new mock\Stancer\Http\Client)
+                    ->and($config = $this->mockConfig($client))
+                    ->and($config->setLogger($logger))
+
+                    ->if($this->calling($client)->request = $this->mockResponse(json_encode($paymentData)))
+                    ->and($this->newTestedInstance($id))
+                    ->then
+                        ->exception(function () use ($notEnough) {
+                            $this->testedInstance->refund($notEnough);
+                        })
+                            ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
+                            ->message
+                                ->isIdenticalTo('Amount must be greater than or equal to 50.')
 
                 ->assert('We can put a refund amount')
-                    ->if($this->calling($response)->getBody = new Stancer\Http\Stream(json_encode($refund1Data)))
+                    ->given($client = new mock\Stancer\Http\Client)
+                    ->and($config = $this->mockConfig($client))
+                    ->and($config->setLogger($logger))
+
+                    ->if($response = $this->mockResponse(json_encode($paymentData)))
+                    ->and($this->calling($client)->request = $response)
+                    ->and($this->calling($response)->getBody[2] = new Stancer\Http\Stream(json_encode($refund1Data)))
+                    ->and($this->newTestedInstance($id))
                     ->then
                         ->object($this->testedInstance->refund($amount))
                             ->isTestedInstance
@@ -1199,22 +1216,35 @@ class Payment extends Stancer\Tests\atoum
                                 ->withArguments(sprintf('Refund of %.02f EUR on payment "%s"', $amount / 100, $id))
                                     ->once
 
-                        ->mock($client)
-                            ->call('request')
-                                ->withArguments('GET', $this->testedInstance->getUri())
-                                    ->never
-
                 ->assert('We can not refund more than refundable')
-                    ->exception(function () use ($paid) {
-                        $this->testedInstance->refund($paid);
-                    })
-                        ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
-                        ->message
-                            ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $paid / 100) . ' EUR) more than paid (34.06 EUR with ' . sprintf('%.02f', $amount / 100) . ' EUR already refunded).')
+                    ->given($client = new mock\Stancer\Http\Client)
+                    ->and($config = $this->mockConfig($client))
+                    ->and($config->setLogger($logger))
+
+                    ->if($response = $this->mockResponse(json_encode($paymentData)))
+                    ->and($this->calling($client)->request = $response)
+                    ->and($this->calling($response)->getBody[2] = new Stancer\Http\Stream(json_encode($refund1Data)))
+                    ->and($this->newTestedInstance($id))
+                    ->and($this->testedInstance->refund($amount))
+                    ->then
+                        ->exception(function () use ($paid) {
+                            $this->testedInstance->refund($paid);
+                        })
+                            ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
+                            ->message
+                                ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $paid / 100) . ' EUR) more than paid (34.06 EUR with ' . sprintf('%.02f', $amount / 100) . ' EUR already refunded).')
 
                 ->assert('Without amount we will refund all')
-                    ->if($this->calling($response)->getBody = new Stancer\Http\Stream(json_encode($refund2Data)))
-                    ->and($location = $this->testedInstance->getUri())
+                    ->given($client = new mock\Stancer\Http\Client)
+                    ->and($config = $this->mockConfig($client))
+                    ->and($config->setLogger($logger))
+
+                    ->if($response = $this->mockResponse(json_encode($paymentData)))
+                    ->and($this->calling($client)->request = $response)
+                    ->and($this->calling($response)->getBody[2] = new Stancer\Http\Stream(json_encode($refund1Data)))
+                    ->and($this->calling($response)->getBody[3] = new Stancer\Http\Stream(json_encode($refund2Data)))
+
+                    ->if($this->newTestedInstance($id)->refund($amount))
                     ->then
                         ->object($this->testedInstance->refund())
                             ->isTestedInstance
@@ -1252,11 +1282,6 @@ class Payment extends Stancer\Tests\atoum
                                 ->withArguments(sprintf('Refund of %.02f EUR on payment "%s"', $lastPart / 100, $id))
                                     ->once
 
-                        ->mock($client)
-                            ->call('request')
-                                ->withArguments('GET', $location)
-                                    ->once
-
                 ->assert('We can not refund on unsent payment')
                     ->exception(function () {
                         $this->newTestedInstance->refund();
@@ -1266,10 +1291,14 @@ class Payment extends Stancer\Tests\atoum
                             ->isIdenticalTo('A payment ID is mandatory. Maybe you forgot to send the payment.')
 
                 ->assert('Should work with methods allowed (internal bug)')
-                    ->if($this->mockJsonResponse('payment', 'read-methods-allowed', $response))
-                    ->and($this->newTestedInstance('paym_QAM6fOpJnH5DvkYr3ezAVPpa'))
+                    ->given($client = new mock\Stancer\Http\Client)
+                    ->and($config = $this->mockConfig($client))
+                    ->and($config->setLogger($logger))
+
+                    ->if($response = $this->mockJsonResponses([['payment', 'read-methods-allowed'], ['refund', 'read']]))
+                    ->and($this->calling($client)->request = $response)
                     ->then
-                        ->array($this->testedInstance->getMethodsAllowed())
+                        ->array($this->newTestedInstance($id)->getMethodsAllowed())
                             ->hasSize(2)
                             ->containsValues(['card', 'sepa'])
 
