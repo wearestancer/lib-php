@@ -358,13 +358,24 @@ class Payment extends Stancer\Tests\atoum
     public function testGetEndpoint()
     {
         $this
-            ->given($this->newTestedInstance)
-            ->then
-                ->string($this->testedInstance->getEndpoint())
-                    ->isIdenticalTo('checkout')
+            ->assert('Default as v1')
+                ->given($this->newTestedInstance)
+                ->then
+                    ->string($this->testedInstance->getEndpoint())
+                        ->isIdenticalTo('checkout')
 
-                ->string($this->testedInstance->endpoint)
-                    ->isIdenticalTo('checkout')
+                    ->string($this->testedInstance->endpoint)
+                        ->isIdenticalTo('checkout')
+
+            ->assert('New value for v2')
+                ->given(Stancer\Config::init([])->setVersion(2))
+                ->if($this->newTestedInstance)
+                ->then
+                    ->string($this->testedInstance->getEndpoint())
+                        ->isIdenticalTo('payments')
+
+                    ->string($this->testedInstance->endpoint)
+                        ->isIdenticalTo('payments')
         ;
     }
 

@@ -185,7 +185,11 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      * Whereas `Card::getBrand()` returns brand as a simple normalized string like "amex",
      * `Card::getBrandName()` will return a complete and real brand name, like "American Express".
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Formatted brand name', restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Formatted brand name',
+        restricted: true,
+        type: self::STRING,
+    )]
     public function getBrandName(): ?string
     {
         $names = [

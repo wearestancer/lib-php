@@ -183,6 +183,7 @@ class Config
         description: 'HTTP "basic" authentication header\'s value',
         nullable: false,
         restricted: true,
+        type: 'string',
     )]
     public function getBasicAuthHeader(): string
     {
@@ -238,7 +239,12 @@ class Config
      *
      * @phpstan-return non-empty-string
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Default user agent', nullable: false, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Default user agent',
+        nullable: false,
+        restricted: true,
+        type: 'string',
+    )]
     public function getDefaultUserAgent(): string
     {
         $params = [];
@@ -296,7 +302,7 @@ class Config
      *
      * Default : api.stancer.com
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'API host', nullable: false)]
+    #[Stancer\Core\Documentation\FormatProperty(description: 'API host', nullable: false, type: 'string')]
     public function getHost(): string
     {
         return $this->host;
@@ -358,7 +364,7 @@ class Config
      *
      * You should use class constant `LIVE_MODE` and `TEST_MODE`.
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'API mode (test or live)', value: 'test')]
+    #[Stancer\Core\Documentation\FormatProperty(description: 'API mode (test or live)', type: 'string', value: 'test')]
     public function getMode(): string
     {
         return $this->mode ?: static::TEST_MODE;
@@ -384,7 +390,12 @@ class Config
      *
      * @throws Stancer\Exceptions\MissingApiKeyException When no key is found.
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Public API key', nullable: false, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Public API key',
+        nullable: false,
+        restricted: true,
+        type: 'string',
+    )]
     public function getPublicKey(): string
     {
         $key = $this->keys['ptest'];
@@ -409,7 +420,12 @@ class Config
      *
      * @throws Stancer\Exceptions\MissingApiKeyException When no key is found.
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Secret API key', nullable: false, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Secret API key',
+        nullable: false,
+        restricted: true,
+        type: 'string',
+    )]
     public function getSecretKey(): string
     {
         $key = $this->keys['stest'];
@@ -447,7 +463,12 @@ class Config
      *
      * Default : 1
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'API URI', nullable: false, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'API URI',
+        nullable: false,
+        restricted: true,
+        type: 'string',
+    )]
     public function getUri(): string
     {
         $pattern = '%1$s://%2$s/v%4$s/';

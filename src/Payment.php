@@ -47,7 +47,7 @@ use Stancer;
  * @method ?\DateTimeImmutable get_date_bank() Get delivery date of the funds traded by the bank.
  * @method ?string get_description() Get payment description.
  * @method ?\Stancer\Device get_device() Get customer's device object.
- * @method string get_endpoint() Get API endpoint.
+ * @method string get_endpoint() Return API endpoint.
  * @method string get_entity_name() Get entity name.
  * @method ?string get_id() Get object ID.
  * @method ?string get_method() Get payment method used.
@@ -128,7 +128,6 @@ use Stancer;
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read ?\DateTimeImmutable $dateBank Delivery date of the funds traded by the bank.
  * @property-read ?\DateTimeImmutable $date_bank Delivery date of the funds traded by the bank.
- * @property-read string $endpoint API endpoint.
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
@@ -173,7 +172,7 @@ class Payment extends Stancer\Core\AbstractObject
     use Stancer\Traits\SearchTrait;
 
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    final public const ENDPOINT = 'checkout';
+    final public const ENDPOINT = 'payments';
 
     /**
      * @phpstan-var array<string, DataModel>
@@ -448,6 +447,24 @@ class Payment extends Stancer\Core\AbstractObject
 
         return $params;
     }
+
+    /**
+     * Return API endpoint.
+     *
+     * @return string
+     */
+    public function getEndpoint(): string
+    {
+        $config = Stancer\Config::getGlobal();
+
+        if ($config->version === 1) {
+            return 'checkout';
+        }
+
+        return static::ENDPOINT;
+    }
+
+    // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
 
     /**
      * Return the URL for Stancer payment page.

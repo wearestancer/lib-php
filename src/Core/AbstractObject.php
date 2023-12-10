@@ -64,6 +64,8 @@ abstract class AbstractObject implements \JsonSerializable
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     final public const INTEGER = 'integer';
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
+    final public const MIXED = 'mixed';
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     final public const STRING = 'string';
 
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
@@ -110,6 +112,7 @@ abstract class AbstractObject implements \JsonSerializable
                 'min' => null,
                 'max' => null,
             ],
+            'type' => self::MIXED,
             'value' => null,
         ];
 
@@ -285,7 +288,12 @@ abstract class AbstractObject implements \JsonSerializable
     /**
      * Return API endpoint.
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'API endpoint', nullable: false, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'API endpoint',
+        nullable: false,
+        restricted: true,
+        type: self::STRING,
+    )]
     public function getEndpoint(): string
     {
         return static::ENDPOINT;
@@ -294,7 +302,12 @@ abstract class AbstractObject implements \JsonSerializable
     /**
      * Return entity name.
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Entity name', nullable: false, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Entity name',
+        nullable: false,
+        restricted: true,
+        type: self::STRING,
+    )]
     public function getEntityName(): string
     {
         $parts = explode('\\', get_class($this));
@@ -306,7 +319,7 @@ abstract class AbstractObject implements \JsonSerializable
     /**
      * Return object ID.
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Object ID', restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(description: 'Object ID', restricted: true, type: self::STRING)]
     public function getId(): ?string
     {
         return $this->id;
@@ -345,6 +358,7 @@ abstract class AbstractObject implements \JsonSerializable
         description: 'Entity resource location',
         nullable: false,
         restricted: true,
+        type: self::STRING,
     )]
     public function getUri(): string
     {

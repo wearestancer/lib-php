@@ -155,7 +155,12 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
     /**
      * Return IBAN with usual readeable format (AAAA BBBB CCCC ...).
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Formatted IBAN', required: true, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Formatted IBAN',
+        required: true,
+        restricted: true,
+        type: self::STRING,
+    )]
     public function getFormattedIban(): ?string
     {
         $iban = $this->getIban();

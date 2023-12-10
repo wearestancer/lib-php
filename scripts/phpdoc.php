@@ -14,7 +14,7 @@ $defaultModel = [
     'nullable' => true,
     'required' => false,
     'restricted' => false,
-    'type' => 'string',
+    'type' => 'mixed',
     'value' => null,
 ];
 
