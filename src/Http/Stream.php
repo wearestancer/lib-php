@@ -63,6 +63,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      *
      * @return void
      */
+    #[\ReturnTypeWillChange]
     public function close()
     {
     }
@@ -74,6 +75,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      *
      * @return resource|null Underlying PHP stream, if any.
      */
+    #[\ReturnTypeWillChange]
     public function detach()
     {
         return null;

@@ -51,6 +51,7 @@ class Client implements Stancer\Interfaces\HttpClientInterface
      *
      * @return resource
      */
+    #[\ReturnTypeWillChange]
     public function getCurlResource()
     {
         return $this->curl;

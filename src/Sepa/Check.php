@@ -84,6 +84,7 @@ class Check extends Stancer\Core\AbstractObject
      * @uses self::toArray()
      * @return string|integer|boolean|null|array<string, mixed>
      */
+    #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
         $sepa = $this->getSepa();

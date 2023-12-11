@@ -70,8 +70,10 @@ class Config
      * @see self::init() for a quick config setup
      * @param string[] $keys Authentication keys.
      */
-    public function __construct(array $keys)
-    {
+    public function __construct(
+        #[\SensitiveParameter]
+        array $keys
+    ) {
         $this->setKeys($keys);
     }
 
@@ -228,6 +230,7 @@ class Config
      *
      * @return Stancer\Http\Client|GuzzleHttp\ClientInterface
      */
+    #[\ReturnTypeWillChange]
     public function getHttpClient()
     {
         if ($this->httpClient) {
@@ -393,8 +396,10 @@ class Config
      * @param string[] $keys Authentication keys.
      * @return self
      */
-    public static function init(array $keys): self
-    {
+    public static function init(
+        #[\SensitiveParameter]
+        array $keys
+    ): self {
         $obj = new static($keys);
 
         return static::setGlobal($obj);
@@ -561,8 +566,10 @@ class Config
      *
      * @return $this
      */
-    public function setKeys($keys): self
-    {
+    public function setKeys(
+        #[\SensitiveParameter]
+        $keys
+    ): self {
         if (!is_array($keys)) {
             return $this->setKeys([$keys]);
         }

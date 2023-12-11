@@ -210,7 +210,7 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      * @see self::getExpMonth() Return the expiration month.
      * @return integer|null
      */
-    public function getExpirationMonth()
+    public function getExpirationMonth(): ?int
     {
         return $this->getExpMonth();
     }
@@ -221,7 +221,7 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      * @see self::getExpYear() Return the expiration year.
      * @return integer|null
      */
-    public function getExpirationYear()
+    public function getExpirationYear(): ?int
     {
         return $this->getExpYear();
     }
@@ -302,8 +302,10 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      * @return $this
      * @throws Stancer\Exceptions\InvalidCardNumberException When the card number is invalid.
      */
-    public function setNumber(string $number): self
-    {
+    public function setNumber(
+        #[\SensitiveParameter]
+        string $number
+    ): self {
         $numb = preg_replace('`\s*`', '', $number);
 
         if (is_null($numb)) {
