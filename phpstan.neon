@@ -21,12 +21,13 @@ parameters:
         - src/Payment.php
         - src/Traits/SearchTrait.php
 
-    - message: '/^Variable (property access|method call)/'
+    - message: '/^Variable (property access|method call|static method call)/'
       paths:
         - src/Core/AbstractObject.php
         - src/Core/Request.php
         - src/Http/Client.php
         - src/Payment.php
+        - src/Traits/AliasTrait.php
 
   level: max
 
@@ -72,6 +73,32 @@ parameters:
           max: ?int,
         },
         type: string,
+        value: mixed,
+      }
+    '''
+
+    DocumentationMethodParameters: '''
+      array{
+        method: array{
+          desc: ?string,
+          name: string,
+          parameters: string[],
+          return: string,
+          stan: bool,
+        },
+      }
+    '''
+
+    DocumentationPropertyParameters: '''
+      array{
+        desc: ?string,
+        fullDesc: ?string,
+        generateMethodGetter: bool,
+        list: bool,
+        nullable: bool,
+        required: bool,
+        restricted: bool,
+        type: string|string[],
         value: mixed,
       }
     '''

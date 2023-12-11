@@ -8,6 +8,7 @@ use DateTimeInterface;
 use Stancer;
 use JsonSerializable;
 use ReflectionClass;
+use Stancer\Auth\Status;
 
 /**
  * Manage common code between API object.
@@ -19,6 +20,8 @@ use ReflectionClass;
  */
 abstract class AbstractObject implements JsonSerializable
 {
+    use Stancer\Traits\AliasTrait;
+
     #[Stancer\WillChange\PHP8_1\FinalClassConstants]
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     public const BOOLEAN = 'boolean';
@@ -57,9 +60,6 @@ abstract class AbstractObject implements JsonSerializable
 
     /** @var boolean */
     protected $cleanModified = false;
-
-    /** @var array<string, string> */
-    protected $aliases = [];
 
     /**
      * Create or get an API object.
@@ -138,15 +138,16 @@ abstract class AbstractObject implements JsonSerializable
     #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
     public function __call(string $method, array $arguments)
     {
-        $lower = $this->snakeCaseToCamelCase($method);
+        $name = Stancer\Helper::snakeCaseToCamelCase($method);
+        $alias = $this->findAlias($name);
 
-        if (array_key_exists($lower, $this->aliases)) {
-            return $this->{$this->aliases[$lower]}();
+        if ($alias) {
+            return $this->{$alias}();
         }
 
         $message = sprintf('Method "%s::%s()" unknown', get_class($this), $method);
         $action = substr($method, 0, 3);
-        $property = lcfirst(substr($this->snakeCaseToCamelCase($method), 3));
+        $property = lcfirst(substr(Stancer\Helper::snakeCaseToCamelCase($method), 3));
 
         if ($action === 'set' && property_exists($this, $property)) {
             $tmp = $property;
@@ -176,61 +177,6 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Aliases.
-     *
-     * @param string $property Property called.
-     * @return mixed
-     */
-    #[Stancer\WillChange\PHP8_0\MatchExpression]
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
-    public function __get(string $property)
-    {
-        $prop = $this->snakeCaseToCamelCase($property);
-
-        if (array_key_exists($prop, $this->aliases)) {
-            return $this->{$this->aliases[$prop]}();
-        }
-
-        if (array_key_exists($prop, $this->dataModel)) {
-            return $this->{'get' . $prop}();
-        }
-
-        if (property_exists($this, $prop)) {
-            return $this->{'get' . $prop}();
-        }
-
-        switch ($prop) {
-            case 'creationDate':
-                return $this->getCreationDate();
-
-            default:
-                return $this->$prop();
-        }
-    }
-
-    /**
-     * Setter alias.
-     *
-     * @param string $property Property to modify.
-     * @param mixed $value New value.
-     * @return void
-     */
-    #[Stancer\WillChange\PHP8_0\MixedType]
-    public function __set(string $property, $value): void
-    {
-        $prop = $this->snakeCaseToCamelCase($property);
-        $method = 'set' . $prop;
-
-        if (method_exists($this, $method)) {
-            $this->{$method}($value);
-        }
-
-        if (array_key_exists($prop, $this->dataModel)) {
-            $this->{$method}($value);
-        }
-    }
-
-    /**
      * Return a string representation (as a JSON) of the current object.
      *
      * @uses self::toString()
@@ -239,28 +185,6 @@ abstract class AbstractObject implements JsonSerializable
     public function __toString(): string
     {
         return $this->toString();
-    }
-
-    /**
-     * Convert `camelCase` text to `snake_case`.
-     *
-     * @param string $text Text to convert.
-     *
-     * @return string
-     */
-    public function camelCaseToSnakeCase(string $text): string
-    {
-        $replace = function ($matches): string {
-            return '_' . strtolower($matches[0]);
-        };
-
-        $rep = preg_replace_callback('`[A-Z]`', $replace, $text);
-
-        if (!$rep) {
-            return '';
-        }
-
-        return $rep;
     }
 
     /**
@@ -422,7 +346,7 @@ abstract class AbstractObject implements JsonSerializable
         }
 
         $this->dataModel[$property]['value'] = $coercedValues;
-        $this->modified[] = $this->camelCaseToSnakeCase($property);
+        $this->modified[] = Stancer\Helper::camelCaseToSnakeCase($property);
 
         return $this;
     }
@@ -456,7 +380,7 @@ abstract class AbstractObject implements JsonSerializable
     public function get(string $attr = null)
     {
         if ($attr && $this->apiData) {
-            $prop = $this->camelCaseToSnakeCase($attr);
+            $prop = Stancer\Helper::camelCaseToSnakeCase($attr);
 
             if (array_key_exists($prop, $this->apiData)) {
                 return $this->apiData[$prop];
@@ -526,7 +450,7 @@ abstract class AbstractObject implements JsonSerializable
                 return $this->dataModel[$property];
             }
 
-            $prop = $this->snakeCaseToCamelCase($property);
+            $prop = Stancer\Helper::snakeCaseToCamelCase($property);
 
             if ($prop !== $property) {
                 return $this->getModel($prop);
@@ -571,7 +495,7 @@ abstract class AbstractObject implements JsonSerializable
     public function hydrate(array $data): self
     {
         foreach ($data as $key => $value) {
-            $property = $this->snakeCaseToCamelCase($key);
+            $property = Stancer\Helper::snakeCaseToCamelCase($key);
 
             if ($property === 'id') {
                 if (is_string($value) || is_null($value)) {
@@ -859,7 +783,7 @@ abstract class AbstractObject implements JsonSerializable
 
         foreach ($struct as $prop => $value) {
             if (is_object($value) && $value instanceof self) {
-                $tmp = $this->camelCaseToSnakeCase($prop);
+                $tmp = Stancer\Helper::camelCaseToSnakeCase($prop);
 
                 if (array_key_exists($tmp, $body)) {
                     $value->apiData = $body[$tmp];
@@ -945,28 +869,6 @@ abstract class AbstractObject implements JsonSerializable
     }
 
     /**
-     * Convert `snake_case` text to `camelCase`.
-     *
-     * @param string $text Text to convert.
-     *
-     * @return string
-     */
-    public function snakeCaseToCamelCase(string $text): string
-    {
-        $replace = function ($matches): string {
-            return strtoupper(ltrim($matches[0], '_'));
-        };
-
-        $rep = preg_replace_callback('`_[a-z]`', $replace, $text);
-
-        if (!$rep) {
-            return '';
-        }
-
-        return $rep;
-    }
-
-    /**
      * Return a array representation of the current object.
      *
      * @return array<string, mixed>
@@ -989,7 +891,7 @@ abstract class AbstractObject implements JsonSerializable
                 && $infos['exportable']
                 && $infos['value'] !== null
             ) {
-                $prop = $this->camelCaseToSnakeCase($property);
+                $prop = Stancer\Helper::camelCaseToSnakeCase($property);
 
                 $json[$prop] = $infos['value'];
             }
@@ -1146,7 +1048,7 @@ abstract class AbstractObject implements JsonSerializable
         }
 
         if ($isLower || $isUpper) {
-            $readable = str_replace(['_id', '_'], [' ID', ' '], $this->camelCaseToSnakeCase($property));
+            $readable = str_replace(['_id', '_'], [' ID', ' '], Stancer\Helper::camelCaseToSnakeCase($property));
 
             $params = [
                 $readable,

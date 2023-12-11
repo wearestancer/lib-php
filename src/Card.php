@@ -125,10 +125,22 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
         ],
     ];
 
-    /** @var array<string, string> */
-    protected $aliases = [
-        'isTokenized' => 'getTokenize',
-    ];
+    /**
+     * Return methods/properties aliases.
+     *
+     * @param string $name Searched method or property.
+     *
+     * @return string|false
+     */
+    #[\ReturnTypeWillChange]
+    protected function findAlias(string $name)
+    {
+        if ($name === 'isTokenized') {
+            return 'getTokenize';
+        }
+
+        return false;
+    }
 
     /**
      * Return real brand name.

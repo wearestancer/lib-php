@@ -5,6 +5,20 @@ namespace Stancer\Stub;
 use Stancer;
 
 trait TestMethodTrait {
+    public function __set(string $property, $value): void
+    {
+        $prop = Stancer\Helper::snakeCaseToCamelCase($property);
+        $method = 'set' . $prop;
+
+        if (method_exists($this, $method)) {
+            $this->{$method}($value);
+        }
+
+        if (array_key_exists($prop, $this->dataModel)) {
+            $this->{$method}($value);
+        }
+    }
+
     public function testOnlyAddModified(string $modified): Stancer\Core\AbstractObject
     {
         $this->modified[] = $modified;

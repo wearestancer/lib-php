@@ -14,6 +14,7 @@ use Psr;
  */
 class Response implements Psr\Http\Message\ResponseInterface
 {
+    use Stancer\Traits\AliasTrait;
     use MessageTrait;
 
     /** @var integer */

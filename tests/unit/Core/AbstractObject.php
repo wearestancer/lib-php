@@ -144,17 +144,6 @@ class AbstractObject extends Stancer\Tests\atoum
         ;
     }
 
-    /**
-     * @dataProvider caseStringDataProvider
-     */
-    public function testCamelCaseToSnakeCase($camel, $snake)
-    {
-        $this
-            ->string($this->newTestedInstance->camelCaseToSnakeCase($camel))
-                ->isIdenticalTo($snake)
-        ;
-    }
-
     public function testDataModelAdder()
     {
         // More test in stubs
@@ -386,17 +375,6 @@ class AbstractObject extends Stancer\Tests\atoum
 
     // There are no test for `Object::send()` method here
     // Nothing can be sent in `Object`, real test are availaible in `Customer` test case (`Customer::testSend()`)
-
-    /**
-     * @dataProvider caseStringDataProvider
-     */
-    public function testSnakeCaseToCamelCase($camel, $snake)
-    {
-        $this
-            ->string($this->newTestedInstance->snakeCaseToCamelCase($snake))
-                ->isIdenticalTo($camel)
-        ;
-    }
 
     // testToArray, testToString and testToJson moved to stubs (more detailled)
 }

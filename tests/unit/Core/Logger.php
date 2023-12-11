@@ -3,7 +3,6 @@
 namespace Stancer\tests\unit\Core;
 
 use Stancer;
-use Stancer\Core\Logger as testedClass;
 use Psr;
 
 class Logger extends Stancer\Tests\atoum

@@ -43,12 +43,6 @@ class Payout extends Stancer\Core\AbstractObject
     /** @var string */
     protected $endpoint = 'payouts';
 
-    /** @var array<string, string> */
-    protected $aliases = [
-        'datePayment' => 'getDatePaym',
-        'getDatePayment' => 'getDatePaym',
-    ];
-
     /**
      * @var array
      * @phpstan-var array<string, DataModel>
@@ -89,6 +83,23 @@ class Payout extends Stancer\Core\AbstractObject
             'type' => self::STRING,
         ],
     ];
+
+    /**
+     * Return methods/properties aliases.
+     *
+     * @param string $name Searched method or property.
+     *
+     * @return string|false
+     */
+    #[\ReturnTypeWillChange]
+    protected function findAlias(string $name)
+    {
+        if ($name === 'datePayment' || $name === 'getDatePayment') {
+            return 'getDatePaym';
+        }
+
+        return false;
+    }
 
     /**
      * Hydrate the current object.

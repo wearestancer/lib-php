@@ -45,6 +45,9 @@
         "satesh/phpcs-gitlab-report": "^1.0",
         "squizlabs/php_codesniffer": "^3.3"
     },
+    "scripts": {
+        "create-doc": "php scripts/phpdoc.php"
+    },
     "suggest": {
         "monolog/monolog": "Allows to log interaction with the API"
     },

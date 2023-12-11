@@ -63,7 +63,7 @@ class Details extends Stancer\Core\AbstractObject
     #[ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
     public function __call(string $method, array $arguments)
     {
-        $name = $this->snakeCaseToCamelCase($method);
+        $name = Stancer\Helper::snakeCaseToCamelCase($method);
         $action = substr($name, 0, 4);
 
         if ($action === 'list') {
