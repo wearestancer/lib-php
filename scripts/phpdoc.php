@@ -24,6 +24,11 @@ $classes = [
     ],
     Stancer\Core\AbstractObject::class => [
         'instance' => new class() extends Stancer\Core\AbstractObject implements Documentation {},
+
+        'throws' => [
+            [Stancer\Exceptions\BadMethodCallException::class, 'when calling an unknown method'],
+            [Stancer\Exceptions\BadPropertyAccessException::class, 'when calling an unknown property'],
+        ],
     ],
 ];
 

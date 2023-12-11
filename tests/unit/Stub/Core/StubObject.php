@@ -750,7 +750,6 @@ class StubObject extends Stancer\Tests\atoum
      */
     public function testDataModelSetterThrowsInvalidData($property, $value, $class, $message)
     {
-
         if (is_array($value)) {
             $assertMessage = vsprintf('$%s = %s => %s', [
                 $property,
@@ -1462,10 +1461,46 @@ class StubObject extends Stancer\Tests\atoum
                     ->boolean($this->testedInstance->isNotModified())
                         ->isTrue
 
+                    ->boolean($this->testedInstance->is_modified())
+                        ->isFalse
+
+                    ->boolean($this->testedInstance->is_not_modified())
+                        ->isTrue
+
+                    ->boolean($this->testedInstance->isModified)
+                        ->isFalse
+
+                    ->boolean($this->testedInstance->isNotModified)
+                        ->isTrue
+
+                    ->boolean($this->testedInstance->is_modified)
+                        ->isFalse
+
+                    ->boolean($this->testedInstance->is_not_modified)
+                        ->isTrue
+
                     ->boolean($this->testedInstance->testOnlyAddModified('string1')->isModified())
                         ->isTrue
 
                     ->boolean($this->testedInstance->isNotModified())
+                        ->isFalse
+
+                    ->boolean($this->testedInstance->is_modified())
+                        ->isTrue
+
+                    ->boolean($this->testedInstance->is_not_modified())
+                        ->isFalse
+
+                    ->boolean($this->testedInstance->isModified)
+                        ->isTrue
+
+                    ->boolean($this->testedInstance->isNotModified)
+                        ->isFalse
+
+                    ->boolean($this->testedInstance->is_modified)
+                        ->isTrue
+
+                    ->boolean($this->testedInstance->is_not_modified)
                         ->isFalse
 
                 ->assert('Should return false if an object in one property is modified')
@@ -2254,7 +2289,7 @@ class StubObject extends Stancer\Tests\atoum
 
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setCamelCaseProperty($camelCase = uniqid()))
-            ->and($this->testedInstance->forceRestricted1($restricted = uniqid()))
+            ->and($this->testedInstance->forceRestricted1(uniqid()))
             ->and($this->testedInstance->setObject2($object2))
             ->then
                 ->array($this->testedInstance->toArray())
@@ -2285,8 +2320,8 @@ class StubObject extends Stancer\Tests\atoum
             ->and($this->testedInstance->addArray4($object2))
             ->and($this->testedInstance->addArray4($object3))
 
-            ->and($this->testedInstance->setCamelCaseProperty($camelCase = uniqid()))
-            ->and($this->testedInstance->forceRestricted1($restricted = uniqid()))
+            ->and($this->testedInstance->setCamelCaseProperty(uniqid()))
+            ->and($this->testedInstance->forceRestricted1(uniqid()))
             ->and($this->testedInstance->setString1($this->makeStringBetween(10, 20)))
 
             ->and($object->setString1($this->makeStringBetween(10, 20)))

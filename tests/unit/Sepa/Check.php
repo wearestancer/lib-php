@@ -3,7 +3,6 @@
 namespace Stancer\tests\unit\Sepa;
 
 use Stancer;
-use Stancer\Sepa\Check as testedClass;
 
 class Check extends Stancer\Tests\atoum
 {

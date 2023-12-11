@@ -115,20 +115,27 @@ trait AliasTrait
     {
         $prop = Stancer\Helper::snakeCaseToCamelCase($property);
         $method = 'set' . $prop;
-
-        if (method_exists($this, $method)) {
-            $this->{$method}($value);
-
-            return;
-        }
-
-        if (property_exists($this, 'dataModel') && array_key_exists($prop, $this->dataModel)) {
-            $this->{$method}($value);
-
-            return;
-        }
-
         $message = sprintf('Property "%s::$%s" unknown', get_class($this), $property);
+
+        try {
+            if (method_exists($this, $method)) {
+                $this->{$method}($value);
+
+                return;
+            }
+
+            if (property_exists($this, 'dataModel') && array_key_exists($prop, $this->dataModel)) {
+                $this->{$method}($value);
+
+                return;
+            }
+        } catch (Stancer\Exceptions\BadMethodCallException $error) {
+            if (strpos($error->getMessage(), 'You are not allowed to modify') === 0) {
+                $message = $error->getMessage();
+            }
+
+            // Leave the next exception been thrown.
+        }
 
         throw new Stancer\Exceptions\BadPropertyAccessException($message);
     }

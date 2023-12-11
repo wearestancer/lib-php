@@ -8,16 +8,40 @@ use DateTimeInterface;
 use Stancer;
 use JsonSerializable;
 use ReflectionClass;
-use Stancer\Auth\Status;
 
 /**
  * Manage common code between API object.
  *
- * @throws Stancer\Exceptions\BadMethodCallException when calling unknown method.
+ * @method $this data_model_adder(string $property, $value) Add a value stored list in data model.
+ * @method mixed data_model_getter(string $property, bool $auto_populate = true) Get a value stored in data model.
+ * @method $this data_model_setter(string $property, $value) Set a value in data model.
+ * @method ?DateTimeImmutable getCreated() Get creation date.
+ * @method ?DateTimeImmutable get_created() Get creation date.
+ * @method ?DateTimeImmutable get_creation_date() Get creation date.
+ * @method string get_endpoint() Get API endpoint.
+ * @method string get_entity_name() Get entity name.
+ * @method ?string get_id() Get object ID.
+ * @method ?array get_model(string $property = null) Return property model.
+ * @method string get_uri() Get entity resource location.
+ * @method bool is_modified() Indicate if the current object is modified.
+ * @method bool is_not_modified() Indicate if the current object is not modified.
+ * @method array to_array() Return a array representation of the current object.
+ * @method string to_json() Return a JSON representation of the current object.
+ * @method string to_string() Return a string representation (as a JSON) of the current object.
  *
- * @property-read DateTimeImmutable|null $created
- * @property-read DateTimeImmutable|null $creationDate
+ * @property-read ?DateTimeImmutable $created Creation date.
+ * @property-read ?DateTimeImmutable $creationDate Creation date.
+ * @property-read ?DateTimeImmutable $creation_date Creation date.
+ * @property-read string $endpoint API endpoint.
+ * @property-read string $entityName Entity name.
+ * @property-read string $entity_name Entity name.
+ * @property-read ?string $id Object ID.
+ * @property-read string $uri Entity resource location.
+ *
+ * @throws Stancer\Exceptions\BadMethodCallException When calling an unknown method.
+ * @throws Stancer\Exceptions\BadPropertyAccessException When calling an unknown property.
  */
+#[Stancer\Core\Documentation\AddProperty('created', description: 'Creation date', restricted: true, type: DateTimeImmutable::class)]
 abstract class AbstractObject implements JsonSerializable
 {
     use Stancer\Traits\AliasTrait;
@@ -139,10 +163,15 @@ abstract class AbstractObject implements JsonSerializable
     public function __call(string $method, array $arguments)
     {
         $name = Stancer\Helper::snakeCaseToCamelCase($method);
+
+        if ($name !== $method && method_exists($this, $name)) {
+            return $this->{$name}(...$arguments);
+        }
+
         $alias = $this->findAlias($name);
 
         if ($alias) {
-            return $this->{$alias}();
+            return $this->{$alias}(...$arguments);
         }
 
         $message = sprintf('Method "%s::%s()" unknown', get_class($this), $method);
@@ -395,9 +424,10 @@ abstract class AbstractObject implements JsonSerializable
     /**
      * Return creation date.
      *
-     * @return DateTimeInterface|null
+     * @return DateTimeImmutable|null
      */
-    public function getCreationDate(): ?DateTimeInterface
+    #[Stancer\Core\Documentation\FormatProperty(description: 'Creation date', restricted: true, type: DateTimeImmutable::class)]
+    public function getCreationDate(): ?DateTimeImmutable
     {
         return $this->created;
     }
@@ -407,6 +437,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return string
      */
+    #[Stancer\Core\Documentation\FormatProperty(description: 'API endpoint', nullable: false, restricted: true)]
     public function getEndpoint(): string
     {
         return $this->endpoint;
@@ -417,6 +448,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return string
      */
+    #[Stancer\Core\Documentation\FormatProperty(description: 'Entity name', nullable: false, restricted: true)]
     public function getEntityName(): string
     {
         $parts = explode('\\', get_class($this));
@@ -430,6 +462,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return string|null
      */
+    #[Stancer\Core\Documentation\FormatProperty(description: 'Object ID', restricted: true)]
     public function getId(): ?string
     {
         return $this->id;
@@ -467,6 +500,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return string
      */
+    #[Stancer\Core\Documentation\FormatProperty(description: 'Entity resource location', nullable: false, restricted: true)]
     public function getUri(): string
     {
         $tmp = [
@@ -908,13 +942,7 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function toJson(): string
     {
-        $json = json_encode($this);
-
-        if (!$json) {
-            return '{}';
-        }
-
-        return $json;
+        return json_encode($this) ?: '';
     }
 
     /**

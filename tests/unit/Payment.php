@@ -56,8 +56,16 @@ class Payment extends Stancer\Tests\atoum
                 ])
 
                 ->if($this->calling($response)->getBody = new Stancer\Http\Stream(json_encode($json)))
+                ->and($obj = $this->newTestedInstance)
                 ->then
-                    ->object($obj = testedClass::charge($options))
+                    ->when(function() use ($options, &$obj) {
+                        $obj = testedClass::charge($options);
+                    })
+                        ->error()
+                            ->withType(E_USER_DEPRECATED)
+                            ->exists()
+
+                    ->object($obj)
                         ->isInstanceOf(testedClass::class)
 
                     ->integer($obj->getAmount())
@@ -92,8 +100,16 @@ class Payment extends Stancer\Tests\atoum
                 ])
 
                 ->if($this->calling($response)->getBody = new Stancer\Http\Stream(json_encode($json)))
+                ->and($obj = $this->newTestedInstance)
                 ->then
-                    ->object($obj = testedClass::charge($options))
+                    ->when(function() use ($options, &$obj) {
+                        $obj = testedClass::charge($options);
+                    })
+                        ->error()
+                            ->withType(E_USER_DEPRECATED)
+                            ->exists()
+
+                    ->object($obj)
                         ->isInstanceOf(testedClass::class)
 
                     ->integer($obj->getAmount())
@@ -130,8 +146,16 @@ class Payment extends Stancer\Tests\atoum
                 ])
 
                 ->if($this->calling($response)->getBody = new Stancer\Http\Stream(json_encode($json)))
+                ->and($obj = $this->newTestedInstance)
                 ->then
-                    ->object($obj = testedClass::charge($options))
+                    ->when(function() use ($options, &$obj) {
+                        $obj = testedClass::charge($options);
+                    })
+                        ->error()
+                            ->withType(E_USER_DEPRECATED)
+                            ->exists()
+
+                    ->object($obj)
                         ->isInstanceOf(testedClass::class)
 
                     ->integer($obj->getAmount())
@@ -240,6 +264,15 @@ class Payment extends Stancer\Tests\atoum
                 ->variable($this->testedInstance->getDateBank())
                     ->isNull
 
+                ->variable($this->testedInstance->get_date_bank())
+                    ->isNull
+
+                ->variable($this->testedInstance->dateBank)
+                    ->isNull
+
+                ->variable($this->testedInstance->date_bank)
+                    ->isNull
+
                 ->exception(function () use ($date) {
                     $this->testedInstance->setDateBank($date);
                 })
@@ -247,9 +280,39 @@ class Payment extends Stancer\Tests\atoum
                     ->message
                         ->isIdenticalTo('You are not allowed to modify "dateBank".')
 
+                ->exception(function () use ($date) {
+                    $this->testedInstance->set_date_bank($date);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify "dateBank".')
+
+                ->exception(function () use ($date) {
+                    $this->testedInstance->dateBank = $date;
+                })
+                    ->isInstanceOf(Stancer\Exceptions\BadPropertyAccessException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify "dateBank".')
+
+                ->exception(function () use ($date) {
+                    $this->testedInstance->date_bank = $date;
+                })
+                    ->isInstanceOf(Stancer\Exceptions\BadPropertyAccessException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify "dateBank".')
+
             ->if($this->testedInstance->hydrate(['dateBank' => $date]))
             ->then
                 ->dateTime($this->testedInstance->getDateBank())
+                    ->isEqualTo($date)
+
+                ->dateTime($this->testedInstance->get_date_bank())
+                    ->isEqualTo($date)
+
+                ->dateTime($this->testedInstance->dateBank)
+                    ->isEqualTo($date)
+
+                ->dateTime($this->testedInstance->date_bank)
                     ->isEqualTo($date)
         ;
     }
@@ -260,6 +323,9 @@ class Payment extends Stancer\Tests\atoum
             ->given($this->newTestedInstance)
             ->then
                 ->string($this->testedInstance->getEndpoint())
+                    ->isIdenticalTo('checkout')
+
+                ->string($this->testedInstance->endpoint)
                     ->isIdenticalTo('checkout')
         ;
     }
@@ -281,10 +347,6 @@ class Payment extends Stancer\Tests\atoum
             ->if($amount = rand(100, 999999))
             ->and($currency = $this->cardCurrencyDataProvider(true))
 
-            ->if($this->newTestedInstance)
-            ->and($this->testedInstance->setAmount($amount))
-            ->and($this->testedInstance->setCurrency($currency))
-
             ->if($return = 'https://www.example.org?' . uniqid())
             ->and($url = vsprintf('https://%s/%s/', [
                 str_replace('api', 'payment', $config->getHost()),
@@ -297,41 +359,133 @@ class Payment extends Stancer\Tests\atoum
                 uniqid() => uniqid(),
             ])
 
+            ->and($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount($amount))
+            ->and($this->testedInstance->setCurrency($currency))
             ->then
-                ->exception(function () {
-                    $this->testedInstance->getPaymentPageUrl();
-                })
-                    ->isInstanceOf(Stancer\Exceptions\MissingApiKeyException::class)
-                    ->message
-                        ->isIdenticalTo('You did not provide valid public API key for development.')
+                ->assert('should raise if no API key / camelCase method')
+                    ->exception(function () {
+                        $this->testedInstance->getPaymentPageUrl();
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\MissingApiKeyException::class)
+                        ->message
+                            ->isIdenticalTo('You did not provide valid public API key for development.')
 
-                ->object($config->setKeys([$public, $secret]))
+                ->assert('should raise if no API key / snake_case method')
+                    ->exception(function () {
+                        $this->testedInstance->get_payment_page_url();
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\MissingApiKeyException::class)
+                        ->message
+                            ->isIdenticalTo('You did not provide valid public API key for development.')
 
-                ->exception(function () {
-                    $this->testedInstance->getPaymentPageUrl();
-                })
-                    ->isInstanceOf(Stancer\Exceptions\MissingReturnUrlException::class)
-                    ->message
-                        ->isIdenticalTo('You must provide a return URL before asking for the payment page.')
+                ->assert('should raise if no API key / camelCase property')
+                    ->exception(function () {
+                        $this->testedInstance->paymentPageUrl;
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\MissingApiKeyException::class)
+                        ->message
+                            ->isIdenticalTo('You did not provide valid public API key for development.')
 
-                ->object($this->testedInstance->setReturnUrl($return))
-                    ->isTestedInstance
+                ->assert('should raise if no API key / snake_case property')
+                    ->exception(function () {
+                        $this->testedInstance->payment_page_url;
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\MissingApiKeyException::class)
+                        ->message
+                            ->isIdenticalTo('You did not provide valid public API key for development.')
 
-                ->exception(function () {
-                    $this->testedInstance->getPaymentPageUrl();
-                })
-                    ->isInstanceOf(Stancer\Exceptions\MissingPaymentIdException::class)
-                    ->message
-                        ->isIdenticalTo('A payment ID is mandatory to obtain a payment page URL. Maybe you forgot to send the payment.')
+            ->if($config->setKeys([$public, $secret]))
+            ->then
+                ->assert('should raise if no return URL / camelCase method')
+                    ->exception(function () {
+                        $this->testedInstance->getPaymentPageUrl();
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\MissingReturnUrlException::class)
+                        ->message
+                            ->isIdenticalTo('You must provide a return URL before asking for the payment page.')
 
-                ->object($this->testedInstance->send())
-                    ->isTestedInstance
+                ->assert('should raise if no return URL / snake_case method')
+                    ->exception(function () {
+                        $this->testedInstance->get_payment_page_url();
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\MissingReturnUrlException::class)
+                        ->message
+                            ->isIdenticalTo('You must provide a return URL before asking for the payment page.')
 
-                ->string($this->testedInstance->getPaymentPageUrl())
-                    ->isIdenticalTo($url . $this->testedInstance->getId())
+                ->assert('should raise if no return URL / camelCase property')
+                    ->exception(function () {
+                        $this->testedInstance->paymentPageUrl;
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\MissingReturnUrlException::class)
+                        ->message
+                            ->isIdenticalTo('You must provide a return URL before asking for the payment page.')
 
-                ->string($this->testedInstance->getPaymentPageUrl($params))
-                    ->isIdenticalTo($url . $this->testedInstance->getId() . '?lang=' . $lang)
+                ->assert('should raise if no return URL / snake_case property')
+                    ->exception(function () {
+                        $this->testedInstance->payment_page_url;
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\MissingReturnUrlException::class)
+                        ->message
+                            ->isIdenticalTo('You must provide a return URL before asking for the payment page.')
+
+            ->if($this->testedInstance->setReturnUrl($return))
+            ->then
+                ->assert('should raise if the payment is not sent / camelCase method')
+                    ->exception(function () {
+                        $this->testedInstance->getPaymentPageUrl();
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\MissingPaymentIdException::class)
+                        ->message
+                            ->isIdenticalTo('A payment ID is mandatory to obtain a payment page URL. Maybe you forgot to send the payment.')
+
+                ->assert('should raise if the payment is not sent / snake_case method')
+                    ->exception(function () {
+                        $this->testedInstance->get_payment_page_url();
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\MissingPaymentIdException::class)
+                        ->message
+                            ->isIdenticalTo('A payment ID is mandatory to obtain a payment page URL. Maybe you forgot to send the payment.')
+
+                ->assert('should raise if the payment is not sent / camelCase property')
+                    ->exception(function () {
+                        $this->testedInstance->paymentPageUrl;
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\MissingPaymentIdException::class)
+                        ->message
+                            ->isIdenticalTo('A payment ID is mandatory to obtain a payment page URL. Maybe you forgot to send the payment.')
+
+                ->assert('should raise if the payment is not sent / snake_case property')
+                    ->exception(function () {
+                        $this->testedInstance->payment_page_url;
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\MissingPaymentIdException::class)
+                        ->message
+                            ->isIdenticalTo('A payment ID is mandatory to obtain a payment page URL. Maybe you forgot to send the payment.')
+
+            ->if($this->testedInstance->send())
+            ->then
+                ->assert('should return the payment page URL / camelCase method')
+                    ->string($this->testedInstance->getPaymentPageUrl())
+                        ->isIdenticalTo($url . $this->testedInstance->getId())
+
+                    ->string($this->testedInstance->getPaymentPageUrl($params))
+                        ->isIdenticalTo($url . $this->testedInstance->getId() . '?lang=' . $lang)
+
+                ->assert('should return the payment page URL / snake_case method')
+                    ->string($this->testedInstance->get_payment_page_url())
+                        ->isIdenticalTo($url . $this->testedInstance->get_id())
+
+                    ->string($this->testedInstance->get_payment_page_url($params))
+                        ->isIdenticalTo($url . $this->testedInstance->get_id() . '?lang=' . $lang)
+
+                ->assert('should return the payment page URL / camelCase property')
+                    ->string($this->testedInstance->paymentPageUrl)
+                        ->isIdenticalTo($url . $this->testedInstance->id)
+
+                ->assert('should return the payment page URL / snake_case property')
+                    ->string($this->testedInstance->payment_page_url)
+                        ->isIdenticalTo($url . $this->testedInstance->id)
         ;
     }
 
@@ -348,12 +502,12 @@ class Payment extends Stancer\Tests\atoum
             ->and($paid = $data['amount'])
             ->and($id = $data['id'])
 
-            ->if($completeRefund = new Stancer\Refund())
-            ->and($completeRefund->setAmount($paid))
+            ->if($completeRefund = new Stancer\Stub\Refund())
+            ->and($completeRefund->testOnlySetAmount($paid))
 
             ->if($amount = rand(50, $paid))
-            ->and($partialRefund = new Stancer\Refund())
-            ->and($partialRefund->setAmount($amount))
+            ->and($partialRefund = new Stancer\Stub\Refund())
+            ->and($partialRefund->testOnlySetAmount($amount))
 
             ->then
                 ->assert('All paid amount is refundable if not refund was made')
@@ -924,8 +1078,16 @@ class Payment extends Stancer\Tests\atoum
                     ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
 
                     ->if($this->mockJsonResponse('payment', 'create-card', $response))
+                    ->and($obj = null)
                     ->then
-                        ->object($this->newTestedInstance->pay(rand(50, 9999), 'EUR', $card))
+                        ->when(function() use (&$obj, $card) {
+                            $obj = $this->newTestedInstance->pay(rand(50, 9999), 'EUR', $card);
+                        })
+                            ->error()
+                                ->withType(E_USER_DEPRECATED)
+                                ->exists()
+
+                        ->object($obj)
                             ->isTestedInstance
 
                         ->mock($client)
@@ -939,8 +1101,16 @@ class Payment extends Stancer\Tests\atoum
                     ->and($sepa->setName(uniqid()))
 
                     ->if($this->mockJsonResponse('payment', 'create-sepa', $response))
+                    ->and($obj = null)
                     ->then
-                        ->object($this->newTestedInstance->pay(rand(50, 9999), 'EUR', $sepa))
+                        ->when(function() use (&$obj, $sepa) {
+                            $obj = $this->newTestedInstance->pay(rand(50, 9999), 'EUR', $sepa);
+                        })
+                            ->error()
+                                ->withType(E_USER_DEPRECATED)
+                                ->exists()
+
+                        ->object($obj)
                             ->isTestedInstance
 
                         ->mock($client)

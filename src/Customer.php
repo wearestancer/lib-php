@@ -9,18 +9,41 @@ use Stancer;
 /**
  * Representation of a customer.
  *
- * @method string getEmail()
- * @method string getMobile()
- * @method string getName()
+ * @method ?string getEmail() Get customer's email.
+ * @method ?string getExternalId() Get external identifier.
+ * @method ?string getMobile() Get customer's mobile phone.
+ * @method ?string getName() Get customer's name.
+ * @method ?DateTimeImmutable get_creation_date() Get creation date.
+ * @method ?string get_email() Get customer's email.
+ * @method string get_endpoint() Get API endpoint.
+ * @method string get_entity_name() Get entity name.
+ * @method ?string get_external_id() Get external identifier.
+ * @method ?string get_id() Get object ID.
+ * @method ?string get_mobile() Get customer's mobile phone.
+ * @method ?string get_name() Get customer's name.
+ * @method string get_uri() Get entity resource location.
+ * @method $this setEmail(string $email) Set customer's email.
+ * @method $this setExternalId(string $externalId) Set external identifier.
+ * @method $this setMobile(string $mobile) Set customer's mobile phone.
+ * @method $this setName(string $name) Set customer's name.
+ * @method $this set_email(string $email) Set customer's email.
+ * @method $this set_external_id(string $external_id) Set external identifier.
+ * @method $this set_mobile(string $mobile) Set customer's mobile phone.
+ * @method $this set_name(string $name) Set customer's name.
  *
- * @method $this setEmail(string $email)
- * @method $this setMobile(string $mobile)
- * @method $this setName(string $name)
+ * @property ?string $email Customer's email.
+ * @property ?string $externalId External identifier.
+ * @property ?string $external_id External identifier.
+ * @property ?string $mobile Customer's mobile phone.
+ * @property ?string $name Customer's name.
  *
- * @property DateTimeImmutable|null $created
- * @property string $email
- * @property string $mobile
- * @property string $name
+ * @property-read ?DateTimeImmutable $creationDate Creation date.
+ * @property-read ?DateTimeImmutable $creation_date Creation date.
+ * @property-read string $endpoint API endpoint.
+ * @property-read string $entityName Entity name.
+ * @property-read string $entity_name Entity name.
+ * @property-read ?string $id Object ID.
+ * @property-read string $uri Entity resource location.
  */
 class Customer extends Stancer\Core\AbstractObject
 {
@@ -33,6 +56,7 @@ class Customer extends Stancer\Core\AbstractObject
      */
     protected $dataModel = [
         'email' => [
+            'desc' => 'Customer\'s email',
             'size' => [
                 'min' => 5,
                 'max' => 64,
@@ -40,12 +64,14 @@ class Customer extends Stancer\Core\AbstractObject
             'type' => self::STRING,
         ],
         'externalId' => [
+            'desc' => 'External identifier',
             'size' => [
                 'max' => 36,
             ],
             'type' => self::STRING,
         ],
         'mobile' => [
+            'desc' => 'Customer\'s mobile phone',
             'size' => [
                 'min' => 8,
                 'max' => 16,
@@ -53,6 +79,7 @@ class Customer extends Stancer\Core\AbstractObject
             'type' => self::STRING,
         ],
         'name' => [
+            'desc' => 'Customer\'s name',
             'size' => [
                 'min' => 3,
                 'max' => 64,

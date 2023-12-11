@@ -10,31 +10,49 @@ use Stancer;
 /**
  * Representation of a payout.
  *
- * @method integer getAmount()
- * @method string getCurrency()
- * @method DateTimeImmutable getCreated()
- * @method DateTimeImmutable getCreationDate()
- * @method DateTimeImmutable getDateBank()
- * @method DateTimeImmutable getDatePaym()
- * @method DateTimeImmutable getDatePayment()
- * @method Stancer\Payout\Details getDetails()
- * @method integer getFees()
- * @method string getStatus()
- * @method string getStatementDescription()
+ * @method integer getAmount() Get the total credit transfer amount you will receive.
+ * @method string getCurrency() Get processed currency.
+ * @method ?DateTimeImmutable getDateBank() Get the date you will receive the credit transfer.
+ * @method DateTimeImmutable getDatePaym() Get the date the payment transactions were made.
+ * @method Stancer\Payout\Details getDetails() Get payout details.
+ * @method integer getFees() Get the fees you paid for processing the payments.
+ * @method ?string getStatementDescription() Get the statement description, will be used on the transfer.
+ * @method string getStatus() Get payout status.
+ * @method integer get_amount() Get the total credit transfer amount you will receive.
+ * @method ?DateTimeImmutable get_creation_date() Get creation date.
+ * @method string get_currency() Get processed currency.
+ * @method ?DateTimeImmutable get_date_bank() Get the date you will receive the credit transfer.
+ * @method DateTimeImmutable get_date_paym() Get the date the payment transactions were made.
+ * @method DateTimeImmutable get_date_payment() Get the date the payment transactions were made.
+ * @method Stancer\Payout\Details get_details() Get payout details.
+ * @method string get_endpoint() Get API endpoint.
+ * @method string get_entity_name() Get entity name.
+ * @method integer get_fees() Get the fees you paid for processing the payments.
+ * @method ?string get_id() Get object ID.
+ * @method ?string get_statement_description() Get the statement description, will be used on the transfer.
+ * @method string get_status() Get payout status.
+ * @method string get_uri() Get entity resource location.
  *
- * @method static Generator<static> list(SearchFilters $terms)
- *
- * @property-read integer $amount
- * @property-read DateTimeImmutable $creationDate
- * @property-read DateTimeImmutable $created
- * @property-read string $currency
- * @property-read DateTimeImmutable $dateBank
- * @property-read DateTimeImmutable $datePaym
- * @property-read DateTimeImmutable $datePayment
- * @property-read Stancer\Payout\Details $details
- * @property-read integer $fees
- * @property-read string $status
- * @property-read string $statementDescription
+ * @property-read integer $amount The total credit transfer amount you will receive.
+ * @property-read ?DateTimeImmutable $creationDate Creation date.
+ * @property-read ?DateTimeImmutable $creation_date Creation date.
+ * @property-read string $currency Processed currency.
+ * @property-read ?DateTimeImmutable $dateBank The date you will receive the credit transfer.
+ * @property-read DateTimeImmutable $datePaym The date the payment transactions were made.
+ * @property-read DateTimeImmutable $datePayment The date the payment transactions were made.
+ * @property-read ?DateTimeImmutable $date_bank The date you will receive the credit transfer.
+ * @property-read DateTimeImmutable $date_paym The date the payment transactions were made.
+ * @property-read DateTimeImmutable $date_payment The date the payment transactions were made.
+ * @property-read Stancer\Payout\Details $details Payout details.
+ * @property-read string $endpoint API endpoint.
+ * @property-read string $entityName Entity name.
+ * @property-read string $entity_name Entity name.
+ * @property-read integer $fees The fees you paid for processing the payments.
+ * @property-read ?string $id Object ID.
+ * @property-read ?string $statementDescription The statement description, will be used on the transfer.
+ * @property-read ?string $statement_description The statement description, will be used on the transfer.
+ * @property-read string $status Payout status.
+ * @property-read string $uri Entity resource location.
  */
 class Payout extends Stancer\Core\AbstractObject
 {
@@ -49,56 +67,71 @@ class Payout extends Stancer\Core\AbstractObject
      */
     protected $dataModel = [
         'amount' => [
+            'desc' => 'The total credit transfer amount you will receive',
+            'nullable' => false,
             'restricted' => true,
             'type' => self::INTEGER,
         ],
         'currency' => [
+            'desc' => 'Processed currency',
+            'nullable' => false,
             'restricted' => true,
             'type' => self::STRING,
         ],
         'dateBank' => [
+            'desc' => 'The date you will receive the credit transfer',
             'format' => Stancer\Core\Type\Helper::DATE_ONLY,
             'restricted' => true,
             'type' => DateTimeImmutable::class,
         ],
         'datePaym' => [
+            'desc' => 'The date the payment transactions were made',
             'format' => Stancer\Core\Type\Helper::DATE_ONLY,
+            'nullable' => false,
+            'restricted' => true,
+            'type' => DateTimeImmutable::class,
+        ],
+        'datePayment' => [
+            'desc' => 'The date the payment transactions were made',
+            'nullable' => false,
             'restricted' => true,
             'type' => DateTimeImmutable::class,
         ],
         'details' => [
+            'desc' => 'Payout details',
+            'nullable' => false,
             'restricted' => true,
             'type' => Stancer\Payout\Details::class,
         ],
         'fees' => [
+            'desc' => 'The fees you paid for processing the payments',
+            'nullable' => false,
             'restricted' => true,
             'type' => self::INTEGER,
         ],
         'status' => [
+            'desc' => 'Payout status',
+            'nullable' => false,
             'restricted' => true,
             'type' => self::STRING,
         ],
         'statementDescription' => [
+            'desc' => 'The statement description, will be used on the transfer',
             'restricted' => true,
             'type' => self::STRING,
         ],
     ];
 
     /**
-     * Return methods/properties aliases.
+     * Return the date the payment transactions were made.
      *
-     * @param string $name Searched method or property.
+     * Alias for `datePaym`.
      *
-     * @return string|false
+     * @return DateTimeImmutable
      */
-    #[\ReturnTypeWillChange]
-    protected function findAlias(string $name)
+    public function getDatePayment(): DateTimeImmutable
     {
-        if ($name === 'datePayment' || $name === 'getDatePayment') {
-            return 'getDatePaym';
-        }
-
-        return false;
+        return $this->datePaym;
     }
 
     /**

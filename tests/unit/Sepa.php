@@ -3,7 +3,6 @@
 namespace Stancer\tests\unit;
 
 use Stancer;
-use Stancer\Sepa as testedClass;
 use mock;
 
 class Sepa extends Stancer\Tests\atoum
