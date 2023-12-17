@@ -211,125 +211,125 @@ class Stream extends Stancer\Tests\atoum
             ->if($this->newTestedInstance($content))
             ->then
                 ->assert('Default behavior')
-                    ->object($this->testedInstance->seek(1))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek(1))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo(1)
 
-                    ->object($this->testedInstance->seek(1))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek(1))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo(1)
 
-                    ->object($this->testedInstance->seek($len + 10))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek($len + 10))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo($len)
 
-                    ->object($this->testedInstance->seek(-1))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek(-1))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo(0)
 
-                    ->object($this->testedInstance->seek(0))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek(0))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo(0)
 
                 ->assert('Absolute position')
-                    ->object($this->testedInstance->seek(1, SEEK_SET))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek(1, SEEK_SET))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo(1)
 
-                    ->object($this->testedInstance->seek(1, SEEK_SET))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek(1, SEEK_SET))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo(1)
 
-                    ->object($this->testedInstance->seek($len + 10, SEEK_SET))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek($len + 10, SEEK_SET))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo($len)
 
-                    ->object($this->testedInstance->seek(-1, SEEK_SET))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek(-1, SEEK_SET))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo(0)
 
-                    ->object($this->testedInstance->seek($len * -2, SEEK_SET))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek($len * -2, SEEK_SET))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo(0)
 
                 ->assert('Relative position')
-                    ->object($this->testedInstance->seek(1, SEEK_CUR))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek(1, SEEK_CUR))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo(1)
 
-                    ->object($this->testedInstance->seek(1, SEEK_CUR))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek(1, SEEK_CUR))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo(2)
 
-                    ->object($this->testedInstance->seek($len + 10, SEEK_CUR))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek($len + 10, SEEK_CUR))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo($len)
 
-                    ->object($this->testedInstance->seek(-1, SEEK_CUR))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek(-1, SEEK_CUR))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo($len - 1)
 
-                    ->object($this->testedInstance->seek($len * -2, SEEK_CUR))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek($len * -2, SEEK_CUR))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo(0)
 
                 ->assert('From end')
-                    ->object($this->testedInstance->seek(1, SEEK_END))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek(1, SEEK_END))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo($len)
 
-                    ->object($this->testedInstance->seek(1, SEEK_END))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek(1, SEEK_END))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo($len)
 
-                    ->object($this->testedInstance->seek($len + 10, SEEK_END))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek($len + 10, SEEK_END))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo($len)
 
-                    ->object($this->testedInstance->seek(-1, SEEK_END))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek(-1, SEEK_END))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo($len - 1)
 
-                    ->object($this->testedInstance->seek($len * -2, SEEK_END))
-                        ->isTestedInstance
+                    ->variable($this->testedInstance->seek($len * -2, SEEK_END))
+                        ->isNull
 
                     ->integer($this->testedInstance->tell())
                         ->isEqualTo(0)

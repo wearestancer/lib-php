@@ -15,7 +15,7 @@ use Throwable;
 class Exception extends \Exception implements Stancer\Interfaces\ExceptionInterface
 {
     /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::NOTICE;
+    protected static string $logLevel = Psr\Log\LogLevel::NOTICE;
 
     /**
      * Construct the exception.

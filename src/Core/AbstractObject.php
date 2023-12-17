@@ -83,19 +83,16 @@ abstract class AbstractObject implements JsonSerializable
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [];
+    protected array $dataModel = [];
 
-    /** @var string|null */
-    protected $id;
+    protected ?string $id = null;
 
-    /** @var boolean */
-    protected $populated = false;
+    protected bool $populated = false;
 
     /** @var string[] */
-    protected $modified = [];
+    protected array $modified = [];
 
-    /** @var boolean */
-    protected $cleanModified = false;
+    protected bool $cleanModified = false;
 
     /**
      * Create or get an API object.

@@ -23,7 +23,7 @@ class enum extends atoum\atoum\asserters\phpClass
         }
     }
 
-    public function isEqualTo(mixed $value, string $failMessage = null): self
+    public function isEqualTo(mixed $value, ?string $failMessage = null): static
     {
         if ($this->valueIsSet()->value == $value) {
             return $this->pass();
@@ -32,7 +32,7 @@ class enum extends atoum\atoum\asserters\phpClass
         return $this->fail($failMessage ?: $this->_('enum are not equal'));
     }
 
-    public function isIdenticalTo(mixed $value, string $failMessage = null): self
+    public function isIdenticalTo(mixed $value, ?string $failMessage = null): static
     {
         if ($this->valueIsSet()->value === $value) {
             return $this->pass();
@@ -41,7 +41,7 @@ class enum extends atoum\atoum\asserters\phpClass
         return $this->fail($failMessage ?: $this->_('enum are not identical'));
     }
 
-    public function isNotEqualTo(mixed $value, string $failMessage = null): self
+    public function isNotEqualTo(mixed $value, ?string $failMessage = null): static
     {
         if ($this->valueIsSet()->value != $value) {
             return $this->pass();
@@ -50,7 +50,7 @@ class enum extends atoum\atoum\asserters\phpClass
         return $this->fail($failMessage ?: $this->_('enum are equal'));
     }
 
-    public function isNotIdenticalTo(mixed $value, string $failMessage = null): self
+    public function isNotIdenticalTo(mixed $value, ?string $failMessage = null): static
     {
         if ($this->valueIsSet()->value !== $value) {
             return $this->pass();
@@ -59,7 +59,7 @@ class enum extends atoum\atoum\asserters\phpClass
         return $this->fail($failMessage ?: $this->_('enum are identical'));
     }
 
-    public function setWith(mixed $value): self
+    public function setWith(mixed $value): static
     {
         parent::setWith($value);
 
@@ -73,7 +73,7 @@ class enum extends atoum\atoum\asserters\phpClass
         return $this->fail($this->_('%s is not an enum', $this));
     }
 
-    protected function valueIsSet(string $message = 'Value is undefined'): self
+    protected function valueIsSet(string $message = 'Value is undefined'): static
     {
         if ($this->isSet === false) {
             throw new atoum\atoum\exceptions\logic($message);

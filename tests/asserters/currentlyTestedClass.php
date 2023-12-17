@@ -7,7 +7,7 @@ use BackedEnum;
 
 class currentlyTestedClass extends atoum\atoum\asserters\testedClass
 {
-    public function constant($constant, $failMessage = null)
+    public function constant(string $constant, ?string $failMessage = null)
     {
         $asserter = parent::hasConstant($constant, $failMessage);
 
@@ -25,7 +25,7 @@ class currentlyTestedClass extends atoum\atoum\asserters\testedClass
         return $this;
     }
 
-    public function hasTrait($trait, $failMessage = null)
+    public function hasTrait(string $trait, ?string $failMessage = null)
     {
         try {
             $traits = $this->classIsSet()->class->getTraits();
@@ -42,7 +42,7 @@ class currentlyTestedClass extends atoum\atoum\asserters\testedClass
         return $this;
     }
 
-    public function isBackedEnum(string $failMessage = null): self
+    public function isBackedEnum(?string $failMessage = null): self
     {
         $className = $this->isEnum($failMessage)->class->getName();
 
@@ -55,7 +55,7 @@ class currentlyTestedClass extends atoum\atoum\asserters\testedClass
         return $this;
     }
 
-    public function isEnum(string $failMessage = null): self
+    public function isEnum(?string $failMessage = null): self
     {
         if ($this->classIsSet()->class->isEnum() === true) {
             $this->pass();

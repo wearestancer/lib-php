@@ -8,7 +8,7 @@ use Stancer;
 
 class TestCase extends Stancer\Tests\atoum
 {
-    protected $config;
+    protected Stancer\Config $config;
 
     public function __construct(
         ?atoum\atoum\adapter $adapter = null,

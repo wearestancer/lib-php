@@ -11,12 +11,9 @@ use Psr;
  */
 class ServerException extends HttpException implements ExceptionInterface
 {
-    /** @var string */
-    protected static $defaultMessage = 'Server error';
+    protected static string $defaultMessage = 'Server error';
 
-    /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::CRITICAL;
+    protected static string $logLevel = Psr\Log\LogLevel::CRITICAL;
 
-    /** @var string */
-    protected static $status = '5xx';
+    protected static string $status = '5xx';
 }

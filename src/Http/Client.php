@@ -12,20 +12,17 @@ use Psr;
  */
 class Client implements Stancer\Interfaces\HttpClientInterface
 {
-    /** @var CurlHandle */
-    protected $curl;
+    protected CurlHandle $curl;
 
     /**
      * @var mixed[]
      * @phpstan-var array<string, string[]>
      */
-    protected $headers = [];
+    protected array $headers = [];
 
-    /** @var Stancer\Http\Request|null */
-    protected $lastRequest;
+    protected ?Stancer\Http\Request $lastRequest = null;
 
-    /** @var Stancer\Http\Response|null */
-    protected $lastResponse;
+    protected ?Stancer\Http\Response $lastResponse = null;
 
     /**
      * Creation of a new client instance.

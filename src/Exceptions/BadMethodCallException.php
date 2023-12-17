@@ -11,8 +11,7 @@ use Psr;
  */
 class BadMethodCallException extends Exception implements ExceptionInterface
 {
-    /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::CRITICAL;
+    protected static string $logLevel = Psr\Log\LogLevel::CRITICAL;
 
     /**
      * Return default message for that kind of exception.

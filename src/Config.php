@@ -96,48 +96,39 @@ class Config
     public const VERSION = '1.1.3';
 
     /** @var non-empty-array<string|null>[] */
-    protected $app = [];
+    protected array $app = [];
 
     /** @var Stancer\Core\Request\Call[] */
-    protected $calls = [];
+    protected array $calls = [];
 
-    /** @var boolean|null */
-    protected $debug;
+    protected ?bool $debug = null;
 
-    /** @var string */
-    protected $host = 'api.stancer.com';
+    protected string $host = 'api.stancer.com';
 
-    /** @var Stancer\Http\Client|GuzzleHttp\ClientInterface|null */
-    protected $httpClient;
+    protected Stancer\Http\Client|GuzzleHttp\ClientInterface|null $httpClient = null;
 
-    /** @var static|null */
-    protected static $instance;
+    /** @var self|null */
+    protected static ?self $instance = null;
 
     /** @var array<string, string|null> */
-    protected $keys = [
+    protected array $keys = [
         'pprod' => null,
         'ptest' => null,
         'sprod' => null,
         'stest' => null,
     ];
 
-    /** @var Psr\Log\LoggerInterface|null */
-    protected $logger;
+    protected ?Psr\Log\LoggerInterface $logger = null;
 
-    /** @var string */
-    protected $mode;
+    protected string $mode = self::TEST_MODE;
 
-    /** @var integer */
-    protected $port;
+    protected ?int $port = null;
 
-    /** @var integer */
-    protected $timeout = 0;
+    protected int $timeout = 0;
 
-    /** @var DateTimeZone|null */
-    protected $timezone;
+    protected ?DateTimeZone $timezone = null;
 
-    /** @var integer */
-    protected $version = 1;
+    protected int $version = 1;
 
     /**
      * Create an API configuration.

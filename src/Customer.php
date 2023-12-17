@@ -57,7 +57,7 @@ class Customer extends Stancer\Core\AbstractObject
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [
+    protected array $dataModel = [
         'email' => [
             'desc' => 'Customer\'s email',
             'size' => [

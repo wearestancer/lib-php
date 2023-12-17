@@ -172,7 +172,7 @@ class Payment extends Stancer\Core\AbstractObject
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [
+    protected array $dataModel = [
         'amount' => [
             'desc' => 'Transaction amount',
             'required' => true,
@@ -603,7 +603,7 @@ class Payment extends Stancer\Core\AbstractObject
      * @throws Stancer\Exceptions\InvalidAmountException When the amount is invalid.
      * @throws Stancer\Exceptions\MissingPaymentIdException When the payment has no ID.
      */
-    public function refund(int $amount = null): static
+    public function refund(?int $amount = null): static
     {
         if (!$this->getId()) {
             throw new Stancer\Exceptions\MissingPaymentIdException();
@@ -771,7 +771,7 @@ class Payment extends Stancer\Core\AbstractObject
      * @param Stancer\Auth|string|boolean $auth Authentication data.
      * @return $this
      */
-    public function setAuth($auth): static
+    public function setAuth(Stancer\Auth|string|bool $auth): static
     {
         if ($auth === false) {
             return $this;

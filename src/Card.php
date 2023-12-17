@@ -103,7 +103,7 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [
+    protected array $dataModel = [
         'brand' => [
             'desc' => 'Card brand',
             'restricted' => true,

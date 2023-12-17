@@ -13,20 +13,17 @@ use Throwable;
  */
 class HttpException extends Exception implements Stancer\Interfaces\ExceptionInterface
 {
-    /** @var string */
-    protected static $defaultMessage = 'HTTP error';
+    /** @var string Default message */
+    protected static string $defaultMessage = 'HTTP error';
 
-    /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::WARNING;
+    protected static string $logLevel = Psr\Log\LogLevel::WARNING;
 
-    /** @var Psr\Http\Message\RequestInterface|null */
-    protected $request;
+    protected ?Psr\Http\Message\RequestInterface $request = null;
 
-    /** @var Psr\Http\Message\ResponseInterface|null */
-    protected $response;
+    protected ?Psr\Http\Message\ResponseInterface $response = null;
 
-    /** @var string */
-    protected static $status;
+    /** @var string HTTP status */
+    protected static string $status = '';
 
     /**
      * Construct the exception.

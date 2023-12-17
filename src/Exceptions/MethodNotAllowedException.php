@@ -13,12 +13,9 @@ use Psr;
  */
 class MethodNotAllowedException extends ClientException implements ExceptionInterface
 {
-    /** @var string */
-    protected static $defaultMessage = 'Method Not Allowed';
+    protected static string $defaultMessage = 'Method Not Allowed';
 
-    /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::CRITICAL;
+    protected static string $logLevel = Psr\Log\LogLevel::CRITICAL;
 
-    /** @var string */
-    protected static $status = '405';
+    protected static string $status = '405';
 }

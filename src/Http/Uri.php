@@ -18,13 +18,13 @@ class Uri implements Psr\Http\Message\UriInterface
      * @var array Uri components.
      * @phpstan-var UriComponents Uri components.
      */
-    protected $components = [];
+    protected array $components = [];
 
     /**
      * @param string|array $uri URI to parse.
      * @phpstan-param string|UriComponents $uri
      */
-    public function __construct($uri = [])
+    public function __construct(string|array $uri = [])
     {
         $parts = $uri;
 
@@ -420,7 +420,7 @@ class Uri implements Psr\Http\Message\UriInterface
      * @param string $fragment The fragment to use with the new instance.
      * @return static A new instance with the specified fragment.
      */
-    public function withFragment($fragment): static
+    public function withFragment(string $fragment): static
     {
         $components = $this->getComponents();
 
@@ -440,7 +440,7 @@ class Uri implements Psr\Http\Message\UriInterface
      * @param string $host The hostname to use with the new instance.
      * @return static A new instance with the specified host.
      */
-    public function withHost($host): static
+    public function withHost(string $host): static
     {
         $components = $this->getComponents();
 
@@ -470,7 +470,7 @@ class Uri implements Psr\Http\Message\UriInterface
      * @param string $path The path to use with the new instance.
      * @return static A new instance with the specified path.
      */
-    public function withPath($path): static
+    public function withPath(string $path): static
     {
         $components = $this->getComponents();
 
@@ -495,7 +495,7 @@ class Uri implements Psr\Http\Message\UriInterface
      *     removes the port information.
      * @return static A new instance with the specified port.
      */
-    public function withPort($port): static
+    public function withPort(?int $port): static
     {
         $components = $this->getComponents();
 
@@ -518,7 +518,7 @@ class Uri implements Psr\Http\Message\UriInterface
      * @param string $query The query string to use with the new instance.
      * @return static A new instance with the specified query string.
      */
-    public function withQuery($query): static
+    public function withQuery(string $query): static
     {
         $components = $this->getComponents();
 
@@ -541,7 +541,7 @@ class Uri implements Psr\Http\Message\UriInterface
      * @param string $scheme The scheme to use with the new instance.
      * @return static A new instance with the specified scheme.
      */
-    public function withScheme($scheme): static
+    public function withScheme(string $scheme): static
     {
         $components = $this->getComponents();
 
@@ -561,10 +561,10 @@ class Uri implements Psr\Http\Message\UriInterface
      * information.
      *
      * @param string $user The user name to use for authority.
-     * @param null|string $password The password associated with $user.
+     * @param string $password The password associated with $user.
      * @return static A new instance with the specified user information.
      */
-    public function withUserInfo($user, $password = null): static
+    public function withUserInfo(string $user, ?string $password = null): static
     {
         $components = $this->getComponents();
 

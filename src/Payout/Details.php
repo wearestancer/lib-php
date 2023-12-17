@@ -109,7 +109,7 @@ class Details extends Stancer\Core\AbstractObject
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [
+    protected array $dataModel = [
         'disputes' => [
             'desc' => 'Disputes details',
             'restricted' => true,

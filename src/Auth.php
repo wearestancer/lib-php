@@ -44,7 +44,7 @@ class Auth extends Stancer\Core\AbstractObject
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [
+    protected array $dataModel = [
         'redirectUrl' => [
             'desc' => 'The redirection URL to start an authentification session',
             'restricted' => true,
@@ -68,7 +68,7 @@ class Auth extends Stancer\Core\AbstractObject
     ];
 
     /** @var string[] */
-    protected $modified = [
+    protected array $modified = [
         'status',
     ];
 

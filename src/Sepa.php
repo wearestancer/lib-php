@@ -79,7 +79,7 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
     /**
      * @var array<string, DataModel>
      */
-    protected $dataModel = [
+    protected array $dataModel = [
         'bic' => [
             'desc' => 'Bank Identifier Code',
             'required' => false,

@@ -68,7 +68,7 @@ class Payout extends Stancer\Core\AbstractObject
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [
+    protected array $dataModel = [
         'amount' => [
             'desc' => 'The total credit transfer amount you will receive',
             'nullable' => false,

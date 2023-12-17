@@ -48,7 +48,7 @@ class Inner extends Stancer\Core\AbstractObject
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [
+    protected array $dataModel = [
         'amount' => [
             'nullable' => false,
             'restricted' => true,

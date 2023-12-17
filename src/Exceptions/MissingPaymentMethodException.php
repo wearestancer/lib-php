@@ -11,8 +11,7 @@ use Psr;
  */
 class MissingPaymentMethodException extends BadMethodCallException implements ExceptionInterface
 {
-    /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::ERROR;
+    protected static string $logLevel = Psr\Log\LogLevel::ERROR;
 
     /**
      * Return default message for that kind of exception.

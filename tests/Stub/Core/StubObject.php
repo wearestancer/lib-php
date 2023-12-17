@@ -12,7 +12,7 @@ class StubObject extends Stancer\Core\AbstractObject
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     final const ENDPOINT = 'objects'; // invalid but must be not empty
 
-    protected $dataModel = [
+    protected array $dataModel = [
         'date1' => [
             'type' => DateTimeInterface::class,
         ],

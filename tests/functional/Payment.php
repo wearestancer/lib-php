@@ -13,8 +13,8 @@ class Payment extends TestCase
     use Stancer\Tests\Provider\Currencies;
     use Stancer\Tests\Provider\Network;
 
-    protected $order;
-    protected $paymentList = [];
+    protected ?string $order = null;
+    protected array $paymentList = [];
 
     public function beforeTestMethod($testMethod)
     {

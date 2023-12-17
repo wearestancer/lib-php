@@ -56,7 +56,7 @@ class Check extends Stancer\Core\AbstractObject
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [
+    protected array $dataModel = [
         'dateBirth' => [
             'restricted' => true,
             'type' => self::BOOLEAN,
