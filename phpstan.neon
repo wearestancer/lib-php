@@ -183,7 +183,7 @@ parameters:
       }
     '''
 
-  tmpDir: .cache/phpstan
+  tmpDir: vendor/.cache/phpstan
 
 
 services:

@@ -7,6 +7,7 @@ stages:
 variables:
   ATOUM_COVERAGE_FILENAME: coverage.xml
   ATOUM_XUNIT_FILENAME: xunit.xml
+  DOCKER_REGISTRY: wearestancer
   PHP_BUILD_FILENAME: "lib-php-${CI_COMMIT_TAG}.tar.gz"
 
 
@@ -19,38 +20,19 @@ workflow:
     - when: always
 
 
-.prereqs:
-  apt:
-    - apt-get update -yqq
-    - apt-get install -yqq git libpq-dev libcurl4-gnutls-dev libicu-dev libvpx-dev libjpeg-dev libpng-dev libxpm-dev zlib1g-dev libfreetype6-dev libxml2-dev libexpat1-dev libbz2-dev libgmp3-dev libldap2-dev unixodbc-dev libsqlite3-dev libaspell-dev libsnmp-dev libpcre3-dev libtidy-dev libonig-dev libzip-dev unzip
-  php:
-    - cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini && sed -i 's/^;*memory_limit =.*/memory_limit = 512M/' $PHP_INI_DIR/php.ini && sed -i 's/^;*date.timezone =.*/date.timezone = UTC/' $PHP_INI_DIR/php.ini
-    - docker-php-ext-install mbstring curl zip
-  xdebug:
-    - if [ -n "${XDEBUG_VERSION:-}" ]; then pecl install "xdebug-${XDEBUG_VERSION}"; else pecl install xdebug; fi
-    - docker-php-ext-enable xdebug
-    - echo 'xdebug.mode=coverage' >> $PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini
-  composer:
-    - curl -sS https://getcomposer.org/installer | php
-    - mv composer.phar /usr/local/bin/composer
-  start:
+.php::base:
+  image: ${DOCKER_REGISTRY}/php:$VERSION
+
+  before_script:
     - php -v
     - composer --version
     - if [[ "$COMPOSER_PREFER" == "lowest" ]]; then export COMPOSER_PREFER='--prefer-lowest'; else export COMPOSER_PREFER= ; fi
     - composer update --no-progress --prefer-stable ${COMPOSER_PREFER}
 
-
-.php::base:
-  image: php:$VERSION
-
-  before_script:
-    - !reference ['.prereqs', apt]
-    - !reference ['.prereqs', php]
-    - !reference ['.prereqs', xdebug]
-    - !reference ['.prereqs', composer]
-    - !reference ['.prereqs', start]
-
   cache:
+    key:
+      files:
+        - composer.json
     paths:
       - vendor/
 
@@ -92,7 +74,7 @@ atoum:
   stage: test
 
   script:
-    - ./vendor/bin/atoum --max-children-number 1
+    - composer run test -- --max-children-number 1
 
   coverage: '/Code coverage value: \d+\.\d+%/'
 
@@ -111,8 +93,8 @@ phpcs:
   stage: lint
 
   script:
-    - ./vendor/bin/phpcs --cache --report=full
-    - ./vendor/bin/phpcs --cache --report=\\Satesh\\Phpcs\\GitLabReport --report-file=codequality.json
+    - composer run phpcs -- --report=full
+    - composer run phpcs -- --report=\\Satesh\\Phpcs\\GitLabReport --report-file=codequality.json
 
   artifacts:
     reports:
@@ -126,8 +108,8 @@ phpstan:
   stage: lint
 
   script:
-    - ./vendor/bin/phpstan analyse --no-progress || true
-    - ./vendor/bin/phpstan analyse --no-progress --error-format=gitlab > codequality.json
+    - composer run phpstan || true
+    - composer run phpstan -- --error-format=gitlab > codequality.json
 
   artifacts:
     reports:

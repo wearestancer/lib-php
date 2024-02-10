@@ -46,7 +46,14 @@
         "squizlabs/php_codesniffer": "^3.3"
     },
     "scripts": {
-        "create-doc": "php scripts/phpdoc.php"
+        "create-doc": "php scripts/phpdoc.php",
+        "phpcs": "phpcs --cache",
+        "phpstan": "phpstan analyse --no-progress",
+        "test": "atoum",
+        "test:watch": [
+            "Composer\\Config::disableProcessTimeout",
+            "atoum --debug --loop"
+        ]
     },
     "suggest": {
         "monolog/monolog": "Allows to log interaction with the API"
