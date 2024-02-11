@@ -125,6 +125,7 @@ abstract class AbstractObject implements JsonSerializable
      * @return mixed
      * @throws Stancer\Exceptions\BadMethodCallException When an unhandled method is called.
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
     public function __call(string $method, array $arguments)
     {
         $lower = $this->snakeCaseToCamelCase($method);
@@ -170,6 +171,8 @@ abstract class AbstractObject implements JsonSerializable
      * @param string $property Property called.
      * @return mixed
      */
+    #[Stancer\WillChange\PHP8_0\MatchExpression]
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
     public function __get(string $property)
     {
         $prop = $this->snakeCaseToCamelCase($property);
@@ -202,6 +205,7 @@ abstract class AbstractObject implements JsonSerializable
      * @param mixed $value New value.
      * @return void
      */
+    #[Stancer\WillChange\PHP8_0\MixedType]
     public function __set(string $property, $value): void
     {
         $prop = $this->snakeCaseToCamelCase($property);
@@ -255,6 +259,7 @@ abstract class AbstractObject implements JsonSerializable
      * @param mixed[] $data Additional data for creation.
      * @return static
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public static function create(array $data): self
     {
         $obj = new static();
@@ -273,6 +278,8 @@ abstract class AbstractObject implements JsonSerializable
      * @throws Stancer\Exceptions\InvalidArgumentException When asking an unknown property.
      * @throws Stancer\Exceptions\InvalidArgumentException If used on properties not declared as list.
      */
+    #[Stancer\WillChange\PHP8_0\MixedType]
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function dataModelAdder(string $property, $value): self
     {
         $model = $this->getModel($property);
@@ -308,6 +315,7 @@ abstract class AbstractObject implements JsonSerializable
      * @return mixed
      * @throws Stancer\Exceptions\InvalidArgumentException When asking an unknown property.
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
     public function dataModelGetter(string $property, bool $autoPopulate = true)
     {
         $model = $this->getModel($property);
@@ -357,6 +365,8 @@ abstract class AbstractObject implements JsonSerializable
      * @throws Stancer\Exceptions\InvalidArgumentException When asking an unknown property.
      * @throws Stancer\Exceptions\InvalidArgumentException When the value do not match expected pattern.
      */
+    #[Stancer\WillChange\PHP8_0\MixedType]
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function dataModelSetter(string $property, $value): self
     {
         $model = $this->getModel($property);
@@ -413,6 +423,7 @@ abstract class AbstractObject implements JsonSerializable
      * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When configuration is missing.
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function delete(): self
     {
         $request = new Request();
@@ -431,6 +442,7 @@ abstract class AbstractObject implements JsonSerializable
      * @param string $attr Optional attribute name.
      * @return mixed
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
     public function get(string $attr = null)
     {
         if ($attr && $this->apiData) {
@@ -545,6 +557,7 @@ abstract class AbstractObject implements JsonSerializable
      * @param array<string, mixed> $data Data for hydration.
      * @return $this
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function hydrate(array $data): self
     {
         foreach ($data as $key => $value) {
@@ -753,7 +766,7 @@ abstract class AbstractObject implements JsonSerializable
      * @uses self::toArray()
      * @return string|integer|boolean|null|array<string, mixed>
      */
-    #[\ReturnTypeWillChange]
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
     public function jsonSerialize()
     {
         if ($this->getId() && $this->isNotModified()) {
@@ -814,6 +827,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return $this
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function populate(): self
     {
         if ($this->populated || !$this->getId() || !$this->getEndpoint()) {
@@ -854,6 +868,7 @@ abstract class AbstractObject implements JsonSerializable
      * @param string $id Identifier of the object.
      * @return static
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     static public function retrieve(string $id): self
     {
         return new static($id);
@@ -867,6 +882,7 @@ abstract class AbstractObject implements JsonSerializable
      * @throws Stancer\Exceptions\BadMethodCallException When the method is called on an empty object.
      * @throws Stancer\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function send(): self
     {
         if ($this->isNotModified()) {
@@ -1010,6 +1026,8 @@ abstract class AbstractObject implements JsonSerializable
      * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When the value do not match expected pattern.
      */
+    #[Stancer\WillChange\PHP8_0\MixedType]
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     protected function validateDataModel(string $property, $value): self
     {
         $model = $this->getModel($property);

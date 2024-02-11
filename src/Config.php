@@ -200,6 +200,7 @@ class Config
      * @return static
      * @throws Stancer\Exceptions\InvalidArgumentException When no previous instance was stored (use `Config::init()`).
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public static function getGlobal(): self
     {
         if (static::$instance instanceof static) {
@@ -230,7 +231,7 @@ class Config
      *
      * @return Stancer\Http\Client|GuzzleHttp\ClientInterface
      */
-    #[\ReturnTypeWillChange]
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\ReturnTypeWithUnion]
     public function getHttpClient()
     {
         if ($this->httpClient) {

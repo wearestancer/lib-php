@@ -176,6 +176,7 @@ trait MessageTrait
      * @param string|string[] $value Header value(s).
      * @return static
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function withAddedHeader($name, $value): Psr\Http\Message\MessageInterface
     {
         $obj = clone $this;
@@ -189,6 +190,7 @@ trait MessageTrait
      * @param Psr\Http\Message\StreamInterface $body Body.
      * @return static
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function withBody(Psr\Http\Message\StreamInterface $body): Psr\Http\Message\MessageInterface
     {
         $obj = clone $this;
@@ -204,6 +206,7 @@ trait MessageTrait
      * @param string|string[] $value Header value(s).
      * @return static
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function withHeader($name, $value): Psr\Http\Message\MessageInterface
     {
         return $this->withoutHeader($name)->addHeader($name, $value);
@@ -216,6 +219,7 @@ trait MessageTrait
      * @param string|string[]|null $out Text for replacement.
      * @return static
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function withModifiedBody($in = '', $out = ''): Psr\Http\Message\MessageInterface
     {
         $obj = clone $this;
@@ -233,6 +237,7 @@ trait MessageTrait
      * @param string $name Case-insensitive header field name to remove.
      * @return static
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function withoutHeader($name): Psr\Http\Message\MessageInterface
     {
         $obj = clone $this;
@@ -246,6 +251,7 @@ trait MessageTrait
      * @param string $version HTTP protocol version.
      * @return static
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function withProtocolVersion($version): Psr\Http\Message\MessageInterface
     {
         $obj = clone $this;

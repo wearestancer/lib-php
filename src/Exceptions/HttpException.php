@@ -4,14 +4,14 @@ declare(strict_types=1);
 namespace Stancer\Exceptions;
 
 use GuzzleHttp\Exception\RequestException;
-use Stancer\Interfaces\ExceptionInterface;
 use Psr;
+use Stancer;
 use Throwable;
 
 /**
  * Base exception class for all Stancer HTTP based exceptions.
  */
-class HttpException extends Exception implements ExceptionInterface
+class HttpException extends Exception implements Stancer\Interfaces\ExceptionInterface
 {
     /** @var string */
     protected static $defaultMessage = 'HTTP error';
@@ -53,6 +53,7 @@ class HttpException extends Exception implements ExceptionInterface
      *
      * @phpstan-param CreateExceptionParameters $params
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public static function create(array $params = []): Exception
     {
         if (array_key_exists('status', $params)) {

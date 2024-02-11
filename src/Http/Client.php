@@ -12,6 +12,7 @@ use Psr;
 class Client implements Stancer\Interfaces\HttpClientInterface
 {
     /** @var resource */
+    #[Stancer\WillChange\PHP8_0\CurlHandler]
     protected $curl;
 
     /**
@@ -51,7 +52,7 @@ class Client implements Stancer\Interfaces\HttpClientInterface
      *
      * @return resource
      */
-    #[\ReturnTypeWillChange]
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\CurlHandler]
     public function getCurlResource()
     {
         return $this->curl;
@@ -98,6 +99,7 @@ class Client implements Stancer\Interfaces\HttpClientInterface
      * @param string $line One header line.
      * @return integer
      */
+    #[Stancer\WillChange\PHP8_0\CurlHandler]
     public function parseHeaderLine($curl, string $line): int
     {
         if (!trim($line)) {
@@ -148,6 +150,7 @@ class Client implements Stancer\Interfaces\HttpClientInterface
      * @phpstan-param array{body?: string, headers?: array<string, string|string[]>, timeout?: int} $options
      *   Request options to apply.
      */
+    #[Stancer\WillChange\PHP8_0\MatchExpression]
     public function request(string $method, string $uri, array $options = []): Psr\Http\Message\ResponseInterface
     {
         $config = Stancer\Config::getGlobal();

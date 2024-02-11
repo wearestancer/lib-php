@@ -7,6 +7,7 @@ declare(strict_types=1);
 namespace Stancer\Http;
 
 use Psr;
+use Stancer;
 
 /**
  * Basic HTTP URI.
@@ -419,6 +420,7 @@ class Uri implements Psr\Http\Message\UriInterface
      * @param string $fragment The fragment to use with the new instance.
      * @return static A new instance with the specified fragment.
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function withFragment($fragment): self
     {
         $components = $this->getComponents();
@@ -439,6 +441,7 @@ class Uri implements Psr\Http\Message\UriInterface
      * @param string $host The hostname to use with the new instance.
      * @return static A new instance with the specified host.
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function withHost($host): self
     {
         $components = $this->getComponents();
@@ -469,6 +472,7 @@ class Uri implements Psr\Http\Message\UriInterface
      * @param string $path The path to use with the new instance.
      * @return static A new instance with the specified path.
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function withPath($path): self
     {
         $components = $this->getComponents();
@@ -494,6 +498,7 @@ class Uri implements Psr\Http\Message\UriInterface
      *     removes the port information.
      * @return static A new instance with the specified port.
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function withPort($port): self
     {
         $components = $this->getComponents();
@@ -517,6 +522,7 @@ class Uri implements Psr\Http\Message\UriInterface
      * @param string $query The query string to use with the new instance.
      * @return static A new instance with the specified query string.
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function withQuery($query): self
     {
         $components = $this->getComponents();
@@ -540,6 +546,7 @@ class Uri implements Psr\Http\Message\UriInterface
      * @param string $scheme The scheme to use with the new instance.
      * @return static A new instance with the specified scheme.
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function withScheme($scheme): self
     {
         $components = $this->getComponents();
@@ -563,6 +570,7 @@ class Uri implements Psr\Http\Message\UriInterface
      * @param null|string $password The password associated with $user.
      * @return static A new instance with the specified user information.
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function withUserInfo($user, $password = null): self
     {
         $components = $this->getComponents();

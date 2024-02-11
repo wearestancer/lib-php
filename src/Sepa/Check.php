@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Stancer\Sepa;
 
 use Override;
+use ReturnTypeWillChange;
 use Stancer;
 
 /**
@@ -86,7 +87,7 @@ class Check extends Stancer\Core\AbstractObject
      * @return string|integer|boolean|null|array<string, mixed>
      */
     #[Override]
-    #[\ReturnTypeWillChange]
+    #[ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
     public function jsonSerialize()
     {
         $sepa = $this->getSepa();

@@ -91,6 +91,7 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      *
      * @return Stancer\Sepa\Check|null
      */
+    #[Stancer\WillChange\PHP8_0\NonCapturingCatch]
     public function getCheck(): ?Stancer\Sepa\Check
     {
         if ($this->id) {
