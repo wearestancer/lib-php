@@ -20,12 +20,16 @@ use ReflectionClass;
 abstract class AbstractObject implements JsonSerializable
 {
     #[Stancer\WillChange\PHP8_1\FinalClassConstants]
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     public const BOOLEAN = 'boolean';
     #[Stancer\WillChange\PHP8_1\FinalClassConstants]
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     public const FLOAT = 'float';
     #[Stancer\WillChange\PHP8_1\FinalClassConstants]
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     public const INTEGER = 'integer';
     #[Stancer\WillChange\PHP8_1\FinalClassConstants]
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     public const STRING = 'string';
 
     /** @var array<string, mixed> */
@@ -33,6 +37,7 @@ abstract class AbstractObject implements JsonSerializable
 
     /** @var string */
     #[Stancer\WillChange\PHP8_1\FinalClassConstants]
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     protected $endpoint = '';
 
     /**

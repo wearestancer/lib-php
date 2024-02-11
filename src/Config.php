@@ -13,8 +13,11 @@ use Psr;
  */
 class Config
 {
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     public const LIVE_MODE = 'live';
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     public const TEST_MODE = 'test';
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     public const VERSION = '1.1.1';
 
     /** @var non-empty-array<string|null>[] */
