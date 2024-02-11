@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Stancer\Payout;
 
+use Override;
 use Stancer;
 
 /**
@@ -57,6 +58,7 @@ class Details extends Stancer\Core\AbstractObject
      * @return mixed
      * @throws Stancer\Exceptions\BadMethodCallException When an unhandled method is called.
      */
+    #[Override]
     public function __call(string $method, array $arguments)
     {
         $name = $this->snakeCaseToCamelCase($method);

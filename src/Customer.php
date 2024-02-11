@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Stancer;
 
+use Override;
 use Stancer;
 
 /**
@@ -68,6 +69,7 @@ class Customer extends Stancer\Core\AbstractObject
      * @throws Stancer\Exceptions\BadMethodCallException When trying to send a customer without an email
      *    or a phone number.
      */
+    #[Override]
     public function send(): Stancer\Core\AbstractObject
     {
         if (!$this->getId() && !$this->getEmail() && !$this->getMobile()) {

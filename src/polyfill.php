@@ -26,6 +26,13 @@ if (version_compare(PHP_VERSION, '8.0', '>=')) {
         {
         }
     }
+
+    if (version_compare(PHP_VERSION, '8.3', '<')) {
+        #[Attribute(Attribute::TARGET_METHOD)]
+        final class Override
+        {
+        }
+    }
 }
 
 // phpcs:enable

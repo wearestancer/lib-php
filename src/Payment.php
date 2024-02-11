@@ -5,6 +5,7 @@ namespace Stancer;
 
 use DateTime;
 use DateTimeImmutable;
+use Override;
 use Stancer;
 
 /**
@@ -277,6 +278,7 @@ class Payment extends Stancer\Core\AbstractObject
      *
      * @phpstan-return $this
      */
+    #[Override]
     public function delete(): Stancer\Core\AbstractObject
     {
         $message = 'You are not allowed to delete a payment, you need to refund it instead.';
@@ -585,6 +587,7 @@ class Payment extends Stancer\Core\AbstractObject
      *   was asked and an error occur during device creation.
      * @throws Stancer\Exceptions\InvalidExpirationException When card's expiration is invalid.
      */
+    #[Override]
     public function send(): Stancer\Core\AbstractObject
     {
         if ($this->getId() && $this->isModified()) {

@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace Stancer;
 
 use DateTimeImmutable;
+use Override;
 use Stancer;
 
 /**
@@ -76,6 +77,7 @@ class Refund extends Stancer\Core\AbstractObject
      *
      * @return boolean
      */
+    #[Override]
     public function isModified(): bool
     {
         return !!count($this->modified);
@@ -89,6 +91,7 @@ class Refund extends Stancer\Core\AbstractObject
      * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
+    #[Override]
     public function send(): Stancer\Core\AbstractObject
     {
         $payment = $this->getPayment();

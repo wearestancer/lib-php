@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Stancer\Sepa;
 
+use Override;
 use Stancer;
 
 /**
@@ -84,6 +85,7 @@ class Check extends Stancer\Core\AbstractObject
      * @uses self::toArray()
      * @return string|integer|boolean|null|array<string, mixed>
      */
+    #[Override]
     #[\ReturnTypeWillChange]
     public function jsonSerialize()
     {
@@ -108,6 +110,7 @@ class Check extends Stancer\Core\AbstractObject
      * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
+    #[Override]
     public function send(): Stancer\Core\AbstractObject
     {
         $this->modified[] = 'sepa'; // Mandatory, force `parent::send()` to work.
