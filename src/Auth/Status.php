@@ -8,6 +8,7 @@ use Stancer;
 /**
  * List of a auth status.
  */
+#[Stancer\WillChange\PHP8_1\Enumeration]
 class Status
 {
     public const ATTEMPTED = 'attempted';

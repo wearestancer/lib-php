@@ -19,15 +19,20 @@ use ReflectionClass;
  */
 abstract class AbstractObject implements JsonSerializable
 {
+    #[Stancer\WillChange\PHP8_1\FinalClassConstants]
     public const BOOLEAN = 'boolean';
+    #[Stancer\WillChange\PHP8_1\FinalClassConstants]
     public const FLOAT = 'float';
+    #[Stancer\WillChange\PHP8_1\FinalClassConstants]
     public const INTEGER = 'integer';
+    #[Stancer\WillChange\PHP8_1\FinalClassConstants]
     public const STRING = 'string';
 
     /** @var array<string, mixed> */
     protected $apiData;
 
     /** @var string */
+    #[Stancer\WillChange\PHP8_1\FinalClassConstants]
     protected $endpoint = '';
 
     /**
