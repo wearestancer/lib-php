@@ -12,6 +12,10 @@ trim_trailing_whitespace = true
 [*.php]
 indent_size = 4
 
+[.devcontainer/devcontainer.json]
+indent_size = 4
+indent_style = tab
+
 [.gitattributes]
 indent_size = 4
 indent_style = tab

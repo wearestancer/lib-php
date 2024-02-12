@@ -1,0 +1,14 @@
+version: '3'
+
+services:
+  workspace:
+    build:
+      args:
+        - DOCKER_REGISTRY
+        - PHP_VERSION
+      context: .
+      dockerfile: ./Dockerfile
+      target: main
+
+    volumes:
+      - ..:/workspace:cached
