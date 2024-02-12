@@ -15,4 +15,5 @@ reports
 *.swp
 
 # Local files
+.devcontainer/.env
 *.local.php
