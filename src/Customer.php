@@ -53,7 +53,7 @@ class Customer extends Stancer\Core\AbstractObject
         ],
         'name' => [
             'size' => [
-                'min' => 4,
+                'min' => 3,
                 'max' => 64,
             ],
             'type' => self::STRING,
