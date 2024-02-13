@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `devcontainer` configuration for VS Code
+- Change minimum length of `name` attribute for Card, Customer, Sepa from 4 to 3 (same behaviour as the v1 API).
 
 
 ## [1.1.1] - 2023-09-22
