@@ -91,6 +91,7 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      *
      * @return Stancer\Sepa\Check|null
      */
+    #[Stancer\WillChange\PHP8_0\NonCapturingCatch]
     public function getCheck(): ?Stancer\Sepa\Check
     {
         if ($this->id) {
@@ -154,8 +155,10 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      * @return $this
      * @throws Stancer\Exceptions\InvalidIbanException When IBAN is invalid.
      */
-    public function setIban(string $iban): self
-    {
+    public function setIban(
+        #[\SensitiveParameter]
+        string $iban
+    ): self {
         $iban = str_replace(' ', '', $iban);
         $country = substr($iban, 0, 2);
         $start = substr($iban, 0, 4);

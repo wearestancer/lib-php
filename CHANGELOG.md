@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - `devcontainer` configuration for VS Code
+### Added
+- Classes and methods are marked for future changes
+- Some parameters are marked as sensitive
 
 
 ## [1.1.1] - 2023-09-22

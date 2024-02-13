@@ -11,6 +11,9 @@
     ],
     "license": "MIT",
     "autoload": {
+        "files": [
+            "src/polyfill.php"
+        ],
         "psr-4": {
             "Stancer\\": "src/"
         }

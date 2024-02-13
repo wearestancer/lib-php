@@ -197,6 +197,7 @@ trait SearchTrait
      * @phpstan-param DateTimeInterface|integer $value Parameter value.
      * @phpstan-param class-string<Stancer\Exceptions\Exception> $exception Exception to throw.
      */
+    #[Stancer\WillChange\PHP8_0\MixedType]
     protected static function validateDateRelativeFilter(
         $value,
         string $name,

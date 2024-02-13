@@ -3,9 +3,12 @@ declare(strict_types=1);
 
 namespace Stancer\Payout;
 
+use Stancer;
+
 /**
  * List of a payout status.
  */
+#[Stancer\WillChange\PHP8_1\Enumeration]
 class Status
 {
     public const FAILED = 'failed';

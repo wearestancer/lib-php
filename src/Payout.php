@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Stancer;
 
-use DateTime;
 use DateTimeImmutable;
+use Override;
 use Stancer;
 
 /**
@@ -100,6 +100,7 @@ class Payout extends Stancer\Core\AbstractObject
      *
      * @phpstan-param PayoutResponse $data
      */
+    #[Override]
     public function hydrate(array $data): self
     {
         $data['details'] = [];

@@ -13,8 +13,11 @@ use Psr;
  */
 class Config
 {
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     public const LIVE_MODE = 'live';
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     public const TEST_MODE = 'test';
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     public const VERSION = '1.1.1';
 
     /** @var non-empty-array<string|null>[] */
@@ -70,8 +73,10 @@ class Config
      * @see self::init() for a quick config setup
      * @param string[] $keys Authentication keys.
      */
-    public function __construct(array $keys)
-    {
+    public function __construct(
+        #[\SensitiveParameter]
+        array $keys
+    ) {
         $this->setKeys($keys);
     }
 
@@ -198,6 +203,7 @@ class Config
      * @return static
      * @throws Stancer\Exceptions\InvalidArgumentException When no previous instance was stored (use `Config::init()`).
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public static function getGlobal(): self
     {
         if (static::$instance instanceof static) {
@@ -228,6 +234,7 @@ class Config
      *
      * @return Stancer\Http\Client|GuzzleHttp\ClientInterface
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\ReturnTypeWithUnion]
     public function getHttpClient()
     {
         if ($this->httpClient) {
@@ -393,8 +400,10 @@ class Config
      * @param string[] $keys Authentication keys.
      * @return self
      */
-    public static function init(array $keys): self
-    {
+    public static function init(
+        #[\SensitiveParameter]
+        array $keys
+    ): self {
         $obj = new static($keys);
 
         return static::setGlobal($obj);
@@ -561,8 +570,10 @@ class Config
      *
      * @return $this
      */
-    public function setKeys($keys): self
-    {
+    public function setKeys(
+        #[\SensitiveParameter]
+        $keys
+    ): self {
         if (!is_array($keys)) {
             return $this->setKeys([$keys]);
         }

@@ -73,7 +73,7 @@ class Device extends Stancer\Core\AbstractObject
      * @throws Stancer\Exceptions\InvalidIpAddressException When no IP address was given.
      * @throws Stancer\Exceptions\InvalidPortException When no port was given.
      */
-    public function hydrateFromEnvironment()
+    public function hydrateFromEnvironment(): self
     {
         if (!$this->getHttpAccept() && getenv('HTTP_ACCEPT')) {
             $this->setHttpAccept(getenv('HTTP_ACCEPT'));

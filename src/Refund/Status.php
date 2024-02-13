@@ -3,9 +3,12 @@ declare(strict_types=1);
 
 namespace Stancer\Refund;
 
+use Stancer;
+
 /**
  * List of a refund status.
  */
+#[Stancer\WillChange\PHP8_1\Enumeration]
 class Status
 {
     public const NOT_HONORED = 'not_honored';
