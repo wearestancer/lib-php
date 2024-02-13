@@ -13,21 +13,21 @@ declare(strict_types=1);
 if (version_compare(PHP_VERSION, '8.0', '>=')) {
     // Attributes are available since PHP8, before they will be seen as comments.
 
-    if (version_compare(PHP_VERSION, '8.1', '<')) {
+    if (!class_exists('ReturnTypeWillChange')) {
         #[Attribute(Attribute::TARGET_METHOD)]
         final class ReturnTypeWillChange
         {
         }
     }
 
-    if (version_compare(PHP_VERSION, '8.2', '<')) {
+    if (!class_exists('SensitiveParameter')) {
         #[Attribute(Attribute::TARGET_PARAMETER)]
         final class SensitiveParameter
         {
         }
     }
 
-    if (version_compare(PHP_VERSION, '8.3', '<')) {
+    if (!class_exists('Override')) {
         #[Attribute(Attribute::TARGET_METHOD)]
         final class Override
         {
