@@ -3,6 +3,9 @@ includes:
   - phpstan-baseline.neon
 
 parameters:
+  excludePaths:
+    - src/Core/Documentation/
+
   ignoreErrors:
     - '/^Call to an undefined static method Stancer\\Core\\AbstractObject::[gs]et\w+\(\)/'
     - '/^Only booleans are allowed in/'
