@@ -137,50 +137,42 @@ class atoum extends base\test
         return $config;
     }
 
-    #[Stancer\WillChange\PHP8_1\NewInInitializers]
     public function mockEmptyJsonResponse(
-        Psr\Http\Message\ResponseInterface $response = null
+        Psr\Http\Message\ResponseInterface $response = new mock\Stancer\Http\Response(200)
     ): Psr\Http\Message\ResponseInterface
     {
         return $this->mockResponse('{}', $response);
     }
 
-    #[Stancer\WillChange\PHP8_1\NewInInitializers]
     public function mockJsonResponse(
         string $dir,
         string $file,
-        Psr\Http\Message\ResponseInterface $response = null
+        Psr\Http\Message\ResponseInterface $response = new mock\Stancer\Http\Response(200)
     ): Psr\Http\Message\ResponseInterface
     {
         return $this->mockResponse($this->getFixture($dir, $file), $response);
     }
 
-    #[Stancer\WillChange\PHP8_1\NewInInitializers]
     public function mockJsonResponses(
         array $files,
-        Psr\Http\Message\ResponseInterface $response = null
+        Psr\Http\Message\ResponseInterface $response = new mock\Stancer\Http\Response(200)
     ): Psr\Http\Message\ResponseInterface
     {
-        $resp = $response ?? new mock\Stancer\Http\Response(200);
-
         foreach ($files as $file) {
-            $this->calling($resp)->getBody[] = new Stancer\Http\Stream($this->getFixture(...$file));
+            $this->calling($response)->getBody[] = new Stancer\Http\Stream($this->getFixture(...$file));
         }
 
-        return $resp;
+        return $response;
     }
 
-    #[Stancer\WillChange\PHP8_1\NewInInitializers]
     public function mockResponse(
         string $body,
-        Psr\Http\Message\ResponseInterface $response = null
+        Psr\Http\Message\ResponseInterface $response = new mock\Stancer\Http\Response(200)
     ): Psr\Http\Message\ResponseInterface
     {
-        $resp = $response ?? new mock\Stancer\Http\Response(200);
+        $this->calling($response)->getBody = new Stancer\Http\Stream($body);
 
-        $this->calling($resp)->getBody = new Stancer\Http\Stream($body);
-
-        return $resp;
+        return $response;
     }
 
     public function mockRequestOptions(Stancer\Config $config, array $more = []): array
