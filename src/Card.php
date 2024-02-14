@@ -96,8 +96,8 @@ use Stancer;
  */
 class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\PaymentMeansInterface
 {
-    /** @var string */
-    protected $endpoint = 'cards';
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
+    final public const ENDPOINT = 'cards';
 
     /**
      * @var array

@@ -59,8 +59,8 @@ class Refund extends Stancer\Core\AbstractObject
     use Stancer\Traits\AmountTrait;
     use Stancer\Traits\SearchTrait;
 
-    /** @var string */
-    protected $endpoint = 'refunds';
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
+    final public const ENDPOINT = 'refunds';
 
     /**
      * @var array

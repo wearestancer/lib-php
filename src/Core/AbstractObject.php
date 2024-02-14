@@ -61,29 +61,23 @@ abstract class AbstractObject implements JsonSerializable
 {
     use Stancer\Traits\AliasTrait;
 
-    #[Stancer\WillChange\PHP8_1\FinalClassConstants]
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    public const BOOLEAN = 'boolean';
-    #[Stancer\WillChange\PHP8_1\FinalClassConstants]
+    final public const BOOLEAN = 'boolean';
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    public const FLOAT = 'float';
-    #[Stancer\WillChange\PHP8_1\FinalClassConstants]
+    final public const FLOAT = 'float';
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    public const INTEGER = 'integer';
-    #[Stancer\WillChange\PHP8_1\FinalClassConstants]
+    final public const INTEGER = 'integer';
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    public const STRING = 'string';
+    final public const STRING = 'string';
+
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
+    public const ENDPOINT = '';
 
     /**
      * @var array|string
      * @phpstan-var array<string, mixed>|string
      */
     protected array|string $apiData = [];
-
-    /** @var string */
-    #[Stancer\WillChange\PHP8_1\FinalClassConstants]
-    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    protected $endpoint = '';
 
     /**
      * @var array
@@ -451,7 +445,7 @@ abstract class AbstractObject implements JsonSerializable
     #[Stancer\Core\Documentation\FormatProperty(description: 'API endpoint', nullable: false, restricted: true)]
     public function getEndpoint(): string
     {
-        return $this->endpoint;
+        return static::ENDPOINT;
     }
 
     /**

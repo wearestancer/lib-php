@@ -50,8 +50,8 @@ use Stancer;
  */
 class Customer extends Stancer\Core\AbstractObject
 {
-    /** @var string */
-    protected $endpoint = 'customers';
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
+    final public const ENDPOINT = 'customers';
 
     /**
      * @var array

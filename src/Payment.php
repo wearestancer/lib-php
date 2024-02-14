@@ -165,8 +165,8 @@ class Payment extends Stancer\Core\AbstractObject
     use Stancer\Traits\AmountTrait;
     use Stancer\Traits\SearchTrait;
 
-    /** @var string */
-    protected $endpoint = 'checkout';
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
+    final public const ENDPOINT = 'checkout';
 
     /**
      * @var array

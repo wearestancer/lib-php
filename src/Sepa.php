@@ -73,8 +73,8 @@ use Stancer;
  */
 class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\PaymentMeansInterface
 {
-    /** @var string */
-    protected $endpoint = 'sepa';
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
+    final public const ENDPOINT = 'sepa';
 
     /**
      * @var array<string, DataModel>

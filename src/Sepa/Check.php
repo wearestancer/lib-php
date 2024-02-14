@@ -49,8 +49,8 @@ use Stancer;
  */
 class Check extends Stancer\Core\AbstractObject
 {
-    /** @var string */
-    protected $endpoint = 'sepa/check';
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
+    final public const ENDPOINT = 'sepa/check';
 
     /**
      * @var array

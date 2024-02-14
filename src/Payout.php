@@ -61,8 +61,8 @@ class Payout extends Stancer\Core\AbstractObject
 {
     use Stancer\Traits\SearchTrait;
 
-    /** @var string */
-    protected $endpoint = 'payouts';
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
+    final public const ENDPOINT = 'payouts';
 
     /**
      * @var array
