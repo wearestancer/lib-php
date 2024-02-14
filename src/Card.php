@@ -92,7 +92,7 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
         ],
         'name' => [
             'size' => [
-                'min' => 4,
+                'min' => 3,
                 'max' => 64,
             ],
             'type' => self::STRING,

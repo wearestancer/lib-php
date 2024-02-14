@@ -79,7 +79,7 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
         'name' => [
             'required' => true,
             'size' => [
-                'min' => 4,
+                'min' => 3,
                 'max' => 64,
             ],
             'type' => self::STRING,
