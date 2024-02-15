@@ -79,7 +79,7 @@ class Config
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     public const TEST_MODE = 'test';
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    public const VERSION = '1.1.1';
+    public const VERSION = '1.1.2';
 
     /** @var non-empty-array<string|null>[] */
     protected $app = [];
