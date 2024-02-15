@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace Stancer\Traits;
 
@@ -27,7 +28,7 @@ trait SearchTrait
      * `start` must be an integer, will be used as a pagination cursor, starts at 0.
      *
      * @param array $terms Search terms. May have `created`, `limit` or `start` key.
-     * @return Generator<Stancer\Core\AbstractObject>
+     * @return Generator<static>
      * @throws Stancer\Exceptions\InvalidSearchFilterException When `$terms` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchCreationFilterException When `created` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchCreationFilterException When `created` is a DatePeriod without end.
@@ -51,7 +52,7 @@ trait SearchTrait
      * @param string $class Base class.
      * @param string $property Searched property.
      * @param array $terms Search terms.
-     * @return Generator<Stancer\Core\AbstractObject>
+     * @return Generator<static>
      * @throws Stancer\Exceptions\InvalidSearchFilterException When `$terms` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchCreationFilterException When `created` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchCreationFilterException When `created` is a DatePeriod without end.
@@ -59,7 +60,7 @@ trait SearchTrait
      * @throws Stancer\Exceptions\InvalidSearchLimitException When `limit` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchStartException When `start` is invalid.
      *
-     * @phpstan-param class-string<Stancer\Core\AbstractObject> $class
+     * @phpstan-param class-string<static> $class
      * @phpstan-param SearchFilters $terms
      */
     protected function search(string $class, string $property, array $terms): Generator

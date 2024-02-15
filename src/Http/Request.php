@@ -15,6 +15,7 @@ use Psr;
  */
 class Request implements Psr\Http\Message\RequestInterface
 {
+    use Stancer\Traits\AliasTrait;
     use MessageTrait;
 
     /** @var string */

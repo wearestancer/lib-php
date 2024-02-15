@@ -111,57 +111,29 @@ class Refund extends Stancer\Tests\atoum
     public function testSetAmount()
     {
         $this
-            ->assert('0 is not a valid amount')
+            ->assert('camelCase method')
                 ->exception(function () {
-                    $this->newTestedInstance->setAmount(0);
+                    $this->newTestedInstance->setAmount(rand(0, PHP_INT_MAX));
                 })
-                    ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
+                    ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                     ->message
-                        ->isIdenticalTo('Amount must be greater than or equal to 50.')
+                        ->isIdenticalTo('You are not allowed to modify "amount".')
 
-                ->boolean($this->testedInstance->isModified())
-                    ->isFalse
-
-            ->assert('49 is not a valid amount')
+            ->assert('camelCase method')
                 ->exception(function () {
-                    $this->newTestedInstance->setAmount(49);
+                    $this->newTestedInstance->set_amount(rand(0, PHP_INT_MAX));
                 })
-                    ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
+                    ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                     ->message
-                        ->isIdenticalTo('Amount must be greater than or equal to 50.')
+                        ->isIdenticalTo('You are not allowed to modify "amount".')
 
-                ->boolean($this->testedInstance->isModified())
-                    ->isFalse
-
-            ->assert('50 is valid')
-                ->object($this->newTestedInstance->setAmount(50))
-                    ->isTestedInstance
-                ->integer($this->testedInstance->getAmount())
-                    ->isEqualTo(50)
-
-                ->boolean($this->testedInstance->isModified())
-                    ->isTrue
-
-                ->array($this->testedInstance->jsonSerialize())
-                    ->hasSize(1)
-                    ->hasKey('amount')
-                    ->integer['amount']
-                        ->isEqualTo(50)
-
-            ->assert('random value')
-                ->object($this->newTestedInstance->setAmount($amount = rand(50, 999999)))
-                    ->isTestedInstance
-                ->integer($this->testedInstance->getAmount())
-                    ->isEqualTo($amount)
-
-                ->boolean($this->testedInstance->isModified())
-                    ->isTrue
-
-                ->array($this->testedInstance->jsonSerialize())
-                    ->hasSize(1)
-                    ->hasKey('amount')
-                    ->integer['amount']
-                        ->isEqualTo($amount)
+            ->assert('property')
+                ->exception(function () {
+                    $this->newTestedInstance->amount = rand(0, PHP_INT_MAX);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\BadPropertyAccessException::class)
+                    ->message
+                        ->isIdenticalTo('You are not allowed to modify "amount".')
         ;
     }
 }

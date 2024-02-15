@@ -4,9 +4,7 @@ namespace Stancer\tests\unit\Core;
 
 use DateTime;
 use DateTimeZone;
-use GuzzleHttp;
 use Stancer;
-use Stancer\Core\AbstractObject as testedClass;
 use mock;
 
 class AbstractObject extends Stancer\Tests\atoum
@@ -144,17 +142,6 @@ class AbstractObject extends Stancer\Tests\atoum
         ;
     }
 
-    /**
-     * @dataProvider caseStringDataProvider
-     */
-    public function testCamelCaseToSnakeCase($camel, $snake)
-    {
-        $this
-            ->string($this->newTestedInstance->camelCaseToSnakeCase($camel))
-                ->isIdenticalTo($snake)
-        ;
-    }
-
     public function testDataModelAdder()
     {
         // More test in stubs
@@ -271,10 +258,40 @@ class AbstractObject extends Stancer\Tests\atoum
                 ->dateTime($this->testedInstance->getCreationDate())
                     ->isEqualTo(new DateTime('@' . $timestamp))
 
+                ->dateTime($this->testedInstance->get_creation_date())
+                    ->isEqualTo(new DateTime('@' . $timestamp))
+
+                ->dateTime($this->testedInstance->creationDate)
+                    ->isEqualTo(new DateTime('@' . $timestamp))
+
+                ->dateTime($this->testedInstance->creation_date)
+                    ->isEqualTo(new DateTime('@' . $timestamp))
+
+                ->dateTime($this->testedInstance->getCreated())
+                    ->isEqualTo(new DateTime('@' . $timestamp))
+
+                ->dateTime($this->testedInstance->created)
+                    ->isEqualTo(new DateTime('@' . $timestamp))
+
             ->if($config = Stancer\Config::init([]))
             ->and($config->setDefaultTimeZone($tz))
             ->then
                 ->dateTime($this->testedInstance->getCreationDate())
+                    ->hasTimezone(new DateTimeZone($tz))
+
+                ->dateTime($this->testedInstance->get_creation_date())
+                    ->hasTimezone(new DateTimeZone($tz))
+
+                ->dateTime($this->testedInstance->creationDate)
+                    ->hasTimezone(new DateTimeZone($tz))
+
+                ->dateTime($this->testedInstance->creation_date)
+                    ->hasTimezone(new DateTimeZone($tz))
+
+                ->dateTime($this->testedInstance->getCreated())
+                    ->hasTimezone(new DateTimeZone($tz))
+
+                ->dateTime($this->testedInstance->created)
                     ->hasTimezone(new DateTimeZone($tz))
         ;
     }
@@ -290,6 +307,15 @@ class AbstractObject extends Stancer\Tests\atoum
             ->then
                 ->string($this->testedInstance->getEntityName())
                     ->isIdenticalTo($class)
+
+                ->string($this->testedInstance->get_entity_name())
+                    ->isIdenticalTo($class)
+
+                ->string($this->testedInstance->entityName)
+                    ->isIdenticalTo($class)
+
+                ->string($this->testedInstance->entity_name)
+                    ->isIdenticalTo($class)
         ;
     }
 
@@ -300,6 +326,9 @@ class AbstractObject extends Stancer\Tests\atoum
             ->and($this->newTestedInstance($id))
             ->then
                 ->string($this->testedInstance->getId())
+                    ->isIdenticalTo($id)
+
+                ->string($this->testedInstance->id)
                     ->isIdenticalTo($id)
         ;
     }
@@ -314,6 +343,9 @@ class AbstractObject extends Stancer\Tests\atoum
                     ->string($this->testedInstance->getUri())
                         ->isIdenticalTo($config->getUri() . $this->testedInstance->getEndpoint())
 
+                    ->string($this->testedInstance->uri)
+                        ->isIdenticalTo($config->getUri() . $this->testedInstance->endpoint)
+
             ->assert('With an id')
                 ->if($id = uniqid())
                 ->and($this->newTestedInstance($id))
@@ -327,6 +359,9 @@ class AbstractObject extends Stancer\Tests\atoum
                 }, $tmp)))
                 ->then
                     ->string($this->testedInstance->getUri())
+                        ->isIdenticalTo($uri)
+
+                    ->string($this->testedInstance->uri)
                         ->isIdenticalTo($uri)
         ;
     }
@@ -386,17 +421,6 @@ class AbstractObject extends Stancer\Tests\atoum
 
     // There are no test for `Object::send()` method here
     // Nothing can be sent in `Object`, real test are availaible in `Customer` test case (`Customer::testSend()`)
-
-    /**
-     * @dataProvider caseStringDataProvider
-     */
-    public function testSnakeCaseToCamelCase($camel, $snake)
-    {
-        $this
-            ->string($this->newTestedInstance->snakeCaseToCamelCase($snake))
-                ->isIdenticalTo($camel)
-        ;
-    }
 
     // testToArray, testToString and testToJson moved to stubs (more detailled)
 }
