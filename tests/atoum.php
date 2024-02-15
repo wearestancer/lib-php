@@ -29,9 +29,15 @@ class atoum extends base\test
         }
     }
 
-    public function choose(array $items): mixed
+    public function choose(array $items, array $exclude = []): mixed
     {
-        return $items[array_rand($items)];
+        $item = $items[array_rand($items)];
+
+        if (in_array($item, $exclude, true)) {
+            return $this->choose($items, $exclude);
+        }
+
+        return $item;
     }
 
     public function fake(): Faker\Generator

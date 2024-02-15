@@ -75,7 +75,6 @@ use ValueError;
  * @method $this setDescription(string $description) Set payment description.
  * @method $this setDevice(\Stancer\Device $device) Set customer's device object.
  * @method $this setOrderId(string $orderId) Set order identifier.
- * @method $this setStatus(\Stancer\Payment\Status $status) Set status of the payment.
  * @method $this setUniqueId(string $uniqueId) Set unicity key.
  * @method $this set_amount(integer $amount) Set transaction amount.
  * @method $this set_auth(\Stancer\Auth|boolean|string $auth) Set auth object, must be set for 3-D Secure card payments.
@@ -903,6 +902,31 @@ class Payment extends Stancer\Core\AbstractObject
         }
 
         return parent::setReturnUrl($url);
+    }
+
+    /**
+     * Ask for a new status.
+     *
+     * @param Stancer\Payment\Status|string $status New status value.
+     * @return $this
+     * @throws Stancer\Exceptions\BadMethodCallException If the value is passed by string
+     *      and it does not match a valid status.
+     */
+    public function setStatus(Stancer\Payment\Status|string $status): static
+    {
+        try {
+            if (is_string($status)) {
+                $new = Stancer\Payment\Status::from(strtolower($status));
+            } else {
+                $new = $status;
+            }
+        } catch (ValueError $exception) {
+            $message = 'You only can set `AUTHORIZE`, to ask for an authorization, or `CAPTURE`, to ask for a capture.';
+
+            throw new Stancer\Exceptions\BadMethodCallException($message, previous: $exception);
+        }
+
+        return parent::setStatus($new);
     }
 
     /**

@@ -3,8 +3,6 @@ declare(strict_types=1);
 
 namespace Stancer\Payment;
 
-use Stancer;
-
 /**
  * List of a payment status.
  */

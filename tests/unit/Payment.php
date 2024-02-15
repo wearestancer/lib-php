@@ -2500,6 +2500,126 @@ class Payment extends Stancer\Tests\atoum
         }
     }
 
+    public function testSetStatus()
+    {
+        $this
+            ->assert('Can be set with AUTHORIZE, camelCase method')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->getStatus())
+                        ->isNull
+
+                    ->object($this->testedInstance->setStatus(Stancer\Payment\Status::AUTHORIZE))
+                        ->isTestedInstance
+
+                    ->enum($this->testedInstance->getStatus())
+                        ->isIdenticalTo(Stancer\Payment\Status::AUTHORIZE)
+
+            ->assert('Can be set with AUTHORIZE, snake_case method')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->get_status())
+                        ->isNull
+
+                    ->object($this->testedInstance->set_status(Stancer\Payment\Status::AUTHORIZE))
+                        ->isTestedInstance
+
+                    ->enum($this->testedInstance->get_status())
+                        ->isIdenticalTo(Stancer\Payment\Status::AUTHORIZE)
+
+            ->assert('Can be set with AUTHORIZE, property')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->status)
+                        ->isNull
+
+                    ->variable($this->testedInstance->status = Stancer\Payment\Status::AUTHORIZE)
+
+                    ->enum($this->testedInstance->status)
+                        ->isIdenticalTo(Stancer\Payment\Status::AUTHORIZE)
+
+            ->assert('Can be set with CAPTURE, camelCase method')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->getStatus())
+                        ->isNull
+
+                    ->object($this->testedInstance->setStatus(Stancer\Payment\Status::CAPTURE))
+                        ->isTestedInstance
+
+                    ->enum($this->testedInstance->getStatus())
+                        ->isIdenticalTo(Stancer\Payment\Status::CAPTURE)
+
+            ->assert('Can be set with CAPTURE, snake_case method')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->get_status())
+                        ->isNull
+
+                    ->object($this->testedInstance->set_status(Stancer\Payment\Status::CAPTURE))
+                        ->isTestedInstance
+
+                    ->enum($this->testedInstance->get_status())
+                        ->isIdenticalTo(Stancer\Payment\Status::CAPTURE)
+
+            ->assert('Can be set with CAPTURE, property')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->status)
+                        ->isNull
+
+                    ->variable($this->testedInstance->status = Stancer\Payment\Status::CAPTURE)
+
+                    ->enum($this->testedInstance->status)
+                        ->isIdenticalTo(Stancer\Payment\Status::CAPTURE)
+
+            ->assert('Can be set with a string, camelCase method')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->getStatus())
+                        ->isNull
+
+                    ->object($this->testedInstance->setStatus('CAPTURE'))
+                        ->isTestedInstance
+
+                    ->enum($this->testedInstance->getStatus())
+                        ->isIdenticalTo(Stancer\Payment\Status::CAPTURE)
+
+            ->assert('Can be set with a string, snake_case method')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->get_status())
+                        ->isNull
+
+                    ->object($this->testedInstance->set_status('capture'))
+                        ->isTestedInstance
+
+                    ->enum($this->testedInstance->get_status())
+                        ->isIdenticalTo(Stancer\Payment\Status::CAPTURE)
+
+            ->assert('Can be set with a string, property')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->variable($this->testedInstance->status)
+                        ->isNull
+
+                    ->variable($this->testedInstance->status = 'CaPTuRe')
+
+                    ->enum($this->testedInstance->status)
+                        ->isIdenticalTo(Stancer\Payment\Status::CAPTURE)
+
+            ->assert('Will still not accept anything')
+                ->if($this->newTestedInstance)
+                ->then
+                    ->exception(function() {
+                        $this->testedInstance->setStatus(uniqid());
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
+                        ->message
+                            ->isIdenticalTo('You only can set `AUTHORIZE`, to ask for an authorization, or `CAPTURE`, to ask for a capture.')
+        ;
+    }
+
     public function testSetUniqueId()
     {
         $uniqueId = '';
