@@ -5,6 +5,7 @@ namespace Stancer\tests\unit;
 use DateTime;
 use DateTimeZone;
 use GuzzleHttp;
+use Psr;
 use Stancer;
 use Stancer\Config as testedClass;
 use mock;
@@ -59,25 +60,46 @@ class Config extends Stancer\Tests\atoum
                 PHP_VERSION,
             ]))
 
-            ->if($this->newTestedInstance([]))
             ->then
-                ->object($this->testedInstance->addAppData($name1, $version))
-                    ->isTestedInstance
+                ->assert('camelCase method')
+                    ->if($this->newTestedInstance([]))
+                        ->object($this->testedInstance->addAppData($name1, $version))
+                            ->isTestedInstance
 
-                ->string($this->testedInstance->getDefaultUserAgent())
-                    ->contains($agent1)
+                        ->string($this->testedInstance->getDefaultUserAgent())
+                            ->contains($agent1)
 
-                ->object($this->testedInstance->addAppData($name2))
-                    ->isTestedInstance
+                        ->object($this->testedInstance->addAppData($name2))
+                            ->isTestedInstance
 
-                ->string($this->testedInstance->getDefaultUserAgent())
-                    ->contains($agent2)
+                        ->string($this->testedInstance->getDefaultUserAgent())
+                            ->contains($agent2)
 
-                ->object($this->testedInstance->resetAppData())
-                    ->isTestedInstance
+                        ->object($this->testedInstance->resetAppData())
+                            ->isTestedInstance
 
-                ->string($this->testedInstance->getDefaultUserAgent())
-                    ->contains($agent0)
+                        ->string($this->testedInstance->getDefaultUserAgent())
+                            ->contains($agent0)
+
+                ->assert('snake_case method')
+                    ->if($this->newTestedInstance([]))
+                        ->object($this->testedInstance->add_app_data($name1, $version))
+                            ->isTestedInstance
+
+                        ->string($this->testedInstance->get_default_user_agent())
+                            ->contains($agent1)
+
+                        ->object($this->testedInstance->add_app_data($name2))
+                            ->isTestedInstance
+
+                        ->string($this->testedInstance->get_default_user_agent())
+                            ->contains($agent2)
+
+                        ->object($this->testedInstance->reset_app_data())
+                            ->isTestedInstance
+
+                        ->string($this->testedInstance->get_default_user_agent())
+                            ->contains($agent0)
         ;
     }
 
@@ -92,6 +114,15 @@ class Config extends Stancer\Tests\atoum
             ->and($this->newTestedInstance([$pprod, $ptest, $sprod, $stest]))
             ->then
                 ->string($this->testedInstance->getBasicAuthHeader())
+                    ->isIdenticalTo('Basic ' . base64_encode($stest . ':'))
+
+                ->string($this->testedInstance->get_basic_auth_header())
+                    ->isIdenticalTo('Basic ' . base64_encode($stest . ':'))
+
+                ->string($this->testedInstance->basicAuthHeader)
+                    ->isIdenticalTo('Basic ' . base64_encode($stest . ':'))
+
+                ->string($this->testedInstance->basic_auth_header)
                     ->isIdenticalTo('Basic ' . base64_encode($stest . ':'))
         ;
     }
@@ -122,29 +153,82 @@ class Config extends Stancer\Tests\atoum
                     ->array($this->testedInstance->getCalls())
                         ->isEmpty
 
+                    ->array($this->testedInstance->get_calls())
+                        ->isEmpty
+
+                    ->array($this->testedInstance->calls)
+                        ->isEmpty
+
                 ->if($req->post($payment))
                 ->then
-                    ->array($calls = $this->testedInstance->getCalls())
-                        ->hasSize(1)
+                    ->assert('camelCase method')
+                        ->array($calls = $this->testedInstance->getCalls())
+                            ->hasSize(1)
 
-                    ->object($calls[0])
-                        ->isInstanceOf(Stancer\Core\Request\Call::class)
+                        ->object($calls[0])
+                            ->isInstanceOf(Stancer\Core\Request\Call::class)
 
-                    ->variable($calls[0]->getException())
-                        ->isNull
+                        ->variable($calls[0]->getException())
+                            ->isNull
 
-                    ->object($calls[0]->getRequest())
-                        ->isInstanceOf(Stancer\Http\Request::class)
+                        ->object($calls[0]->getRequest())
+                            ->isInstanceOf(Stancer\Http\Request::class)
 
-                    ->object($calls[0]->getRequest()->getBody())
-                        ->isInstanceOf(Stancer\Http\Stream::class)
+                        ->object($calls[0]->getRequest()->getBody())
+                            ->isInstanceOf(Stancer\Http\Stream::class)
 
-                    ->castToString($calls[0]->getRequest()->getBody())
-                        ->notContains($number)
-                        ->contains($obfuscated)
+                        ->castToString($calls[0]->getRequest()->getBody())
+                            ->notContains($number)
+                            ->contains($obfuscated)
 
-                    ->object($calls[0]->getResponse())
-                        ->isInstanceOf(Stancer\Http\Response::class)
+                        ->object($calls[0]->getResponse())
+                            ->isInstanceOf(Stancer\Http\Response::class)
+
+                    ->assert('snake_case method')
+                        ->array($calls = $this->testedInstance->get_calls())
+                            ->hasSize(1)
+
+                        ->object($calls[0])
+                            ->isInstanceOf(Stancer\Core\Request\Call::class)
+
+                        ->variable($calls[0]->get_exception())
+                            ->isNull
+
+                        ->object($calls[0]->get_request())
+                            ->isInstanceOf(Stancer\Http\Request::class)
+
+                        ->object($calls[0]->get_request()->get_body())
+                            ->isInstanceOf(Stancer\Http\Stream::class)
+
+                        ->castToString($calls[0]->get_request()->get_body())
+                            ->notContains($number)
+                            ->contains($obfuscated)
+
+                        ->object($calls[0]->get_response())
+                            ->isInstanceOf(Stancer\Http\Response::class)
+
+                    ->assert('property')
+                        ->array($calls = $this->testedInstance->calls)
+                            ->hasSize(1)
+
+                        ->object($calls[0])
+                            ->isInstanceOf(Stancer\Core\Request\Call::class)
+
+                        ->variable($calls[0]->exception)
+                            ->isNull
+
+                        ->object($calls[0]->request)
+                            ->isInstanceOf(Stancer\Http\Request::class)
+
+                        ->object($calls[0]->request->body)
+                            ->isInstanceOf(Stancer\Http\Stream::class)
+
+                        ->castToString($calls[0]->request->body)
+                            ->notContains($number)
+                            ->contains($obfuscated)
+
+                        ->object($calls[0]->response)
+                            ->isInstanceOf(Stancer\Http\Response::class)
 
             ->assert('With debug mode activated / Default client / With exception')
                 ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . bin2hex(random_bytes(12))])))
@@ -164,42 +248,110 @@ class Config extends Stancer\Tests\atoum
                 ->and($payment = new Stancer\Payment(['sepa' => $sepa]))
                 ->and($req = new Stancer\Core\Request)
                 ->then
-                    ->array($this->testedInstance->getCalls())
-                        ->isEmpty
+                    ->assert('default empty')
+                        ->array($this->testedInstance->getCalls())
+                            ->isEmpty
+
+                        ->array($this->testedInstance->get_calls())
+                            ->isEmpty
+
+                        ->array($this->testedInstance->calls)
+                            ->isEmpty
 
                     ->exception(function () use ($req, $payment) {
                         $req->post($payment);
                     })
                         ->isInstanceOf(Stancer\Exceptions\NotAuthorizedException::class)
 
-                    ->array($calls = $this->testedInstance->getCalls())
-                        ->hasSize(1)
+                    ->assert('camelCase method')
+                        ->array($calls = $this->testedInstance->getCalls())
+                            ->hasSize(1)
 
-                    ->object($calls[0])
-                        ->isInstanceOf(Stancer\Core\Request\Call::class)
+                        ->object($calls[0])
+                            ->isInstanceOf(Stancer\Core\Request\Call::class)
 
-                    ->object($calls[0]->getException())
-                        ->isInstanceOf(Stancer\Exceptions\NotAuthorizedException::class)
-                        ->isIdenticalTo($this->exception)
+                        ->object($calls[0]->getException())
+                            ->isInstanceOf(Stancer\Exceptions\NotAuthorizedException::class)
+                            ->isIdenticalTo($this->exception)
 
-                    ->object($calls[0]->getRequest())
-                        ->isInstanceOf(Stancer\Http\Request::class)
+                        ->object($calls[0]->getRequest())
+                            ->isInstanceOf(Stancer\Http\Request::class)
 
-                    ->object($calls[0]->getRequest()->getBody())
-                        ->isInstanceOf(Stancer\Http\Stream::class)
+                        ->object($calls[0]->getRequest()->getBody())
+                            ->isInstanceOf(Stancer\Http\Stream::class)
 
-                    ->castToString($calls[0]->getRequest()->getBody())
-                        ->notContains($iban)
-                        ->contains($obfuscated)
+                        ->castToString($calls[0]->getRequest()->getBody())
+                            ->notContains($iban)
+                            ->contains($obfuscated)
 
-                    ->object($calls[0]->getResponse())
-                        ->isInstanceOf(Stancer\Http\Response::class)
+                        ->object($calls[0]->getResponse())
+                            ->isInstanceOf(Stancer\Http\Response::class)
 
-                    ->object($calls[0]->getResponse()->getBody())
-                        ->isInstanceOf(Stancer\Http\Stream::class)
+                        ->object($calls[0]->getResponse()->getBody())
+                            ->isInstanceOf(Stancer\Http\Stream::class)
 
-                    ->castToString($calls[0]->getResponse()->getBody())
-                        ->isIdenticalTo($body)
+                        ->castToString($calls[0]->getResponse()->getBody())
+                            ->isIdenticalTo($body)
+
+                    ->assert('snake_case method')
+                        ->array($calls = $this->testedInstance->get_calls())
+                            ->hasSize(1)
+
+                        ->object($calls[0])
+                            ->isInstanceOf(Stancer\Core\Request\Call::class)
+
+                        ->object($calls[0]->get_exception())
+                            ->isInstanceOf(Stancer\Exceptions\NotAuthorizedException::class)
+                            ->isIdenticalTo($this->exception)
+
+                        ->object($calls[0]->get_request())
+                            ->isInstanceOf(Stancer\Http\Request::class)
+
+                        ->object($calls[0]->get_request()->get_body())
+                            ->isInstanceOf(Stancer\Http\Stream::class)
+
+                        ->castToString($calls[0]->get_request()->get_body())
+                            ->notContains($iban)
+                            ->contains($obfuscated)
+
+                        ->object($calls[0]->get_response())
+                            ->isInstanceOf(Stancer\Http\Response::class)
+
+                        ->object($calls[0]->get_response()->get_body())
+                            ->isInstanceOf(Stancer\Http\Stream::class)
+
+                        ->castToString($calls[0]->get_response()->get_body())
+                            ->isIdenticalTo($body)
+
+                    ->assert('property')
+                        ->array($calls = $this->testedInstance->calls)
+                            ->hasSize(1)
+
+                        ->object($calls[0])
+                            ->isInstanceOf(Stancer\Core\Request\Call::class)
+
+                        ->object($calls[0]->exception)
+                            ->isInstanceOf(Stancer\Exceptions\NotAuthorizedException::class)
+                            ->isIdenticalTo($this->exception)
+
+                        ->object($calls[0]->request)
+                            ->isInstanceOf(Stancer\Http\Request::class)
+
+                        ->object($calls[0]->request->body)
+                            ->isInstanceOf(Stancer\Http\Stream::class)
+
+                        ->castToString($calls[0]->request->body)
+                            ->notContains($iban)
+                            ->contains($obfuscated)
+
+                        ->object($calls[0]->response)
+                            ->isInstanceOf(Stancer\Http\Response::class)
+
+                        ->object($calls[0]->response->body)
+                            ->isInstanceOf(Stancer\Http\Stream::class)
+
+                        ->castToString($calls[0]->response->body)
+                            ->isIdenticalTo($body)
 
             ->assert('With debug mode activated / Guzzle / Without exception')
                 ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . bin2hex(random_bytes(12))])))
@@ -334,44 +486,125 @@ class Config extends Stancer\Tests\atoum
     public function testGetDebug_SetDebug()
     {
         $this
-            ->assert('TRUE in test mode')
-                ->if($this->newTestedInstance([]))
-                ->then
-                    ->boolean($this->testedInstance->getDebug())
-                        ->isTrue
+            ->assert('camelCase method')
+                ->assert('TRUE in test mode')
+                    ->if($this->newTestedInstance([]))
+                    ->then
+                        ->boolean($this->testedInstance->getDebug())
+                            ->isTrue
 
-                    ->object($this->testedInstance->setDebug(false))
-                        ->isTestedInstance
+                        ->object($this->testedInstance->setDebug(false))
+                            ->isTestedInstance
 
-                    ->boolean($this->testedInstance->getDebug())
-                        ->isFalse
+                        ->boolean($this->testedInstance->getDebug())
+                            ->isFalse
 
-            ->assert('FALSE in live mode')
-                ->if($this->newTestedInstance([]))
-                ->and($this->testedInstance->setMode(testedClass::LIVE_MODE))
-                ->then
-                    ->boolean($this->testedInstance->getDebug())
-                        ->isFalse
+                ->assert('FALSE in live mode')
+                    ->if($this->newTestedInstance([]))
+                    ->and($this->testedInstance->setMode(testedClass::LIVE_MODE))
+                    ->then
+                        ->boolean($this->testedInstance->getDebug())
+                            ->isFalse
 
-                    ->object($this->testedInstance->setDebug(true))
-                        ->isTestedInstance
+                        ->object($this->testedInstance->setDebug(true))
+                            ->isTestedInstance
 
-                    ->boolean($this->testedInstance->getDebug())
-                        ->isTrue
+                        ->boolean($this->testedInstance->getDebug())
+                            ->isTrue
 
-            ->assert('Can be forced')
-                ->if($this->newTestedInstance([]))
-                ->then
-                    ->object($this->testedInstance->setDebug(true))
-                        ->isTestedInstance
+                ->assert('Can be forced')
+                    ->if($this->newTestedInstance([]))
+                    ->then
+                        ->object($this->testedInstance->setDebug(true))
+                            ->isTestedInstance
 
-                    ->boolean($this->testedInstance->getDebug())
-                        ->isTrue
+                        ->boolean($this->testedInstance->getDebug())
+                            ->isTrue
 
-                ->if($this->testedInstance->setMode(testedClass::LIVE_MODE))
-                ->then
-                    ->boolean($this->testedInstance->getDebug())
-                        ->isTrue
+                    ->if($this->testedInstance->setMode(testedClass::LIVE_MODE))
+                    ->then
+                        ->boolean($this->testedInstance->getDebug())
+                            ->isTrue
+
+            ->assert('snake_case method')
+                ->assert('TRUE in test mode')
+                    ->if($this->newTestedInstance([]))
+                    ->then
+                        ->boolean($this->testedInstance->get_debug())
+                            ->isTrue
+
+                        ->object($this->testedInstance->set_debug(false))
+                            ->isTestedInstance
+
+                        ->boolean($this->testedInstance->get_debug())
+                            ->isFalse
+
+                ->assert('FALSE in live mode')
+                    ->if($this->newTestedInstance([]))
+                    ->and($this->testedInstance->setMode(testedClass::LIVE_MODE))
+                    ->then
+                        ->boolean($this->testedInstance->get_debug())
+                            ->isFalse
+
+                        ->object($this->testedInstance->set_debug(true))
+                            ->isTestedInstance
+
+                        ->boolean($this->testedInstance->get_debug())
+                            ->isTrue
+
+                ->assert('Can be forced')
+                    ->if($this->newTestedInstance([]))
+                    ->then
+                        ->object($this->testedInstance->set_debug(true))
+                            ->isTestedInstance
+
+                        ->boolean($this->testedInstance->get_debug())
+                            ->isTrue
+
+                    ->if($this->testedInstance->setMode(testedClass::LIVE_MODE))
+                    ->then
+                        ->boolean($this->testedInstance->get_debug())
+                            ->isTrue
+
+            ->assert('property')
+                ->assert('TRUE in test mode')
+                    ->if($this->newTestedInstance([]))
+                    ->then
+                        ->boolean($this->testedInstance->debug)
+                            ->isTrue
+
+                        ->boolean($this->testedInstance->debug = false)
+                            ->isFalse
+
+                        ->boolean($this->testedInstance->debug)
+                            ->isFalse
+
+                ->assert('FALSE in live mode')
+                    ->if($this->newTestedInstance([]))
+                    ->and($this->testedInstance->setMode(testedClass::LIVE_MODE))
+                    ->then
+                        ->boolean($this->testedInstance->debug)
+                            ->isFalse
+
+                        ->boolean($this->testedInstance->debug = true)
+                            ->isTrue
+
+                        ->boolean($this->testedInstance->debug)
+                            ->isTrue
+
+                ->assert('Can be forced')
+                    ->if($this->newTestedInstance([]))
+                    ->then
+                        ->boolean($this->testedInstance->debug = true)
+                            ->isTrue
+
+                        ->boolean($this->testedInstance->debug)
+                            ->isTrue
+
+                    ->if($this->testedInstance->setMode(testedClass::LIVE_MODE))
+                    ->then
+                        ->boolean($this->testedInstance->debug)
+                            ->isTrue
         ;
     }
 
@@ -388,9 +621,59 @@ class Config extends Stancer\Tests\atoum
                     ->variable($this->testedInstance->getDefaultTimeZone())
                         ->isNull
 
+                    ->variable($this->testedInstance->get_default_timezone())
+                        ->isNull
+
+                    ->variable($this->testedInstance->get_default_time_zone())
+                        ->isNull
+
+                    ->variable($this->testedInstance->defaultTimeZone)
+                        ->isNull
+
+                    ->variable($this->testedInstance->default_timezone)
+                        ->isNull
+
+                    ->variable($this->testedInstance->default_time_zone)
+                        ->isNull
+
             ->assert('Exception if not a DateTimeZone instance')
                 ->exception(function () {
                     $this->newTestedInstance([])->setDefaultTimeZone(new DateTime);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Invalid time zone.')
+
+                ->exception(function () {
+                    $this->newTestedInstance([])->set_default_timezone(new DateTime);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Invalid time zone.')
+
+                ->exception(function () {
+                    $this->newTestedInstance([])->set_default_time_zone(new DateTime);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Invalid time zone.')
+
+                ->exception(function () {
+                    $this->newTestedInstance([])->defaultTimeZone = new DateTime;
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Invalid time zone.')
+
+                ->exception(function () {
+                    $this->newTestedInstance([])->default_timezone = new DateTime;
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Invalid time zone.')
+
+                ->exception(function () {
+                    $this->newTestedInstance([])->default_time_zone = new DateTime;
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                     ->message
@@ -404,7 +687,42 @@ class Config extends Stancer\Tests\atoum
                     ->message
                         ->isIdenticalTo('Invalid time zone "' . $badName . '".')
 
-            ->assert('Update with a string')
+                ->exception(function () use ($badName) {
+                    $this->newTestedInstance([])->set_default_timezone($badName);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Invalid time zone "' . $badName . '".')
+
+                ->exception(function () use ($badName) {
+                    $this->newTestedInstance([])->set_default_time_zone($badName);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Invalid time zone "' . $badName . '".')
+
+                ->exception(function () use ($badName) {
+                    $this->newTestedInstance([])->defaultTimeZone = $badName;
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Invalid time zone "' . $badName . '".')
+
+                ->exception(function () use ($badName) {
+                    $this->newTestedInstance([])->default_timezone = $badName;
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Invalid time zone "' . $badName . '".')
+
+                ->exception(function () use ($badName) {
+                    $this->newTestedInstance([])->default_time_zone = $badName;
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Invalid time zone "' . $badName . '".')
+
+            ->assert('Update with a string / camelCase method')
                 ->if($this->newTestedInstance([]))
                 ->then
                     ->object($this->testedInstance->setDefaultTimeZone($zone))
@@ -422,23 +740,89 @@ class Config extends Stancer\Tests\atoum
                     ->variable($this->testedInstance->getDefaultTimeZone())
                         ->isNull
 
-            ->assert('Update with an instance')
+            ->assert('Update with a string / snake_case method')
                 ->if($this->newTestedInstance([]))
-                ->and($tz = new DateTimeZone($zone))
                 ->then
-                    ->object($this->testedInstance->setDefaultTimeZone($tz))
+                    ->object($this->testedInstance->set_default_timezone($zone))
                         ->isTestedInstance
 
-                    ->object($this->testedInstance->getDefaultTimeZone())
+                    ->object($this->testedInstance->get_default_timezone())
                         ->isInstanceOf(DateTimeZone::class)
 
-                    ->string($this->testedInstance->getDefaultTimeZone()->getName())
+                    ->string($this->testedInstance->get_default_timezone()->getName())
+                        ->isIdenticalTo($zone)
+
+                    ->object($this->testedInstance->reset_default_timezone())
+                        ->isTestedInstance
+
+                    ->variable($this->testedInstance->get_default_timezone())
+                        ->isNull
+
+            ->assert('Update with a string / snake_case method alternative')
+                ->if($this->newTestedInstance([]))
+                ->then
+                    ->object($this->testedInstance->set_default_time_zone($zone))
+                        ->isTestedInstance
+
+                    ->object($this->testedInstance->get_default_time_zone())
+                        ->isInstanceOf(DateTimeZone::class)
+
+                    ->string($this->testedInstance->get_default_time_zone()->getName())
+                        ->isIdenticalTo($zone)
+
+                    ->object($this->testedInstance->reset_default_time_zone())
+                        ->isTestedInstance
+
+                    ->variable($this->testedInstance->get_default_time_zone())
+                        ->isNull
+
+            ->assert('Update with a string / camelCase property')
+                ->if($this->newTestedInstance([])->defaultTimeZone = $zone)
+                ->then
+                    ->object($this->testedInstance->defaultTimeZone)
+                        ->isInstanceOf(DateTimeZone::class)
+
+                    ->string($this->testedInstance->defaultTimeZone->getName())
                         ->isIdenticalTo($zone)
 
                     ->object($this->testedInstance->resetDefaultTimeZone())
                         ->isTestedInstance
 
-                    ->variable($this->testedInstance->getDefaultTimeZone())
+                    ->variable($this->testedInstance->defaultTimeZone)
+                        ->isNull
+
+            ->assert('Update with an instance / snake_case property')
+                ->given($tz = new DateTimeZone($zone))
+
+                ->if($this->newTestedInstance([])->default_timezone = $tz)
+                ->then
+                    ->object($this->testedInstance->default_timezone)
+                        ->isInstanceOf(DateTimeZone::class)
+
+                    ->string($this->testedInstance->default_timezone->getName())
+                        ->isIdenticalTo($zone)
+
+                    ->object($this->testedInstance->reset_default_timezone())
+                        ->isTestedInstance
+
+                    ->variable($this->testedInstance->default_timezone)
+                        ->isNull
+
+            ->assert('Update with an instance / snake_case property alternative')
+                ->given($tz = new DateTimeZone($zone))
+
+                ->if($this->newTestedInstance([])->default_time_zone = $tz)
+                ->then
+                    ->object($this->testedInstance->default_time_zone)
+                        ->isInstanceOf(DateTimeZone::class)
+
+                    ->string($this->testedInstance->default_time_zone->getName())
+                        ->isIdenticalTo($zone)
+
+                    ->object($this->testedInstance->reset_default_time_zone())
+                        ->isTestedInstance
+
+                    ->variable($this->testedInstance->default_time_zone)
                         ->isNull
         ;
     }
@@ -464,9 +848,27 @@ class Config extends Stancer\Tests\atoum
                 ->string($this->testedInstance->getDefaultUserAgent())
                     ->isIdenticalTo($curlPrefix . $agent)
 
+                ->string($this->testedInstance->get_default_user_agent())
+                    ->isIdenticalTo($curlPrefix . $agent)
+
+                ->string($this->testedInstance->defaultUserAgent)
+                    ->isIdenticalTo($curlPrefix . $agent)
+
+                ->string($this->testedInstance->default_user_agent)
+                    ->isIdenticalTo($curlPrefix . $agent)
+
             ->if($this->testedInstance->setHttpClient($guzzle))
             ->then
                 ->string($this->testedInstance->getDefaultUserAgent())
+                    ->isIdenticalTo($guzzlePrefix . $agent)
+
+                ->string($this->testedInstance->get_default_user_agent())
+                    ->isIdenticalTo($guzzlePrefix . $agent)
+
+                ->string($this->testedInstance->defaultUserAgent)
+                    ->isIdenticalTo($guzzlePrefix . $agent)
+
+                ->string($this->testedInstance->default_user_agent)
                     ->isIdenticalTo($guzzlePrefix . $agent)
         ;
     }
@@ -481,116 +883,287 @@ class Config extends Stancer\Tests\atoum
                 ->message
                     ->contains('You need to provide API credential')
 
-            ->if($this->newTestedInstance([]))
-            ->then
-                ->object(testedClass::setGlobal($this->testedInstance))
-                    ->isTestedInstance
+            ->exception(function () {
+                testedClass::get_global();
+            })
+                ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                ->message
+                    ->contains('You need to provide API credential')
 
-                ->object(testedClass::getGlobal())
-                    ->isTestedInstance
+            ->object(testedClass::setGlobal($this->newTestedInstance([])))
+                ->isTestedInstance
+
+            ->object(testedClass::getGlobal())
+                ->isTestedInstance
+
+            ->object(testedClass::set_global($this->newTestedInstance([])))
+                ->isTestedInstance
+
+            ->object(testedClass::get_global())
+                ->isTestedInstance
         ;
     }
 
     public function testGetHost_SetHost()
     {
         $this
-            ->given($this->newTestedInstance([]))
-            ->and($defaultHost = 'api.stancer.com')
+            ->given($defaultHost = 'api.stancer.com')
             ->and($randomHost = uniqid())
             ->then
-                ->string($this->testedInstance->getHost())
-                    ->isIdenticalTo($defaultHost)
-                ->object($this->testedInstance->setHost($randomHost))
-                    ->isTestedInstance
-                ->string($this->testedInstance->getHost())
-                    ->isIdenticalTo($randomHost)
+                ->assert('camelCase method')
+                    ->string($this->newTestedInstance([])->getHost())
+                        ->isIdenticalTo($defaultHost)
+
+                    ->object($this->testedInstance->setHost($randomHost))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getHost())
+                        ->isIdenticalTo($randomHost)
+
+                ->assert('snake_case method')
+                    ->string($this->newTestedInstance([])->get_host())
+                        ->isIdenticalTo($defaultHost)
+
+                    ->object($this->testedInstance->set_host($randomHost))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->get_host())
+                        ->isIdenticalTo($randomHost)
+
+                ->assert('property')
+                    ->string($this->newTestedInstance([])->host)
+                        ->isIdenticalTo($defaultHost)
+
+                    ->string($this->testedInstance->host = $randomHost)
+
+                    ->string($this->testedInstance->host)
+                        ->isIdenticalTo($randomHost)
         ;
     }
 
     public function testGetHttpClient_SetHttpClient()
     {
         $this
-            ->given($this->newTestedInstance([]))
-            ->and($guzzle = new mock\GuzzleHttp\ClientInterface)
+            ->given($guzzle = new mock\GuzzleHttp\ClientInterface)
             ->and($client = new Stancer\Http\Client)
             ->then
-                ->object($this->testedInstance->getHttpClient())
-                    ->isInstanceOf('Stancer\Http\Client') // Automagicaly created instance
+                ->assert('camelCase method')
+                    ->object($this->newTestedInstance([])->getHttpClient())
+                        ->isInstanceOf(Stancer\Http\Client::class) // Automagicaly created instance
 
-                ->object($this->testedInstance->setHttpClient($guzzle))
-                    ->isTestedInstance
+                    ->object($this->testedInstance->setHttpClient($guzzle))
+                        ->isTestedInstance
 
-                ->object($this->testedInstance->getHttpClient())
-                    ->isIdenticalTo($guzzle)
+                    ->object($this->testedInstance->getHttpClient())
+                        ->isIdenticalTo($guzzle)
 
-                ->object($this->testedInstance->setHttpClient($client))
-                    ->isTestedInstance
+                    ->object($this->testedInstance->setHttpClient($client))
+                        ->isTestedInstance
 
-                ->object($this->testedInstance->getHttpClient())
-                    ->isIdenticalTo($client)
+                    ->object($this->testedInstance->getHttpClient())
+                        ->isIdenticalTo($client)
+
+                ->assert('snake_case method')
+                    ->object($this->newTestedInstance([])->get_http_client())
+                        ->isInstanceOf(Stancer\Http\Client::class) // Automagicaly created instance
+
+                    ->object($this->testedInstance->set_http_client($guzzle))
+                        ->isTestedInstance
+
+                    ->object($this->testedInstance->get_http_client())
+                        ->isIdenticalTo($guzzle)
+
+                    ->object($this->testedInstance->set_http_client($client))
+                        ->isTestedInstance
+
+                    ->object($this->testedInstance->get_http_client())
+                        ->isIdenticalTo($client)
+
+                ->assert('camelCase property')
+                    ->object($this->newTestedInstance([])->httpClient)
+                        ->isInstanceOf(Stancer\Http\Client::class) // Automagicaly created instance
+
+                    ->object($this->testedInstance->httpClient = $guzzle)
+                        ->isInstanceOf(GuzzleHttp\ClientInterface::class)
+
+                    ->object($this->testedInstance->httpClient)
+                        ->isIdenticalTo($guzzle)
+
+                    ->object($this->testedInstance->httpClient = $client)
+                        ->isInstanceOf(Stancer\Http\Client::class)
+
+                    ->object($this->testedInstance->httpClient)
+                        ->isIdenticalTo($client)
+
+                ->assert('snake_case property')
+                    ->object($this->newTestedInstance([])->http_client)
+                        ->isInstanceOf(Stancer\Http\Client::class) // Automagicaly created instance
+
+                    ->object($this->testedInstance->http_client = $guzzle)
+                        ->isInstanceOf(GuzzleHttp\ClientInterface::class)
+
+                    ->object($this->testedInstance->http_client)
+                        ->isIdenticalTo($guzzle)
+
+                    ->object($this->testedInstance->http_client = $client)
+                        ->isInstanceOf(Stancer\Http\Client::class)
+
+                    ->object($this->testedInstance->http_client)
+                        ->isIdenticalTo($client)
         ;
     }
 
     public function testGetLogger_SetLogger()
     {
         $this
-            ->given($this->newTestedInstance([]))
-            ->and($mock = new mock\Psr\Log\LoggerInterface)
+            ->if($mock = new mock\Psr\Log\LoggerInterface)
             ->then
-                ->object($this->testedInstance->getLogger())
-                    ->isInstanceOf(Stancer\Core\Logger::class)
+                ->assert('camelCase method')
+                    ->object($this->newTestedInstance([])->getLogger())
+                        ->isInstanceOf(Stancer\Core\Logger::class)
 
-                ->object($this->testedInstance->setLogger($mock))
-                    ->isTestedInstance
+                    ->object($this->testedInstance->setLogger($mock))
+                        ->isTestedInstance
 
-                ->object($this->testedInstance->getLogger())
-                    ->isIdenticalTo($mock)
+                    ->object($this->testedInstance->getLogger())
+                        ->isIdenticalTo($mock)
+
+                ->assert('snake_case method')
+                    ->object($this->newTestedInstance([])->get_logger())
+                        ->isInstanceOf(Stancer\Core\Logger::class)
+
+                    ->object($this->testedInstance->set_logger($mock))
+                        ->isTestedInstance
+
+                    ->object($this->testedInstance->get_logger())
+                        ->isIdenticalTo($mock)
+
+                ->assert('property')
+                    ->object($this->newTestedInstance([])->logger)
+                        ->isInstanceOf(Stancer\Core\Logger::class)
+
+                    ->object($this->testedInstance->logger = $mock)
+                        ->isInstanceOf(Psr\Log\LoggerInterface::class)
+
+                    ->object($this->testedInstance->logger)
+                        ->isIdenticalTo($mock)
         ;
     }
 
     public function testGetMode_SetMode()
     {
         $this
-            ->given($this->newTestedInstance([]))
-            ->and($invalidMode = uniqid())
+            ->if($invalidMode = uniqid())
             ->then
-                ->string($this->testedInstance->getMode())
-                    ->isIdenticalTo(testedClass::TEST_MODE)
+                ->assert('camelCase method')
+                    ->string($this->newTestedInstance([])->getMode())
+                        ->isIdenticalTo(testedClass::TEST_MODE)
 
-                ->object($this->testedInstance->setMode(testedClass::LIVE_MODE))
-                    ->isTestedInstance
-                ->string($this->testedInstance->getMode())
-                    ->isIdenticalTo(testedClass::LIVE_MODE)
+                    ->object($this->testedInstance->setMode(testedClass::LIVE_MODE))
+                        ->isTestedInstance
 
-                ->object($this->testedInstance->setMode(testedClass::TEST_MODE))
-                    ->isTestedInstance
-                ->string($this->testedInstance->getMode())
-                    ->isIdenticalTo(testedClass::TEST_MODE)
+                    ->string($this->testedInstance->getMode())
+                        ->isIdenticalTo(testedClass::LIVE_MODE)
 
-                ->exception(function () use ($invalidMode) {
-                    $this->testedInstance->setMode($invalidMode);
-                })
-                    ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
-                    ->message
-                        ->contains($invalidMode)
-                        ->contains('LIVE_MODE')
-                        ->contains('TEST_MODE')
+                    ->object($this->testedInstance->setMode(testedClass::TEST_MODE))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->getMode())
+                        ->isIdenticalTo(testedClass::TEST_MODE)
+
+                    ->exception(function () use ($invalidMode) {
+                        $this->testedInstance->setMode($invalidMode);
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->contains($invalidMode)
+                            ->contains('LIVE_MODE')
+                            ->contains('TEST_MODE')
+
+                ->assert('snake_case method')
+                    ->string($this->newTestedInstance([])->get_mode())
+                        ->isIdenticalTo(testedClass::TEST_MODE)
+
+                    ->object($this->testedInstance->set_mode(testedClass::LIVE_MODE))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->get_mode())
+                        ->isIdenticalTo(testedClass::LIVE_MODE)
+
+                    ->object($this->testedInstance->set_mode(testedClass::TEST_MODE))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->get_mode())
+                        ->isIdenticalTo(testedClass::TEST_MODE)
+
+                    ->exception(function () use ($invalidMode) {
+                        $this->testedInstance->set_mode($invalidMode);
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->contains($invalidMode)
+                            ->contains('LIVE_MODE')
+                            ->contains('TEST_MODE')
+
+                ->assert('property')
+                    ->string($this->newTestedInstance([])->mode)
+                        ->isIdenticalTo(testedClass::TEST_MODE)
+
+                    ->variable($this->testedInstance->mode = testedClass::LIVE_MODE)
+
+                    ->string($this->testedInstance->mode)
+                        ->isIdenticalTo(testedClass::LIVE_MODE)
+
+                    ->variable($this->testedInstance->mode = testedClass::TEST_MODE)
+
+                    ->string($this->testedInstance->mode)
+                        ->isIdenticalTo(testedClass::TEST_MODE)
+
+                    ->exception(function () use ($invalidMode) {
+                        $this->testedInstance->mode = $invalidMode;
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->contains($invalidMode)
+                            ->contains('LIVE_MODE')
+                            ->contains('TEST_MODE')
         ;
     }
 
     public function testGetPort_SetPort()
     {
         $this
-            ->given($this->newTestedInstance([]))
-            ->and($defaultPort = 443)
+            ->if($defaultPort = 443)
             ->and($randomPort = rand(0, PHP_INT_MAX))
             ->then
-                ->integer($this->testedInstance->getPort())
-                    ->isIdenticalTo($defaultPort)
-                ->object($this->testedInstance->setPort($randomPort))
-                    ->isTestedInstance
-                ->integer($this->testedInstance->getPort())
-                    ->isIdenticalTo($randomPort)
+                ->assert('camelCase method')
+                    ->integer($this->newTestedInstance([])->getPort())
+                        ->isIdenticalTo($defaultPort)
+
+                    ->object($this->testedInstance->setPort($randomPort))
+                        ->isTestedInstance
+
+                    ->integer($this->testedInstance->getPort())
+                        ->isIdenticalTo($randomPort)
+
+                ->assert('snake_case method')
+                    ->integer($this->newTestedInstance([])->get_port())
+                        ->isIdenticalTo($defaultPort)
+
+                    ->object($this->testedInstance->set_port($randomPort))
+                        ->isTestedInstance
+
+                    ->integer($this->testedInstance->get_port())
+                        ->isIdenticalTo($randomPort)
+
+                ->assert('property')
+                    ->integer($this->newTestedInstance([])->port)
+                        ->isIdenticalTo($defaultPort)
+
+                    ->integer($this->testedInstance->port = $randomPort)
+
+                    ->integer($this->testedInstance->port)
+                        ->isIdenticalTo($randomPort)
         ;
     }
 
@@ -675,49 +1248,115 @@ class Config extends Stancer\Tests\atoum
     public function testGetTimeout_SetTimeout()
     {
         $this
-            ->given($this->newTestedInstance([]))
-            ->and($defaultTimeout = 0)
+            ->if($defaultTimeout = 0)
             ->and($randomTimeout = rand(1, 60 * 3))
             ->and($tooMuchTimeout = 60 * 3 + rand(1, 9999))
             ->then
-                ->integer($this->testedInstance->getTimeout())
-                    ->isIdenticalTo($defaultTimeout)
+                ->assert('camelCase method')
+                    ->integer($this->newTestedInstance([])->getTimeout())
+                        ->isIdenticalTo($defaultTimeout)
 
-                ->object($this->testedInstance->setTimeout($randomTimeout))
-                    ->isTestedInstance
+                    ->object($this->testedInstance->setTimeout($randomTimeout))
+                        ->isTestedInstance
 
-                ->integer($this->testedInstance->getTimeout())
-                    ->isIdenticalTo($randomTimeout)
+                    ->integer($this->testedInstance->getTimeout())
+                        ->isIdenticalTo($randomTimeout)
 
-                ->exception(function () use ($tooMuchTimeout) {
-                    $this->testedInstance->setTimeout($tooMuchTimeout);
-                })
-                    ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
-                    ->message
-                        ->isIdenticalTo('Timeout (' . $tooMuchTimeout . 's) is too high, the maximum allowed is 180 seconds (3 minutes, and it\'s already too much).')
+                    ->exception(function () use ($tooMuchTimeout) {
+                        $this->testedInstance->setTimeout($tooMuchTimeout);
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo('Timeout (' . $tooMuchTimeout . 's) is too high, the maximum allowed is 180 seconds.')
+
+                ->assert('snake_case method')
+                    ->integer($this->newTestedInstance([])->get_timeout())
+                        ->isIdenticalTo($defaultTimeout)
+
+                    ->object($this->testedInstance->set_timeout($randomTimeout))
+                        ->isTestedInstance
+
+                    ->integer($this->testedInstance->get_timeout())
+                        ->isIdenticalTo($randomTimeout)
+
+                    ->exception(function () use ($tooMuchTimeout) {
+                        $this->testedInstance->set_timeout($tooMuchTimeout);
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo('Timeout (' . $tooMuchTimeout . 's) is too high, the maximum allowed is 180 seconds.')
+
+                ->assert('property')
+                    ->integer($this->newTestedInstance([])->timeout)
+                        ->isIdenticalTo($defaultTimeout)
+
+                    ->integer($this->testedInstance->timeout = $randomTimeout)
+
+                    ->integer($this->testedInstance->timeout)
+                        ->isIdenticalTo($randomTimeout)
+
+                    ->exception(function () use ($tooMuchTimeout) {
+                        $this->testedInstance->timeout = $tooMuchTimeout;
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                        ->message
+                            ->isIdenticalTo('Timeout (' . $tooMuchTimeout . 's) is too high, the maximum allowed is 180 seconds.')
         ;
     }
 
     public function testGetUri()
     {
         $this
-            ->given($this->newTestedInstance([]))
             ->assert('Default values')
-                ->then
-                    ->string($this->testedInstance->getUri())
-                        ->isIdenticalTo('https://api.stancer.com/v1/')
-            ->assert('Random values')
+                ->string($this->newTestedInstance([])->getUri())
+                    ->isIdenticalTo('https://api.stancer.com/v1/')
+
+                ->string($this->newTestedInstance([])->get_uri())
+                    ->isIdenticalTo('https://api.stancer.com/v1/')
+
+                ->string($this->newTestedInstance([])->uri)
+                    ->isIdenticalTo('https://api.stancer.com/v1/')
+
+            ->assert('Random values / camelCase method')
                 ->if($host = uniqid())
                 ->and($port = rand(0, PHP_INT_MAX))
                 ->and($version = rand(0, PHP_INT_MAX))
                 ->and($protocol = 'https')
 
-                ->given($this->testedInstance->setHost($host))
+                ->given($this->newTestedInstance([])->setHost($host))
                 ->and($this->testedInstance->setPort($port))
                 ->and($this->testedInstance->setVersion($version))
 
                 ->then
                     ->string($this->testedInstance->getUri())
+                        ->isIdenticalTo(sprintf('%s://%s:%d/v%d/', $protocol, $host, $port, $version))
+
+            ->assert('Random values / snake_case method')
+                ->if($host = uniqid())
+                ->and($port = rand(0, PHP_INT_MAX))
+                ->and($version = rand(0, PHP_INT_MAX))
+                ->and($protocol = 'https')
+
+                ->given($this->newTestedInstance([])->set_host($host))
+                ->and($this->testedInstance->set_port($port))
+                ->and($this->testedInstance->set_version($version))
+
+                ->then
+                    ->string($this->testedInstance->get_uri())
+                        ->isIdenticalTo(sprintf('%s://%s:%d/v%d/', $protocol, $host, $port, $version))
+
+            ->assert('Random values / property')
+                ->if($host = uniqid())
+                ->and($port = rand(0, PHP_INT_MAX))
+                ->and($version = rand(0, PHP_INT_MAX))
+                ->and($protocol = 'https')
+
+                ->given($this->newTestedInstance([])->host = $host)
+                ->and($this->testedInstance->port = $port)
+                ->and($this->testedInstance->version = $version)
+
+                ->then
+                    ->string($this->testedInstance->uri)
                         ->isIdenticalTo(sprintf('%s://%s:%d/v%d/', $protocol, $host, $port, $version))
         ;
     }
@@ -725,16 +1364,37 @@ class Config extends Stancer\Tests\atoum
     public function testGetVersion_SetVersion()
     {
         $this
-            ->given($this->newTestedInstance([]))
-            ->and($defaultVersion = 1)
+            ->if($defaultVersion = 1)
             ->and($randomVersion = rand(0, PHP_INT_MAX))
             ->then
-                ->integer($this->testedInstance->getVersion())
-                    ->isIdenticalTo($defaultVersion)
-                ->object($this->testedInstance->setVersion($randomVersion))
-                    ->isTestedInstance
-                ->integer($this->testedInstance->getVersion())
-                    ->isIdenticalTo($randomVersion)
+                ->assert('camelCase method')
+                    ->integer($this->newTestedInstance([])->getVersion())
+                        ->isIdenticalTo($defaultVersion)
+
+                    ->object($this->testedInstance->setVersion($randomVersion))
+                        ->isTestedInstance
+
+                    ->integer($this->testedInstance->getVersion())
+                        ->isIdenticalTo($randomVersion)
+
+                ->assert('snake_case method')
+                    ->integer($this->newTestedInstance([])->get_version())
+                        ->isIdenticalTo($defaultVersion)
+
+                    ->object($this->testedInstance->set_version($randomVersion))
+                        ->isTestedInstance
+
+                    ->integer($this->testedInstance->get_version())
+                        ->isIdenticalTo($randomVersion)
+
+                ->assert('property')
+                    ->integer($this->newTestedInstance([])->version)
+                        ->isIdenticalTo($defaultVersion)
+
+                    ->integer($this->testedInstance->version = $randomVersion)
+
+                    ->integer($this->testedInstance->version)
+                        ->isIdenticalTo($randomVersion)
         ;
     }
 
@@ -761,10 +1421,9 @@ class Config extends Stancer\Tests\atoum
     public function testModes()
     {
         $this
-            ->given($this->newTestedInstance([]))
-            ->then
+            ->assert('camelCase method')
                 ->assert('Defaults values')
-                    ->boolean($this->testedInstance->isLiveMode())->isFalse
+                    ->boolean($this->newTestedInstance([])->isLiveMode())->isFalse
                     ->boolean($this->testedInstance->isNotLiveMode())->isTrue
                     ->boolean($this->testedInstance->isTestMode())->isTrue
                     ->boolean($this->testedInstance->isNotTestMode())->isFalse
@@ -784,6 +1443,75 @@ class Config extends Stancer\Tests\atoum
                         ->boolean($this->testedInstance->isNotLiveMode())->isFalse
                         ->boolean($this->testedInstance->isTestMode())->isFalse
                         ->boolean($this->testedInstance->isNotTestMode())->isTrue
+
+            ->assert('snake_case method')
+                ->assert('Defaults values')
+                    ->boolean($this->newTestedInstance([])->is_live_mode())->isFalse
+                    ->boolean($this->testedInstance->is_not_live_mode())->isTrue
+                    ->boolean($this->testedInstance->is_test_mode())->isTrue
+                    ->boolean($this->testedInstance->is_not_test_mode())->isFalse
+
+                ->assert('Force test mode')
+                    ->if($this->testedInstance->setMode(testedClass::TEST_MODE))
+                    ->then
+                        ->boolean($this->testedInstance->is_live_mode())->isFalse
+                        ->boolean($this->testedInstance->is_not_live_mode())->isTrue
+                        ->boolean($this->testedInstance->is_test_mode())->isTrue
+                        ->boolean($this->testedInstance->is_not_test_mode())->isFalse
+
+                ->assert('Force live mode')
+                    ->if($this->testedInstance->setMode(testedClass::LIVE_MODE))
+                    ->then
+                        ->boolean($this->testedInstance->is_live_mode())->isTrue
+                        ->boolean($this->testedInstance->is_not_live_mode())->isFalse
+                        ->boolean($this->testedInstance->is_test_mode())->isFalse
+                        ->boolean($this->testedInstance->is_not_test_mode())->isTrue
+
+            ->assert('camelCase property')
+                ->assert('Defaults values')
+                    ->boolean($this->newTestedInstance([])->isLiveMode)->isFalse
+                    ->boolean($this->testedInstance->isNotLiveMode)->isTrue
+                    ->boolean($this->testedInstance->isTestMode)->isTrue
+                    ->boolean($this->testedInstance->isNotTestMode)->isFalse
+
+                ->assert('Force test mode')
+                    ->if($this->testedInstance->setMode(testedClass::TEST_MODE))
+                    ->then
+                        ->boolean($this->testedInstance->isLiveMode)->isFalse
+                        ->boolean($this->testedInstance->isNotLiveMode)->isTrue
+                        ->boolean($this->testedInstance->isTestMode)->isTrue
+                        ->boolean($this->testedInstance->isNotTestMode)->isFalse
+
+                ->assert('Force live mode')
+                    ->if($this->testedInstance->setMode(testedClass::LIVE_MODE))
+                    ->then
+                        ->boolean($this->testedInstance->isLiveMode)->isTrue
+                        ->boolean($this->testedInstance->isNotLiveMode)->isFalse
+                        ->boolean($this->testedInstance->isTestMode)->isFalse
+                        ->boolean($this->testedInstance->isNotTestMode)->isTrue
+
+            ->assert('snake_case property')
+                ->assert('Defaults values')
+                    ->boolean($this->newTestedInstance([])->is_live_mode)->isFalse
+                    ->boolean($this->testedInstance->is_not_live_mode)->isTrue
+                    ->boolean($this->testedInstance->is_test_mode)->isTrue
+                    ->boolean($this->testedInstance->is_not_test_mode)->isFalse
+
+                ->assert('Force test mode')
+                    ->if($this->testedInstance->setMode(testedClass::TEST_MODE))
+                    ->then
+                        ->boolean($this->testedInstance->is_live_mode)->isFalse
+                        ->boolean($this->testedInstance->is_not_live_mode)->isTrue
+                        ->boolean($this->testedInstance->is_test_mode)->isTrue
+                        ->boolean($this->testedInstance->is_not_test_mode)->isFalse
+
+                ->assert('Force live mode')
+                    ->if($this->testedInstance->setMode(testedClass::LIVE_MODE))
+                    ->then
+                        ->boolean($this->testedInstance->is_live_mode)->isTrue
+                        ->boolean($this->testedInstance->is_not_live_mode)->isFalse
+                        ->boolean($this->testedInstance->is_test_mode)->isFalse
+                        ->boolean($this->testedInstance->is_not_test_mode)->isTrue
         ;
     }
 

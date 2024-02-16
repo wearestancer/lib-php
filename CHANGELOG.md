@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.2] - 2024-02-16
+
+### Added
+- Classes and methods are marked for future changes
+- Documentation attributes
+- Some parameters are marked as sensitive
+- `Stancer\Payment::charge()` is deprecated
+- `Stancer\Payment::pay()` is deprecated
+
+### Changed
+- Change minimum length of `name` attribute for Card, Customer, Sepa from 4 to 3 (same behaviour as the v1 API).
+- `devcontainer` configuration for VS Code
+
+### Fixed
+- Better PHPDoc
+- Some methods/properties were not correctly defined
+
+
 ## [1.1.1] - 2023-09-22
 
 ### Changed

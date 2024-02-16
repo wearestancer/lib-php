@@ -119,6 +119,7 @@ class atoum extends base\test
         return $config;
     }
 
+    #[Stancer\WillChange\PHP8_1\NewInInitializers]
     public function mockEmptyJsonResponse(
         Psr\Http\Message\ResponseInterface $response = null
     ): Psr\Http\Message\ResponseInterface
@@ -126,6 +127,7 @@ class atoum extends base\test
         return $this->mockResponse('{}', $response);
     }
 
+    #[Stancer\WillChange\PHP8_1\NewInInitializers]
     public function mockJsonResponse(
         string $dir,
         string $file,
@@ -135,6 +137,7 @@ class atoum extends base\test
         return $this->mockResponse($this->getFixture($dir, $file), $response);
     }
 
+    #[Stancer\WillChange\PHP8_1\NewInInitializers]
     public function mockJsonResponses(
         array $files,
         Psr\Http\Message\ResponseInterface $response = null
@@ -149,6 +152,7 @@ class atoum extends base\test
         return $resp;
     }
 
+    #[Stancer\WillChange\PHP8_1\NewInInitializers]
     public function mockResponse(
         string $body,
         Psr\Http\Message\ResponseInterface $response = null

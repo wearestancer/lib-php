@@ -3,29 +3,55 @@ declare(strict_types=1);
 
 namespace Stancer\Payout;
 
+use Override;
+use ReturnTypeWillChange;
 use Stancer;
 
 /**
  * Payout details.
  *
- * @method \Generator<Stancer\Dispute> disputes(array $terms) List every dispute in the payout.
- * @method Stancer\Payout\Details\Inner getDisputes() Get disputes details.
- * @method Stancer\Payout\Details\Inner getPayments() Get payments details.
- * @method Stancer\Payout\Details\Inner getRefunds() Get refunds details.
- * @method \Generator<Stancer\Dispute> listDisputes(array $terms) List every dispute in the payout.
- * @method \Generator<Stancer\Payment> listPayments(array $terms) List every payment in the payout.
- * @method \Generator<Stancer\Refund> listRefunds(array $terms) List every refund in the payout.
- * @method \Generator<Stancer\Payment> payments(array $terms) List every payment in the payout.
- * @method \Generator<Stancer\Refund> refunds(array $terms) List every refund in the payout.
+ * @method \Generator<Stancer\Dispute> disputes(array $terms) List every disputes in the payout.
+ * @method ?Stancer\Payout\Details\Inner getDisputes() Get disputes details.
+ * @method ?Stancer\Payout\Details\Inner getPayments() Get payments details.
+ * @method ?Stancer\Payout\Details\Inner getRefunds() Get refunds details.
+ * @method ?DateTimeImmutable get_creation_date() Get creation date.
+ * @method ?Stancer\Payout\Details\Inner get_disputes() Get disputes details.
+ * @method string get_endpoint() Get API endpoint.
+ * @method string get_entity_name() Get entity name.
+ * @method ?string get_id() Get object ID.
+ * @method ?Stancer\Payout\Details\Inner get_payments() Get payments details.
+ * @method ?Stancer\Payout\Details\Inner get_refunds() Get refunds details.
+ * @method string get_uri() Get entity resource location.
+ * @method \Generator<Stancer\Dispute> listDisputes(array $terms) List every disputes in the payout.
+ * @method \Generator<Stancer\Payment> listPayments(array $terms) List every payments in the payout.
+ * @method \Generator<Stancer\Refund> listRefunds(array $terms) List every refunds in the payout.
+ * @method \Generator<Stancer\Payment> payments(array $terms) List every payments in the payout.
+ * @method \Generator<Stancer\Refund> refunds(array $terms) List every refunds in the payout.
  *
- * @property-read Stancer\Payout\Details\Inner $disputes Get disputes details.
- * @property-read Stancer\Payout\Details\Inner $payments Get payments details.
- * @property-read Stancer\Payout\Details\Inner $refunds Get refunds details.
+ * @phpstan-method \Generator<Stancer\Dispute> listDisputes(SearchFilters $terms) List every disputes in the payout.
+ * @phpstan-method \Generator<Stancer\Payment> listPayments(SearchFilters $terms) List every payments in the payout.
+ * @phpstan-method \Generator<Stancer\Refund> listRefunds(SearchFilters $terms) List every refunds in the payout.
  *
- * @phpstan-method \Generator<Stancer\Dispute> listDisputes(SearchFilters $terms)
- * @phpstan-method \Generator<Stancer\Payment> listPayments(SearchFilters $terms)
- * @phpstan-method \Generator<Stancer\Refund> listRefunds(SearchFilters $terms)
+ * @property-read ?DateTimeImmutable $creationDate Creation date.
+ * @property-read ?DateTimeImmutable $creation_date Creation date.
+ * @property-read ?Stancer\Payout\Details\Inner $disputes Disputes details.
+ * @property-read string $endpoint API endpoint.
+ * @property-read string $entityName Entity name.
+ * @property-read string $entity_name Entity name.
+ * @property-read ?string $id Object ID.
+ * @property-read ?Stancer\Payout\Details\Inner $payments Payments details.
+ * @property-read ?Stancer\Payout\Details\Inner $refunds Refunds details.
+ * @property-read string $uri Entity resource location.
  */
+#[Stancer\Core\Documentation\AddMethod('disputes', ['array $terms'], '\Generator<Stancer\Dispute>', description: 'List every disputes in the payout.')]
+#[Stancer\Core\Documentation\AddMethod('listDisputes', ['array $terms'], '\Generator<Stancer\Dispute>', description: 'List every disputes in the payout.')]
+#[Stancer\Core\Documentation\AddMethod('listDisputes', ['SearchFilters $terms'], '\Generator<Stancer\Dispute>', description: 'List every disputes in the payout.', stan: true)]
+#[Stancer\Core\Documentation\AddMethod('payments', ['array $terms'], '\Generator<Stancer\Payment>', description: 'List every payments in the payout.')]
+#[Stancer\Core\Documentation\AddMethod('listPayments', ['array $terms'], '\Generator<Stancer\Payment>', description: 'List every payments in the payout.')]
+#[Stancer\Core\Documentation\AddMethod('listPayments', ['SearchFilters $terms'], '\Generator<Stancer\Payment>', description: 'List every payments in the payout.', stan: true)]
+#[Stancer\Core\Documentation\AddMethod('refunds', ['array $terms'], '\Generator<Stancer\Refund>', description: 'List every refunds in the payout.')]
+#[Stancer\Core\Documentation\AddMethod('listRefunds', ['array $terms'], '\Generator<Stancer\Refund>', description: 'List every refunds in the payout.')]
+#[Stancer\Core\Documentation\AddMethod('listRefunds', ['SearchFilters $terms'], '\Generator<Stancer\Refund>', description: 'List every refunds in the payout.', stan: true)]
 class Details extends Stancer\Core\AbstractObject
 {
     /**
@@ -34,14 +60,17 @@ class Details extends Stancer\Core\AbstractObject
      */
     protected $dataModel = [
         'disputes' => [
+            'desc' => 'Disputes details',
             'restricted' => true,
             'type' => Stancer\Payout\Details\Inner::class,
         ],
         'payments' => [
+            'desc' => 'Payments details',
             'restricted' => true,
             'type' => Stancer\Payout\Details\Inner::class,
         ],
         'refunds' => [
+            'desc' => 'Refunds details',
             'restricted' => true,
             'type' => Stancer\Payout\Details\Inner::class,
         ],
@@ -57,9 +86,11 @@ class Details extends Stancer\Core\AbstractObject
      * @return mixed
      * @throws Stancer\Exceptions\BadMethodCallException When an unhandled method is called.
      */
+    #[Override]
+    #[ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
     public function __call(string $method, array $arguments)
     {
-        $name = $this->snakeCaseToCamelCase($method);
+        $name = Stancer\Helper::snakeCaseToCamelCase($method);
         $action = substr($name, 0, 4);
 
         if ($action === 'list') {

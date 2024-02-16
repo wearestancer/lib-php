@@ -1,28 +1,20 @@
+# syntax=docker/dockerfile:1.3
 
-ARG VERSION
+ARG DOCKER_REGISTRY=docker.io/wearestancer
+ARG PHP_VERSION=8.1
 
-FROM php:${VERSION}
+FROM ${DOCKER_REGISTRY}/php:${PHP_VERSION} AS main
 
-RUN apt-get update \
- && apt-get upgrade -y \
- && apt-get install -y --no-install-recommends ca-certificates git libzip-dev unzip zip \
- && apt-get autoremove -y
+CMD [ "sleep", "infinity" ]
 
-RUN cp $PHP_INI_DIR/php.ini-development $PHP_INI_DIR/php.ini \
- && sed -i 's/^;*memory_limit =.*/memory_limit = 512M/' $PHP_INI_DIR/php.ini \
- && sed -i 's/^;*curl.cainfo =.*/curl.cainfo = \/etc\/ssl\/certs\/ca-certificates.crt/' $PHP_INI_DIR/php.ini \
- && sed -i 's/^;*date.timezone =.*/date.timezone = UTC/' $PHP_INI_DIR/php.ini
+RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
+    --mount=type=cache,target=/var/log/apt,sharing=locked \
+    --mount=type=cache,target=/var/lib/apt,sharing=locked apt update \
+      && apt upgrade -y \
+      && apt install -y --no-install-recommends gpg sudo vim \
+      && apt autoremove -y \
+      && sed -i 's/%sudo.*/%sudo   ALL=(ALL:ALL) NOPASSWD: ALL/' /etc/sudoers
 
-# Add PHP extensions
-RUN pecl install xdebug-3.1.5 zip \
- && docker-php-ext-enable xdebug zip
-
-# Configure xdebug
-RUN echo 'xdebug.mode=coverage' >> $PHP_INI_DIR/conf.d/docker-php-ext-xdebug.ini
-
-# Add composer
-RUN php -r "copy('https://getcomposer.org/installer', 'composer-setup.php');" \
- && php -r "copy('https://composer.github.io/installer.sig', 'checksum');" \
- && php -r "if (hash_file('sha384', 'composer-setup.php') === file_get_contents('checksum')) { echo 'Installer verified'; } else { echo 'Installer corrupt'; unlink('composer-setup.php'); } echo PHP_EOL;" \
- && php composer-setup.php --install-dir=/usr/local/bin --filename=composer \
- && rm composer-setup.php checksum
+# Create user
+RUN useradd --create-home --shell /bin/bash --groups sudo vscode -u 1000
+USER vscode

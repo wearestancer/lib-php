@@ -3,8 +3,8 @@ declare(strict_types=1);
 
 namespace Stancer\Exceptions;
 
-use Stancer\Interfaces\ExceptionInterface;
 use Psr;
+use Stancer;
 use Throwable;
 
 /**
@@ -12,7 +12,7 @@ use Throwable;
  *
  * Created for grouping purpose.
  */
-class Exception extends \Exception implements ExceptionInterface
+class Exception extends \Exception implements Stancer\Interfaces\ExceptionInterface
 {
     /** @var string Default log level */
     protected static $logLevel = Psr\Log\LogLevel::NOTICE;
@@ -37,6 +37,7 @@ class Exception extends \Exception implements ExceptionInterface
      *
      * @phpstan-param CreateExceptionParameters $params
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public static function create(array $params = []): self
     {
         $code = 0;

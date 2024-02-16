@@ -14,6 +14,7 @@ use Psr;
  */
 class Response implements Psr\Http\Message\ResponseInterface
 {
+    use Stancer\Traits\AliasTrait;
     use MessageTrait;
 
     /** @var integer */
@@ -178,6 +179,7 @@ class Response implements Psr\Http\Message\ResponseInterface
      *     use the defaults as suggested in the HTTP specification.
      * @return static
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function withStatus($code, $reasonPhrase = ''): self
     {
         $obj = clone $this;

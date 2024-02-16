@@ -10,28 +10,61 @@ use DateTimeInterface;
 /**
  * Representation of a SEPA account.
  *
- * @method string getBic()
- * @method string|null getCountry()
- * @method DateTimeInterface|null getDateMandate()
- * @method string|null getIban()
- * @method string getLast4()
- * @method string|null getMandate()
- * @method string getName()
+ * @method ?string getBic() Get bank Identifier Code.
+ * @method ?string getCountry() Get IBAN country.
+ * @method ?DateTimeInterface getDateBirth() Get account holder birth date.
+ * @method ?DateTimeInterface getDateMandate() Get mandate signature date.
+ * @method ?string getIban() Get international Bank Account Number.
+ * @method ?string getLast4() Get IBAN last 4 characters.
+ * @method ?string getMandate() Get mandate number.
+ * @method ?string getName() Get account holder name.
+ * @method ?string get_bic() Get bank Identifier Code.
+ * @method ?Stancer\Sepa\Check get_check()
+ * @method ?string get_country() Get IBAN country.
+ * @method ?DateTimeImmutable get_creation_date() Get creation date.
+ * @method ?DateTimeInterface get_date_birth() Get account holder birth date.
+ * @method ?DateTimeInterface get_date_mandate() Get mandate signature date.
+ * @method string get_endpoint() Get API endpoint.
+ * @method string get_entity_name() Get entity name.
+ * @method ?string get_formatted_iban() Get formatted IBAN.
+ * @method ?string get_iban() Get international Bank Account Number.
+ * @method ?string get_id() Get object ID.
+ * @method ?string get_last4() Get IBAN last 4 characters.
+ * @method ?string get_mandate() Get mandate number.
+ * @method ?string get_name() Get account holder name.
+ * @method string get_uri() Get entity resource location.
+ * @method $this setDateBirth(DateTimeInterface $dateBirth) Set account holder birth date.
+ * @method $this setDateMandate(DateTimeInterface $dateMandate) Set mandate signature date.
+ * @method $this setMandate(string $mandate) Set mandate number.
+ * @method $this setName(string $name) Set account holder name.
+ * @method $this set_bic(string $bic) Set bank Identifier Code.
+ * @method $this set_date_birth(DateTimeInterface $date_birth) Set account holder birth date.
+ * @method $this set_date_mandate(DateTimeInterface $date_mandate) Set mandate signature date.
+ * @method $this set_iban(string $iban) Set international Bank Account Number.
+ * @method $this set_mandate(string $mandate) Set mandate number.
+ * @method $this set_name(string $name) Set account holder name.
  *
- * @method $this setDateMandate(DateTimeInterface $dateMandate)
- * @method $this setMandate(string $mandate)
- * @method $this setName(string $name)
+ * @property ?string $bic Bank Identifier Code.
+ * @property ?DateTimeInterface $dateBirth Account holder birth date.
+ * @property ?DateTimeInterface $dateMandate Mandate signature date.
+ * @property ?DateTimeInterface $date_birth Account holder birth date.
+ * @property ?DateTimeInterface $date_mandate Mandate signature date.
+ * @property ?string $iban International Bank Account Number.
+ * @property ?string $mandate Mandate number.
+ * @property ?string $name Account holder name.
  *
- * @property string $bic
- * @property string|null $country
- * @property DateTimeInterface|null $dateMandate
- * @property string $last4
- * @property string|null $mandate
- * @property string $name
- *
- * @property-read Stancer\Sepa\Check|null $check
- * @property-read DateTimeImmutable|null $created
- * @property-read DateTimeImmutable|null $creationDate
+ * @property-read ?Stancer\Sepa\Check $check
+ * @property-read ?string $country IBAN country.
+ * @property-read ?DateTimeImmutable $creationDate Creation date.
+ * @property-read ?DateTimeImmutable $creation_date Creation date.
+ * @property-read string $endpoint API endpoint.
+ * @property-read string $entityName Entity name.
+ * @property-read string $entity_name Entity name.
+ * @property-read ?string $formattedIban Formatted IBAN.
+ * @property-read ?string $formatted_iban Formatted IBAN.
+ * @property-read ?string $id Object ID.
+ * @property-read ?string $last4 IBAN last 4 characters.
+ * @property-read string $uri Entity resource location.
  */
 class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\PaymentMeansInterface
 {
@@ -43,6 +76,7 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      */
     protected $dataModel = [
         'bic' => [
+            'desc' => 'Bank Identifier Code',
             'required' => false,
             'type' => self::STRING,
         ],
@@ -51,25 +85,31 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
             'type' => Stancer\Sepa\Check::class,
         ],
         'country' => [
+            'desc' => 'IBAN country',
             'restricted' => true,
             'type' => self::STRING,
         ],
         'dateBirth' => [
+            'desc' => 'Account holder birth date',
             'format' => Stancer\Core\Type\Helper::DATE_ONLY,
             'type' => DateTimeInterface::class,
         ],
         'dateMandate' => [
+            'desc' => 'Mandate signature date',
             'type' => DateTimeInterface::class,
         ],
         'iban' => [
+            'desc' => 'International Bank Account Number',
             'required' => true,
             'type' => self::STRING,
         ],
         'last4' => [
+            'desc' => 'IBAN last 4 characters',
             'restricted' => true,
             'type' => self::STRING,
         ],
         'mandate' => [
+            'desc' => 'Mandate number',
             'size' => [
                 'min' => 3,
                 'max' => 35,
@@ -77,9 +117,10 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
             'type' => self::STRING,
         ],
         'name' => [
+            'desc' => 'Account holder name',
             'required' => true,
             'size' => [
-                'min' => 4,
+                'min' => 3,
                 'max' => 64,
             ],
             'type' => self::STRING,
@@ -91,6 +132,7 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      *
      * @return Stancer\Sepa\Check|null
      */
+    #[Stancer\WillChange\PHP8_0\NonCapturingCatch]
     public function getCheck(): ?Stancer\Sepa\Check
     {
         if ($this->id) {
@@ -115,6 +157,7 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      *
      * @return string|null
      */
+    #[Stancer\Core\Documentation\FormatProperty(description: 'Formatted IBAN', required: true, restricted: true)]
     public function getFormattedIban(): ?string
     {
         $iban = $this->getIban();
@@ -154,8 +197,10 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      * @return $this
      * @throws Stancer\Exceptions\InvalidIbanException When IBAN is invalid.
      */
-    public function setIban(string $iban): self
-    {
+    public function setIban(
+        #[\SensitiveParameter]
+        string $iban
+    ): self {
         $iban = str_replace(' ', '', $iban);
         $country = substr($iban, 0, 2);
         $start = substr($iban, 0, 4);

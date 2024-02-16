@@ -298,7 +298,7 @@ class Customer extends Stancer\Tests\atoum
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidNameException::class)
                     ->message
-                        ->isIdenticalTo('A valid name must be between 4 and 64 characters.')
+                        ->isIdenticalTo('A valid name must be between 3 and 64 characters.')
 
                 ->boolean($this->testedInstance->isModified())
                     ->isFalse

@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 namespace Stancer\Sepa;
 
+use Override;
+use ReturnTypeWillChange;
 use Stancer;
 
 /**
@@ -10,18 +12,35 @@ use Stancer;
  *
  * This will use SEPAmail, a french service allowing to verify bank details on SEPA.
  *
- * @method bool|null getDateBirth()
- * @method string|null getResponse()
- * @method float|null getScoreName()
- * @method string|null getStatus()
+ * @method ?boolean getDateBirth()
+ * @method ?string getResponse()
+ * @method ?float getScoreName()
+ * @method ?string getStatus()
+ * @method ?DateTimeImmutable get_creation_date() Get creation date.
+ * @method ?boolean get_date_birth()
+ * @method string get_endpoint() Get API endpoint.
+ * @method string get_entity_name() Get entity name.
+ * @method ?string get_id() Get object ID.
+ * @method ?string get_response()
+ * @method ?float get_score_name()
+ * @method ?Stancer\Sepa get_sepa()
+ * @method ?string get_status()
+ * @method string get_uri() Get entity resource location.
  *
- * @property-read bool|null $dateBirth
- * @property-read DateTimeImmutable|null $created
- * @property-read DateTimeImmutable|null $creationDate
- * @property-read string|null $response
- * @property-read float|null $scoreName
- * @property-read Stancer\Sepa|null $sepa
- * @property-read string|null $status
+ * @property-read ?DateTimeImmutable $creationDate Creation date.
+ * @property-read ?DateTimeImmutable $creation_date Creation date.
+ * @property-read ?boolean $dateBirth
+ * @property-read ?boolean $date_birth
+ * @property-read string $endpoint API endpoint.
+ * @property-read string $entityName Entity name.
+ * @property-read string $entity_name Entity name.
+ * @property-read ?string $id Object ID.
+ * @property-read ?string $response
+ * @property-read ?float $scoreName
+ * @property-read ?float $score_name
+ * @property-read ?Stancer\Sepa $sepa
+ * @property-read ?string $status
+ * @property-read string $uri Entity resource location.
  */
 class Check extends Stancer\Core\AbstractObject
 {
@@ -84,6 +103,8 @@ class Check extends Stancer\Core\AbstractObject
      * @uses self::toArray()
      * @return string|integer|boolean|null|array<string, mixed>
      */
+    #[Override]
+    #[ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
     public function jsonSerialize()
     {
         $sepa = $this->getSepa();
@@ -107,6 +128,7 @@ class Check extends Stancer\Core\AbstractObject
      * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
+    #[Override]
     public function send(): Stancer\Core\AbstractObject
     {
         $this->modified[] = 'sepa'; // Mandatory, force `parent::send()` to work.

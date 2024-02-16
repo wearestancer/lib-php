@@ -8,14 +8,32 @@ use Stancer;
 /**
  * Data for authenticated payment.
  *
- * @method string|null getRedirectUrl()
- * @method string getReturnUrl()
- * @method string getStatus()
+ * @method ?string getRedirectUrl() Get the redirection URL to start an authentification session.
+ * @method ?string getReturnUrl() Get the return URL at end of the authentification session.
+ * @method string getStatus() Get the authentification status.
+ * @method ?DateTimeImmutable get_creation_date() Get creation date.
+ * @method string get_endpoint() Get API endpoint.
+ * @method string get_entity_name() Get entity name.
+ * @method ?string get_id() Get object ID.
+ * @method ?string get_redirect_url() Get the redirection URL to start an authentification session.
+ * @method ?string get_return_url() Get the return URL at end of the authentification session.
+ * @method string get_status() Get the authentification status.
+ * @method string get_uri() Get entity resource location.
+ * @method $this set_return_url(string $return_url) Set the return URL at end of the authentification session.
  *
- * @property DateTimeImmutable|null $created
- * @property string|null $redirectUrl
- * @property string $returnUrl
- * @property string $status
+ * @property ?string $returnUrl The return URL at end of the authentification session.
+ * @property ?string $return_url The return URL at end of the authentification session.
+ *
+ * @property-read ?DateTimeImmutable $creationDate Creation date.
+ * @property-read ?DateTimeImmutable $creation_date Creation date.
+ * @property-read string $endpoint API endpoint.
+ * @property-read string $entityName Entity name.
+ * @property-read string $entity_name Entity name.
+ * @property-read ?string $id Object ID.
+ * @property-read ?string $redirectUrl The redirection URL to start an authentification session.
+ * @property-read ?string $redirect_url The redirection URL to start an authentification session.
+ * @property-read string $status The authentification status.
+ * @property-read string $uri Entity resource location.
  */
 class Auth extends Stancer\Core\AbstractObject
 {
@@ -25,10 +43,12 @@ class Auth extends Stancer\Core\AbstractObject
      */
     protected $dataModel = [
         'redirectUrl' => [
+            'desc' => 'The redirection URL to start an authentification session',
             'restricted' => true,
             'type' => self::STRING,
         ],
         'returnUrl' => [
+            'desc' => 'The return URL at end of the authentification session',
             'size' => [
                 'min' => 1,
                 'max' => 2048,
@@ -36,6 +56,7 @@ class Auth extends Stancer\Core\AbstractObject
             'type' => self::STRING,
         ],
         'status' => [
+            'desc' => 'The authentification status',
             'exportable' => true,
             'restricted' => true,
             'type' => self::STRING,

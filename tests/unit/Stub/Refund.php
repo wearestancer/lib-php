@@ -14,7 +14,7 @@ class Refund extends Stancer\Tests\atoum
             ->and($payment->testOnlyAddModified('amount'))
 
             ->if($this->newTestedInstance)
-            ->and($this->testedInstance->setPayment($payment))
+            ->and($this->testedInstance->testOnlySetPayment($payment))
             ->and($this->testedInstance->testOnlyResetModified())
             ->then
                 ->boolean($this->testedInstance->isModified())
@@ -32,10 +32,8 @@ class Refund extends Stancer\Tests\atoum
                 ->given($client = new mock\Stancer\Http\Client)
                 ->and($config = $this->mockConfig($client))
 
-                ->if($response = new mock\Stancer\Http\Response(200))
-                ->and($this->calling($client)->request = $response)
-                ->and($this->calling($response)->getBody[] = new Stancer\Http\Stream('{}'))
-                ->and($this->calling($response)->getBody[] = new Stancer\Http\Stream($this->getFixture('refund', 'read')))
+                ->if($this->calling($client)->request[] = new Stancer\Http\Response(200, '{}'))
+                ->and($this->calling($client)->request[] = new Stancer\Http\Response(200, $this->getFixture('refund', 'read')))
 
                 ->if($paym = 'paym_' . bin2hex(random_bytes(12)))
                 ->and($payment = new Stancer\Payment($paym))
@@ -44,7 +42,7 @@ class Refund extends Stancer\Tests\atoum
                 ->if($amount = rand(50, 99999))
 
                 ->if($this->newTestedInstance)
-                ->and($this->testedInstance->setAmount($amount))
+                ->and($this->testedInstance->testOnlySetAmount($amount))
                 ->and($this->testedInstance->testOnlySetPayment($payment))
 
                 ->and($location = $this->testedInstance->getUri())
@@ -55,7 +53,6 @@ class Refund extends Stancer\Tests\atoum
                         'payment' => $paym,
                     ]),
                 ]))
-
                 ->then
                     ->object($this->testedInstance->send())
                         ->isTestedInstance
@@ -82,10 +79,8 @@ class Refund extends Stancer\Tests\atoum
                 ->given($client = new mock\Stancer\Http\Client)
                 ->and($config = $this->mockConfig($client))
 
-                ->if($response = new mock\Stancer\Http\Response(200))
-                ->and($this->calling($client)->request = $response)
-                ->and($this->calling($response)->getBody[] = new Stancer\Http\Stream('{}'))
-                ->and($this->calling($response)->getBody[] = new Stancer\Http\Stream($this->getFixture('refund', 'read')))
+                ->if($this->calling($client)->request[] = new Stancer\Http\Response(200, '{}'))
+                ->and($this->calling($client)->request[] = new Stancer\Http\Response(200, $this->getFixture('refund', 'read')))
 
                 ->if($paym = 'paym_' . bin2hex(random_bytes(12)))
                 ->and($payment = new Stancer\Payment($paym))

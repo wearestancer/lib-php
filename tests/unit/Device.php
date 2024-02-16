@@ -35,72 +35,193 @@ class Device extends Stancer\Tests\atoum
     public function testGetCity_SetCity()
     {
         $this
-            ->given($city = uniqid())
-
-            ->if($this->newTestedInstance)
-
+            ->if($city = uniqid())
             ->then
-                ->variable($this->testedInstance->getCity())
-                    ->isNull
+                ->assert('camelCase method')
+                    ->variable($this->newTestedInstance->getCity())
+                        ->isNull
 
-                ->object($this->testedInstance->setCity($city))
-                    ->isTestedInstance
+                    ->exception(function () use ($city) {
+                        $this->testedInstance->setCity($city);
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
+                        ->message
+                            ->isIdenticalTo('You are not allowed to modify "city".')
 
-                ->string($this->testedInstance->getCity())
-                    ->isIdenticalTo($city)
+                    ->if($this->testedInstance->hydrate(['city' => $city]))
+                    ->then
+                        ->string($this->testedInstance->getCity())
+                            ->isIdenticalTo($city)
 
-                ->array($this->testedInstance->jsonSerialize())
-                    ->hasKey('city')
-                    ->string['city']
-                        ->isIdenticalTo($city)
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->notHasKey('city')
+
+                ->assert('snake_case method')
+                    ->variable($this->newTestedInstance->get_city())
+                        ->isNull
+
+                    ->exception(function () use ($city) {
+                        $this->testedInstance->set_city($city);
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
+                        ->message
+                            ->isIdenticalTo('You are not allowed to modify "city".')
+
+                    ->if($this->testedInstance->hydrate(['city' => $city]))
+                    ->then
+                        ->string($this->testedInstance->get_city())
+                            ->isIdenticalTo($city)
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->notHasKey('city')
+
+                ->assert('property')
+                    ->variable($this->newTestedInstance->city)
+                        ->isNull
+
+                    ->exception(function () use ($city) {
+                        $this->testedInstance->city = $city;
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\BadPropertyAccessException::class)
+                        ->message
+                            ->isIdenticalTo('You are not allowed to modify "city".')
+
+                    ->if($this->testedInstance->hydrate(['city' => $city]))
+                    ->then
+                        ->string($this->testedInstance->city)
+                            ->isIdenticalTo($city)
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->notHasKey('city')
         ;
     }
 
     public function testGetCountry_SetCountry()
     {
         $this
-            ->given($country = uniqid())
-
-            ->if($this->newTestedInstance)
-
+            ->if($country = uniqid())
             ->then
-                ->variable($this->testedInstance->getCountry())
-                    ->isNull
+                ->assert('camelCase method')
+                    ->variable($this->newTestedInstance->getCountry())
+                        ->isNull
 
-                ->object($this->testedInstance->setCountry($country))
-                    ->isTestedInstance
+                    ->exception(function () use ($country) {
+                        $this->testedInstance->setCountry($country);
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
+                        ->message
+                            ->isIdenticalTo('You are not allowed to modify "country".')
 
-                ->string($this->testedInstance->getCountry())
-                    ->isIdenticalTo($country)
+                    ->if($this->testedInstance->hydrate(['country' => $country]))
+                    ->then
+                        ->string($this->testedInstance->getCountry())
+                            ->isIdenticalTo($country)
 
-                ->array($this->testedInstance->jsonSerialize())
-                    ->hasKey('country')
-                    ->string['country']
-                        ->isIdenticalTo($country)
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->notHasKey('country')
+
+                ->assert('snake_case method')
+                    ->variable($this->newTestedInstance->get_country())
+                        ->isNull
+
+                    ->exception(function () use ($country) {
+                        $this->testedInstance->set_country($country);
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
+                        ->message
+                            ->isIdenticalTo('You are not allowed to modify "country".')
+
+                    ->if($this->testedInstance->hydrate(['country' => $country]))
+                    ->then
+                        ->string($this->testedInstance->get_country())
+                            ->isIdenticalTo($country)
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->notHasKey('country')
+
+                ->assert('property')
+                    ->variable($this->newTestedInstance->country)
+                        ->isNull
+
+                    ->exception(function () use ($country) {
+                        $this->testedInstance->country = $country;
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\BadPropertyAccessException::class)
+                        ->message
+                            ->isIdenticalTo('You are not allowed to modify "country".')
+
+                    ->if($this->testedInstance->hydrate(['country' => $country]))
+                    ->then
+                        ->string($this->testedInstance->country)
+                            ->isIdenticalTo($country)
+
+                        ->array($this->testedInstance->jsonSerialize())
+                            ->notHasKey('country')
         ;
     }
 
     public function testGetHttpAccept_SetHttpAccept()
     {
         $this
-            ->given($accept = uniqid())
-
-            ->if($this->newTestedInstance)
-
+            ->if($accept = uniqid())
             ->then
-                ->variable($this->testedInstance->getHttpAccept())
-                    ->isNull
+                ->assert('camelCase method')
+                    ->variable($this->newTestedInstance->getHttpAccept())
+                        ->isNull
 
-                ->object($this->testedInstance->setHttpAccept($accept))
-                    ->isTestedInstance
+                    ->object($this->testedInstance->setHttpAccept($accept))
+                        ->isTestedInstance
 
-                ->string($this->testedInstance->getHttpAccept())
-                    ->isIdenticalTo($accept)
-
-                ->array($this->testedInstance->jsonSerialize())
-                    ->hasKey('http_accept')
-                    ->string['http_accept']
+                    ->string($this->testedInstance->getHttpAccept())
                         ->isIdenticalTo($accept)
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasKey('http_accept')
+                        ->string['http_accept']
+                            ->isIdenticalTo($accept)
+
+                ->assert('snake_case method')
+                    ->variable($this->newTestedInstance->get_http_accept())
+                        ->isNull
+
+                    ->object($this->testedInstance->set_http_accept($accept))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->get_http_accept())
+                        ->isIdenticalTo($accept)
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasKey('http_accept')
+                        ->string['http_accept']
+                            ->isIdenticalTo($accept)
+
+                ->assert('camelCase property')
+                    ->variable($this->newTestedInstance->httpAccept)
+                        ->isNull
+
+                    ->variable($this->testedInstance->httpAccept = $accept)
+
+                    ->string($this->testedInstance->httpAccept)
+                        ->isIdenticalTo($accept)
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasKey('http_accept')
+                        ->string['http_accept']
+                            ->isIdenticalTo($accept)
+
+                ->assert('snake_case property')
+                    ->variable($this->newTestedInstance->http_accept)
+                        ->isNull
+
+                    ->variable($this->testedInstance->http_accept = $accept)
+
+                    ->string($this->testedInstance->http_accept)
+                        ->isIdenticalTo($accept)
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasKey('http_accept')
+                        ->string['http_accept']
+                            ->isIdenticalTo($accept)
         ;
     }
 
@@ -110,110 +231,239 @@ class Device extends Stancer\Tests\atoum
     public function testGetIp_SetIp($ip)
     {
         $this
-            ->given($bad = rand(250, 300) . '.' . rand(250, 300) . '.' . rand(250, 300) . '.' . rand(250, 300))
-
-            ->if($this->newTestedInstance)
-
+            ->if($bad = rand(250, 300) . '.' . rand(250, 300) . '.' . rand(250, 300) . '.' . rand(250, 300))
             ->then
-                ->variable($this->testedInstance->getIp())
-                    ->isNull
+                ->assert('camelCase method')
+                    ->variable($this->newTestedInstance->getIp())
+                        ->isNull
 
-                ->object($this->testedInstance->setIp($ip))
-                    ->isTestedInstance
+                    ->object($this->testedInstance->setIp($ip))
+                        ->isTestedInstance
 
-                ->string($this->testedInstance->getIp())
-                    ->isIdenticalTo($ip)
-
-                ->array($this->testedInstance->jsonSerialize())
-                    ->hasKey('ip')
-                    ->string['ip']
+                    ->string($this->testedInstance->getIp())
                         ->isIdenticalTo($ip)
 
-                ->exception(function () use ($bad) {
-                    $this->testedInstance->setIp($bad);
-                })
-                    ->isInstanceOf(Stancer\Exceptions\InvalidIpAddressException::class)
-                    ->message
-                        ->isIdenticalTo('"' . $bad . '" is not a valid IP address.')
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasKey('ip')
+                        ->string['ip']
+                            ->isIdenticalTo($ip)
+
+                    ->exception(function () use ($bad) {
+                        $this->testedInstance->setIp($bad);
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\InvalidIpAddressException::class)
+                        ->message
+                            ->isIdenticalTo('"' . $bad . '" is not a valid IP address.')
+
+                ->assert('snake_case method')
+                    ->variable($this->newTestedInstance->get_ip())
+                        ->isNull
+
+                    ->object($this->testedInstance->set_ip($ip))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->get_ip())
+                        ->isIdenticalTo($ip)
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasKey('ip')
+                        ->string['ip']
+                            ->isIdenticalTo($ip)
+
+                    ->exception(function () use ($bad) {
+                        $this->testedInstance->set_ip($bad);
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\InvalidIpAddressException::class)
+                        ->message
+                            ->isIdenticalTo('"' . $bad . '" is not a valid IP address.')
+
+                ->assert('property')
+                    ->variable($this->newTestedInstance->ip)
+                        ->isNull
+
+                    ->variable($this->testedInstance->ip = $ip)
+
+                    ->string($this->testedInstance->ip)
+                        ->isIdenticalTo($ip)
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasKey('ip')
+                        ->string['ip']
+                            ->isIdenticalTo($ip)
+
+                    ->exception(function () use ($bad) {
+                        $this->testedInstance->ip = $bad;
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\InvalidIpAddressException::class)
+                        ->message
+                            ->isIdenticalTo('"' . $bad . '" is not a valid IP address.')
         ;
     }
 
     public function testGetLanguages_SetLanguages()
     {
         $this
-            ->given($languages = uniqid())
-
-            ->if($this->newTestedInstance)
-
+            ->if($languages = uniqid())
             ->then
-                ->variable($this->testedInstance->getLanguages())
-                    ->isNull
+                ->assert('camelCase method')
+                    ->variable($this->newTestedInstance->getLanguages())
+                        ->isNull
 
-                ->object($this->testedInstance->setLanguages($languages))
-                    ->isTestedInstance
+                    ->object($this->testedInstance->setLanguages($languages))
+                        ->isTestedInstance
 
-                ->string($this->testedInstance->getLanguages())
-                    ->isIdenticalTo($languages)
-
-                ->array($this->testedInstance->jsonSerialize())
-                    ->hasKey('languages')
-                    ->string['languages']
+                    ->string($this->testedInstance->getLanguages())
                         ->isIdenticalTo($languages)
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasKey('languages')
+                        ->string['languages']
+                            ->isIdenticalTo($languages)
+
+                ->assert('snake_case method')
+                    ->variable($this->newTestedInstance->get_languages())
+                        ->isNull
+
+                    ->object($this->testedInstance->set_languages($languages))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->get_languages())
+                        ->isIdenticalTo($languages)
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasKey('languages')
+                        ->string['languages']
+                            ->isIdenticalTo($languages)
+
+                ->assert('property')
+                    ->variable($this->newTestedInstance->languages)
+                        ->isNull
+
+                    ->variable($this->testedInstance->languages = $languages)
+
+                    ->string($this->testedInstance->languages)
+                        ->isIdenticalTo($languages)
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasKey('languages')
+                        ->string['languages']
+                            ->isIdenticalTo($languages)
         ;
     }
 
     public function testGetPort_SetPort()
     {
         $this
-            ->given($port = rand(1, 65535))
-
-            ->if($this->newTestedInstance)
-
+            ->if($port = rand(1, 65535))
             ->then
-                ->variable($this->testedInstance->getPort())
-                    ->isNull
+                ->assert('camelCase method')
+                    ->variable($this->newTestedInstance->getPort())
+                        ->isNull
 
-                ->object($this->testedInstance->setPort($port))
-                    ->isTestedInstance
+                    ->object($this->testedInstance->setPort($port))
+                        ->isTestedInstance
 
-                ->integer($this->testedInstance->getPort())
-                    ->isIdenticalTo($port)
-
-                ->array($this->testedInstance->jsonSerialize())
-                    ->hasKey('port')
-                    ->integer['port']
+                    ->integer($this->testedInstance->getPort())
                         ->isIdenticalTo($port)
 
-                ->exception(function () {
-                    $this->testedInstance->setPort(rand(65535, 70000));
-                })
-                    ->isInstanceOf(Stancer\Exceptions\InvalidPortException::class)
-                    ->message
-                        ->isIdenticalTo('Port must be greater than or equal to 1 and be less than or equal to 65535.')
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasKey('port')
+                        ->integer['port']
+                            ->isIdenticalTo($port)
+
+                ->assert('snake_case method')
+                    ->variable($this->newTestedInstance->get_port())
+                        ->isNull
+
+                    ->object($this->testedInstance->set_port($port))
+                        ->isTestedInstance
+
+                    ->integer($this->testedInstance->get_port())
+                        ->isIdenticalTo($port)
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasKey('port')
+                        ->integer['port']
+                            ->isIdenticalTo($port)
+
+                ->assert('property')
+                    ->variable($this->newTestedInstance->port)
+                        ->isNull
+
+                    ->variable($this->testedInstance->port = $port)
+
+                    ->integer($this->testedInstance->port)
+                        ->isIdenticalTo($port)
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasKey('port')
+                        ->integer['port']
+                            ->isIdenticalTo($port)
         ;
     }
 
     public function testGetUserAgent_SetUserAgent()
     {
         $this
-            ->given($agent = uniqid())
-
-            ->if($this->newTestedInstance)
-
+            ->if($agent = uniqid())
             ->then
-                ->variable($this->testedInstance->getUserAgent())
-                    ->isNull
+                ->assert('camelCase method')
+                    ->variable($this->newTestedInstance->getUserAgent())
+                        ->isNull
 
-                ->object($this->testedInstance->setUserAgent($agent))
-                    ->isTestedInstance
+                    ->object($this->testedInstance->setUserAgent($agent))
+                        ->isTestedInstance
 
-                ->string($this->testedInstance->getUserAgent())
-                    ->isIdenticalTo($agent)
-
-                ->array($this->testedInstance->jsonSerialize())
-                    ->hasKey('user_agent')
-                    ->string['user_agent']
+                    ->string($this->testedInstance->getUserAgent())
                         ->isIdenticalTo($agent)
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasKey('user_agent')
+                        ->string['user_agent']
+                            ->isIdenticalTo($agent)
+
+                ->assert('snake_case method')
+                    ->variable($this->newTestedInstance->get_user_agent())
+                        ->isNull
+
+                    ->object($this->testedInstance->set_user_agent($agent))
+                        ->isTestedInstance
+
+                    ->string($this->testedInstance->get_user_agent())
+                        ->isIdenticalTo($agent)
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasKey('user_agent')
+                        ->string['user_agent']
+                            ->isIdenticalTo($agent)
+
+                ->assert('camelCase property')
+                    ->variable($this->newTestedInstance->userAgent)
+                        ->isNull
+
+                    ->variable($this->testedInstance->userAgent = $agent)
+
+                    ->string($this->testedInstance->userAgent)
+                        ->isIdenticalTo($agent)
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasKey('user_agent')
+                        ->string['user_agent']
+                            ->isIdenticalTo($agent)
+
+                ->assert('snake_case property')
+                    ->variable($this->newTestedInstance->user_agent)
+                        ->isNull
+
+                    ->variable($this->testedInstance->user_agent = $agent)
+
+                    ->string($this->testedInstance->user_agent)
+                        ->isIdenticalTo($agent)
+
+                    ->array($this->testedInstance->jsonSerialize())
+                        ->hasKey('user_agent')
+                        ->string['user_agent']
+                            ->isIdenticalTo($agent)
         ;
     }
 

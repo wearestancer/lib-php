@@ -15,6 +15,7 @@ use Psr;
  */
 class Request implements Psr\Http\Message\RequestInterface
 {
+    use Stancer\Traits\AliasTrait;
     use MessageTrait;
 
     /** @var string */
@@ -154,6 +155,7 @@ class Request implements Psr\Http\Message\RequestInterface
      * @param string $method Case-sensitive method.
      * @return static
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function withMethod($method): self
     {
         $obj = clone $this;
@@ -170,6 +172,8 @@ class Request implements Psr\Http\Message\RequestInterface
      * @param mixed $requestTarget New target.
      * @return static
      */
+    #[Stancer\WillChange\PHP8_0\MixedType]
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function withRequestTarget($requestTarget): self
     {
         // phpcs:disable PEAR.Functions.FunctionCallSignature.SpaceAfterCloseBracket
@@ -220,6 +224,7 @@ class Request implements Psr\Http\Message\RequestInterface
      * @return static
      * @throws Stancer\Exceptions\BadMethodCallException For every call.
      */
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
     public function withUri(Psr\Http\Message\UriInterface $uri, $preserveHost = false): self
     {
         $message = 'This method is not implemented for now';

@@ -8,10 +8,13 @@ class Refund extends Stancer\Refund
 {
     use Stancer\Stub\TestMethodTrait;
 
+    public function testOnlySetAmount(int $amount): self
+    {
+        return $this->hydrate(['amount' => $amount]);
+    }
+
     public function testOnlySetPayment(Stancer\Payment $payment): self
     {
-        $this->payment = $payment;
-
-        return $this;
+        return $this->hydrate(['payment' => $payment]);
     }
 }
