@@ -182,7 +182,7 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      *
      * @return string|false
      */
-    #[\ReturnTypeWillChange]
+    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\ReturnTypeWithUnion]
     protected function findAlias(string $name)
     {
         if ($name === 'isTokenized') {
