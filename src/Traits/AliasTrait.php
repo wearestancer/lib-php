@@ -81,7 +81,7 @@ trait AliasTrait
             return $this->{$method}();
         }
 
-        if (property_exists($this, 'dataModel') && array_key_exists($prop, $this->dataModel)) {
+        if ($this instanceof Stancer\Core\AbstractObject) {
             return $this->{$method}();
         }
 
@@ -109,7 +109,7 @@ trait AliasTrait
                 return;
             }
 
-            if (property_exists($this, 'dataModel') && array_key_exists($prop, $this->dataModel)) {
+            if ($this instanceof Stancer\Core\AbstractObject) {
                 $this->{$method}($value);
 
                 return;

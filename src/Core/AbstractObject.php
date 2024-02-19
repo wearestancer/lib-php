@@ -583,7 +583,8 @@ abstract class AbstractObject implements JsonSerializable
                                         $this->dataModel[$property]['value'] = [];
                                     } else {
                                         foreach ($this->dataModel[$property]['value'] as $obj) {
-                                            if ($obj->getId() === $id) {
+                                            if (is_object($obj) && $obj instanceof $this && $obj->getId() === $id) {
+                                                /** @var array<string, mixed> $val */
                                                 $obj->hydrate($val);
 
                                                 $missing = false;
@@ -596,6 +597,7 @@ abstract class AbstractObject implements JsonSerializable
                                         $obj = new $class($id);
 
                                         $obj->cleanModified = $this->cleanModified;
+                                        /** @var array<string, mixed> $val */
                                         $obj->hydrate($val);
 
                                         $list[] = $obj;
@@ -631,6 +633,7 @@ abstract class AbstractObject implements JsonSerializable
                                 && $this->dataModel[$property]['value'] instanceof self
                             ) {
                                 $this->dataModel[$property]['value']->cleanModified = $this->cleanModified;
+                                /** @var array<string, mixed> $value */
                                 $this->dataModel[$property]['value']->hydrate($value);
                             }
                         } else {
@@ -981,6 +984,7 @@ abstract class AbstractObject implements JsonSerializable
             throw new Stancer\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
         }
 
+        /** @var array<class-string<Stancer\Exceptions\Exception>> $exceptionList */
         $exceptionList = [
             'Stancer\\Exceptions\\Invalid' . ucfirst($property) . 'Exception',
             $model['exception'],
