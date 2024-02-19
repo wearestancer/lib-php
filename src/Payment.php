@@ -121,8 +121,6 @@ use Stancer;
  * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
  * @property-read ?string $method Payment method used.
- * @property-read ?string $paymentPageUrl URL for Stancer payment page.
- * @property-read ?string $payment_page_url URL for Stancer payment page.
  * @property-read Stancer\Refund[] $refunds Array of refund objects.
  * @property-read ?string $response Response of the bank processing.
  * @property-read ?string $responseAuthor
@@ -435,7 +433,6 @@ class Payment extends Stancer\Core\AbstractObject
      *
      * @phpstan-param array{lang?: string} $params Parameters to add to the URL.
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'URL for Stancer payment page', generateMethodGetter: false, restricted: true)]
     public function getPaymentPageUrl(array $params = []): string
     {
         $config = Stancer\Config::getGlobal();
