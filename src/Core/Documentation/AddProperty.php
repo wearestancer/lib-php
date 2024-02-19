@@ -18,11 +18,13 @@ class AddProperty
      * @param string $name New property name.
      * @param string|null $description Property description.
      * @param string|null $fullDescription Property full description (without manipulation from the phpdoc script).
-     * @param boolean|null $generateMethodGetter Do we need to create an entry for a get method?.
+     * @param array|false|null $getter Getter data.
      * @param boolean|null $list Is this parameter a list?.
      * @param boolean|null $nullable Is it nullable?.
+     * @param array|false|null $property Property data.
      * @param boolean|null $required Is it required?.
      * @param boolean|null $restricted Is it restricted (aka no setter)?.
+     * @param array|false|null $setter Setter data.
      * @param string|string[] $type Property types.
      * @param mixed $value Property default value.
      */
@@ -32,11 +34,13 @@ class AddProperty
         protected string $name,
         protected ?string $description = null,
         protected ?string $fullDescription = null,
-        protected ?bool $generateMethodGetter = null,
+        protected $getter = null,
         protected ?bool $list = null,
         protected ?bool $nullable = null,
+        protected $property = null,
         protected ?bool $required = null,
         protected ?bool $restricted = null,
+        protected $setter = null,
         protected $type = null,
         protected $value = null,
     ) {
@@ -59,8 +63,8 @@ class AddProperty
             $data['fullDesc'] = $this->fullDescription;
         }
 
-        if (!is_null($this->generateMethodGetter)) {
-            $data['generateMethodGetter'] = $this->generateMethodGetter;
+        if (!is_null($this->getter)) {
+            $data['getter'] = $this->getter;
         }
 
         if (!is_null($this->list)) {
@@ -71,12 +75,20 @@ class AddProperty
             $data['nullable'] = $this->nullable;
         }
 
+        if ($this->property) {
+            $data['property'] = $this->property;
+        }
+
         if (!is_null($this->required)) {
             $data['required'] = $this->required;
         }
 
         if (!is_null($this->restricted)) {
             $data['restricted'] = $this->restricted;
+        }
+
+        if ($this->setter) {
+            $data['setter'] = $this->setter;
         }
 
         if (!is_null($this->type)) {

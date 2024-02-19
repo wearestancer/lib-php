@@ -75,7 +75,7 @@ use Stancer;
  * @method $this setStatus(string $status) Set status of the payment.
  * @method $this setUniqueId(string $uniqueId) Set unicity key.
  * @method $this set_amount(integer $amount) Set transaction amount.
- * @method $this set_auth(Stancer\Auth $auth) Set auth object, must be set for 3-D Secure card payments.
+ * @method $this set_auth(Stancer\Auth|bool|string $auth) Set auth object, must be set for 3-D Secure card payments.
  * @method $this set_capture(boolean $capture) Set capture immediately the payment.
  * @method $this set_card(Stancer\Card $card) Set card object.
  * @method $this set_country(string $country)
@@ -93,7 +93,7 @@ use Stancer;
  * @phpstan-method $this addRefunds(Stancer\Refund $refund)
  *
  * @property ?integer $amount Transaction amount.
- * @property ?Stancer\Auth $auth Auth object, must be set for 3-D Secure card payments.
+ * @property ?Stancer\Auth|bool|string $auth Auth object, must be set for 3-D Secure card payments.
  * @property ?boolean $capture Capture immediately the payment.
  * @property ?Stancer\Card $card Card object.
  * @property ?string $country
@@ -129,6 +129,7 @@ use Stancer;
  */
 #[Stancer\Core\Documentation\AddMethod('addRefunds', ['Stancer\Refund $refund'], '$this', stan: true)]
 #[Stancer\Core\Documentation\AddMethod('list', ['SearchFilters $terms'], 'static Generator<static>')]
+#[Stancer\Core\Documentation\AddProperty('auth', property: ['type' => [Stancer\Auth::class, 'bool', 'string']], setter: ['type' => [Stancer\Auth::class, 'bool', 'string']])]
 #[Stancer\Core\Documentation\AddProperty('refunds', restricted: true)]
 class Payment extends Stancer\Core\AbstractObject
 {
