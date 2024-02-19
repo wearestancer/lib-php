@@ -561,16 +561,32 @@ class StubObject extends Stancer\Tests\atoum
     {
         $this
             ->if($class = (string) $this->testedClass)
-            ->and($this->newTestedInstance->dataModelSetter($property, $value))
+            ->and($this->newTestedInstance->testOnlyDataModelSetter($property, $value))
             ->then
                 ->object($obj = $class::create([$property => $value]))
                     ->isInstanceOf($class)
 
-                ->variable($obj->dataModelGetter($property))
+                ->variable($obj->testOnlyDataModelGetter($property))
                     ->isIdenticalTo($value)
 
                 ->array($this->testedInstance->testOnlyGetModified())
                     ->contains($property)
+        ;
+    }
+
+    public function testDataModelAdder()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($property = uniqid())
+            ->and($value = uniqid())
+            ->then
+                ->exception(function () use ($property, $value) {
+                    $this->testedInstance->testOnlyDataModelAdder($property, $value);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Unknown property "' . $property . '"')
         ;
     }
 
@@ -583,11 +599,26 @@ class StubObject extends Stancer\Tests\atoum
             ->given($this->newTestedInstance)
             ->then
                 ->exception(function () use ($property, $value) {
-                    $this->testedInstance->dataModelAdder($property, $value);
+                    $this->testedInstance->testOnlyDataModelAdder($property, $value);
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                     ->message
                         ->isIdenticalTo('"' . $property . '" is not a list, you can not add elements in it.')
+        ;
+    }
+
+    public function testDataModelGetter()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($property = uniqid())
+            ->then
+                ->exception(function () use ($property) {
+                    $this->testedInstance->testOnlyDataModelGetter($property);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Unknown property "' . $property . '"')
         ;
     }
 
@@ -606,13 +637,13 @@ class StubObject extends Stancer\Tests\atoum
             ->given($this->newTestedInstance)
             ->then
                 ->assert($assertMessage)
-                    ->variable($this->testedInstance->dataModelGetter($property))
+                    ->variable($this->testedInstance->testOnlyDataModelGetter($property))
                         ->isNull
 
-                    ->object($this->testedInstance->dataModelSetter($property, $value))
+                    ->object($this->testedInstance->testOnlyDataModelSetter($property, $value))
                         ->isTestedInstance
 
-                    ->variable($this->testedInstance->dataModelGetter($property))
+                    ->variable($this->testedInstance->testOnlyDataModelGetter($property))
                         ->isIdenticalTo($value)
 
                     ->array($this->testedInstance->testOnlyGetModified())
@@ -634,17 +665,17 @@ class StubObject extends Stancer\Tests\atoum
             ->given($this->newTestedInstance)
             ->then
                 ->assert($assertMessage . 'If nothing, we got an empty array')
-                    ->array($this->testedInstance->dataModelGetter($property))
+                    ->array($this->testedInstance->testOnlyDataModelGetter($property))
                         ->isEmpty
 
                     ->array($this->testedInstance->testOnlyGetModified())
                         ->isEmpty
 
                 ->assert($assertMessage . '"set" will insert value like other')
-                    ->object($this->testedInstance->dataModelSetter($property, $value))
+                    ->object($this->testedInstance->testOnlyDataModelSetter($property, $value))
                         ->isTestedInstance
 
-                    ->array($this->testedInstance->dataModelGetter($property))
+                    ->array($this->testedInstance->testOnlyDataModelGetter($property))
                         ->isIdenticalTo($value)
                         ->size
                             ->isEqualTo(count($value))
@@ -653,10 +684,10 @@ class StubObject extends Stancer\Tests\atoum
                         ->contains($property)
 
                 ->assert($assertMessage . '"add" will add value without touching previous ones')
-                    ->object($this->testedInstance->dataModelAdder($property, $extra))
+                    ->object($this->testedInstance->testOnlyDataModelAdder($property, $extra))
                         ->isTestedInstance
 
-                    ->array($this->testedInstance->dataModelGetter($property))
+                    ->array($this->testedInstance->testOnlyDataModelGetter($property))
                         ->containsValues($value)
                         ->size
                             ->isEqualTo(count($value) + 1)
@@ -665,14 +696,14 @@ class StubObject extends Stancer\Tests\atoum
                         ->contains($property)
 
                 ->assert($assertMessage . '"set" will truncate previous')
-                    ->array($this->testedInstance->dataModelGetter($property))
+                    ->array($this->testedInstance->testOnlyDataModelGetter($property))
                         ->size
                             ->isGreaterThan(count($value))
 
-                    ->object($this->testedInstance->dataModelSetter($property, $value))
+                    ->object($this->testedInstance->testOnlyDataModelSetter($property, $value))
                         ->isTestedInstance
 
-                    ->array($this->testedInstance->dataModelGetter($property))
+                    ->array($this->testedInstance->testOnlyDataModelGetter($property))
                         ->isIdenticalTo($value)
                         ->size
                             ->isEqualTo(count($value))
@@ -699,7 +730,7 @@ class StubObject extends Stancer\Tests\atoum
             ->assert('No call without id')
                 ->if($this->newTestedInstance)
                 ->then
-                    ->variable($this->testedInstance->dataModelGetter('string1'))
+                    ->variable($this->testedInstance->testOnlyDataModelGetter('string1'))
                         ->isNull
 
                     ->mock($client)
@@ -709,12 +740,28 @@ class StubObject extends Stancer\Tests\atoum
             ->assert('Will automatically call populate')
                 ->if($this->newTestedInstance($id))
                 ->then
-                    ->string($this->testedInstance->dataModelGetter('string1'))
+                    ->string($this->testedInstance->testOnlyDataModelGetter('string1'))
                         ->isIdenticalTo($string1)
 
                     ->mock($client)
                         ->call('request')
                             ->once
+        ;
+    }
+
+    public function testDataModelSetter()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->and($property = uniqid())
+            ->and($value = uniqid())
+            ->then
+                ->exception(function () use ($property, $value) {
+                    $this->testedInstance->testOnlyDataModelSetter($property, $value);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                    ->message
+                        ->isIdenticalTo('Unknown property "' . $property . '"')
         ;
     }
 
@@ -726,7 +773,7 @@ class StubObject extends Stancer\Tests\atoum
             ->then
                 ->assert('On getter')
                     ->exception(function () use ($property) {
-                        $this->testedInstance->dataModelGetter($property);
+                        $this->testedInstance->testOnlyDataModelGetter($property);
                     })
                         ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                         ->message
@@ -734,7 +781,7 @@ class StubObject extends Stancer\Tests\atoum
 
                 ->assert('On setter')
                     ->exception(function () use ($property) {
-                        $this->testedInstance->dataModelSetter($property, uniqid());
+                        $this->testedInstance->testOnlyDataModelSetter($property, uniqid());
                     })
                         ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                         ->message
@@ -770,7 +817,7 @@ class StubObject extends Stancer\Tests\atoum
             ->then
                 ->assert($assertMessage)
                     ->exception(function () use ($property, $value) {
-                        $this->testedInstance->dataModelSetter($property, $value);
+                        $this->testedInstance->testOnlyDataModelSetter($property, $value);
                     })
                         ->isInstanceOf($class)
                         ->message

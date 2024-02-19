@@ -12,9 +12,6 @@ use ReflectionClass;
 /**
  * Manage common code between API object.
  *
- * @method $this data_model_adder(string $property, $value) Add a value stored list in data model.
- * @method mixed data_model_getter(string $property, boolean $auto_populate = true) Get a value stored in data model.
- * @method $this data_model_setter(string $property, $value) Set a value in data model.
  * @method ?DateTimeImmutable getCreated() Get creation date.
  * @method ?DateTimeImmutable get_created() Get creation date.
  * @method ?DateTimeImmutable get_creation_date() Get creation date.
@@ -244,7 +241,7 @@ abstract class AbstractObject implements JsonSerializable
      */
     #[Stancer\WillChange\PHP8_0\MixedType]
     #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public function dataModelAdder(string $property, $value): self
+    protected function dataModelAdder(string $property, $value): self
     {
         $model = $this->getModel($property);
 
@@ -280,7 +277,7 @@ abstract class AbstractObject implements JsonSerializable
      * @throws Stancer\Exceptions\InvalidArgumentException When asking an unknown property.
      */
     #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
-    public function dataModelGetter(string $property, bool $autoPopulate = true)
+    protected function dataModelGetter(string $property, bool $autoPopulate = true)
     {
         $model = $this->getModel($property);
 
@@ -331,7 +328,7 @@ abstract class AbstractObject implements JsonSerializable
      */
     #[Stancer\WillChange\PHP8_0\MixedType]
     #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public function dataModelSetter(string $property, $value): self
+    protected function dataModelSetter(string $property, $value): self
     {
         $model = $this->getModel($property);
 

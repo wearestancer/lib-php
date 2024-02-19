@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - `Stancer\Payment::$auth`/`Stancer\Payment::set_auth()` had bad typing
 
+### Removed
+- `Stancer\Core\AbstractObject::dataModel{Adder,Getter,Setter}()` are no longer public
+
 
 ## [1.1.2] - 2024-02-16
 
