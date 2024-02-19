@@ -57,6 +57,10 @@ function prepareData(string $action, array $data): array
             $typeNullable = $typeNonNullable = implode('|', $types);
         } else if (is_null($data['value']) && $data['nullable']) {
             $typeNullable = '?' . $typeNonNullable;
+
+            if (count($types) > 1) {
+                $typeNullable = $typeNonNullable . '|null';
+            }
         }
 
         if ($action === 'get') {

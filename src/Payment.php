@@ -95,7 +95,7 @@ use Stancer;
  * @phpstan-method $this addRefunds(Stancer\Refund $refund)
  *
  * @property ?integer $amount Transaction amount.
- * @property ?Stancer\Auth|boolean|string $auth Auth object, must be set for 3-D Secure card payments.
+ * @property Stancer\Auth|boolean|string|null $auth Auth object, must be set for 3-D Secure card payments.
  * @property ?boolean $capture Capture immediately the payment.
  * @property ?Stancer\Card $card Card object.
  * @property ?string $country

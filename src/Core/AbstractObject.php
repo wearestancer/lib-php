@@ -116,6 +116,7 @@ abstract class AbstractObject implements JsonSerializable
 
         $this->dataModel = array_merge($this->dataModel, $defaultValues);
 
+        /** @var DataModel $data */
         foreach ($this->dataModel as &$data) {
             $size = array_merge($defaultModel['size'], $data['size'] ?? []);
             $data = array_merge($defaultModel, $data, ['size' => $size]);
