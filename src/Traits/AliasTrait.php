@@ -23,11 +23,6 @@ trait AliasTrait
     public function __call(string $method, array $arguments)
     {
         $name = Stancer\Helper::snakeCaseToCamelCase($method);
-        $alias = $this->findAlias($name);
-
-        if ($alias) {
-            return $this->{$alias}(...$arguments);
-        }
 
         if (method_exists($this, $name)) {
             return $this->{$name}(...$arguments);
@@ -83,12 +78,6 @@ trait AliasTrait
             return $this->{$prop}();
         }
 
-        $alias = $this->findAlias($prop);
-
-        if ($alias) {
-            return $this->{$alias}();
-        }
-
         $method = 'get' . $prop;
 
         if (method_exists($this, $method)) {
@@ -138,18 +127,5 @@ trait AliasTrait
         }
 
         throw new Stancer\Exceptions\BadPropertyAccessException($message);
-    }
-
-    /**
-     * Return methods/properties aliases.
-     *
-     * @param string $name Searched method or property.
-     *
-     * @return string|false
-     */
-    #[ReturnTypeWillChange, Stancer\WillChange\PHP8_0\ReturnTypeWithUnion]
-    protected function findAlias(string $name)
-    {
-        return false;
     }
 }

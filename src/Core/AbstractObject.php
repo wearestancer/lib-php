@@ -166,12 +166,6 @@ abstract class AbstractObject implements JsonSerializable
             return $this->{$name}(...$arguments);
         }
 
-        $alias = $this->findAlias($name);
-
-        if ($alias) {
-            return $this->{$alias}(...$arguments);
-        }
-
         $message = sprintf('Method "%s::%s()" unknown', get_class($this), $method);
         $action = substr($method, 0, 3);
         $property = lcfirst(substr(Stancer\Helper::snakeCaseToCamelCase($method), 3));

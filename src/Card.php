@@ -47,6 +47,7 @@ use Stancer;
  * @method boolean get_tokenize() Is the card tokenized?
  * @method string get_uri() Get entity resource location.
  * @method ?string get_zip_code()
+ * @method boolean is_tokenized() Alias for `Stancer\Card::getTokenize()`.
  * @method $this setCvc(string $cvc) Set card Validation Code.
  * @method $this setExpYear(integer $expYear) Set card expiration year.
  * @method $this setName(string $name) Set card holder's name.
@@ -179,23 +180,6 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
     ];
 
     /**
-     * Return methods/properties aliases.
-     *
-     * @param string $name Searched method or property.
-     *
-     * @return string|false
-     */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\ReturnTypeWithUnion]
-    protected function findAlias(string $name)
-    {
-        if ($name === 'isTokenized') {
-            return 'getTokenize';
-        }
-
-        return false;
-    }
-
-    /**
      * Return real brand name.
      *
      * Whereas `Card::getBrand()` returns brand as a simple normalized string like "amex",
@@ -315,6 +299,17 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
         }
 
         return $tokenize;
+    }
+
+    /**
+     * Alias for `Stancer\Card::getTokenize()`.
+     *
+     * @see Stancer\Card::getTokenize()
+     * @return boolean
+     */
+    public function isTokenized(): bool
+    {
+        return $this->getTokenize();
     }
 
     /**

@@ -154,19 +154,6 @@ foreach ($classes as $className => $classData) {
     unset($classData['filepath']);
     unset($classData['instance']);
 
-    // Adding manual aliases.
-
-    $aliases = [];
-
-    foreach ($classData['aliases'] ?? [] as $name => $alias) {
-        $aliases[$name] = [
-            $alias,
-            Stancer\Helper::camelCaseToSnakeCase($alias),
-        ];
-    }
-
-    unset($classData['aliases']);
-
     // Adding manual exceptions.
 
     $throws = $classData['throws'] ?? [];
@@ -192,25 +179,9 @@ foreach ($classes as $className => $classData) {
 
     $methods = [
         'jsonSerialize' => [
-            'used' => true,
+            'alreadyDocumented' => true,
         ],
     ];
-
-    // Checking for class attributes.
-
-    $attributes = $reflect->getAttributes();
-
-    foreach ($attributes as $attribute) {
-        $instance = $attribute->newInstance();
-
-        if ($instance instanceof Stancer\Core\Documentation\AddMethod) {
-            $classData[] = $instance->getData();
-        }
-
-        if ($instance instanceof Stancer\Core\Documentation\AddProperty) {
-            $classData[$instance->getName()] = $instance->getData();
-        }
-    }
 
     // Looking for the built-in method of the object.
 
@@ -234,11 +205,6 @@ foreach ($classes as $className => $classData) {
 
         // Do not considere magic method.
         if (strpos($name, '__') === 0) {
-            continue;
-        }
-
-        // Pass methods already detected.
-        if ($name === $snake) {
             continue;
         }
 
@@ -276,13 +242,29 @@ foreach ($classes as $className => $classData) {
 
         // Registering the "new" method.
         $methods[$name] = array_merge([
+            'alreadyDocumented' => $name === $snake,
             'desc' => array_shift($lines),
             'name' => $snake,
             'parameters' => $method->getParameters(),
             'static' => $method->isStatic(),
             'return' => $return,
-            'used' => false,
         ], $methods[$name] ?? []);
+    }
+
+    // Checking for class attributes.
+
+    $attributes = $reflect->getAttributes();
+
+    foreach ($attributes as $attribute) {
+        $instance = $attribute->newInstance();
+
+        if ($instance instanceof Stancer\Core\Documentation\AddMethod) {
+            $classData[] = $instance->getData();
+        }
+
+        if ($instance instanceof Stancer\Core\Documentation\AddProperty) {
+            $classData[$instance->getName()] = $instance->getData();
+        }
     }
 
     // Merging everything together.
@@ -360,7 +342,7 @@ foreach ($classes as $className => $classData) {
                 $getter['fullDesc'],
             ]);
 
-            $methods[$getterMethod]['used'] = true;
+            $methods[$getterMethod]['alreadyDocumented'] = true;
         }
 
         // Do we need to create setter methods?
@@ -374,7 +356,7 @@ foreach ($classes as $className => $classData) {
                 ]);
             }
 
-            $methods[$setterMethod]['used'] = true;
+            $methods[$setterMethod]['alreadyDocumented'] = true;
 
             $doc[] = implode(' ', [
                 '@method',
@@ -386,36 +368,6 @@ foreach ($classes as $className => $classData) {
                 ]),
                 $setter['fullDesc'],
             ]);
-        }
-
-        // Does the object have aliases?
-        if ($obj instanceof Stancer\Traits\AliasTrait) {
-            $alias = $obj->findAlias($getterMethod);
-
-            if ($alias) {
-                $aliases[$getterMethod] = $alias;
-            }
-        }
-
-        // Adding alliases.
-        if (array_key_exists($getterMethod, $aliases)) {
-            foreach ($aliases[$getterMethod] as $method) {
-                if (!method_exists($obj, $getterMethod)) {
-                    $doc[] = implode(' ', [
-                        '@method',
-                        $data['type'],
-                        $method . '()',
-                        $data['fullDesc'],
-                    ]);
-                }
-
-                $doc[] = implode(' ', [
-                    '@method',
-                    $data['type'],
-                    $method . '()',
-                    $data['fullDesc'],
-                ]);
-            }
         }
 
         // Now, the properties.
@@ -441,10 +393,10 @@ foreach ($classes as $className => $classData) {
 
     // Ok, now we check for methods defined in the object which will have an automatic alias.
 
-    $notUsedMethods = array_filter($methods, fn($m) => !$m['used']);
+    $notDocumentedMethods = array_filter($methods, fn($m) => !$m['alreadyDocumented']);
 
-    if ($notUsedMethods) {
-        foreach ($notUsedMethods as $data) {
+    if ($notDocumentedMethods) {
+        foreach ($notDocumentedMethods as $data) {
             $parameters = [];
 
             foreach ($data['parameters'] as $param) {
