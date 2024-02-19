@@ -61,10 +61,10 @@ use Stancer;
  * @method ?string get_status() Get status of the payment.
  * @method ?string get_unique_id() Get unicity key.
  * @method string get_uri() Get entity resource location.
- * @method bool is_error() Indicates if payment is an error.
- * @method bool is_not_error() Indicates if payment is not an error.
- * @method bool is_not_success() Indicates if payment is not a success.
- * @method bool is_success() Indicates if payment is a success.
+ * @method boolean is_error() Indicates if payment is an error.
+ * @method boolean is_not_error() Indicates if payment is not an error.
+ * @method boolean is_not_success() Indicates if payment is not a success.
+ * @method boolean is_success() Indicates if payment is a success.
  * @method static Generator<static> list(SearchFilters $terms)
  * @method $this setCapture(boolean $capture) Set capture immediately the payment.
  * @method $this setCountry(string $country)
@@ -75,7 +75,7 @@ use Stancer;
  * @method $this setStatus(string $status) Set status of the payment.
  * @method $this setUniqueId(string $uniqueId) Set unicity key.
  * @method $this set_amount(integer $amount) Set transaction amount.
- * @method $this set_auth(Stancer\Auth|bool|string $auth) Set auth object, must be set for 3-D Secure card payments.
+ * @method $this set_auth(Stancer\Auth|boolean|string $auth) Set auth object, must be set for 3-D Secure card payments.
  * @method $this set_capture(boolean $capture) Set capture immediately the payment.
  * @method $this set_card(Stancer\Card $card) Set card object.
  * @method $this set_country(string $country)
@@ -93,7 +93,7 @@ use Stancer;
  * @phpstan-method $this addRefunds(Stancer\Refund $refund)
  *
  * @property ?integer $amount Transaction amount.
- * @property ?Stancer\Auth|bool|string $auth Auth object, must be set for 3-D Secure card payments.
+ * @property ?Stancer\Auth|boolean|string $auth Auth object, must be set for 3-D Secure card payments.
  * @property ?boolean $capture Capture immediately the payment.
  * @property ?Stancer\Card $card Card object.
  * @property ?string $country

@@ -27,7 +27,7 @@ use Stancer;
  * @method Stancer\Payment get_payment() Get refunded payment identifier.
  * @method ?string get_status() Get refund status.
  * @method string get_uri() Get entity resource location.
- * @method bool is_modified() Indicate if the current object is modified.
+ * @method boolean is_modified() Indicate if the current object is modified.
  * @method $this set_amount(float $amount) Update amount.
  *
  * @phpstan-method $this setPayment(Stancer\Payment $payment)

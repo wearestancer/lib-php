@@ -29,10 +29,10 @@ use Psr;
  * @method integer get_timeout() Get API timeout.
  * @method string get_uri() Get API URI.
  * @method integer get_version() Get API version.
- * @method bool is_live_mode() Indicate if API is in live mode.
- * @method bool is_not_live_mode() Indicate if API is not in live mode.
- * @method bool is_not_test_mode() Indicate if API is not in test mode.
- * @method bool is_test_mode() Indicate if API is in test mode.
+ * @method boolean is_live_mode() Indicate if API is in live mode.
+ * @method boolean is_not_live_mode() Indicate if API is not in live mode.
+ * @method boolean is_not_test_mode() Indicate if API is not in test mode.
+ * @method boolean is_test_mode() Indicate if API is in test mode.
  * @method $this reset_app_data() Reset app data.
  * @method $this reset_default_time_zone() Reset default time zone.
  * @method $this set_debug(boolean $debug) Set debug mode.

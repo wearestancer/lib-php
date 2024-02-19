@@ -13,7 +13,7 @@ use ReflectionClass;
  * Manage common code between API object.
  *
  * @method $this data_model_adder(string $property, $value) Add a value stored list in data model.
- * @method mixed data_model_getter(string $property, bool $auto_populate = true) Get a value stored in data model.
+ * @method mixed data_model_getter(string $property, boolean $auto_populate = true) Get a value stored in data model.
  * @method $this data_model_setter(string $property, $value) Set a value in data model.
  * @method ?DateTimeImmutable getCreated() Get creation date.
  * @method ?DateTimeImmutable get_created() Get creation date.
@@ -23,8 +23,8 @@ use ReflectionClass;
  * @method ?string get_id() Get object ID.
  * @method ?array get_model(string $property = null) Return property model.
  * @method string get_uri() Get entity resource location.
- * @method bool is_modified() Indicate if the current object is modified.
- * @method bool is_not_modified() Indicate if the current object is not modified.
+ * @method boolean is_modified() Indicate if the current object is modified.
+ * @method boolean is_not_modified() Indicate if the current object is not modified.
  * @method array to_array() Return a array representation of the current object.
  * @method string to_json() Return a JSON representation of the current object.
  * @method string to_string() Return a string representation (as a JSON) of the current object.

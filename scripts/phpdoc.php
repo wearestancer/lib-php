@@ -46,7 +46,8 @@ function prepareData(string $action, array $data): array
         // Finding the type.
 
         $types = is_array($data['type']) ? $data['type'] : [$data['type']];
-        $typeNullable = $typeNonNullable = implode('|', $types);
+        $rewriteTypes = fn(string $value): string => $value === 'bool' ? 'boolean' : $value;
+        $typeNullable = $typeNonNullable = implode('|', array_map($rewriteTypes, $types));
 
         if ($data['list']) {
             foreach ($types as &$type) {
@@ -264,6 +265,10 @@ foreach ($classes as $className => $classData) {
                 $return = '$this';
             }
 
+            if ($return === 'bool') {
+                $return = 'boolean';
+            }
+
             if ($tmp->allowsNull()) {
                 $return = '?' . $return;
             }
@@ -461,6 +466,10 @@ foreach ($classes as $className => $classData) {
                     }
                 }
 
+                if ($type === 'bool') {
+                    $type = 'boolean';
+                }
+
                 // Does the parameter has a default value?
                 if ($param->isDefaultValueAvailable()) {
                     $tmp = $param->getDefaultValue();
@@ -469,7 +478,7 @@ foreach ($classes as $className => $classData) {
                             return 'null';
                         }
 
-                        if ($type === 'bool') {
+                        if ($type === 'boolean') {
                             return $val ? 'true' : 'false';
                         }
 
