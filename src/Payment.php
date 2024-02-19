@@ -18,6 +18,7 @@ use Stancer;
  * @method ?boolean getCapture() Get capture immediately the payment.
  * @method ?Stancer\Card getCard() Get card object.
  * @method ?string getCountry()
+ * @method ?DateTimeImmutable getCreated() Get creation date.
  * @method ?string getCurrency() Get processed currency.
  * @method ?Stancer\Customer getCustomer() Get customer object.
  * @method ?DateTimeImmutable getDateBank() Get delivery date of the funds traded by the bank.
@@ -38,6 +39,7 @@ use Stancer;
  * @method ?boolean get_capture() Get capture immediately the payment.
  * @method ?Stancer\Card get_card() Get card object.
  * @method ?string get_country()
+ * @method ?DateTimeImmutable get_created() Get creation date.
  * @method ?DateTimeImmutable get_creation_date() Get creation date.
  * @method ?string get_currency() Get processed currency.
  * @method ?Stancer\Customer get_customer() Get customer object.
@@ -112,6 +114,7 @@ use Stancer;
  * @property ?string $uniqueId Unicity key.
  * @property ?string $unique_id Unicity key.
  *
+ * @property-read ?DateTimeImmutable $created Creation date.
  * @property-read ?DateTimeImmutable $creationDate Creation date.
  * @property-read ?DateTimeImmutable $creation_date Creation date.
  * @property-read ?DateTimeImmutable $dateBank Delivery date of the funds traded by the bank.

@@ -294,10 +294,6 @@ foreach ($classes as $className => $classData) {
 
     // Now we have every property and methods, we can create the documentation.
     foreach ($model as $name => $data) {
-        if ($name === 'created' && !array_key_exists('desc', $data)) {
-            continue;
-        }
-
         $data = array_merge($defaultModel, $data);
 
         // It's a method, we create a "@method" entry.

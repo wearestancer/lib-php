@@ -10,6 +10,7 @@ use Stancer;
  *
  * @method ?string getCity() Get city of the payer.
  * @method ?string getCountry() Get country of the payer.
+ * @method ?DateTimeImmutable getCreated() Get creation date.
  * @method ?string getHttpAccept() Get HTTP Accept header.
  * @method ?string getIp() Get IP address of the payer.
  * @method ?string getLanguages() Get HTTP Accept-Language header.
@@ -17,6 +18,7 @@ use Stancer;
  * @method ?string getUserAgent() Get HTTP User Agent header.
  * @method ?string get_city() Get city of the payer.
  * @method ?string get_country() Get country of the payer.
+ * @method ?DateTimeImmutable get_created() Get creation date.
  * @method ?DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_endpoint() Get API endpoint.
  * @method string get_entity_name() Get entity name.
@@ -48,6 +50,7 @@ use Stancer;
  *
  * @property-read ?string $city City of the payer.
  * @property-read ?string $country Country of the payer.
+ * @property-read ?DateTimeImmutable $created Creation date.
  * @property-read ?DateTimeImmutable $creationDate Creation date.
  * @property-read ?DateTimeImmutable $creation_date Creation date.
  * @property-read string $endpoint API endpoint.

@@ -11,12 +11,14 @@ use Stancer;
  * Representation of a refund.
  *
  * @method integer getAmount() Get amount to refund.
+ * @method ?DateTimeImmutable getCreated() Get creation date.
  * @method string getCurrency() Get processed currency.
  * @method ?DateTimeImmutable getDateBank() Get delivery date of the funds by the bank.
  * @method ?DateTimeImmutable getDateRefund() Get date when the API sent the refund request to the bank.
  * @method Stancer\Payment getPayment() Get refunded payment identifier.
  * @method ?string getStatus() Get refund status.
  * @method integer get_amount() Get amount to refund.
+ * @method ?DateTimeImmutable get_created() Get creation date.
  * @method ?DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_currency() Get processed currency.
  * @method ?DateTimeImmutable get_date_bank() Get delivery date of the funds by the bank.
@@ -33,6 +35,7 @@ use Stancer;
  * @phpstan-method $this setPayment(Stancer\Payment $payment)
  *
  * @property-read integer $amount Amount to refund.
+ * @property-read ?DateTimeImmutable $created Creation date.
  * @property-read ?DateTimeImmutable $creationDate Creation date.
  * @property-read ?DateTimeImmutable $creation_date Creation date.
  * @property-read string $currency Processed currency.

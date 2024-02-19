@@ -111,6 +111,7 @@ abstract class AbstractObject implements JsonSerializable
 
         $defaultValues = [
             'created' => [
+                'desc' => 'Creation date',
                 'restricted' => true,
                 'type' => DateTimeImmutable::class,
             ],

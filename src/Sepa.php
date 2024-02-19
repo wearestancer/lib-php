@@ -12,6 +12,7 @@ use DateTimeInterface;
  *
  * @method ?string getBic() Get bank Identifier Code.
  * @method ?string getCountry() Get IBAN country.
+ * @method ?DateTimeImmutable getCreated() Get creation date.
  * @method ?DateTimeInterface getDateBirth() Get account holder birth date.
  * @method ?DateTimeInterface getDateMandate() Get mandate signature date.
  * @method ?string getIban() Get international Bank Account Number.
@@ -21,6 +22,7 @@ use DateTimeInterface;
  * @method ?string get_bic() Get bank Identifier Code.
  * @method ?Stancer\Sepa\Check get_check()
  * @method ?string get_country() Get IBAN country.
+ * @method ?DateTimeImmutable get_created() Get creation date.
  * @method ?DateTimeImmutable get_creation_date() Get creation date.
  * @method ?DateTimeInterface get_date_birth() Get account holder birth date.
  * @method ?DateTimeInterface get_date_mandate() Get mandate signature date.
@@ -55,6 +57,7 @@ use DateTimeInterface;
  *
  * @property-read ?Stancer\Sepa\Check $check
  * @property-read ?string $country IBAN country.
+ * @property-read ?DateTimeImmutable $created Creation date.
  * @property-read ?DateTimeImmutable $creationDate Creation date.
  * @property-read ?DateTimeImmutable $creation_date Creation date.
  * @property-read string $endpoint API endpoint.
