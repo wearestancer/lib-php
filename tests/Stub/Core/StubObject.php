@@ -136,10 +136,26 @@ class StubObject extends Stancer\Core\AbstractObject
     ];
 
     // Test only methods
+
     public function forceRestricted1(string $value): self
     {
         $this->dataModel['restricted1']['value'] = $value;
 
         return $this;
+    }
+
+    public function testOnlyDataModelAdder(string $property, $value): self
+    {
+        return $this->dataModelAdder($property, $value);
+    }
+
+    public function testOnlyDataModelGetter(string $property, bool $autoPopulate = true)
+    {
+        return $this->dataModelGetter($property, $autoPopulate);
+    }
+
+    public function testOnlyDataModelSetter(string $property, $value): self
+    {
+        return $this->dataModelSetter($property, $value);
     }
 }

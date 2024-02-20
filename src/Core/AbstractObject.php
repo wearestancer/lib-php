@@ -12,9 +12,6 @@ use ReflectionClass;
 /**
  * Manage common code between API object.
  *
- * @method $this data_model_adder(string $property, $value) Add a value stored list in data model.
- * @method mixed data_model_getter(string $property, bool $auto_populate = true) Get a value stored in data model.
- * @method $this data_model_setter(string $property, $value) Set a value in data model.
  * @method ?DateTimeImmutable getCreated() Get creation date.
  * @method ?DateTimeImmutable get_created() Get creation date.
  * @method ?DateTimeImmutable get_creation_date() Get creation date.
@@ -23,8 +20,8 @@ use ReflectionClass;
  * @method ?string get_id() Get object ID.
  * @method ?array get_model(string $property = null) Return property model.
  * @method string get_uri() Get entity resource location.
- * @method bool is_modified() Indicate if the current object is modified.
- * @method bool is_not_modified() Indicate if the current object is not modified.
+ * @method boolean is_modified() Indicate if the current object is modified.
+ * @method boolean is_not_modified() Indicate if the current object is not modified.
  * @method array to_array() Return a array representation of the current object.
  * @method string to_json() Return a JSON representation of the current object.
  * @method string to_string() Return a string representation (as a JSON) of the current object.
@@ -36,6 +33,18 @@ use ReflectionClass;
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
+ * @property-read boolean $isModified Alias for `Stancer\Core\AbstractObject::isModified()`.
+ * @property-read boolean $isNotModified Alias for `Stancer\Core\AbstractObject::isNotModified()`.
+ * @property-read boolean $is_modified Alias for `Stancer\Core\AbstractObject::isModified()`.
+ * @property-read boolean $is_not_modified Alias for `Stancer\Core\AbstractObject::isNotModified()`.
+ * @property-read mixed $jsonSerialize Alias for `Stancer\Core\AbstractObject::jsonSerialize()`.
+ * @property-read mixed $json_serialize Alias for `Stancer\Core\AbstractObject::jsonSerialize()`.
+ * @property-read array $toArray Alias for `Stancer\Core\AbstractObject::toArray()`.
+ * @property-read string $toJson Alias for `Stancer\Core\AbstractObject::toJson()`.
+ * @property-read string $toString Alias for `Stancer\Core\AbstractObject::toString()`.
+ * @property-read array $to_array Alias for `Stancer\Core\AbstractObject::toArray()`.
+ * @property-read string $to_json Alias for `Stancer\Core\AbstractObject::toJson()`.
+ * @property-read string $to_string Alias for `Stancer\Core\AbstractObject::toString()`.
  * @property-read string $uri Entity resource location.
  *
  * @throws Stancer\Exceptions\BadMethodCallException When calling an unknown method.
@@ -111,6 +120,7 @@ abstract class AbstractObject implements JsonSerializable
 
         $defaultValues = [
             'created' => [
+                'desc' => 'Creation date',
                 'restricted' => true,
                 'type' => DateTimeImmutable::class,
             ],
@@ -118,6 +128,7 @@ abstract class AbstractObject implements JsonSerializable
 
         $this->dataModel = array_merge($this->dataModel, $defaultValues);
 
+        /** @var DataModel $data */
         foreach ($this->dataModel as &$data) {
             $size = array_merge($defaultModel['size'], $data['size'] ?? []);
             $data = array_merge($defaultModel, $data, ['size' => $size]);
@@ -166,12 +177,6 @@ abstract class AbstractObject implements JsonSerializable
 
         if ($name !== $method && method_exists($this, $name)) {
             return $this->{$name}(...$arguments);
-        }
-
-        $alias = $this->findAlias($name);
-
-        if ($alias) {
-            return $this->{$alias}(...$arguments);
         }
 
         $message = sprintf('Method "%s::%s()" unknown', get_class($this), $method);
@@ -243,7 +248,7 @@ abstract class AbstractObject implements JsonSerializable
      */
     #[Stancer\WillChange\PHP8_0\MixedType]
     #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public function dataModelAdder(string $property, $value): self
+    protected function dataModelAdder(string $property, $value): self
     {
         $model = $this->getModel($property);
 
@@ -279,7 +284,7 @@ abstract class AbstractObject implements JsonSerializable
      * @throws Stancer\Exceptions\InvalidArgumentException When asking an unknown property.
      */
     #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
-    public function dataModelGetter(string $property, bool $autoPopulate = true)
+    protected function dataModelGetter(string $property, bool $autoPopulate = true)
     {
         $model = $this->getModel($property);
 
@@ -330,7 +335,7 @@ abstract class AbstractObject implements JsonSerializable
      */
     #[Stancer\WillChange\PHP8_0\MixedType]
     #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public function dataModelSetter(string $property, $value): self
+    protected function dataModelSetter(string $property, $value): self
     {
         $model = $this->getModel($property);
 

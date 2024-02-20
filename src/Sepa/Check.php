@@ -12,10 +12,12 @@ use Stancer;
  *
  * This will use SEPAmail, a french service allowing to verify bank details on SEPA.
  *
+ * @method ?DateTimeImmutable getCreated() Get creation date.
  * @method ?boolean getDateBirth()
  * @method ?string getResponse()
  * @method ?float getScoreName()
  * @method ?string getStatus()
+ * @method ?DateTimeImmutable get_created() Get creation date.
  * @method ?DateTimeImmutable get_creation_date() Get creation date.
  * @method ?boolean get_date_birth()
  * @method string get_endpoint() Get API endpoint.
@@ -27,6 +29,7 @@ use Stancer;
  * @method ?string get_status()
  * @method string get_uri() Get entity resource location.
  *
+ * @property-read ?DateTimeImmutable $created Creation date.
  * @property-read ?DateTimeImmutable $creationDate Creation date.
  * @property-read ?DateTimeImmutable $creation_date Creation date.
  * @property-read ?boolean $dateBirth
@@ -35,6 +38,8 @@ use Stancer;
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
+ * @property-read mixed $jsonSerialize Alias for `Stancer\Sepa\Check::jsonSerialize()`.
+ * @property-read mixed $json_serialize Alias for `Stancer\Sepa\Check::jsonSerialize()`.
  * @property-read ?string $response
  * @property-read ?float $scoreName
  * @property-read ?float $score_name

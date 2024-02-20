@@ -11,6 +11,11 @@ class AliasTrait extends Stancer\Stub\Core\StubObject
     protected $fakeMethodCount = 0;
     protected static $fakeStaticMethodCount = 0;
 
+    public function aliasedMethod(): self
+    {
+        return $this->fakeMethod();
+    }
+
     public function fakeMethod(): self
     {
         $this->fakeMethodCount++;
@@ -33,22 +38,5 @@ class AliasTrait extends Stancer\Stub\Core\StubObject
     public static function fakeStaticMethodCallCount(): int
     {
         return static::$fakeStaticMethodCount;
-    }
-
-    /**
-     * Return methods/properties aliases.
-     *
-     * @param string $name Searched method or property.
-     *
-     * @return string|false
-     */
-    #[\ReturnTypeWillChange]
-    protected function findAlias(string $name)
-    {
-        if ($name === 'aliasedMethod') {
-            return 'fakeMethod';
-        }
-
-        return false;
     }
 }

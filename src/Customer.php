@@ -9,10 +9,12 @@ use Stancer;
 /**
  * Representation of a customer.
  *
+ * @method ?DateTimeImmutable getCreated() Get creation date.
  * @method ?string getEmail() Get customer's email.
  * @method ?string getExternalId() Get external identifier.
  * @method ?string getMobile() Get customer's mobile phone.
  * @method ?string getName() Get customer's name.
+ * @method ?DateTimeImmutable get_created() Get creation date.
  * @method ?DateTimeImmutable get_creation_date() Get creation date.
  * @method ?string get_email() Get customer's email.
  * @method string get_endpoint() Get API endpoint.
@@ -37,6 +39,7 @@ use Stancer;
  * @property ?string $mobile Customer's mobile phone.
  * @property ?string $name Customer's name.
  *
+ * @property-read ?DateTimeImmutable $created Creation date.
  * @property-read ?DateTimeImmutable $creationDate Creation date.
  * @property-read ?DateTimeImmutable $creation_date Creation date.
  * @property-read string $endpoint API endpoint.

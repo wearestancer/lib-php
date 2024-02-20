@@ -11,6 +11,7 @@ use Stancer;
  * Representation of a payout.
  *
  * @method integer getAmount() Get the total credit transfer amount you will receive.
+ * @method ?DateTimeImmutable getCreated() Get creation date.
  * @method string getCurrency() Get processed currency.
  * @method ?DateTimeImmutable getDateBank() Get the date you will receive the credit transfer.
  * @method DateTimeImmutable getDatePaym() Get the date the payment transactions were made.
@@ -19,6 +20,7 @@ use Stancer;
  * @method ?string getStatementDescription() Get the statement description, will be used on the transfer.
  * @method string getStatus() Get payout status.
  * @method integer get_amount() Get the total credit transfer amount you will receive.
+ * @method ?DateTimeImmutable get_created() Get creation date.
  * @method ?DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_currency() Get processed currency.
  * @method ?DateTimeImmutable get_date_bank() Get the date you will receive the credit transfer.
@@ -34,6 +36,7 @@ use Stancer;
  * @method string get_uri() Get entity resource location.
  *
  * @property-read integer $amount The total credit transfer amount you will receive.
+ * @property-read ?DateTimeImmutable $created Creation date.
  * @property-read ?DateTimeImmutable $creationDate Creation date.
  * @property-read ?DateTimeImmutable $creation_date Creation date.
  * @property-read string $currency Processed currency.

@@ -10,10 +10,12 @@ use Stancer;
  * Payout details.
  *
  * @method integer getAmount()
+ * @method ?DateTimeImmutable getCreated() Get creation date.
  * @method string getCurrency()
  * @method Stancer\Payout getParent()
  * @method string getType()
  * @method integer get_amount()
+ * @method ?DateTimeImmutable get_created() Get creation date.
  * @method ?DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_currency()
  * @method string get_endpoint() Get API endpoint.
@@ -24,6 +26,7 @@ use Stancer;
  * @method string get_uri() Get current resource location.
  *
  * @property-read integer $amount
+ * @property-read ?DateTimeImmutable $created Creation date.
  * @property-read ?DateTimeImmutable $creationDate Creation date.
  * @property-read ?DateTimeImmutable $creation_date Creation date.
  * @property-read string $currency

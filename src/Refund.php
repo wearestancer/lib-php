@@ -11,12 +11,14 @@ use Stancer;
  * Representation of a refund.
  *
  * @method integer getAmount() Get amount to refund.
+ * @method ?DateTimeImmutable getCreated() Get creation date.
  * @method string getCurrency() Get processed currency.
  * @method ?DateTimeImmutable getDateBank() Get delivery date of the funds by the bank.
  * @method ?DateTimeImmutable getDateRefund() Get date when the API sent the refund request to the bank.
  * @method Stancer\Payment getPayment() Get refunded payment identifier.
  * @method ?string getStatus() Get refund status.
  * @method integer get_amount() Get amount to refund.
+ * @method ?DateTimeImmutable get_created() Get creation date.
  * @method ?DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_currency() Get processed currency.
  * @method ?DateTimeImmutable get_date_bank() Get delivery date of the funds by the bank.
@@ -27,12 +29,13 @@ use Stancer;
  * @method Stancer\Payment get_payment() Get refunded payment identifier.
  * @method ?string get_status() Get refund status.
  * @method string get_uri() Get entity resource location.
- * @method bool is_modified() Indicate if the current object is modified.
+ * @method boolean is_modified() Indicate if the current object is modified.
  * @method $this set_amount(float $amount) Update amount.
  *
  * @phpstan-method $this setPayment(Stancer\Payment $payment)
  *
  * @property-read integer $amount Amount to refund.
+ * @property-read ?DateTimeImmutable $created Creation date.
  * @property-read ?DateTimeImmutable $creationDate Creation date.
  * @property-read ?DateTimeImmutable $creation_date Creation date.
  * @property-read string $currency Processed currency.
@@ -44,6 +47,8 @@ use Stancer;
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
+ * @property-read boolean $isModified Alias for `Stancer\Refund::isModified()`.
+ * @property-read boolean $is_modified Alias for `Stancer\Refund::isModified()`.
  * @property-read Stancer\Payment $payment Refunded payment identifier.
  * @property-read ?string $status Refund status.
  * @property-read string $uri Entity resource location.
