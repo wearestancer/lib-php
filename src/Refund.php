@@ -47,6 +47,8 @@ use Stancer;
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
+ * @property-read boolean $isModified Alias for `Stancer\Refund::isModified()`.
+ * @property-read boolean $is_modified Alias for `Stancer\Refund::isModified()`.
  * @property-read Stancer\Payment $payment Refunded payment identifier.
  * @property-read ?string $status Refund status.
  * @property-read string $uri Entity resource location.

@@ -68,6 +68,7 @@ use DateTimeInterface;
  * @property-read ?string $id Object ID.
  * @property-read ?string $last4 IBAN last 4 characters.
  * @property-read string $uri Entity resource location.
+ * @property-read $this $validate Alias for `Stancer\Sepa::validate()`.
  */
 class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\PaymentMeansInterface
 {

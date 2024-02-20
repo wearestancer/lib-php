@@ -56,6 +56,8 @@ use Stancer;
  * @property-read string $endpoint API endpoint.
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
+ * @property-read $this $hydrateFromEnvironment Alias for `Stancer\Device::hydrateFromEnvironment()`.
+ * @property-read $this $hydrate_from_environment Alias for `Stancer\Device::hydrateFromEnvironment()`.
  * @property-read ?string $id Object ID.
  * @property-read string $uri Entity resource location.
  */

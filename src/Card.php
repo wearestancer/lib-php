@@ -86,6 +86,8 @@ use Stancer;
  * @property-read string $entity_name Entity name.
  * @property-read ?string $funding Card funding.
  * @property-read ?string $id Object ID.
+ * @property-read boolean $isTokenized Alias for `Stancer\Card::isTokenized()`.
+ * @property-read boolean $is_tokenized Alias for `Stancer\Card::isTokenized()`.
  * @property-read ?string $last4 Card last 4 digits.
  * @property-read ?string $nature Card nature.
  * @property-read ?string $network Card network.

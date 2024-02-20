@@ -33,6 +33,18 @@ use ReflectionClass;
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
+ * @property-read boolean $isModified Alias for `Stancer\Core\AbstractObject::isModified()`.
+ * @property-read boolean $isNotModified Alias for `Stancer\Core\AbstractObject::isNotModified()`.
+ * @property-read boolean $is_modified Alias for `Stancer\Core\AbstractObject::isModified()`.
+ * @property-read boolean $is_not_modified Alias for `Stancer\Core\AbstractObject::isNotModified()`.
+ * @property-read mixed $jsonSerialize Alias for `Stancer\Core\AbstractObject::jsonSerialize()`.
+ * @property-read mixed $json_serialize Alias for `Stancer\Core\AbstractObject::jsonSerialize()`.
+ * @property-read array $toArray Alias for `Stancer\Core\AbstractObject::toArray()`.
+ * @property-read string $toJson Alias for `Stancer\Core\AbstractObject::toJson()`.
+ * @property-read string $toString Alias for `Stancer\Core\AbstractObject::toString()`.
+ * @property-read array $to_array Alias for `Stancer\Core\AbstractObject::toArray()`.
+ * @property-read string $to_json Alias for `Stancer\Core\AbstractObject::toJson()`.
+ * @property-read string $to_string Alias for `Stancer\Core\AbstractObject::toString()`.
  * @property-read string $uri Entity resource location.
  *
  * @throws Stancer\Exceptions\BadMethodCallException When calling an unknown method.

@@ -244,15 +244,34 @@ foreach ($classes as $className => $classData) {
             }
         }
 
+        $parameters = $method->getParameters();
+
         // Registering the "new" method.
         $methods[$name] = array_merge([
             'alreadyDocumented' => $name === $snake,
             'desc' => array_shift($lines),
             'name' => $snake,
-            'parameters' => $method->getParameters(),
+            'parameters' => $parameters,
             'static' => $method->isStatic(),
             'return' => $return,
         ], $methods[$name] ?? []);
+
+        // Registering properties based on methods
+        if (empty($parameters) && strpos($name, 'get') !== 0 && !in_array($name, ['delete', 'populate', 'send'])) {
+            foreach ([$name, $snake] as $tmp) {
+                if (!array_key_exists($tmp, $model)) {
+                    $model[$tmp] = [
+                        'getter' => [],
+                        'property' => [
+                            'desc' => 'Alias for `' . $reflect->getName() . '::' . $name . '()`',
+                            'nullable' => false,
+                            'type' => $return,
+                        ],
+                        'restricted' => true,
+                    ];
+                }
+            }
+        }
     }
 
     // Checking for class attributes.

@@ -123,6 +123,14 @@ use Stancer;
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
+ * @property-read boolean $isError Alias for `Stancer\Payment::isError()`.
+ * @property-read boolean $isNotError Alias for `Stancer\Payment::isNotError()`.
+ * @property-read boolean $isNotSuccess Alias for `Stancer\Payment::isNotSuccess()`.
+ * @property-read boolean $isSuccess Alias for `Stancer\Payment::isSuccess()`.
+ * @property-read boolean $is_error Alias for `Stancer\Payment::isError()`.
+ * @property-read boolean $is_not_error Alias for `Stancer\Payment::isNotError()`.
+ * @property-read boolean $is_not_success Alias for `Stancer\Payment::isNotSuccess()`.
+ * @property-read boolean $is_success Alias for `Stancer\Payment::isSuccess()`.
  * @property-read ?string $method Payment method used.
  * @property-read Stancer\Refund[] $refunds Array of refund objects.
  * @property-read ?string $response Response of the bank processing.

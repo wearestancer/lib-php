@@ -64,8 +64,20 @@ use Psr;
  * @property-read Stancer\Core\Request\Call[] $calls Request list recorded on debug mode.
  * @property-read string $defaultUserAgent Default user agent.
  * @property-read string $default_user_agent Default user agent.
+ * @property-read boolean $isLiveMode Alias for `Stancer\Config::isLiveMode()`.
+ * @property-read boolean $isNotLiveMode Alias for `Stancer\Config::isNotLiveMode()`.
+ * @property-read boolean $isNotTestMode Alias for `Stancer\Config::isNotTestMode()`.
+ * @property-read boolean $isTestMode Alias for `Stancer\Config::isTestMode()`.
+ * @property-read boolean $is_live_mode Alias for `Stancer\Config::isLiveMode()`.
+ * @property-read boolean $is_not_live_mode Alias for `Stancer\Config::isNotLiveMode()`.
+ * @property-read boolean $is_not_test_mode Alias for `Stancer\Config::isNotTestMode()`.
+ * @property-read boolean $is_test_mode Alias for `Stancer\Config::isTestMode()`.
  * @property-read string $publicKey Public API key.
  * @property-read string $public_key Public API key.
+ * @property-read $this $resetAppData Alias for `Stancer\Config::resetAppData()`.
+ * @property-read $this $resetDefaultTimeZone Alias for `Stancer\Config::resetDefaultTimeZone()`.
+ * @property-read $this $reset_app_data Alias for `Stancer\Config::resetAppData()`.
+ * @property-read $this $reset_default_time_zone Alias for `Stancer\Config::resetDefaultTimeZone()`.
  * @property-read string $secretKey Secret API key.
  * @property-read string $secret_key Secret API key.
  * @property-read string $uri API URI.
