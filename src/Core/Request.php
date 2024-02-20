@@ -147,15 +147,15 @@ class Request
         $out = null;
 
         if ($object instanceof Stancer\Payment) {
-            $card = $object->dataModelGetter('card', false);
-            $sepa = $object->dataModelGetter('sepa', false);
+            $card = $object->getModel('card')['value'];
+            $sepa = $object->getModel('sepa')['value'];
 
             if ($card instanceof Stancer\Card) {
                 /** @phpstan-var string|null $in */
-                $in = $card->dataModelGetter('number', false);
+                $in = $card->getModel('number')['value'];
 
                 if ($in) {
-                    $last4 = $card->dataModelGetter('last4', false);
+                    $last4 = $card->getModel('last4')['value'];
 
                     if (is_string($last4)) {
                         $out = str_pad($last4, strlen($in), 'x', STR_PAD_LEFT);
@@ -165,10 +165,10 @@ class Request
 
             if ($sepa instanceof Stancer\Sepa) {
                 /** @phpstan-var string|null $in */
-                $in = $sepa->dataModelGetter('iban', false);
+                $in = $sepa->getModel('iban')['value'];
 
                 if ($in) {
-                    $last4 = $sepa->dataModelGetter('last4', false);
+                    $last4 = $sepa->getModel('last4')['value'];
 
                     if (is_string($last4)) {
                         $out = str_pad($last4, strlen($in), 'x', STR_PAD_LEFT);
@@ -230,15 +230,15 @@ class Request
             $in = null;
             $out = '';
 
-            $card = $object->dataModelGetter('card', false);
-            $sepa = $object->dataModelGetter('sepa', false);
+            $card = $object->getModel('card')['value'];
+            $sepa = $object->getModel('sepa')['value'];
 
             if ($card instanceof Stancer\Card) {
                 /** @phpstan-var string|null $in */
-                $in = $card->dataModelGetter('number', false);
+                $in = $card->getModel('number')['value'];
 
                 if ($in) {
-                    $last4 = $card->dataModelGetter('last4', false);
+                    $last4 = $card->getModel('last4')['value'];
 
                     if (is_string($last4)) {
                         $out = str_pad($last4, strlen($in), 'x', STR_PAD_LEFT);
@@ -248,10 +248,10 @@ class Request
 
             if ($sepa instanceof Stancer\Sepa) {
                 /** @phpstan-var string|null $in */
-                $in = $sepa->dataModelGetter('iban', false);
+                $in = $sepa->getModel('iban')['value'];
 
                 if ($in) {
-                    $last4 = $sepa->dataModelGetter('last4', false);
+                    $last4 = $sepa->getModel('last4')['value'];
 
                     if (is_string($last4)) {
                         $out = str_pad($last4, strlen($in), 'x', STR_PAD_LEFT);

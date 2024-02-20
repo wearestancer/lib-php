@@ -16,12 +16,12 @@ use Psr;
  * @method string get_basic_auth_header() Get HTTP "basic" authentication header's value.
  * @method Stancer\Core\Request\Call[] get_calls() Get request list recorded on debug mode.
  * @method boolean get_debug() Get debug mode.
- * @method ?DateTimeZone get_default_time_zone() Get default time zone.
+ * @method ?\DateTimeZone get_default_time_zone() Get default time zone.
  * @method string get_default_user_agent() Get default user agent.
  * @method static self get_global() Return current instance.
  * @method string get_host() Get API host.
- * @method Stancer\Http\Client|GuzzleHttp\ClientInterface get_http_client() Get HTTP client instance.
- * @method Psr\Log\LoggerInterface get_logger() Get logger handler.
+ * @method \Stancer\Http\Client|\GuzzleHttp\ClientInterface get_http_client() Get HTTP client instance.
+ * @method \Psr\Log\LoggerInterface get_logger() Get logger handler.
  * @method string get_mode() Get API mode (test or live).
  * @method ?integer get_port() Get API port.
  * @method string get_public_key() Get public API key.
@@ -29,31 +29,31 @@ use Psr;
  * @method integer get_timeout() Get API timeout.
  * @method string get_uri() Get API URI.
  * @method integer get_version() Get API version.
- * @method bool is_live_mode() Indicate if API is in live mode.
- * @method bool is_not_live_mode() Indicate if API is not in live mode.
- * @method bool is_not_test_mode() Indicate if API is not in test mode.
- * @method bool is_test_mode() Indicate if API is in test mode.
+ * @method boolean is_live_mode() Indicate if API is in live mode.
+ * @method boolean is_not_live_mode() Indicate if API is not in live mode.
+ * @method boolean is_not_test_mode() Indicate if API is not in test mode.
+ * @method boolean is_test_mode() Indicate if API is in test mode.
  * @method $this reset_app_data() Reset app data.
  * @method $this reset_default_time_zone() Reset default time zone.
  * @method $this set_debug(boolean $debug) Set debug mode.
- * @method $this set_default_time_zone(DateTimeZone $default_time_zone) Set default time zone.
+ * @method $this set_default_time_zone(\DateTimeZone $default_time_zone) Set default time zone.
  * @method static self set_global(self $instance) Register a configuration for deferred API call.
  * @method $this set_host(string $host) Set API host.
- * @method $this set_http_client(Stancer\Http\Client|GuzzleHttp\ClientInterface $http_client) Set HTTP client instance.
+ * @method $this set_http_client(\Stancer\Http\Client|\GuzzleHttp\ClientInterface $http_client) Set HTTP client instance.
  * @method $this set_keys($keys) Update authentication keys.
- * @method $this set_logger(Psr\Log\LoggerInterface $logger) Set logger handler.
+ * @method $this set_logger(\Psr\Log\LoggerInterface $logger) Set logger handler.
  * @method $this set_mode(string $mode) Set API mode (test or live).
  * @method $this set_port(integer $port) Set API port.
  * @method $this set_timeout(integer $timeout) Set API timeout.
  * @method $this set_version(integer $version) Set API version.
  *
  * @property boolean $debug Debug mode.
- * @property ?DateTimeZone $defaultTimeZone Default time zone.
- * @property ?DateTimeZone $default_time_zone Default time zone.
+ * @property ?\DateTimeZone $defaultTimeZone Default time zone.
+ * @property ?\DateTimeZone $default_time_zone Default time zone.
  * @property string $host API host.
- * @property Stancer\Http\Client|GuzzleHttp\ClientInterface $httpClient HTTP client instance.
- * @property Stancer\Http\Client|GuzzleHttp\ClientInterface $http_client HTTP client instance.
- * @property Psr\Log\LoggerInterface $logger Logger handler.
+ * @property \Stancer\Http\Client|\GuzzleHttp\ClientInterface $httpClient HTTP client instance.
+ * @property \Stancer\Http\Client|\GuzzleHttp\ClientInterface $http_client HTTP client instance.
+ * @property \Psr\Log\LoggerInterface $logger Logger handler.
  * @property string $mode API mode (test or live).
  * @property ?integer $port API port.
  * @property integer $timeout API timeout.
@@ -64,8 +64,20 @@ use Psr;
  * @property-read Stancer\Core\Request\Call[] $calls Request list recorded on debug mode.
  * @property-read string $defaultUserAgent Default user agent.
  * @property-read string $default_user_agent Default user agent.
+ * @property-read boolean $isLiveMode Alias for `Stancer\Config::isLiveMode()`.
+ * @property-read boolean $isNotLiveMode Alias for `Stancer\Config::isNotLiveMode()`.
+ * @property-read boolean $isNotTestMode Alias for `Stancer\Config::isNotTestMode()`.
+ * @property-read boolean $isTestMode Alias for `Stancer\Config::isTestMode()`.
+ * @property-read boolean $is_live_mode Alias for `Stancer\Config::isLiveMode()`.
+ * @property-read boolean $is_not_live_mode Alias for `Stancer\Config::isNotLiveMode()`.
+ * @property-read boolean $is_not_test_mode Alias for `Stancer\Config::isNotTestMode()`.
+ * @property-read boolean $is_test_mode Alias for `Stancer\Config::isTestMode()`.
  * @property-read string $publicKey Public API key.
  * @property-read string $public_key Public API key.
+ * @property-read $this $resetAppData Alias for `Stancer\Config::resetAppData()`.
+ * @property-read $this $resetDefaultTimeZone Alias for `Stancer\Config::resetDefaultTimeZone()`.
+ * @property-read $this $reset_app_data Alias for `Stancer\Config::resetAppData()`.
+ * @property-read $this $reset_default_time_zone Alias for `Stancer\Config::resetDefaultTimeZone()`.
  * @property-read string $secretKey Secret API key.
  * @property-read string $secret_key Secret API key.
  * @property-read string $uri API URI.
@@ -79,7 +91,7 @@ class Config
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     public const TEST_MODE = 'test';
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    public const VERSION = '1.1.2';
+    public const VERSION = '1.1.3';
 
     /** @var non-empty-array<string|null>[] */
     protected $app = [];

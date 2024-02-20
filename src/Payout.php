@@ -11,20 +11,22 @@ use Stancer;
  * Representation of a payout.
  *
  * @method integer getAmount() Get the total credit transfer amount you will receive.
+ * @method ?\DateTimeImmutable getCreated() Get creation date.
  * @method string getCurrency() Get processed currency.
- * @method ?DateTimeImmutable getDateBank() Get the date you will receive the credit transfer.
- * @method DateTimeImmutable getDatePaym() Get the date the payment transactions were made.
- * @method Stancer\Payout\Details getDetails() Get payout details.
+ * @method ?\DateTimeImmutable getDateBank() Get the date you will receive the credit transfer.
+ * @method \DateTimeImmutable getDatePaym() Get the date the payment transactions were made.
+ * @method \Stancer\Payout\Details getDetails() Get payout details.
  * @method integer getFees() Get the fees you paid for processing the payments.
  * @method ?string getStatementDescription() Get the statement description, will be used on the transfer.
  * @method string getStatus() Get payout status.
  * @method integer get_amount() Get the total credit transfer amount you will receive.
- * @method ?DateTimeImmutable get_creation_date() Get creation date.
+ * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_currency() Get processed currency.
- * @method ?DateTimeImmutable get_date_bank() Get the date you will receive the credit transfer.
- * @method DateTimeImmutable get_date_paym() Get the date the payment transactions were made.
- * @method DateTimeImmutable get_date_payment() Get the date the payment transactions were made.
- * @method Stancer\Payout\Details get_details() Get payout details.
+ * @method ?\DateTimeImmutable get_date_bank() Get the date you will receive the credit transfer.
+ * @method \DateTimeImmutable get_date_paym() Get the date the payment transactions were made.
+ * @method \DateTimeImmutable get_date_payment() Get the date the payment transactions were made.
+ * @method \Stancer\Payout\Details get_details() Get payout details.
  * @method string get_endpoint() Get API endpoint.
  * @method string get_entity_name() Get entity name.
  * @method integer get_fees() Get the fees you paid for processing the payments.
@@ -34,16 +36,17 @@ use Stancer;
  * @method string get_uri() Get entity resource location.
  *
  * @property-read integer $amount The total credit transfer amount you will receive.
- * @property-read ?DateTimeImmutable $creationDate Creation date.
- * @property-read ?DateTimeImmutable $creation_date Creation date.
+ * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $creationDate Creation date.
+ * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $currency Processed currency.
- * @property-read ?DateTimeImmutable $dateBank The date you will receive the credit transfer.
- * @property-read DateTimeImmutable $datePaym The date the payment transactions were made.
- * @property-read DateTimeImmutable $datePayment The date the payment transactions were made.
- * @property-read ?DateTimeImmutable $date_bank The date you will receive the credit transfer.
- * @property-read DateTimeImmutable $date_paym The date the payment transactions were made.
- * @property-read DateTimeImmutable $date_payment The date the payment transactions were made.
- * @property-read Stancer\Payout\Details $details Payout details.
+ * @property-read ?\DateTimeImmutable $dateBank The date you will receive the credit transfer.
+ * @property-read \DateTimeImmutable $datePaym The date the payment transactions were made.
+ * @property-read \DateTimeImmutable $datePayment The date the payment transactions were made.
+ * @property-read ?\DateTimeImmutable $date_bank The date you will receive the credit transfer.
+ * @property-read \DateTimeImmutable $date_paym The date the payment transactions were made.
+ * @property-read \DateTimeImmutable $date_payment The date the payment transactions were made.
+ * @property-read \Stancer\Payout\Details $details Payout details.
  * @property-read string $endpoint API endpoint.
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.

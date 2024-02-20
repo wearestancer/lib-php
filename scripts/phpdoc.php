@@ -6,6 +6,7 @@ interface Documentation {}
 
 // Default model values.
 $defaultModel = [
+    'allowedValues' => null,
     'desc' => null,
     'fullDesc' => null,
     'list' => false,
@@ -16,6 +17,84 @@ $defaultModel = [
     'type' => 'string',
     'value' => null,
 ];
+
+/**
+ * Prepare parameter/property data.
+ *
+ * Will define type, return type and descriptions for each line of documentation.
+ *
+ * @param string $action The action done on this property(get, set, etc...).
+ * @param array $data An array containing all the data necessary to create the property/method doc.
+ * @return array
+ *
+ * @phpstan-param DataModel $data
+ * @phpstan-return DataModel
+ */
+function prepareData(string $action, array $data): array
+{
+    if ($data) {
+        if (!$data['fullDesc'] && $data['desc']) {
+            $desc = $data['desc'] . '.';
+            $data['desc'] = $desc;
+
+            if ($desc[1] === strtoupper($desc[1])) { // Prevent to lowercase acronyms
+                $data['fullDesc'] = ucfirst($action) . ' ' . $desc;
+            } else {
+                $data['fullDesc'] = ucfirst($action) . ' ' . lcfirst($desc);
+            }
+        }
+
+        // Finding the type.
+
+        $types = is_array($data['type']) ? $data['type'] : [$data['type']];
+        $rewriteTypes = function (string $value): string {
+            if ($value === 'bool') {
+                return 'boolean';
+            }
+
+            if (in_array($value, ['$this', 'array', 'boolean', 'float', 'integer', 'mixed', 'string'], true)) {
+                return $value;
+            }
+
+            return '\\' . $value;
+        };
+        $tmpType = implode('|', array_map($rewriteTypes, $types));
+
+        if ($tmpType === 'string' && $data['allowedValues'] && $action === 'get') {
+            $tmpType = implode('|', array_map(fn($value) => "'$value'", $data['allowedValues']));
+
+            if ($data['list']) {
+                $tmpType = 'array<' . $tmpType . '>';
+            }
+        } else {
+            if ($data['list']) {
+                foreach ($types as &$type) {
+                    $type .= '[]';
+                }
+
+                $tmpType = implode('|', $types);
+            }
+        }
+
+        $typeNullable = $typeNonNullable = $tmpType;
+
+        if (!$data['list'] && is_null($data['value']) && $data['nullable']) {
+            $typeNullable = '?' . $typeNonNullable;
+
+            if (strpos($typeNullable, '|') !== false) {
+                $typeNullable = $typeNonNullable . '|null';
+            }
+        }
+
+        if ($action === 'get') {
+            $data['type'] = $typeNullable;
+        } else {
+            $data['type'] = $typeNonNullable;
+        }
+    }
+
+    return $data;
+}
 
 // Initialize specific classes.
 $classes = [
@@ -102,19 +181,6 @@ foreach ($classes as $className => $classData) {
     unset($classData['filepath']);
     unset($classData['instance']);
 
-    // Adding manual aliases.
-
-    $aliases = [];
-
-    foreach ($classData['aliases'] ?? [] as $name => $alias) {
-        $aliases[$name] = [
-            $alias,
-            Stancer\Helper::camelCaseToSnakeCase($alias),
-        ];
-    }
-
-    unset($classData['aliases']);
-
     // Adding manual exceptions.
 
     $throws = $classData['throws'] ?? [];
@@ -140,25 +206,9 @@ foreach ($classes as $className => $classData) {
 
     $methods = [
         'jsonSerialize' => [
-            'used' => true,
+            'alreadyDocumented' => true,
         ],
     ];
-
-    // Checking for class attributes.
-
-    $attributes = $reflect->getAttributes();
-
-    foreach ($attributes as $attribute) {
-        $instance = $attribute->newInstance();
-
-        if ($instance instanceof Stancer\Core\Documentation\AddMethod) {
-            $classData[] = $instance->getData();
-        }
-
-        if ($instance instanceof Stancer\Core\Documentation\AddProperty) {
-            $classData[$instance->getName()] = $instance->getData();
-        }
-    }
 
     // Looking for the built-in method of the object.
 
@@ -185,11 +235,6 @@ foreach ($classes as $className => $classData) {
             continue;
         }
 
-        // Pass methods already detected.
-        if ($name === $snake) {
-            continue;
-        }
-
         // Pass methods from the parent.
         if ($method->getDeclaringClass()->getName() !== $className) {
             continue;
@@ -213,20 +258,59 @@ foreach ($classes as $className => $classData) {
                 $return = '$this';
             }
 
+            if ($return === 'bool') {
+                $return = 'boolean';
+            }
+
             if ($tmp->allowsNull()) {
                 $return = '?' . $return;
             }
         }
 
+        $parameters = $method->getParameters();
+
         // Registering the "new" method.
         $methods[$name] = array_merge([
+            'alreadyDocumented' => $name === $snake,
             'desc' => array_shift($lines),
             'name' => $snake,
-            'parameters' => $method->getParameters(),
+            'parameters' => $parameters,
             'static' => $method->isStatic(),
             'return' => $return,
-            'used' => false,
         ], $methods[$name] ?? []);
+
+        // Registering properties based on methods
+        if (empty($parameters) && strpos($name, 'get') !== 0 && !in_array($name, ['delete', 'populate', 'send'])) {
+            foreach ([$name, $snake] as $tmp) {
+                if (!array_key_exists($tmp, $model)) {
+                    $model[$tmp] = [
+                        'getter' => [],
+                        'property' => [
+                            'desc' => 'Alias for `' . $reflect->getName() . '::' . $name . '()`',
+                            'nullable' => false,
+                            'type' => $return,
+                        ],
+                        'restricted' => true,
+                    ];
+                }
+            }
+        }
+    }
+
+    // Checking for class attributes.
+
+    $attributes = $reflect->getAttributes();
+
+    foreach ($attributes as $attribute) {
+        $instance = $attribute->newInstance();
+
+        if ($instance instanceof Stancer\Core\Documentation\AddMethod) {
+            $classData[] = $instance->getData();
+        }
+
+        if ($instance instanceof Stancer\Core\Documentation\AddProperty) {
+            $classData[$instance->getName()] = $instance->getData();
+        }
     }
 
     // Merging everything together.
@@ -238,10 +322,6 @@ foreach ($classes as $className => $classData) {
 
     // Now we have every property and methods, we can create the documentation.
     foreach ($model as $name => $data) {
-        if ($name === 'created' && !array_key_exists('desc', $data)) {
-            continue;
-        }
-
         $data = array_merge($defaultModel, $data);
 
         // It's a method, we create a "@method" entry.
@@ -259,148 +339,110 @@ foreach ($classes as $className => $classData) {
             continue;
         }
 
-        // Preparing automatic getter and setter.
+        // Preparing getter and setter data.
 
-        $getter = 'get' . ucfirst($name);
-        $setter = 'set' . ucfirst($name);
+        $getterMethod = 'get' . ucfirst($name);
+        $setterMethod = 'set' . ucfirst($name);
 
-        $desc = '';
-        $descGetter = '';
-        $descSetter = '';
+        $getter = prepareData('get', $data);
+        $setter = [];
+        $property = prepareData('get', $data);
 
-        // "desc" is used as a template, adding "Get" or "Set"
-        // "fullDesc" is used as is
-        if ($data['fullDesc']) {
-            $descGetter = $data['fullDesc'];
-            $descSetter = $data['fullDesc'];
-        } elseif ($data['desc']) {
-            $desc = $data['desc'] . '.';
-
-            if ($desc[1] === strtoupper($desc[1])) { // Prevent to lowercase acronyms
-                $descGetter = 'Get ' . $desc;
-                $descSetter = 'Set ' . $desc;
+        if (array_key_exists('getter', $data)) {
+            if ($data['getter']) {
+                $getter = prepareData('get', array_merge($data, $data['getter']));
             } else {
-                $descGetter = 'Get ' . lcfirst($desc);
-                $descSetter = 'Set ' . lcfirst($desc);
+                $getter = [];
             }
         }
 
-        // Finding the type.
-
-        $types = is_array($data['type']) ? $data['type'] : [$data['type']];
-        $typeNullable = $typeNonNullable = implode('|', $types);
-
-        if ($data['list']) {
-            foreach ($types as &$type) {
-                $type .= '[]';
+        if (array_key_exists('property', $data)) {
+            if ($data['property']) {
+                $property = prepareData('get', array_merge($data, $data['property']));
+            } else {
+                $property = [];
             }
-
-            $typeNullable = $typeNonNullable = implode('|', $types);
-        } else if (is_null($data['value']) && $data['nullable']) {
-            $typeNullable = '?' . $typeNonNullable;
         }
+
+        if (!$data['restricted']) {
+            $setter = prepareData('set', array_merge($data, array_key_exists('setter', $data) ? $data['setter'] : []));
+        }
+
+        $data = prepareData('get', $data);
 
         // Do we need to create getter methods?
-        if ($data['generateMethodGetter'] ?? true) {
-            if (!method_exists($obj, $getter)) {
+        if ($getter) {
+            if (!method_exists($obj, $getterMethod)) {
                 $doc[] = implode(' ', [
                     '@method',
-                    $typeNullable,
-                    $getter . '()',
-                    $descGetter,
+                    $getter['type'],
+                    $getterMethod . '()',
+                    $getter['fullDesc'],
                 ]);
             }
 
             $doc[] = implode(' ', [
                 '@method',
-                $typeNullable,
-                Stancer\Helper::camelCaseToSnakeCase($getter) . '()',
-                $descGetter,
+                $getter['type'],
+                Stancer\Helper::camelCaseToSnakeCase($getterMethod) . '()',
+                $getter['fullDesc'],
             ]);
 
-            $methods[$getter]['used'] = true;
+            $methods[$getterMethod]['alreadyDocumented'] = true;
         }
 
         // Do we need to create setter methods?
-        if (!$data['restricted']) {
-            if (!method_exists($obj, $setter)) {
+        if ($setter) {
+            if (!method_exists($obj, $setterMethod)) {
                 $doc[] = implode(' ', [
                     '@method',
                     '$this',
-                    $setter . '(' . $typeNonNullable . ' $' . $name . ')',
-                    $descSetter,
+                    $setterMethod . '(' . $setter['type'] . ' $' . $name . ')',
+                    $setter['fullDesc'],
                 ]);
             }
 
-            $methods[$setter]['used'] = true;
+            $methods[$setterMethod]['alreadyDocumented'] = true;
 
             $doc[] = implode(' ', [
                 '@method',
                 '$this',
                 vsprintf('%s(%s $%s)', [
-                    Stancer\Helper::camelCaseToSnakeCase($setter),
-                    $typeNonNullable,
+                    Stancer\Helper::camelCaseToSnakeCase($setterMethod),
+                    $setter['type'],
                     Stancer\Helper::camelCaseToSnakeCase($name),
                 ]),
-                $descSetter,
+                $setter['fullDesc'],
             ]);
-        }
-
-        // Does the object have aliases?
-        if ($obj instanceof Stancer\Traits\AliasTrait) {
-            $alias = $obj->findAlias($getter);
-
-            if ($alias) {
-                $aliases[$getter] = $alias;
-            }
-        }
-
-        // Adding alliases.
-        if (array_key_exists($getter, $aliases)) {
-            foreach ($aliases[$getter] as $method) {
-                if (!method_exists($obj, $getter)) {
-                    $doc[] = implode(' ', [
-                        '@method',
-                        $typeNullable,
-                        $method . '()',
-                        $descGetter,
-                    ]);
-                }
-
-                $doc[] = implode(' ', [
-                    '@method',
-                    $typeNullable,
-                    $method . '()',
-                    $descGetter,
-                ]);
-            }
         }
 
         // Now, the properties.
 
-        $doc[] = implode(' ', [
-            '@property' . ($data['restricted'] ? '-read' : ''),
-            $typeNullable,
-            '$' . $name,
-            $desc,
-        ]);
-
-        if (Stancer\Helper::camelCaseToSnakeCase($name) !== $name) {
+        if ($property) {
             $doc[] = implode(' ', [
                 '@property' . ($data['restricted'] ? '-read' : ''),
-                $typeNullable,
-                '$' . Stancer\Helper::camelCaseToSnakeCase($name),
-                $desc,
+                $property['type'],
+                '$' . $name,
+                $property['desc'],
             ]);
+
+            if (Stancer\Helper::camelCaseToSnakeCase($name) !== $name) {
+                $doc[] = implode(' ', [
+                    '@property' . ($data['restricted'] ? '-read' : ''),
+                    $property['type'],
+                    '$' . Stancer\Helper::camelCaseToSnakeCase($name),
+                    $property['desc'],
+                ]);
+            }
         }
     }
 
     // Ok, now we check for methods defined in the object which will have an automatic alias.
 
-    $notUsedMethods = array_filter($methods, fn($m) => !$m['used']);
+    $notDocumentedMethods = array_filter($methods, fn($m) => !$m['alreadyDocumented']);
 
-    if ($notUsedMethods) {
-        foreach ($notUsedMethods as $data) {
+    if ($notDocumentedMethods) {
+        foreach ($notDocumentedMethods as $data) {
             $parameters = [];
 
             foreach ($data['parameters'] as $param) {
@@ -418,6 +460,10 @@ foreach ($classes as $className => $classData) {
                     }
                 }
 
+                if ($type === 'bool') {
+                    $type = 'boolean';
+                }
+
                 // Does the parameter has a default value?
                 if ($param->isDefaultValueAvailable()) {
                     $tmp = $param->getDefaultValue();
@@ -426,7 +472,7 @@ foreach ($classes as $className => $classData) {
                             return 'null';
                         }
 
-                        if ($type === 'bool') {
+                        if ($type === 'boolean') {
                             return $val ? 'true' : 'false';
                         }
 

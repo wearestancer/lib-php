@@ -12,6 +12,7 @@ use Stancer;
  *
  * @method ?string getBrand() Get card brand.
  * @method ?string getCountry() Get card country.
+ * @method ?\DateTimeImmutable getCreated() Get creation date.
  * @method ?string getCvc() Get card Validation Code.
  * @method ?integer getExpMonth() Get card expiration month.
  * @method ?integer getExpYear() Get card expiration year.
@@ -25,7 +26,8 @@ use Stancer;
  * @method ?string get_brand() Get card brand.
  * @method ?string get_brand_name() Get formatted brand name.
  * @method ?string get_country() Get card country.
- * @method ?DateTimeImmutable get_creation_date() Get creation date.
+ * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method ?string get_cvc() Get card Validation Code.
  * @method string get_endpoint() Get API endpoint.
  * @method string get_entity_name() Get entity name.
@@ -45,6 +47,7 @@ use Stancer;
  * @method boolean get_tokenize() Is the card tokenized?
  * @method string get_uri() Get entity resource location.
  * @method ?string get_zip_code()
+ * @method boolean is_tokenized() Alias for `Stancer\Card::getTokenize()`.
  * @method $this setCvc(string $cvc) Set card Validation Code.
  * @method $this setExpYear(integer $expYear) Set card expiration year.
  * @method $this setName(string $name) Set card holder's name.
@@ -75,13 +78,16 @@ use Stancer;
  * @property-read ?string $brandName Formatted brand name.
  * @property-read ?string $brand_name Formatted brand name.
  * @property-read ?string $country Card country.
- * @property-read ?DateTimeImmutable $creationDate Creation date.
- * @property-read ?DateTimeImmutable $creation_date Creation date.
+ * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $creationDate Creation date.
+ * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $endpoint API endpoint.
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
  * @property-read ?string $funding Card funding.
  * @property-read ?string $id Object ID.
+ * @property-read boolean $isTokenized Alias for `Stancer\Card::isTokenized()`.
+ * @property-read boolean $is_tokenized Alias for `Stancer\Card::isTokenized()`.
  * @property-read ?string $last4 Card last 4 digits.
  * @property-read ?string $nature Card nature.
  * @property-read ?string $network Card network.
@@ -174,23 +180,6 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
             'type' => self::STRING,
         ],
     ];
-
-    /**
-     * Return methods/properties aliases.
-     *
-     * @param string $name Searched method or property.
-     *
-     * @return string|false
-     */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\ReturnTypeWithUnion]
-    protected function findAlias(string $name)
-    {
-        if ($name === 'isTokenized') {
-            return 'getTokenize';
-        }
-
-        return false;
-    }
 
     /**
      * Return real brand name.
@@ -312,6 +301,17 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
         }
 
         return $tokenize;
+    }
+
+    /**
+     * Alias for `Stancer\Card::getTokenize()`.
+     *
+     * @see Stancer\Card::getTokenize()
+     * @return boolean
+     */
+    public function isTokenized(): bool
+    {
+        return $this->getTokenize();
     }
 
     /**

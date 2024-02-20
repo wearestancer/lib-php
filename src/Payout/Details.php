@@ -11,16 +11,18 @@ use Stancer;
  * Payout details.
  *
  * @method \Generator<Stancer\Dispute> disputes(array $terms) List every disputes in the payout.
- * @method ?Stancer\Payout\Details\Inner getDisputes() Get disputes details.
- * @method ?Stancer\Payout\Details\Inner getPayments() Get payments details.
- * @method ?Stancer\Payout\Details\Inner getRefunds() Get refunds details.
- * @method ?DateTimeImmutable get_creation_date() Get creation date.
- * @method ?Stancer\Payout\Details\Inner get_disputes() Get disputes details.
+ * @method ?\DateTimeImmutable getCreated() Get creation date.
+ * @method ?\Stancer\Payout\Details\Inner getDisputes() Get disputes details.
+ * @method ?\Stancer\Payout\Details\Inner getPayments() Get payments details.
+ * @method ?\Stancer\Payout\Details\Inner getRefunds() Get refunds details.
+ * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_creation_date() Get creation date.
+ * @method ?\Stancer\Payout\Details\Inner get_disputes() Get disputes details.
  * @method string get_endpoint() Get API endpoint.
  * @method string get_entity_name() Get entity name.
  * @method ?string get_id() Get object ID.
- * @method ?Stancer\Payout\Details\Inner get_payments() Get payments details.
- * @method ?Stancer\Payout\Details\Inner get_refunds() Get refunds details.
+ * @method ?\Stancer\Payout\Details\Inner get_payments() Get payments details.
+ * @method ?\Stancer\Payout\Details\Inner get_refunds() Get refunds details.
  * @method string get_uri() Get entity resource location.
  * @method \Generator<Stancer\Dispute> listDisputes(array $terms) List every disputes in the payout.
  * @method \Generator<Stancer\Payment> listPayments(array $terms) List every payments in the payout.
@@ -32,15 +34,16 @@ use Stancer;
  * @phpstan-method \Generator<Stancer\Payment> listPayments(SearchFilters $terms) List every payments in the payout.
  * @phpstan-method \Generator<Stancer\Refund> listRefunds(SearchFilters $terms) List every refunds in the payout.
  *
- * @property-read ?DateTimeImmutable $creationDate Creation date.
- * @property-read ?DateTimeImmutable $creation_date Creation date.
- * @property-read ?Stancer\Payout\Details\Inner $disputes Disputes details.
+ * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $creationDate Creation date.
+ * @property-read ?\DateTimeImmutable $creation_date Creation date.
+ * @property-read ?\Stancer\Payout\Details\Inner $disputes Disputes details.
  * @property-read string $endpoint API endpoint.
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
- * @property-read ?Stancer\Payout\Details\Inner $payments Payments details.
- * @property-read ?Stancer\Payout\Details\Inner $refunds Refunds details.
+ * @property-read ?\Stancer\Payout\Details\Inner $payments Payments details.
+ * @property-read ?\Stancer\Payout\Details\Inner $refunds Refunds details.
  * @property-read string $uri Entity resource location.
  */
 #[Stancer\Core\Documentation\AddMethod('disputes', ['array $terms'], '\Generator<Stancer\Dispute>', description: 'List every disputes in the payout.')]
