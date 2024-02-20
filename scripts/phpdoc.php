@@ -6,6 +6,7 @@ interface Documentation {}
 
 // Default model values.
 $defaultModel = [
+    'allowedValues' => null,
     'desc' => null,
     'fullDesc' => null,
     'list' => false,
@@ -47,18 +48,30 @@ function prepareData(string $action, array $data): array
 
         $types = is_array($data['type']) ? $data['type'] : [$data['type']];
         $rewriteTypes = fn(string $value): string => $value === 'bool' ? 'boolean' : $value;
-        $typeNullable = $typeNonNullable = implode('|', array_map($rewriteTypes, $types));
+        $tmpType = implode('|', array_map($rewriteTypes, $types));
 
-        if ($data['list']) {
-            foreach ($types as &$type) {
-                $type .= '[]';
+        if ($tmpType === 'string' && $data['allowedValues'] && $action === 'get') {
+            $tmpType = implode('|', array_map(fn($value) => "'$value'", $data['allowedValues']));
+
+            if ($data['list']) {
+                $tmpType = 'array<' . $tmpType . '>';
             }
+        } else {
+            if ($data['list']) {
+                foreach ($types as &$type) {
+                    $type .= '[]';
+                }
 
-            $typeNullable = $typeNonNullable = implode('|', $types);
-        } else if (is_null($data['value']) && $data['nullable']) {
+                $tmpType = implode('|', $types);
+            }
+        }
+
+        $typeNullable = $typeNonNullable = $tmpType;
+
+        if (!$data['list'] && is_null($data['value']) && $data['nullable']) {
             $typeNullable = '?' . $typeNonNullable;
 
-            if (count($types) > 1) {
+            if (strpos($typeNullable, '|') !== false) {
                 $typeNullable = $typeNonNullable . '|null';
             }
         }

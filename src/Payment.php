@@ -19,13 +19,13 @@ use Stancer;
  * @method ?Stancer\Card getCard() Get card object.
  * @method ?string getCountry()
  * @method ?DateTimeImmutable getCreated() Get creation date.
- * @method ?string getCurrency() Get processed currency.
+ * @method 'aud'|'cad'|'chf'|'dkk'|'eur'|'gbp'|'jpy'|'nok'|'pln'|'sek'|'usd'|null getCurrency() Get processed currency.
  * @method ?Stancer\Customer getCustomer() Get customer object.
  * @method ?DateTimeImmutable getDateBank() Get delivery date of the funds traded by the bank.
  * @method ?string getDescription() Get payment description.
  * @method ?Stancer\Device getDevice() Get customer's device object.
  * @method ?string getMethod() Get payment method used.
- * @method string[] getMethodsAllowed() Get list of payment methods allowed for this payment.
+ * @method array<'card'|'sepa'> getMethodsAllowed() Get list of payment methods allowed for this payment.
  * @method ?string getOrderId() Get order identifier.
  * @method Stancer\Refund[] getRefunds() Get array of refund objects.
  * @method ?string getResponse() Get response of the bank processing.
@@ -41,7 +41,7 @@ use Stancer;
  * @method ?string get_country()
  * @method ?DateTimeImmutable get_created() Get creation date.
  * @method ?DateTimeImmutable get_creation_date() Get creation date.
- * @method ?string get_currency() Get processed currency.
+ * @method 'aud'|'cad'|'chf'|'dkk'|'eur'|'gbp'|'jpy'|'nok'|'pln'|'sek'|'usd'|null get_currency() Get processed currency.
  * @method ?Stancer\Customer get_customer() Get customer object.
  * @method ?DateTimeImmutable get_date_bank() Get delivery date of the funds traded by the bank.
  * @method ?string get_description() Get payment description.
@@ -50,7 +50,7 @@ use Stancer;
  * @method string get_entity_name() Get entity name.
  * @method ?string get_id() Get object ID.
  * @method ?string get_method() Get payment method used.
- * @method string[] get_methods_allowed() Get list of payment methods allowed for this payment.
+ * @method array<'card'|'sepa'> get_methods_allowed() Get list of payment methods allowed for this payment.
  * @method ?string get_order_id() Get order identifier.
  * @method string get_payment_page_url(array $params = []) Return the URL for Stancer payment page.
  * @method int get_refundable_amount() Return the refundable amount.
@@ -99,12 +99,12 @@ use Stancer;
  * @property ?boolean $capture Capture immediately the payment.
  * @property ?Stancer\Card $card Card object.
  * @property ?string $country
- * @property ?string $currency Processed currency.
+ * @property 'aud'|'cad'|'chf'|'dkk'|'eur'|'gbp'|'jpy'|'nok'|'pln'|'sek'|'usd'|null $currency Processed currency.
  * @property ?Stancer\Customer $customer Customer object.
  * @property ?string $description Payment description.
  * @property ?Stancer\Device $device Customer's device object.
- * @property string[] $methodsAllowed List of payment methods allowed for this payment.
- * @property string[] $methods_allowed List of payment methods allowed for this payment.
+ * @property array<'card'|'sepa'> $methodsAllowed List of payment methods allowed for this payment.
+ * @property array<'card'|'sepa'> $methods_allowed List of payment methods allowed for this payment.
  * @property ?string $orderId Order identifier.
  * @property ?string $order_id Order identifier.
  * @property ?string $returnUrl URL to redirect back your customer after processing the payment.
