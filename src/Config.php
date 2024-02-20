@@ -16,12 +16,12 @@ use Psr;
  * @method string get_basic_auth_header() Get HTTP "basic" authentication header's value.
  * @method Stancer\Core\Request\Call[] get_calls() Get request list recorded on debug mode.
  * @method boolean get_debug() Get debug mode.
- * @method ?DateTimeZone get_default_time_zone() Get default time zone.
+ * @method ?\DateTimeZone get_default_time_zone() Get default time zone.
  * @method string get_default_user_agent() Get default user agent.
  * @method static self get_global() Return current instance.
  * @method string get_host() Get API host.
- * @method Stancer\Http\Client|GuzzleHttp\ClientInterface get_http_client() Get HTTP client instance.
- * @method Psr\Log\LoggerInterface get_logger() Get logger handler.
+ * @method \Stancer\Http\Client|\GuzzleHttp\ClientInterface get_http_client() Get HTTP client instance.
+ * @method \Psr\Log\LoggerInterface get_logger() Get logger handler.
  * @method string get_mode() Get API mode (test or live).
  * @method ?integer get_port() Get API port.
  * @method string get_public_key() Get public API key.
@@ -36,24 +36,24 @@ use Psr;
  * @method $this reset_app_data() Reset app data.
  * @method $this reset_default_time_zone() Reset default time zone.
  * @method $this set_debug(boolean $debug) Set debug mode.
- * @method $this set_default_time_zone(DateTimeZone $default_time_zone) Set default time zone.
+ * @method $this set_default_time_zone(\DateTimeZone $default_time_zone) Set default time zone.
  * @method static self set_global(self $instance) Register a configuration for deferred API call.
  * @method $this set_host(string $host) Set API host.
- * @method $this set_http_client(Stancer\Http\Client|GuzzleHttp\ClientInterface $http_client) Set HTTP client instance.
+ * @method $this set_http_client(\Stancer\Http\Client|\GuzzleHttp\ClientInterface $http_client) Set HTTP client instance.
  * @method $this set_keys($keys) Update authentication keys.
- * @method $this set_logger(Psr\Log\LoggerInterface $logger) Set logger handler.
+ * @method $this set_logger(\Psr\Log\LoggerInterface $logger) Set logger handler.
  * @method $this set_mode(string $mode) Set API mode (test or live).
  * @method $this set_port(integer $port) Set API port.
  * @method $this set_timeout(integer $timeout) Set API timeout.
  * @method $this set_version(integer $version) Set API version.
  *
  * @property boolean $debug Debug mode.
- * @property ?DateTimeZone $defaultTimeZone Default time zone.
- * @property ?DateTimeZone $default_time_zone Default time zone.
+ * @property ?\DateTimeZone $defaultTimeZone Default time zone.
+ * @property ?\DateTimeZone $default_time_zone Default time zone.
  * @property string $host API host.
- * @property Stancer\Http\Client|GuzzleHttp\ClientInterface $httpClient HTTP client instance.
- * @property Stancer\Http\Client|GuzzleHttp\ClientInterface $http_client HTTP client instance.
- * @property Psr\Log\LoggerInterface $logger Logger handler.
+ * @property \Stancer\Http\Client|\GuzzleHttp\ClientInterface $httpClient HTTP client instance.
+ * @property \Stancer\Http\Client|\GuzzleHttp\ClientInterface $http_client HTTP client instance.
+ * @property \Psr\Log\LoggerInterface $logger Logger handler.
  * @property string $mode API mode (test or live).
  * @property ?integer $port API port.
  * @property integer $timeout API timeout.

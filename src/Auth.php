@@ -8,12 +8,12 @@ use Stancer;
 /**
  * Data for authenticated payment.
  *
- * @method ?DateTimeImmutable getCreated() Get creation date.
+ * @method ?\DateTimeImmutable getCreated() Get creation date.
  * @method ?string getRedirectUrl() Get the redirection URL to start an authentification session.
  * @method ?string getReturnUrl() Get the return URL at end of the authentification session.
  * @method string getStatus() Get the authentification status.
- * @method ?DateTimeImmutable get_created() Get creation date.
- * @method ?DateTimeImmutable get_creation_date() Get creation date.
+ * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_endpoint() Get API endpoint.
  * @method string get_entity_name() Get entity name.
  * @method ?string get_id() Get object ID.
@@ -26,9 +26,9 @@ use Stancer;
  * @property ?string $returnUrl The return URL at end of the authentification session.
  * @property ?string $return_url The return URL at end of the authentification session.
  *
- * @property-read ?DateTimeImmutable $created Creation date.
- * @property-read ?DateTimeImmutable $creationDate Creation date.
- * @property-read ?DateTimeImmutable $creation_date Creation date.
+ * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $creationDate Creation date.
+ * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $endpoint API endpoint.
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.

@@ -12,26 +12,26 @@ use Stancer;
  *
  * This will use SEPAmail, a french service allowing to verify bank details on SEPA.
  *
- * @method ?DateTimeImmutable getCreated() Get creation date.
+ * @method ?\DateTimeImmutable getCreated() Get creation date.
  * @method ?boolean getDateBirth()
  * @method ?string getResponse()
  * @method ?float getScoreName()
  * @method ?string getStatus()
- * @method ?DateTimeImmutable get_created() Get creation date.
- * @method ?DateTimeImmutable get_creation_date() Get creation date.
+ * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method ?boolean get_date_birth()
  * @method string get_endpoint() Get API endpoint.
  * @method string get_entity_name() Get entity name.
  * @method ?string get_id() Get object ID.
  * @method ?string get_response()
  * @method ?float get_score_name()
- * @method ?Stancer\Sepa get_sepa()
+ * @method ?\Stancer\Sepa get_sepa()
  * @method ?string get_status()
  * @method string get_uri() Get entity resource location.
  *
- * @property-read ?DateTimeImmutable $created Creation date.
- * @property-read ?DateTimeImmutable $creationDate Creation date.
- * @property-read ?DateTimeImmutable $creation_date Creation date.
+ * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $creationDate Creation date.
+ * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read ?boolean $dateBirth
  * @property-read ?boolean $date_birth
  * @property-read string $endpoint API endpoint.
@@ -43,7 +43,7 @@ use Stancer;
  * @property-read ?string $response
  * @property-read ?float $scoreName
  * @property-read ?float $score_name
- * @property-read ?Stancer\Sepa $sepa
+ * @property-read ?\Stancer\Sepa $sepa
  * @property-read ?string $status
  * @property-read string $uri Entity resource location.
  */
