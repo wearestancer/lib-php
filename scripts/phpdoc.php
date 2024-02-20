@@ -47,7 +47,17 @@ function prepareData(string $action, array $data): array
         // Finding the type.
 
         $types = is_array($data['type']) ? $data['type'] : [$data['type']];
-        $rewriteTypes = fn(string $value): string => $value === 'bool' ? 'boolean' : $value;
+        $rewriteTypes = function (string $value): string {
+            if ($value === 'bool') {
+                return 'boolean';
+            }
+
+            if (in_array($value, ['$this', 'array', 'boolean', 'float', 'integer', 'mixed', 'string'], true)) {
+                return $value;
+            }
+
+            return '\\' . $value;
+        };
         $tmpType = implode('|', array_map($rewriteTypes, $types));
 
         if ($tmpType === 'string' && $data['allowedValues'] && $action === 'get') {

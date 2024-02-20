@@ -14,16 +14,16 @@ use Stancer;
  * @method $this add_methods_allowed(string $method) Add an allowed method.
  * @method static array filter_list_params(array $terms) Filter for list method.
  * @method ?integer getAmount() Get transaction amount.
- * @method ?Stancer\Auth getAuth() Get auth object, must be set for 3-D Secure card payments.
+ * @method ?\Stancer\Auth getAuth() Get auth object, must be set for 3-D Secure card payments.
  * @method ?boolean getCapture() Get capture immediately the payment.
- * @method ?Stancer\Card getCard() Get card object.
+ * @method ?\Stancer\Card getCard() Get card object.
  * @method ?string getCountry()
- * @method ?DateTimeImmutable getCreated() Get creation date.
+ * @method ?\DateTimeImmutable getCreated() Get creation date.
  * @method 'aud'|'cad'|'chf'|'dkk'|'eur'|'gbp'|'jpy'|'nok'|'pln'|'sek'|'usd'|null getCurrency() Get processed currency.
- * @method ?Stancer\Customer getCustomer() Get customer object.
- * @method ?DateTimeImmutable getDateBank() Get delivery date of the funds traded by the bank.
+ * @method ?\Stancer\Customer getCustomer() Get customer object.
+ * @method ?\DateTimeImmutable getDateBank() Get delivery date of the funds traded by the bank.
  * @method ?string getDescription() Get payment description.
- * @method ?Stancer\Device getDevice() Get customer's device object.
+ * @method ?\Stancer\Device getDevice() Get customer's device object.
  * @method ?string getMethod() Get payment method used.
  * @method array<'card'|'sepa'> getMethodsAllowed() Get list of payment methods allowed for this payment.
  * @method ?string getOrderId() Get order identifier.
@@ -31,21 +31,21 @@ use Stancer;
  * @method ?string getResponse() Get response of the bank processing.
  * @method ?string getResponseAuthor()
  * @method ?string getReturnUrl() Get URL to redirect back your customer after processing the payment.
- * @method ?Stancer\Sepa getSepa() Get SEPA object.
+ * @method ?\Stancer\Sepa getSepa() Get SEPA object.
  * @method ?string getStatus() Get status of the payment.
  * @method ?string getUniqueId() Get unicity key.
  * @method ?integer get_amount() Get transaction amount.
- * @method ?Stancer\Auth get_auth() Get auth object, must be set for 3-D Secure card payments.
+ * @method ?\Stancer\Auth get_auth() Get auth object, must be set for 3-D Secure card payments.
  * @method ?boolean get_capture() Get capture immediately the payment.
- * @method ?Stancer\Card get_card() Get card object.
+ * @method ?\Stancer\Card get_card() Get card object.
  * @method ?string get_country()
- * @method ?DateTimeImmutable get_created() Get creation date.
- * @method ?DateTimeImmutable get_creation_date() Get creation date.
+ * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method 'aud'|'cad'|'chf'|'dkk'|'eur'|'gbp'|'jpy'|'nok'|'pln'|'sek'|'usd'|null get_currency() Get processed currency.
- * @method ?Stancer\Customer get_customer() Get customer object.
- * @method ?DateTimeImmutable get_date_bank() Get delivery date of the funds traded by the bank.
+ * @method ?\Stancer\Customer get_customer() Get customer object.
+ * @method ?\DateTimeImmutable get_date_bank() Get delivery date of the funds traded by the bank.
  * @method ?string get_description() Get payment description.
- * @method ?Stancer\Device get_device() Get customer's device object.
+ * @method ?\Stancer\Device get_device() Get customer's device object.
  * @method string get_endpoint() Get API endpoint.
  * @method string get_entity_name() Get entity name.
  * @method ?string get_id() Get object ID.
@@ -59,7 +59,7 @@ use Stancer;
  * @method ?string get_response() Get response of the bank processing.
  * @method ?string get_response_author()
  * @method ?string get_return_url() Get URL to redirect back your customer after processing the payment.
- * @method ?Stancer\Sepa get_sepa() Get SEPA object.
+ * @method ?\Stancer\Sepa get_sepa() Get SEPA object.
  * @method ?string get_status() Get status of the payment.
  * @method ?string get_unique_id() Get unicity key.
  * @method string get_uri() Get entity resource location.
@@ -70,55 +70,55 @@ use Stancer;
  * @method static Generator<static> list(SearchFilters $terms)
  * @method $this setCapture(boolean $capture) Set capture immediately the payment.
  * @method $this setCountry(string $country)
- * @method $this setCustomer(Stancer\Customer $customer) Set customer object.
+ * @method $this setCustomer(\Stancer\Customer $customer) Set customer object.
  * @method $this setDescription(string $description) Set payment description.
- * @method $this setDevice(Stancer\Device $device) Set customer's device object.
+ * @method $this setDevice(\Stancer\Device $device) Set customer's device object.
  * @method $this setOrderId(string $orderId) Set order identifier.
  * @method $this setStatus(string $status) Set status of the payment.
  * @method $this setUniqueId(string $uniqueId) Set unicity key.
  * @method $this set_amount(integer $amount) Set transaction amount.
- * @method $this set_auth(Stancer\Auth|boolean|string $auth) Set auth object, must be set for 3-D Secure card payments.
+ * @method $this set_auth(\Stancer\Auth|boolean|string $auth) Set auth object, must be set for 3-D Secure card payments.
  * @method $this set_capture(boolean $capture) Set capture immediately the payment.
- * @method $this set_card(Stancer\Card $card) Set card object.
+ * @method $this set_card(\Stancer\Card $card) Set card object.
  * @method $this set_country(string $country)
  * @method $this set_currency(string $currency) Set processed currency.
- * @method $this set_customer(Stancer\Customer $customer) Set customer object.
+ * @method $this set_customer(\Stancer\Customer $customer) Set customer object.
  * @method $this set_description(string $description) Set payment description.
- * @method $this set_device(Stancer\Device $device) Set customer's device object.
+ * @method $this set_device(\Stancer\Device $device) Set customer's device object.
  * @method $this set_methods_allowed(string[] $methods_allowed) Set list of payment methods allowed for this payment.
  * @method $this set_order_id(string $order_id) Set order identifier.
  * @method $this set_return_url(string $return_url) Set URL to redirect back your customer after processing the payment.
- * @method $this set_sepa(Stancer\Sepa $sepa) Set SEPA object.
+ * @method $this set_sepa(\Stancer\Sepa $sepa) Set SEPA object.
  * @method $this set_status(string $status) Set status of the payment.
  * @method $this set_unique_id(string $unique_id) Set unicity key.
  *
  * @phpstan-method $this addRefunds(Stancer\Refund $refund)
  *
  * @property ?integer $amount Transaction amount.
- * @property Stancer\Auth|boolean|string|null $auth Auth object, must be set for 3-D Secure card payments.
+ * @property \Stancer\Auth|boolean|string|null $auth Auth object, must be set for 3-D Secure card payments.
  * @property ?boolean $capture Capture immediately the payment.
- * @property ?Stancer\Card $card Card object.
+ * @property ?\Stancer\Card $card Card object.
  * @property ?string $country
  * @property 'aud'|'cad'|'chf'|'dkk'|'eur'|'gbp'|'jpy'|'nok'|'pln'|'sek'|'usd'|null $currency Processed currency.
- * @property ?Stancer\Customer $customer Customer object.
+ * @property ?\Stancer\Customer $customer Customer object.
  * @property ?string $description Payment description.
- * @property ?Stancer\Device $device Customer's device object.
+ * @property ?\Stancer\Device $device Customer's device object.
  * @property array<'card'|'sepa'> $methodsAllowed List of payment methods allowed for this payment.
  * @property array<'card'|'sepa'> $methods_allowed List of payment methods allowed for this payment.
  * @property ?string $orderId Order identifier.
  * @property ?string $order_id Order identifier.
  * @property ?string $returnUrl URL to redirect back your customer after processing the payment.
  * @property ?string $return_url URL to redirect back your customer after processing the payment.
- * @property ?Stancer\Sepa $sepa SEPA object.
+ * @property ?\Stancer\Sepa $sepa SEPA object.
  * @property ?string $status Status of the payment.
  * @property ?string $uniqueId Unicity key.
  * @property ?string $unique_id Unicity key.
  *
- * @property-read ?DateTimeImmutable $created Creation date.
- * @property-read ?DateTimeImmutable $creationDate Creation date.
- * @property-read ?DateTimeImmutable $creation_date Creation date.
- * @property-read ?DateTimeImmutable $dateBank Delivery date of the funds traded by the bank.
- * @property-read ?DateTimeImmutable $date_bank Delivery date of the funds traded by the bank.
+ * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $creationDate Creation date.
+ * @property-read ?\DateTimeImmutable $creation_date Creation date.
+ * @property-read ?\DateTimeImmutable $dateBank Delivery date of the funds traded by the bank.
+ * @property-read ?\DateTimeImmutable $date_bank Delivery date of the funds traded by the bank.
  * @property-read string $endpoint API endpoint.
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.

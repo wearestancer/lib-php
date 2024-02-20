@@ -10,31 +10,31 @@ use Stancer;
  * Payout details.
  *
  * @method integer getAmount()
- * @method ?DateTimeImmutable getCreated() Get creation date.
+ * @method ?\DateTimeImmutable getCreated() Get creation date.
  * @method string getCurrency()
- * @method Stancer\Payout getParent()
+ * @method \Stancer\Payout getParent()
  * @method string getType()
  * @method integer get_amount()
- * @method ?DateTimeImmutable get_created() Get creation date.
- * @method ?DateTimeImmutable get_creation_date() Get creation date.
+ * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_currency()
  * @method string get_endpoint() Get API endpoint.
  * @method string get_entity_name() Get entity name.
  * @method ?string get_id() Get object ID.
- * @method Stancer\Payout get_parent()
+ * @method \Stancer\Payout get_parent()
  * @method string get_type()
  * @method string get_uri() Get current resource location.
  *
  * @property-read integer $amount
- * @property-read ?DateTimeImmutable $created Creation date.
- * @property-read ?DateTimeImmutable $creationDate Creation date.
- * @property-read ?DateTimeImmutable $creation_date Creation date.
+ * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $creationDate Creation date.
+ * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $currency
  * @property-read string $endpoint API endpoint.
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
- * @property-read Stancer\Payout $parent
+ * @property-read \Stancer\Payout $parent
  * @property-read string $type
  * @property-read string $uri Current resource location.
  */

@@ -12,9 +12,9 @@ use ReflectionClass;
 /**
  * Manage common code between API object.
  *
- * @method ?DateTimeImmutable getCreated() Get creation date.
- * @method ?DateTimeImmutable get_created() Get creation date.
- * @method ?DateTimeImmutable get_creation_date() Get creation date.
+ * @method ?\DateTimeImmutable getCreated() Get creation date.
+ * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_endpoint() Get API endpoint.
  * @method string get_entity_name() Get entity name.
  * @method ?string get_id() Get object ID.
@@ -26,9 +26,9 @@ use ReflectionClass;
  * @method string to_json() Return a JSON representation of the current object.
  * @method string to_string() Return a string representation (as a JSON) of the current object.
  *
- * @property-read ?DateTimeImmutable $created Creation date.
- * @property-read ?DateTimeImmutable $creationDate Creation date.
- * @property-read ?DateTimeImmutable $creation_date Creation date.
+ * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $creationDate Creation date.
+ * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $endpoint API endpoint.
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
