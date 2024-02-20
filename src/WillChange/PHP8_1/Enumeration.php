@@ -10,7 +10,7 @@ use Attribute;
  *
  * @see https://www.php.net/manual/en/language.enumerations.php
  */
-#[Attribute]
+#[Attribute(Attribute::IS_REPEATABLE | Attribute::TARGET_ALL)]
 final class Enumeration extends Base
 {
 }

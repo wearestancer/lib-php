@@ -154,6 +154,8 @@ class Payment extends Stancer\Core\AbstractObject
      * @var array
      * @phpstan-var array<string, DataModel>
      */
+    #[Stancer\WillChange\PHP8_1\Enumeration('Currency will change')]
+    #[Stancer\WillChange\PHP8_1\Enumeration('Methods allowed will change')]
     protected $dataModel = [
         'amount' => [
             'desc' => 'Transaction amount',
