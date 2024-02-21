@@ -128,23 +128,12 @@ foreach ($iterator as $file) {
                 continue;
             }
 
-            // the documentation helper...
-            if (strpos($className, 'Stancer\\Core\\Documentation\\') !== false) {
-                continue;
-            }
+            $reflect = new ReflectionClass($className);
 
-            // the HTTP client (as it does not have magical properties)...
-            if (strpos($className, 'Stancer\\Http\\') !== false) {
-                continue;
-            }
-
-            // interfaces, for the same reason...
-            if (strpos($className, 'Stancer\\Interfaces\\') !== false) {
-                continue;
-            }
-
-            // and traits, same again.
-            if (strpos($className, 'Stancer\\Traits\\') !== false) {
+            if (
+                $className !== Stancer\Core\AbstractObject::class
+                && !$reflect->isSubclassOf(Stancer\Core\AbstractObject::class)
+            ) {
                 continue;
             }
 
@@ -565,6 +554,9 @@ foreach ($classes as $className => $classData) {
             }
 
             $parsingTags = true;
+        } elseif ($line === ' */' && !$parsingTags) {
+            $lines = array_merge($lines, array_map(fn($l) => ' * ' . $l, $doc));
+            $lines[] = ' */';
         } elseif ($line !== ' *' || !$parsingTags) {
             $lines[] = $line;
         }
