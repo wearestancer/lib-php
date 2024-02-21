@@ -19,6 +19,38 @@ $defaultModel = [
 ];
 
 /**
+ * Format a PHPDoc line.
+ *
+ * @param string $line The line to format.
+ * @return string[]
+ */
+function formatDocLine(string $line): array
+{
+    if (strlen($line) > 117) {
+        $lines = explode('|||', wordwrap($line, 110, '|||'));
+        $first = array_shift($lines);
+
+        return [
+            ' * ' . $first,
+            ...array_map(fn($l) => ' *   ' . $l, $lines),
+        ];
+    }
+
+    return [' * ' . $line];
+}
+
+/**
+ * Format the PHPDoc block.
+ *
+ * @param string|string[] $lines PHPDoc lines.
+ * @return string[]
+ */
+function formatPhpDoc(array $lines): array
+{
+    return array_merge(...array_values(array_map('formatDocLine', $lines)));
+}
+
+/**
  * Prepare parameter/property data.
  *
  * Will define type, return type and descriptions for each line of documentation.
@@ -550,14 +582,18 @@ foreach ($classes as $className => $classData) {
                     array_push($lines, $last);
                 }
 
-                $lines = array_merge($lines, array_map(fn($l) => ' * ' . $l, $doc));
+                $lines = array_merge($lines, formatPhpDoc($doc));
             }
 
             $parsingTags = true;
-        } elseif ($line === ' */' && !$parsingTags) {
-            $lines = array_merge($lines, array_map(fn($l) => ' * ' . $l, $doc));
+        } elseif ($line === ' */') {
+            if (!$parsingTags) {
+                $lines = array_merge($lines, formatPhpDoc($doc));
+            }
+
             $lines[] = ' */';
-        } elseif ($line !== ' *' || !$parsingTags) {
+            $parsingTags = false;
+        } elseif (!$parsingTags) {
             $lines[] = $line;
         }
     }
