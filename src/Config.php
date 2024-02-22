@@ -241,6 +241,7 @@ class Config
      * Return default user agent.
      *
      * @return string
+     * @phpstan-return non-empty-string
      */
     #[Stancer\Core\Documentation\FormatProperty(description: 'Default user agent', nullable: false, restricted: true)]
     public function getDefaultUserAgent(): string

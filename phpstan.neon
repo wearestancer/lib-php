@@ -1,5 +1,6 @@
 
 includes:
+  - phar://phpstan.phar/conf/bleedingEdge.neon
   - phpstan-baseline.neon
 
 parameters:
@@ -155,10 +156,25 @@ parameters:
 
     SearchFilters: '''
       array{
-        created?: DateTimeInterface|DatePeriod|int,
+        created?: DateTimeInterface|DatePeriod<DateTimeInterface, ?DateTimeInterface, int>|int,
         created_until?: DateTimeInterface|int,
         limit?: int,
         start?: int,
+      }
+    '''
+
+    SearchResult: '''
+      array{
+        live_mode: bool,
+        disputes?: mixed[],
+        payments?: mixed[],
+        range: array{
+          end: int,
+          has_more: bool,
+          limit: int,
+          start: int,
+        },
+        refunds?: mixed[],
       }
     '''
 

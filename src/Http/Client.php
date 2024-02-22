@@ -151,10 +151,18 @@ class Client implements Stancer\Interfaces\HttpClientInterface
         $logger = $config->getLogger();
 
         // Set URL.
-        curl_setopt($this->curl, CURLOPT_URL, trim($uri));
+        $trimmed = trim($uri);
+
+        if ($trimmed) {
+            curl_setopt($this->curl, CURLOPT_URL, $trimmed);
+        }
 
         // Set HTTP method.
-        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, trim($method));
+        $trimmed = trim($method);
+
+        if ($trimmed) {
+            curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, $trimmed);
+        }
 
         // Timeout.
         if (array_key_exists('timeout', $options)) {
@@ -237,6 +245,7 @@ class Client implements Stancer\Interfaces\HttpClientInterface
                     json_last_error() === JSON_ERROR_NONE
                     && is_array($json)
                     && array_key_exists('error', $json)
+                    && is_array($json['error'])
                     && array_key_exists('message', $json['error'])
                     && $json['error']['message']
                 ) {
