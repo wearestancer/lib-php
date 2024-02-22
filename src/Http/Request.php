@@ -12,6 +12,33 @@ use Psr;
 
 /**
  * Basic HTTP request.
+ *
+ * @method $this add_header(string $name, $value) Add a value to an header.
+ * @method Psr\Http\Message\StreamInterface get_body() Gets the body of the message.
+ * @method array get_header($name) Retrieves a message header value by the given case-insensitive name.
+ * @method string get_header_line($name) Retrieves a comma-separated string of the values for a single header.
+ * @method array get_headers() Retrieves all message header values.
+ * @method string get_method() Retrieves the HTTP method of the request.
+ * @method string get_protocol_version() Retrieves the HTTP protocol version as a string.
+ * @method string get_request_target() Retrieves the message's request target.
+ * @method Psr\Http\Message\UriInterface get_uri() Retrieves the URI instance.
+ * @method boolean has_header($name) Checks if a header exists by the given case-insensitive name.
+ * @method $this remove_header($name) Remove header by name.
+ * @method $this update_uri($uri) Update URI and host header.
+ * @method Psr\Http\Message\MessageInterface with_added_header($name, $value) Return an instance with the
+ *   specified header appended with the given value.
+ * @method Psr\Http\Message\MessageInterface with_body(Psr\Http\Message\StreamInterface $body) Return an instance
+ *   with the specified message body.
+ * @method Psr\Http\Message\MessageInterface with_header($name, $value) Return an instance with the provided
+ *   value replacing the specified header.
+ * @method $this with_method($method) Return an instance with the provided HTTP method.
+ * @method Psr\Http\Message\MessageInterface with_modified_body($in, $out) Return an instance with obfuscated
+ *   message body.
+ * @method Psr\Http\Message\MessageInterface with_protocol_version($version) Return an instance with the
+ *   specified HTTP protocol version.
+ * @method $this with_request_target($request_target) Return an instance with the specific request-target.
+ * @method $this with_uri(Psr\Http\Message\UriInterface $uri, $preserve_host) Returns an instance with the provided URI.
+ * @method Psr\Http\Message\MessageInterface without_header($name) Return an instance without the specified header.
  */
 class Request implements Psr\Http\Message\RequestInterface
 {

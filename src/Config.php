@@ -39,7 +39,8 @@ use Psr;
  * @method $this set_default_time_zone(\DateTimeZone $default_time_zone) Set default time zone.
  * @method static self set_global(self $instance) Register a configuration for deferred API call.
  * @method $this set_host(string $host) Set API host.
- * @method $this set_http_client(\Stancer\Http\Client|\GuzzleHttp\ClientInterface $http_client) Set HTTP client instance.
+ * @method $this set_http_client(\Stancer\Http\Client|\GuzzleHttp\ClientInterface $http_client) Set HTTP client
+ *   instance.
  * @method $this set_keys($keys) Update authentication keys.
  * @method $this set_logger(\Psr\Log\LoggerInterface $logger) Set logger handler.
  * @method $this set_mode(string $mode) Set API mode (test or live).

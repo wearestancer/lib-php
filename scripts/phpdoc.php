@@ -139,7 +139,9 @@ function prepareData(string $action, array $data): array
 // Initialize specific classes.
 $classes = [
     Stancer\Config::class => [
-        'instance' => [],
+        'instance' => [
+            [],
+        ],
     ],
     Stancer\Core\AbstractObject::class => [
         'instance' => new class() extends Stancer\Core\AbstractObject implements Documentation {},
@@ -147,6 +149,17 @@ $classes = [
         'throws' => [
             [Stancer\Exceptions\BadMethodCallException::class, 'when calling an unknown method'],
             [Stancer\Exceptions\BadPropertyAccessException::class, 'when calling an unknown property'],
+        ],
+    ],
+    Stancer\Http\Request::class => [
+        'instance' => [
+            'GET',
+            'http://127.0.0.1'
+        ],
+    ],
+    Stancer\Http\Response::class => [
+        'instance' => [
+            200,
         ],
     ],
 ];
@@ -169,10 +182,12 @@ foreach ($iterator as $file) {
             }
 
             $reflect = new ReflectionClass($className);
+            $traits = array_keys($reflect->getTraits());
 
             if (
                 $className !== Stancer\Core\AbstractObject::class
                 && !$reflect->isSubclassOf(Stancer\Core\AbstractObject::class)
+                && !in_array(Stancer\Traits\AliasTrait::class, $traits, true)
             ) {
                 continue;
             }
@@ -201,7 +216,7 @@ foreach ($classes as $className => $classData) {
         if ($classData['instance'] instanceof Documentation) {
             $obj = $classData['instance'];
         } else {
-            $obj = new $className($classData['instance']);
+            $obj = new $className(...$classData['instance']);
         }
     } else {
         $obj = new $className();
