@@ -80,11 +80,19 @@ function prepareData(string $action, array $data): array
 
         $types = is_array($data['type']) ? $data['type'] : [$data['type']];
         $rewriteTypes = function (string $value): string {
-            if ($value === 'bool') {
-                return 'boolean';
+            $val = str_replace(['?', '\\'], '', $value);
+            $isNullable = strpos($value, '?') === 0;
+            $isEscaped = strpos($value, '\\') === 0;
+
+            if ($val === 'bool') {
+                return ($isNullable ? '?': '') . 'boolean';
             }
 
-            if (in_array($value, ['$this', 'array', 'boolean', 'float', 'integer', 'mixed', 'string'], true)) {
+            if (in_array($val, ['$this', 'array', 'boolean', 'float', 'integer', 'mixed', 'string'], true)) {
+                return $value;
+            }
+
+            if ($isEscaped) {
                 return $value;
             }
 
@@ -131,7 +139,9 @@ function prepareData(string $action, array $data): array
 // Initialize specific classes.
 $classes = [
     Stancer\Config::class => [
-        'instance' => [],
+        'instance' => [
+            [],
+        ],
     ],
     Stancer\Core\AbstractObject::class => [
         'instance' => new class() extends Stancer\Core\AbstractObject implements Documentation {},
@@ -139,6 +149,17 @@ $classes = [
         'throws' => [
             [Stancer\Exceptions\BadMethodCallException::class, 'when calling an unknown method'],
             [Stancer\Exceptions\BadPropertyAccessException::class, 'when calling an unknown property'],
+        ],
+    ],
+    Stancer\Http\Request::class => [
+        'instance' => [
+            'GET',
+            'http://127.0.0.1'
+        ],
+    ],
+    Stancer\Http\Response::class => [
+        'instance' => [
+            200,
         ],
     ],
 ];
@@ -161,10 +182,12 @@ foreach ($iterator as $file) {
             }
 
             $reflect = new ReflectionClass($className);
+            $traits = array_keys($reflect->getTraits());
 
             if (
                 $className !== Stancer\Core\AbstractObject::class
                 && !$reflect->isSubclassOf(Stancer\Core\AbstractObject::class)
+                && !in_array(Stancer\Traits\AliasTrait::class, $traits, true)
             ) {
                 continue;
             }
@@ -193,7 +216,7 @@ foreach ($classes as $className => $classData) {
         if ($classData['instance'] instanceof Documentation) {
             $obj = $classData['instance'];
         } else {
-            $obj = new $className($classData['instance']);
+            $obj = new $className(...$classData['instance']);
         }
     } else {
         $obj = new $className();

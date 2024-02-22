@@ -11,6 +11,30 @@ use Psr;
 
 /**
  * Basic HTTP response.
+ *
+ * @method $this add_header(string $name, $value) Add a value to an header.
+ * @method Psr\Http\Message\StreamInterface get_body() Gets the body of the message.
+ * @method array get_header($name) Retrieves a message header value by the given case-insensitive name.
+ * @method string get_header_line($name) Retrieves a comma-separated string of the values for a single header.
+ * @method array get_headers() Retrieves all message header values.
+ * @method string get_protocol_version() Retrieves the HTTP protocol version as a string.
+ * @method string get_reason_phrase() Gets the response reason phrase associated with the status code.
+ * @method int get_status_code() Gets the response status code.
+ * @method boolean has_header($name) Checks if a header exists by the given case-insensitive name.
+ * @method $this remove_header($name) Remove header by name.
+ * @method Psr\Http\Message\MessageInterface with_added_header($name, $value) Return an instance with the
+ *   specified header appended with the given value.
+ * @method Psr\Http\Message\MessageInterface with_body(Psr\Http\Message\StreamInterface $body) Return an instance
+ *   with the specified message body.
+ * @method Psr\Http\Message\MessageInterface with_header($name, $value) Return an instance with the provided
+ *   value replacing the specified header.
+ * @method Psr\Http\Message\MessageInterface with_modified_body($in, $out) Return an instance with obfuscated
+ *   message body.
+ * @method Psr\Http\Message\MessageInterface with_protocol_version($version) Return an instance with the
+ *   specified HTTP protocol version.
+ * @method $this with_status($code, $reason_phrase) Return an instance with the specified status code and,
+ *   optionally, reason phrase.
+ * @method Psr\Http\Message\MessageInterface without_header($name) Return an instance without the specified header.
  */
 class Response implements Psr\Http\Message\ResponseInterface
 {
