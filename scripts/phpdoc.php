@@ -80,11 +80,19 @@ function prepareData(string $action, array $data): array
 
         $types = is_array($data['type']) ? $data['type'] : [$data['type']];
         $rewriteTypes = function (string $value): string {
-            if ($value === 'bool') {
-                return 'boolean';
+            $val = str_replace(['?', '\\'], '', $value);
+            $isNullable = strpos($value, '?') === 0;
+            $isEscaped = strpos($value, '\\') === 0;
+
+            if ($val === 'bool') {
+                return ($isNullable ? '?': '') . 'boolean';
             }
 
-            if (in_array($value, ['$this', 'array', 'boolean', 'float', 'integer', 'mixed', 'string'], true)) {
+            if (in_array($val, ['$this', 'array', 'boolean', 'float', 'integer', 'mixed', 'string'], true)) {
+                return $value;
+            }
+
+            if ($isEscaped) {
                 return $value;
             }
 
