@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Stancer\Core;
 
+use BackedEnum;
 use DateTimeImmutable;
 use DateTimeInterface;
 use Stancer;
@@ -37,8 +38,8 @@ use ReflectionClass;
  * @property-read boolean $isNotModified Alias for `Stancer\Core\AbstractObject::isNotModified()`.
  * @property-read boolean $is_modified Alias for `Stancer\Core\AbstractObject::isModified()`.
  * @property-read boolean $is_not_modified Alias for `Stancer\Core\AbstractObject::isNotModified()`.
- * @property-read mixed $jsonSerialize Alias for `Stancer\Core\AbstractObject::jsonSerialize()`.
- * @property-read mixed $json_serialize Alias for `Stancer\Core\AbstractObject::jsonSerialize()`.
+ * @property-read ?mixed $jsonSerialize Alias for `Stancer\Core\AbstractObject::jsonSerialize()`.
+ * @property-read ?mixed $json_serialize Alias for `Stancer\Core\AbstractObject::jsonSerialize()`.
  * @property-read array $toArray Alias for `Stancer\Core\AbstractObject::toArray()`.
  * @property-read string $toJson Alias for `Stancer\Core\AbstractObject::toJson()`.
  * @property-read string $toString Alias for `Stancer\Core\AbstractObject::toString()`.
@@ -50,49 +51,48 @@ use ReflectionClass;
  * @throws Stancer\Exceptions\BadMethodCallException When calling an unknown method.
  * @throws Stancer\Exceptions\BadPropertyAccessException When calling an unknown property.
  */
-#[Stancer\Core\Documentation\AddProperty('created', description: 'Creation date', restricted: true, type: DateTimeImmutable::class)]
+#[Stancer\Core\Documentation\AddProperty(
+    'created',
+    description: 'Creation date',
+    restricted: true,
+    type: DateTimeImmutable::class,
+)]
 abstract class AbstractObject implements JsonSerializable
 {
     use Stancer\Traits\AliasTrait;
 
-    #[Stancer\WillChange\PHP8_1\FinalClassConstants]
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    public const BOOLEAN = 'boolean';
-    #[Stancer\WillChange\PHP8_1\FinalClassConstants]
+    final public const BOOLEAN = 'boolean';
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    public const FLOAT = 'float';
-    #[Stancer\WillChange\PHP8_1\FinalClassConstants]
+    final public const FLOAT = 'float';
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    public const INTEGER = 'integer';
-    #[Stancer\WillChange\PHP8_1\FinalClassConstants]
+    final public const INTEGER = 'integer';
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    public const STRING = 'string';
+    final public const STRING = 'string';
 
-    /** @var array<string, mixed> */
-    protected $apiData;
-
-    /** @var string */
-    #[Stancer\WillChange\PHP8_1\FinalClassConstants]
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    protected $endpoint = '';
+    public const ENDPOINT = '';
+
+    /**
+     * @var array|string
+     * @phpstan-var array<string, mixed>|string
+     */
+    protected array|string $apiData = [];
 
     /**
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [];
+    protected array $dataModel = [];
 
-    /** @var string|null */
-    protected $id;
+    protected ?string $id = null;
 
-    /** @var boolean */
-    protected $populated = false;
+    protected bool $populated = false;
 
     /** @var string[] */
-    protected $modified = [];
+    protected array $modified = [];
 
-    /** @var boolean */
-    protected $cleanModified = false;
+    protected bool $cleanModified = false;
 
     /**
      * Create or get an API object.
@@ -170,8 +170,7 @@ abstract class AbstractObject implements JsonSerializable
      * @return mixed
      * @throws Stancer\Exceptions\BadMethodCallException When an unhandled method is called.
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
-    public function __call(string $method, array $arguments)
+    public function __call(string $method, array $arguments): mixed
     {
         $name = Stancer\Helper::snakeCaseToCamelCase($method);
 
@@ -227,8 +226,7 @@ abstract class AbstractObject implements JsonSerializable
      * @param mixed[] $data Additional data for creation.
      * @return static
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public static function create(array $data): self
+    public static function create(array $data): static
     {
         $obj = new static();
 
@@ -246,9 +244,7 @@ abstract class AbstractObject implements JsonSerializable
      * @throws Stancer\Exceptions\InvalidArgumentException When asking an unknown property.
      * @throws Stancer\Exceptions\InvalidArgumentException If used on properties not declared as list.
      */
-    #[Stancer\WillChange\PHP8_0\MixedType]
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    protected function dataModelAdder(string $property, $value): self
+    protected function dataModelAdder(string $property, mixed $value): static
     {
         $model = $this->getModel($property);
 
@@ -283,8 +279,7 @@ abstract class AbstractObject implements JsonSerializable
      * @return mixed
      * @throws Stancer\Exceptions\InvalidArgumentException When asking an unknown property.
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
-    protected function dataModelGetter(string $property, bool $autoPopulate = true)
+    protected function dataModelGetter(string $property, bool $autoPopulate = true): mixed
     {
         $model = $this->getModel($property);
 
@@ -333,9 +328,7 @@ abstract class AbstractObject implements JsonSerializable
      * @throws Stancer\Exceptions\InvalidArgumentException When asking an unknown property.
      * @throws Stancer\Exceptions\InvalidArgumentException When the value do not match expected pattern.
      */
-    #[Stancer\WillChange\PHP8_0\MixedType]
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    protected function dataModelSetter(string $property, $value): self
+    protected function dataModelSetter(string $property, mixed $value): static
     {
         $model = $this->getModel($property);
 
@@ -371,12 +364,10 @@ abstract class AbstractObject implements JsonSerializable
             }
 
             foreach ($value as $val) {
-                $coercedValues[] = $coerce($val);
-                $this->validateDataModel($property, $coerce($val));
+                $coercedValues[] = $this->validateDataModel($property, $coerce($val));
             }
         } else {
-            $coercedValues = $coerce($value);
-            $this->validateDataModel($property, $coerce($value));
+            $coercedValues = $this->validateDataModel($property, $coerce($value));
         }
 
         $this->dataModel[$property]['value'] = $coercedValues;
@@ -391,8 +382,7 @@ abstract class AbstractObject implements JsonSerializable
      * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When configuration is missing.
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public function delete(): self
+    public function delete(): static
     {
         $request = new Request();
         $request->delete($this);
@@ -410,20 +400,23 @@ abstract class AbstractObject implements JsonSerializable
      * @param string $attr Optional attribute name.
      * @return mixed
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
-    public function get(string $attr = null)
+    public function get(string $attr = null): mixed
     {
         if ($attr && $this->apiData) {
             $prop = Stancer\Helper::camelCaseToSnakeCase($attr);
 
-            if (array_key_exists($prop, $this->apiData)) {
-                return $this->apiData[$prop];
+            if (is_array($this->apiData) && array_key_exists($prop, $this->apiData)) {
+                return $this->apiData[$prop] ?? null;
             }
 
             return null;
         }
 
-        return $this->apiData;
+        if ($this->apiData) {
+            return $this->apiData;
+        }
+
+        return null;
     }
 
     /**
@@ -431,7 +424,11 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return DateTimeImmutable|null
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Creation date', restricted: true, type: DateTimeImmutable::class)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Creation date',
+        restricted: true,
+        type: DateTimeImmutable::class,
+    )]
     public function getCreationDate(): ?DateTimeImmutable
     {
         return $this->created;
@@ -445,7 +442,7 @@ abstract class AbstractObject implements JsonSerializable
     #[Stancer\Core\Documentation\FormatProperty(description: 'API endpoint', nullable: false, restricted: true)]
     public function getEndpoint(): string
     {
-        return $this->endpoint;
+        return static::ENDPOINT;
     }
 
     /**
@@ -505,7 +502,11 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return string
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Entity resource location', nullable: false, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Entity resource location',
+        nullable: false,
+        restricted: true,
+    )]
     public function getUri(): string
     {
         $tmp = [
@@ -530,8 +531,7 @@ abstract class AbstractObject implements JsonSerializable
      * @param array<string, mixed> $data Data for hydration.
      * @return $this
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public function hydrate(array $data): self
+    public function hydrate(array $data): static
     {
         foreach ($data as $key => $value) {
             $property = Stancer\Helper::snakeCaseToCamelCase($key);
@@ -547,14 +547,15 @@ abstract class AbstractObject implements JsonSerializable
                     static::STRING,
                 ];
 
-                $coerce = function ($v) {
-                    return $v;
-                };
-
+                $coerce = fn($v) => $v;
                 $model = $this->getModel($property);
 
                 if (is_callable($model['coerce'])) {
                     $coerce = $model['coerce'];
+                }
+
+                if (is_a($model['type'], BackedEnum::class, true)) {
+                    $coerce = fn($data) => is_string($data) ? $model['type']::from($data) : $data;
                 }
 
                 if ($value && !in_array($model['type'], $types, true) && !is_object($value)) {
@@ -739,8 +740,7 @@ abstract class AbstractObject implements JsonSerializable
      * @uses self::toArray()
      * @return string|integer|boolean|null|array<string, mixed>
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         if ($this->getId() && $this->isNotModified()) {
             return $this->getId();
@@ -756,7 +756,9 @@ abstract class AbstractObject implements JsonSerializable
             };
 
             if (is_object($value)) {
-                if (in_array($prop, $this->modified, true) || ($value instanceof self && $value->isModified())) {
+                if (is_a($value, BackedEnum::class)) {
+                    $value = $value->value;
+                } elseif (in_array($prop, $this->modified, true) || ($value instanceof self && $value->isModified())) {
                     $supp = false;
 
                     if ($value instanceof JsonSerializable) {
@@ -800,8 +802,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @return $this
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public function populate(): self
+    public function populate(): static
     {
         if ($this->populated || !$this->getId() || !$this->getEndpoint()) {
             return $this;
@@ -809,23 +810,26 @@ abstract class AbstractObject implements JsonSerializable
 
         $request = new Request();
         $response = $request->get($this);
-        /** @phpstan-var array<string, mixed> $body */
+        /** @var array<string, array<string, string>|string> $body */
         $body = json_decode($response, true);
 
         $this->cleanModified = true;
         $this->populated = true;
-        $this->apiData = $body;
 
-        $this->hydrate($body);
+        if ($body) {
+            $this->apiData = $body;
 
-        $struct = $this->toArray();
+            $this->hydrate($body);
 
-        foreach ($struct as $prop => $value) {
-            if (is_object($value) && $value instanceof self) {
-                $tmp = Stancer\Helper::camelCaseToSnakeCase($prop);
+            $struct = $this->toArray();
 
-                if (array_key_exists($tmp, $body)) {
-                    $value->apiData = $body[$tmp];
+            foreach ($struct as $prop => $value) {
+                if (is_object($value) && $value instanceof self) {
+                    $tmp = Stancer\Helper::camelCaseToSnakeCase($prop);
+
+                    if (array_key_exists($tmp, $body)) {
+                        $value->apiData = $body[$tmp];
+                    }
                 }
             }
         }
@@ -841,8 +845,7 @@ abstract class AbstractObject implements JsonSerializable
      * @param string $id Identifier of the object.
      * @return static
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    static public function retrieve(string $id): self
+    static public function retrieve(string $id): static
     {
         return new static($id);
     }
@@ -855,8 +858,7 @@ abstract class AbstractObject implements JsonSerializable
      * @throws Stancer\Exceptions\BadMethodCallException When the method is called on an empty object.
      * @throws Stancer\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public function send(): self
+    public function send(): static
     {
         if ($this->isNotModified()) {
             throw new Stancer\Exceptions\BadMethodCallException('The object you tried to send is empty.');
@@ -968,12 +970,10 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @param string $property Property reference.
      * @param mixed $value Value to validate.
-     * @return $this
+     * @return mixed Validated value.
      * @throws Stancer\Exceptions\InvalidArgumentException When the value do not match expected pattern.
      */
-    #[Stancer\WillChange\PHP8_0\MixedType]
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    protected function validateDataModel(string $property, $value): self
+    protected function validateDataModel(string $property, mixed $value): mixed
     {
         $model = $this->getModel($property);
 
@@ -991,6 +991,10 @@ abstract class AbstractObject implements JsonSerializable
             if ($except && class_exists($except)) {
                 $exceptionClass = $except;
             }
+        }
+
+        if (is_a($model['type'], BackedEnum::class, true) && gettype($value) === 'string') {
+            $value = $model['type']::from($value);
         }
 
         $type = gettype($value);
@@ -1122,6 +1126,6 @@ abstract class AbstractObject implements JsonSerializable
             throw new $exceptionClass($message);
         }
 
-        return $this;
+        return $value;
     }
 }

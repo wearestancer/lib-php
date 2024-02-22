@@ -13,12 +13,9 @@ use Psr;
  */
 class ForbiddenException extends ClientException implements ExceptionInterface
 {
-    /** @var string */
-    protected static $defaultMessage = 'Forbidden';
+    protected static string $defaultMessage = 'Forbidden';
 
-    /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::ERROR;
+    protected static string $logLevel = Psr\Log\LogLevel::ERROR;
 
-    /** @var string */
-    protected static $status = '403';
+    protected static string $status = '403';
 }

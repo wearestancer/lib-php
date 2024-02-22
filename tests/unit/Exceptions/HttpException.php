@@ -153,8 +153,8 @@ class HttpException extends Stancer\Tests\atoum
         $this
             ->if($class = $this->testedClass->getClass())
             ->then
-                ->variable($class::getStatus())
-                    ->isNull
+                ->string($class::getStatus())
+                    ->isEmpty
         ;
     }
 }

@@ -13,12 +13,9 @@ use Psr;
  */
 class NotAcceptableException extends ClientException implements ExceptionInterface
 {
-    /** @var string */
-    protected static $defaultMessage = 'Not Acceptable';
+    protected static string $defaultMessage = 'Not Acceptable';
 
-    /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::ERROR;
+    protected static string $logLevel = Psr\Log\LogLevel::ERROR;
 
-    /** @var string */
-    protected static $status = '406';
+    protected static string $status = '406';
 }

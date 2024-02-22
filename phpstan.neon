@@ -3,18 +3,10 @@ includes:
   - phpstan-baseline.neon
 
 parameters:
-  excludePaths:
-    - src/Core/Documentation/
-
   ignoreErrors:
     - '/^Call to an undefined static method Stancer\\Core\\AbstractObject::[gs]et\w+\(\)/'
     - '/^Only booleans are allowed in/'
     - '/^Short ternary operator is not allowed/'
-
-    - message: '/has parameter \$terms with no value type specified in iterable type DatePeriod\.$/'
-      paths:
-        - src/Payout/Details/Inner.php
-        - src/Traits/SearchTrait.php
 
     - message: '/Unsafe usage of new static/'
       paths:
@@ -94,15 +86,15 @@ parameters:
 
     DocumentationPropertyParameters: '''
       array{
-        desc: ?string,
-        fullDesc: ?string,
-        generateMethodGetter: bool,
-        list: bool,
-        nullable: bool,
-        required: bool,
-        restricted: bool,
-        type: string|string[],
-        value: mixed,
+        desc?: string,
+        fullDesc?: string,
+        generateMethodGetter?: bool,
+        list?: bool,
+        nullable?: bool,
+        required?: bool,
+        restricted?: bool,
+        type?: string|string[],
+        value?: mixed,
       }
     '''
 
@@ -183,7 +175,7 @@ parameters:
       }
     '''
 
-  tmpDir: .cache/phpstan
+  tmpDir: vendor/.cache/phpstan
 
 
 services:

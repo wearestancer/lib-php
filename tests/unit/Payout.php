@@ -507,10 +507,10 @@ class Payout extends Stancer\Tests\atoum
             ->and($this->mockConfig($client))
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
             ->then
-                ->string($this->newTestedInstance(uniqid())->getStatus())
+                ->enum($this->newTestedInstance(uniqid())->getStatus())
                     ->isIdenticalTo(Stancer\Payout\Status::PAID)
 
-                ->string($this->testedInstance->status)
+                ->enum($this->testedInstance->status)
                     ->isIdenticalTo(Stancer\Payout\Status::PAID)
         ;
     }

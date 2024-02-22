@@ -8,8 +8,8 @@ namespace Stancer\Http\Verb;
  */
 abstract class AbstractVerb
 {
-    /** @var boolean */
-    protected $isAllowed = false;
+    /** @var boolean Is this verb allowed? */
+    protected bool $isAllowed = false;
 
     /**
      * Return the HTTP verb.

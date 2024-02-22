@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Breaking
+- Drop support for PHP 7.4 and 8.0
+- Every status are now enum
+
+### Added
+- `Stancer\Currency`
+- `Stancer\Payment\MethodsAllowed`
+- More typing
+- PHP 8.3 support
+
+### Changed
+- `Stancer\Auth\Status` is an enum now
+- `Stancer\Dispute\Status` is an enum now
+- `Stancer\Refund\Status` is an enum now
+- `Stancer\Payment\Status` is an enum now
+- `Stancer\Payout\Status` is an enum now
+- Bump version of `psr/http-message` and `psr/log`, CMS-82, [GitLab#5](https://gitlab.com/wearestancer/library/lib-php/-/issues/5), [GitHub#12](https://github.com/wearestancer/lib-php/issues/12)
+
+### Fixed
+- Some tests could fail due to unanticipated random data
+
+
 ## [1.1.3] - 2024-02-20
 
 ### Added

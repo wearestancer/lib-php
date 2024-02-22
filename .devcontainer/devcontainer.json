@@ -10,7 +10,8 @@
 				"editorconfig.editorconfig",
 				"felixfbecker.php-debug",
 				"kasik96.latte",
-				"mrmlnc.vscode-apache"
+				"mrmlnc.vscode-apache",
+				"xdebug.php-debug"
 			],
 			"runArgs": [
 				"-v", "${env:HOME}/.gnupg/:/home/vscode/.gnupg/"

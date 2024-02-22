@@ -6,8 +6,9 @@ declare(strict_types=1);
 
 namespace Stancer\Core;
 
-use Stancer;
 use Psr\Log\LoggerInterface;
+use Stancer;
+use Stringable;
 
 /**
  * Basic and useless logger.
@@ -17,11 +18,11 @@ class Logger implements LoggerInterface
     /**
      * System is unusable.
      *
-     * @param string $message The log message.
+     * @param string|Stringable $message The log message.
      * @param mixed[] $context The log context.
      * @return void
      */
-    public function emergency($message, array $context = []): void
+    public function emergency(string|Stringable $message, array $context = []): void
     {
     }
 
@@ -31,11 +32,11 @@ class Logger implements LoggerInterface
      * Example: Entire website down, database unavailable, etc. This should
      * trigger the SMS alerts and wake you up.
      *
-     * @param string $message The log message.
+     * @param string|Stringable $message The log message.
      * @param mixed[] $context The log context.
      * @return void
      */
-    public function alert($message, array $context = []): void
+    public function alert(string|Stringable $message, array $context = []): void
     {
     }
 
@@ -44,11 +45,11 @@ class Logger implements LoggerInterface
      *
      * Example: Application component unavailable, unexpected exception.
      *
-     * @param string $message The log message.
+     * @param string|Stringable $message The log message.
      * @param mixed[] $context The log context.
      * @return void
      */
-    public function critical($message, array $context = []): void
+    public function critical(string|Stringable $message, array $context = []): void
     {
     }
 
@@ -56,11 +57,11 @@ class Logger implements LoggerInterface
      * Runtime errors that do not require immediate action but should typically.
      * be logged and monitored.
      *
-     * @param string $message The log message.
+     * @param string|Stringable $message The log message.
      * @param mixed[] $context The log context.
      * @return void
      */
-    public function error($message, array $context = []): void
+    public function error(string|Stringable $message, array $context = []): void
     {
     }
 
@@ -70,22 +71,22 @@ class Logger implements LoggerInterface
      * Example: Use of deprecated APIs, poor use of an API, undesirable things
      * that are not necessarily wrong.
      *
-     * @param string $message The log message.
+     * @param string|Stringable $message The log message.
      * @param mixed[] $context The log context.
      * @return void
      */
-    public function warning($message, array $context = []): void
+    public function warning(string|Stringable $message, array $context = []): void
     {
     }
 
     /**
      * Normal but significant events.
      *
-     * @param string $message The log message.
+     * @param string|Stringable $message The log message.
      * @param mixed[] $context The log context.
      * @return void
      */
-    public function notice($message, array $context = []): void
+    public function notice(string|Stringable $message, array $context = []): void
     {
     }
 
@@ -94,22 +95,22 @@ class Logger implements LoggerInterface
      *
      * Example: User logs in, SQL logs.
      *
-     * @param string $message The log message.
+     * @param string|Stringable $message The log message.
      * @param mixed[] $context The log context.
      * @return void
      */
-    public function info($message, array $context = []): void
+    public function info(string|Stringable $message, array $context = []): void
     {
     }
 
     /**
      * Detailed debug information.
      *
-     * @param string $message The log message.
+     * @param string|Stringable $message The log message.
      * @param mixed[] $context The log context.
      * @return void
      */
-    public function debug($message, array $context = []): void
+    public function debug(string|Stringable $message, array $context = []): void
     {
     }
 
@@ -124,12 +125,12 @@ class Logger implements LoggerInterface
      * It is simpler to forget this method and onl use strictly named method.
      *
      * @param mixed $level The log level.
-     * @param string $message The log message.
+     * @param string|Stringable $message The log message.
      * @param mixed[] $context The log context.
      * @return void
      * @throws Stancer\Exceptions\BadMethodCallException Every time, on every call ! Do not use this method.
      */
-    public function log($level, $message, array $context = []): void
+    public function log(mixed $level, string|Stringable $message, array $context = []): void
     {
         throw new Stancer\Exceptions\BadMethodCallException('This method is not allowed');
     }

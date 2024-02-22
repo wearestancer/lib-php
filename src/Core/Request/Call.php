@@ -41,7 +41,7 @@ class Call extends Stancer\Core\AbstractObject
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [
+    protected array $dataModel = [
         'exception' => [
             'desc' => 'The exception catched during processing',
             'restricted' => true,

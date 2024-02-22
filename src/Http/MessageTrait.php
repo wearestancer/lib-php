@@ -14,17 +14,15 @@ use Psr;
  */
 trait MessageTrait
 {
-    /** @var Psr\Http\Message\StreamInterface */
-    protected $body;
+    protected Psr\Http\Message\StreamInterface $body;
 
     /**
      * @var mixed[]
      * @phpstan-var array<string, array{name: string, values: string[]}>
      */
-    protected $headers = [];
+    protected array $headers = [];
 
-    /** @var string */
-    protected $protocol;
+    protected string $protocol;
 
     /**
      * Add a value to an header.
@@ -33,7 +31,7 @@ trait MessageTrait
      * @param string|string[] $value Header value.
      * @return $this
      */
-    public function addHeader(string $name, $value): self
+    public function addHeader(string $name, string|array $value): static
     {
         $key = strtolower($name);
 
@@ -73,7 +71,7 @@ trait MessageTrait
      *    header. If the header does not appear in the message, this method MUST
      *    return an empty array.
      */
-    public function getHeader($name): array
+    public function getHeader(string $name): array
     {
         if (!$this->hasHeader($name)) {
             return [];
@@ -99,7 +97,7 @@ trait MessageTrait
      *    concatenated together using a comma. If the header does not appear in
      *    the message, this method MUST return an empty string.
      */
-    public function getHeaderLine($name): string
+    public function getHeaderLine(string $name): string
     {
         return implode(', ', $this->getHeader($name));
     }
@@ -144,7 +142,7 @@ trait MessageTrait
      *     name using a case-insensitive string comparison. Returns false if
      *     no matching header name is found in the message.
      */
-    public function hasHeader($name): bool
+    public function hasHeader(string $name): bool
     {
         $key = strtolower($name);
 
@@ -157,7 +155,7 @@ trait MessageTrait
      * @param string $name Header name to remove.
      * @return $this
      */
-    public function removeHeader($name): self
+    public function removeHeader(string $name): static
     {
         $key = strtolower($name);
         unset($this->headers[$key]);
@@ -176,8 +174,7 @@ trait MessageTrait
      * @param string|string[] $value Header value(s).
      * @return static
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public function withAddedHeader($name, $value): Psr\Http\Message\MessageInterface
+    public function withAddedHeader(string $name, $value): static
     {
         $obj = clone $this;
 
@@ -190,8 +187,7 @@ trait MessageTrait
      * @param Psr\Http\Message\StreamInterface $body Body.
      * @return static
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public function withBody(Psr\Http\Message\StreamInterface $body): Psr\Http\Message\MessageInterface
+    public function withBody(Psr\Http\Message\StreamInterface $body): static
     {
         $obj = clone $this;
         $obj->body = $body;
@@ -206,8 +202,7 @@ trait MessageTrait
      * @param string|string[] $value Header value(s).
      * @return static
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public function withHeader($name, $value): Psr\Http\Message\MessageInterface
+    public function withHeader(string $name, $value): static
     {
         return $this->withoutHeader($name)->addHeader($name, $value);
     }
@@ -219,8 +214,7 @@ trait MessageTrait
      * @param string|string[]|null $out Text for replacement.
      * @return static
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public function withModifiedBody($in = '', $out = ''): Psr\Http\Message\MessageInterface
+    public function withModifiedBody(string|array|null $in = '', string|array|null $out = ''): static
     {
         $obj = clone $this;
 
@@ -237,8 +231,7 @@ trait MessageTrait
      * @param string $name Case-insensitive header field name to remove.
      * @return static
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public function withoutHeader($name): Psr\Http\Message\MessageInterface
+    public function withoutHeader(string $name): static
     {
         $obj = clone $this;
 
@@ -251,8 +244,7 @@ trait MessageTrait
      * @param string $version HTTP protocol version.
      * @return static
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public function withProtocolVersion($version): Psr\Http\Message\MessageInterface
+    public function withProtocolVersion(string $version): static
     {
         $obj = clone $this;
         $obj->protocol = $version;

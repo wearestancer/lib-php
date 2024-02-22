@@ -16,7 +16,7 @@ use Stancer;
  * @method ?boolean getDateBirth()
  * @method ?string getResponse()
  * @method ?float getScoreName()
- * @method ?string getStatus()
+ * @method ?\Stancer\Sepa\Check\Status getStatus()
  * @method ?\DateTimeImmutable get_created() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method ?boolean get_date_birth()
@@ -26,7 +26,7 @@ use Stancer;
  * @method ?string get_response()
  * @method ?float get_score_name()
  * @method ?\Stancer\Sepa get_sepa()
- * @method ?string get_status()
+ * @method ?\Stancer\Sepa\Check\Status get_status()
  * @method string get_uri() Get entity resource location.
  *
  * @property-read ?\DateTimeImmutable $created Creation date.
@@ -38,25 +38,25 @@ use Stancer;
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
- * @property-read mixed $jsonSerialize Alias for `Stancer\Sepa\Check::jsonSerialize()`.
- * @property-read mixed $json_serialize Alias for `Stancer\Sepa\Check::jsonSerialize()`.
+ * @property-read ?mixed $jsonSerialize Alias for `Stancer\Sepa\Check::jsonSerialize()`.
+ * @property-read ?mixed $json_serialize Alias for `Stancer\Sepa\Check::jsonSerialize()`.
  * @property-read ?string $response
  * @property-read ?float $scoreName
  * @property-read ?float $score_name
  * @property-read ?\Stancer\Sepa $sepa
- * @property-read ?string $status
+ * @property-read ?\Stancer\Sepa\Check\Status $status
  * @property-read string $uri Entity resource location.
  */
 class Check extends Stancer\Core\AbstractObject
 {
-    /** @var string */
-    protected $endpoint = 'sepa/check';
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
+    final public const ENDPOINT = 'sepa/check';
 
     /**
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [
+    protected array $dataModel = [
         'dateBirth' => [
             'restricted' => true,
             'type' => self::BOOLEAN,
@@ -80,7 +80,7 @@ class Check extends Stancer\Core\AbstractObject
         ],
         'status' => [
             'restricted' => true,
-            'type' => self::STRING,
+            'type' => Stancer\Sepa\Check\Status::class,
         ],
     ];
 
@@ -109,8 +109,7 @@ class Check extends Stancer\Core\AbstractObject
      * @return string|integer|boolean|null|array<string, mixed>
      */
     #[Override]
-    #[ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         $sepa = $this->getSepa();
 
@@ -134,7 +133,7 @@ class Check extends Stancer\Core\AbstractObject
      * @throws Stancer\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
     #[Override]
-    public function send(): Stancer\Core\AbstractObject
+    public function send(): static
     {
         $this->modified[] = 'sepa'; // Mandatory, force `parent::send()` to work.
 

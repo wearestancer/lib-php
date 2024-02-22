@@ -13,12 +13,9 @@ use Psr;
  */
 class GoneException extends ClientException implements ExceptionInterface
 {
-    /** @var string */
-    protected static $defaultMessage = 'Gone';
+    protected static string $defaultMessage = 'Gone';
 
-    /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::ERROR;
+    protected static string $logLevel = Psr\Log\LogLevel::ERROR;
 
-    /** @var string */
-    protected static $status = '410';
+    protected static string $status = '410';
 }

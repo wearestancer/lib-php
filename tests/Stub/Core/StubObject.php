@@ -9,9 +9,10 @@ class StubObject extends Stancer\Core\AbstractObject
 {
     use Stancer\Stub\TestMethodTrait;
 
-    protected $endpoint = 'objects'; // invalid but must be not empty
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
+    final const ENDPOINT = 'objects'; // invalid but must be not empty
 
-    protected $dataModel = [
+    protected array $dataModel = [
         'date1' => [
             'type' => DateTimeInterface::class,
         ],
@@ -27,6 +28,9 @@ class StubObject extends Stancer\Core\AbstractObject
             'format' => Stancer\Core\Type\Helper::DATE_ONLY,
             'list' => true,
             'type' => DateTimeInterface::class,
+        ],
+        'enum' => [
+            'type' => Stancer\Stub\FakeStatus::class,
         ],
         'string1' => [
             'required' => true,
@@ -63,10 +67,6 @@ class StubObject extends Stancer\Core\AbstractObject
             'list' => true,
             'type' => self::STRING,
         ],
-        'string7' => [
-            'allowedValues' => Stancer\Stub\FakeStatus::class,
-            'type' => self::STRING,
-        ],
         'integer1' => [
             'required' => true,
             'type' => self::INTEGER,
@@ -94,10 +94,6 @@ class StubObject extends Stancer\Core\AbstractObject
         'integer5' => [
             'allowedValues' => [1, 2, 3],
             'list' => true,
-            'type' => self::INTEGER,
-        ],
-        'integer6' => [
-            'allowedValues' => Stancer\Stub\FakeOptions::class,
             'type' => self::INTEGER,
         ],
         'object1' => [

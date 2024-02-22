@@ -48,7 +48,7 @@ class Inner extends Stancer\Core\AbstractObject
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [
+    protected array $dataModel = [
         'amount' => [
             'nullable' => false,
             'restricted' => true,
@@ -112,7 +112,12 @@ class Inner extends Stancer\Core\AbstractObject
      *
      * @return string
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Current resource location', nullable: false, restricted: true, type: self::STRING)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Current resource location',
+        nullable: false,
+        restricted: true,
+        type: self::STRING,
+    )]
     public function getUri(): string
     {
         return $this->parent->getUri() . '/' . $this->type;

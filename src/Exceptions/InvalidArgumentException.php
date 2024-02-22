@@ -11,8 +11,7 @@ use Psr;
  */
 class InvalidArgumentException extends Exception implements ExceptionInterface
 {
-    /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::NOTICE;
+    protected static string $logLevel = Psr\Log\LogLevel::NOTICE;
 
     /**
      * Return default message for that kind of exception.

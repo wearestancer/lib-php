@@ -13,12 +13,9 @@ use Psr;
  */
 class BadRequestException extends ClientException implements ExceptionInterface
 {
-    /** @var string */
-    protected static $defaultMessage = 'Bad Request';
+    protected static string $defaultMessage = 'Bad Request';
 
-    /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::CRITICAL;
+    protected static string $logLevel = Psr\Log\LogLevel::CRITICAL;
 
-    /** @var string */
-    protected static $status = '400';
+    protected static string $status = '400';
 }

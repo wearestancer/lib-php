@@ -4,7 +4,6 @@ vendor
 composer.lock
 
 # Tests report
-.cache
 reports
 
 # macOS files

@@ -16,7 +16,7 @@ use Stancer;
  * @method ?\DateTimeImmutable getDateBank() Get delivery date of the funds by the bank.
  * @method ?\DateTimeImmutable getDateRefund() Get date when the API sent the refund request to the bank.
  * @method \Stancer\Payment getPayment() Get refunded payment identifier.
- * @method ?string getStatus() Get refund status.
+ * @method ?\Stancer\Refund\Status getStatus() Get refund status.
  * @method integer get_amount() Get amount to refund.
  * @method ?\DateTimeImmutable get_created() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
@@ -27,7 +27,7 @@ use Stancer;
  * @method string get_entity_name() Get entity name.
  * @method ?string get_id() Get object ID.
  * @method \Stancer\Payment get_payment() Get refunded payment identifier.
- * @method ?string get_status() Get refund status.
+ * @method ?\Stancer\Refund\Status get_status() Get refund status.
  * @method string get_uri() Get entity resource location.
  * @method boolean is_modified() Indicate if the current object is modified.
  * @method $this set_amount(float $amount) Update amount.
@@ -50,7 +50,7 @@ use Stancer;
  * @property-read boolean $isModified Alias for `Stancer\Refund::isModified()`.
  * @property-read boolean $is_modified Alias for `Stancer\Refund::isModified()`.
  * @property-read \Stancer\Payment $payment Refunded payment identifier.
- * @property-read ?string $status Refund status.
+ * @property-read ?\Stancer\Refund\Status $status Refund status.
  * @property-read string $uri Entity resource location.
  */
 #[Stancer\Core\Documentation\AddMethod('setPayment', ['Stancer\Payment $payment'], '$this', stan: true)]
@@ -59,14 +59,14 @@ class Refund extends Stancer\Core\AbstractObject
     use Stancer\Traits\AmountTrait;
     use Stancer\Traits\SearchTrait;
 
-    /** @var string */
-    protected $endpoint = 'refunds';
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
+    final public const ENDPOINT = 'refunds';
 
     /**
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [
+    protected array $dataModel = [
         'amount' => [
             'desc' => 'Amount to refund',
             'exportable' => true,
@@ -104,7 +104,7 @@ class Refund extends Stancer\Core\AbstractObject
         'status' => [
             'desc' => 'Refund status',
             'restricted' => true,
-            'type' => self::STRING,
+            'type' => Stancer\Refund\Status::class,
         ],
     ];
 
@@ -130,7 +130,7 @@ class Refund extends Stancer\Core\AbstractObject
      * @throws Stancer\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
     #[Override]
-    public function send(): Stancer\Core\AbstractObject
+    public function send(): static
     {
         $payment = $this->getPayment();
         $modified = $payment->modified;

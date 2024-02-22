@@ -8,6 +8,5 @@ namespace Stancer\Http\Verb;
  */
 class Delete extends AbstractVerb
 {
-    /** @var boolean */
-    protected $isAllowed = true;
+    protected bool $isAllowed = true;
 }
