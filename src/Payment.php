@@ -295,7 +295,7 @@ class Payment extends Stancer\Core\AbstractObject
     {
         $currency = $this->getCurrency();
 
-        if ($currency && $method && $method === 'sepa' && $currency->value !== 'eur') {
+        if ($currency && $method && $method === 'sepa' && $currency !== Stancer\Currency::EUR) {
             $message = sprintf('You can not use "%s" method with "%s" currency.', $method, $currency->value);
 
             throw new Stancer\Exceptions\InvalidArgumentException($message);
@@ -831,7 +831,7 @@ class Payment extends Stancer\Core\AbstractObject
 
         $methods = $this->getMethodsAllowed();
 
-        if (in_array(Stancer\Payment\MethodsAllowed::SEPA, $methods, true) && $new->value !== 'eur') {
+        if (in_array(Stancer\Payment\MethodsAllowed::SEPA, $methods, true) && $new !== Stancer\Currency::EUR) {
             $message = sprintf('You can not use "%s" currency with "%s" method.', $new->value, 'sepa');
 
             throw new Stancer\Exceptions\InvalidCurrencyException($message);
@@ -878,7 +878,7 @@ class Payment extends Stancer\Core\AbstractObject
             !$method
             && $currency
             && in_array(Stancer\Payment\MethodsAllowed::SEPA, $new, true)
-            && $currency->value !== 'eur'
+            && $currency !== Stancer\Currency::EUR
         ) {
             $message = sprintf('You can not use "%s" method with "%s" currency.', 'sepa', $currency->value);
 
