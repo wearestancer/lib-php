@@ -18,17 +18,17 @@ class Stream implements Psr\Http\Message\StreamInterface
     /**
      * @var string Stream content.
      */
-    protected $content = '';
+    protected string $content = '';
 
     /**
      * @var integer Total length.
      */
-    protected $size = 0;
+    protected int $size = 0;
 
     /**
      * @var integer Actual position.
      */
-    protected $position = 0;
+    protected int $position = 0;
 
     /**
      * @param string $content Content.
@@ -55,7 +55,9 @@ class Stream implements Psr\Http\Message\StreamInterface
      */
     public function __toString(): string
     {
-        return $this->rewind()->getContents();
+        $this->rewind();
+
+        return $this->getContents();
     }
 
     /**
@@ -63,8 +65,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      *
      * @return void
      */
-    #[\ReturnTypeWillChange]
-    public function close()
+    public function close(): void
     {
     }
 
@@ -119,7 +120,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      *
      * @phpstan-return array{}|null
      */
-    public function getMetadata($key = null): ?array
+    public function getMetadata(?string $key = null): ?array
     {
         if ($key) {
             return null;
@@ -177,7 +178,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      * @return string Returns the data read from the stream, or an empty string
      *   if no bytes are available.
      */
-    public function read($length): string
+    public function read(int $length): string
     {
         if (!$length) {
             return '';
@@ -198,11 +199,11 @@ class Stream implements Psr\Http\Message\StreamInterface
      *
      * @see seek()
      * @link http://www.php.net/manual/en/function.fseek.php
-     * @return $this
+     * @return void
      */
-    public function rewind(): self
+    public function rewind(): void
     {
-        return $this->seek(0);
+        $this->seek(0);
     }
 
     /**
@@ -215,9 +216,9 @@ class Stream implements Psr\Http\Message\StreamInterface
      *   PHP $whence values for `fseek()`.  SEEK_SET: Set position equal to
      *   offset bytes SEEK_CUR: Set position to current location plus offset
      *   SEEK_END: Set position to end-of-stream plus offset.
-     * @return $this
+     * @return void
      */
-    public function seek($offset, $whence = SEEK_SET): self
+    public function seek(int $offset, int $whence = SEEK_SET): void
     {
         if ($whence === SEEK_CUR) {
             $this->position += $offset;
@@ -238,8 +239,6 @@ class Stream implements Psr\Http\Message\StreamInterface
         if ($this->position > $this->size) {
             $this->position = $this->size;
         }
-
-        return $this;
     }
 
     /**
@@ -259,7 +258,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      * @return integer Returns the number of bytes written to the stream.
      * @throws Stancer\Exceptions\BadMethodCallException For every call.
      */
-    public function write($string): int
+    public function write(string $string): int
     {
         throw new Stancer\Exceptions\BadMethodCallException('This method is not implemented.');
     }

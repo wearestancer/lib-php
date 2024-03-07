@@ -65,7 +65,7 @@ class Sepa extends Stancer\Tests\atoum
                     ->float($this->testedInstance->getCheck()->getScoreName())
                         ->isIdenticalTo(0.32)
 
-                    ->string($this->testedInstance->getCheck()->getStatus())
+                    ->enum($this->testedInstance->getCheck()->getStatus())
                         ->isIdenticalTo(Stancer\Sepa\Check\Status::CHECKED)
 
                     // Property based style
@@ -84,7 +84,7 @@ class Sepa extends Stancer\Tests\atoum
                     ->float($this->testedInstance->check->scoreName)
                         ->isIdenticalTo(0.32)
 
-                    ->string($this->testedInstance->check->status)
+                    ->enum($this->testedInstance->check->status)
                         ->isIdenticalTo(Stancer\Sepa\Check\Status::CHECKED)
         ;
     }
@@ -584,8 +584,8 @@ class Sepa extends Stancer\Tests\atoum
                     ->variable($this->testedInstance->getCheck()->getScoreName())
                         ->isNull
 
-                    ->string($this->testedInstance->getCheck()->getStatus())
-                        ->isIdenticalTo(Stancer\Sepa\Check\Status::CHECK_SENT)
+                    ->enum($this->testedInstance->getCheck()->getStatus())
+                        ->isIdenticalTo(Stancer\Sepa\Check\Status::SENT)
 
                     ->mock($client)
                         ->call('request')
@@ -644,7 +644,7 @@ class Sepa extends Stancer\Tests\atoum
                     ->float($this->testedInstance->getCheck()->getScoreName())
                         ->isIdenticalTo(0.32)
 
-                    ->string($this->testedInstance->getCheck()->getStatus())
+                    ->enum($this->testedInstance->getCheck()->getStatus())
                         ->isIdenticalTo(Stancer\Sepa\Check\Status::CHECKED)
 
                     ->mock($client)

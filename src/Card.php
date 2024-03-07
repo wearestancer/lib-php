@@ -5,6 +5,7 @@ namespace Stancer;
 
 use DateInterval;
 use DateTimeImmutable;
+use SensitiveParameter;
 use Stancer;
 
 /**
@@ -95,14 +96,14 @@ use Stancer;
  */
 class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\PaymentMeansInterface
 {
-    /** @var string */
-    protected $endpoint = 'cards';
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
+    final public const ENDPOINT = 'cards';
 
     /**
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [
+    protected array $dataModel = [
         'brand' => [
             'desc' => 'Card brand',
             'restricted' => true,
@@ -291,7 +292,11 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      *
      * @return boolean
      */
-    #[Stancer\Core\Documentation\FormatProperty(fullDescription: 'Is the card tokenized?', type: self::BOOLEAN, value: false)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        fullDescription: 'Is the card tokenized?',
+        type: self::BOOLEAN,
+        value: false,
+    )]
     public function getTokenize(): bool
     {
         $tokenize = parent::getTokenize();
@@ -367,7 +372,7 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      * @throws Stancer\Exceptions\InvalidCardNumberException When the card number is invalid.
      */
     public function setNumber(
-        #[\SensitiveParameter]
+        #[SensitiveParameter]
         string $number
     ): self {
         $spaceless = preg_replace('/\s/', '', $number);

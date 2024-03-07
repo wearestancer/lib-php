@@ -85,7 +85,7 @@ class AbstractObject extends Stancer\Tests\atoum
                 })
                     ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                     ->message
-                        ->isIdenticalTo('You are not allowed to modify the endpoint.')
+                        ->isIdenticalTo('Method "mock\Stancer\Core\AbstractObject::setEndpoint()" unknown')
 
                 ->exception(function () {
                     $this->testedInstance->setId(uniqid());

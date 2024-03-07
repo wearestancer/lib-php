@@ -13,14 +13,11 @@ use Psr;
  */
 class NotFoundException extends ClientException implements ExceptionInterface
 {
-    /** @var string */
-    protected static $defaultMessage = 'Not Found';
+    protected static string $defaultMessage = 'Not Found';
 
-    /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::ERROR;
+    protected static string $logLevel = Psr\Log\LogLevel::ERROR;
 
-    /** @var string */
-    protected static $status = '404';
+    protected static string $status = '404';
 
     /**
      * Return default message for that kind of exception.

@@ -13,14 +13,11 @@ use Psr;
  */
 class InternalServerErrorException extends ServerException implements ExceptionInterface
 {
-    /** @var string */
-    protected static $defaultMessage = 'Internal Server Error';
+    protected static string $defaultMessage = 'Internal Server Error';
 
-    /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::CRITICAL;
+    protected static string $logLevel = Psr\Log\LogLevel::CRITICAL;
 
-    /** @var string */
-    protected static $status = '500';
+    protected static string $status = '500';
 
     /**
      * Return default message for that kind of exception.

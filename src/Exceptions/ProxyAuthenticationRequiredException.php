@@ -13,12 +13,9 @@ use Psr;
  */
 class ProxyAuthenticationRequiredException extends ClientException implements ExceptionInterface
 {
-    /** @var string */
-    protected static $defaultMessage = 'Proxy Authentication Required';
+    protected static string $defaultMessage = 'Proxy Authentication Required';
 
-    /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::ERROR;
+    protected static string $logLevel = Psr\Log\LogLevel::ERROR;
 
-    /** @var string */
-    protected static $status = '407';
+    protected static string $status = '407';
 }

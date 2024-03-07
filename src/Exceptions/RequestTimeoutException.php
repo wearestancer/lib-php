@@ -13,12 +13,9 @@ use Psr;
  */
 class RequestTimeoutException extends ClientException implements ExceptionInterface
 {
-    /** @var string */
-    protected static $defaultMessage = 'Request Timeout';
+    protected static string $defaultMessage = 'Request Timeout';
 
-    /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::ERROR;
+    protected static string $logLevel = Psr\Log\LogLevel::ERROR;
 
-    /** @var string */
-    protected static $status = '408';
+    protected static string $status = '408';
 }

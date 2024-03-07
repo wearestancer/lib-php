@@ -41,6 +41,7 @@ trait SearchTrait
     public static function list(array $terms): Generator
     {
         $element = new static(); // Mandatory for requests.
+        /** @phpstan-var 'disputes'|'payments'|'refunds' $property */
         $property = strtolower($element->getEntityName() . 's');
 
         return $element->search(static::class, $property, $terms);
@@ -50,7 +51,7 @@ trait SearchTrait
      * Inner wrapper for `list` method.
      *
      * @param string $class Base class.
-     * @param string $property Searched property.
+     * @param 'disputes'|'payments'|'refunds' $property Searched property.
      * @param array $terms Search terms.
      * @return Generator<static>
      * @throws Stancer\Exceptions\InvalidSearchFilterException When `$terms` is invalid.
@@ -60,7 +61,7 @@ trait SearchTrait
      * @throws Stancer\Exceptions\InvalidSearchLimitException When `limit` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchStartException When `start` is invalid.
      *
-     * @phpstan-param class-string<static> $class
+     * @phpstan-param class-string<Stancer\Core\AbstractObject> $class Base class.
      * @phpstan-param SearchFilters $terms
      */
     protected function search(string $class, string $property, array $terms): Generator
@@ -148,6 +149,7 @@ trait SearchTrait
                     if (!$tmp) {
                         $more = false;
                     } else {
+                        /** @phpstan-var SearchResult $results */
                         $results = json_decode($tmp, true);
 
                         if (!is_array($results) || !array_key_exists($property, $results)) {
@@ -156,6 +158,7 @@ trait SearchTrait
                             $more = $results['range']['has_more'];
                             $params['start'] += $results['range']['limit'];
 
+                            /** @var array<string, mixed> $data */
                             foreach ($results[$property] as $data) {
                                 if ($until && $data['created'] > $until) {
                                     $more = false;
@@ -198,9 +201,8 @@ trait SearchTrait
      * @phpstan-param DateTimeInterface|integer $value Parameter value.
      * @phpstan-param class-string<Stancer\Exceptions\Exception> $exception Exception to throw.
      */
-    #[Stancer\WillChange\PHP8_0\MixedType]
     protected static function validateDateRelativeFilter(
-        $value,
+        mixed $value,
         string $name,
         string $exception,
         bool $allowPeriod = false

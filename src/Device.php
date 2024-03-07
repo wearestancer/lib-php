@@ -67,7 +67,7 @@ class Device extends Stancer\Core\AbstractObject
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [
+    protected array $dataModel = [
         'city' => [
             'desc' => 'City of the payer',
             'restricted' => true,

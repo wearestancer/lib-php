@@ -2,11 +2,26 @@
 
 namespace Stancer\Tests\functional;
 
+use atoum;
+use closure;
 use Stancer;
 
 class TestCase extends Stancer\Tests\atoum
 {
-    protected $config;
+    protected Stancer\Config $config;
+
+    public function __construct(
+        ?atoum\atoum\adapter $adapter = null,
+        ?atoum\atoum\annotations\extractor $annotationExtractor = null,
+        ?atoum\atoum\asserter\generator $asserterGenerator = null,
+        ?atoum\atoum\test\assertion\manager $assertionManager = null,
+        ?closure $reflectionClassFactory = null
+    )
+    {
+        parent::__construct($adapter, $annotationExtractor, $asserterGenerator, $assertionManager, $reflectionClassFactory);
+
+        $this->config = Stancer\Config::setGlobal(new Stancer\Config([]));
+    }
 
     public function beforeTestMethod($testMethod)
     {
@@ -23,11 +38,7 @@ class TestCase extends Stancer\Tests\atoum
             }
         }
 
-        if (!$this->config) {
-            $this->config = Stancer\Config::setGlobal(new Stancer\Config([$env['API_KEY']]));
-        }
-
-        $this->config->setHost($env['API_HOST']);
+        $this->config->setKeys($env['API_KEY'])->setHost($env['API_HOST']);
     }
 
     public function getDisputedCardNumber()

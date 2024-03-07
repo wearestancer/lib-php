@@ -13,14 +13,11 @@ use Psr;
  */
 class NotAuthorizedException extends ClientException implements ExceptionInterface
 {
-    /** @var string */
-    protected static $defaultMessage = 'Unauthorized';
+    protected static string $defaultMessage = 'Unauthorized';
 
-    /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::CRITICAL;
+    protected static string $logLevel = Psr\Log\LogLevel::CRITICAL;
 
-    /** @var string */
-    protected static $status = '401';
+    protected static string $status = '401';
 
     /**
      * Return default message for that kind of exception.

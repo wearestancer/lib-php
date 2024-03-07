@@ -13,7 +13,7 @@ use Stancer;
  * @method ?\DateTimeImmutable getCreated() Get creation date.
  * @method string getCurrency()
  * @method \Stancer\Payout getParent()
- * @method string getType()
+ * @method 'disputes'|'payments'|'refunds' getType()
  * @method integer get_amount()
  * @method ?\DateTimeImmutable get_created() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
@@ -22,7 +22,7 @@ use Stancer;
  * @method string get_entity_name() Get entity name.
  * @method ?string get_id() Get object ID.
  * @method \Stancer\Payout get_parent()
- * @method string get_type()
+ * @method 'disputes'|'payments'|'refunds' get_type()
  * @method string get_uri() Get current resource location.
  *
  * @property-read integer $amount
@@ -35,7 +35,7 @@ use Stancer;
  * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
  * @property-read \Stancer\Payout $parent
- * @property-read string $type
+ * @property-read 'disputes'|'payments'|'refunds' $type
  * @property-read string $uri Current resource location.
  */
 class Inner extends Stancer\Core\AbstractObject
@@ -48,7 +48,7 @@ class Inner extends Stancer\Core\AbstractObject
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [
+    protected array $dataModel = [
         'amount' => [
             'nullable' => false,
             'restricted' => true,
@@ -66,6 +66,11 @@ class Inner extends Stancer\Core\AbstractObject
             'type' => Stancer\Payout::class,
         ],
         'type' => [
+            'allowedValues' => [
+                'disputes',
+                'payments',
+                'refunds',
+            ],
             'nullable' => false,
             'exportable' => false,
             'restricted' => true,
@@ -112,7 +117,12 @@ class Inner extends Stancer\Core\AbstractObject
      *
      * @return string
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Current resource location', nullable: false, restricted: true, type: self::STRING)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Current resource location',
+        nullable: false,
+        restricted: true,
+        type: self::STRING,
+    )]
     public function getUri(): string
     {
         return $this->parent->getUri() . '/' . $this->type;

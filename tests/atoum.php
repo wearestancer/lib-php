@@ -29,19 +29,30 @@ class atoum extends base\test
         }
     }
 
+    public function choose(array $items, array $exclude = []): mixed
+    {
+        $item = $items[array_rand($items)];
+
+        if (in_array($item, $exclude, true)) {
+            return $this->choose($items, $exclude);
+        }
+
+        return $item;
+    }
+
     public function fake(): Faker\Generator
     {
         return Faker\Factory::create();
     }
 
-    public function getFixture(string $dir, string $file): string
+    public function getFixture(string ...$parts): string
     {
-        return file_get_contents(__DIR__ . '/fixtures/' . $dir . '/' . $file . '.json');
+        return file_get_contents(__DIR__ . '/fixtures/' . implode('/', $parts) . '.json');
     }
 
-    public function getFixtureData(string $dir, string $file): array
+    public function getFixtureData(string ...$parts): array
     {
-        return json_decode($this->getFixture($dir, $file), true);
+        return json_decode($this->getFixture(...$parts), true);
     }
 
     public function getRandomDate(int $min, int $max = null): string
@@ -94,7 +105,20 @@ class atoum extends base\test
 
         $len = random_int($min, $max);
 
-        return bin2hex(random_bytes(floor($len / 2)));
+        if (!$len) {
+            return '';
+        }
+
+        $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+        $charlen = strlen($characters) - 1;
+        $randomString = '';
+
+        for ($i = 0; $i < $len; $i++) {
+            $index = rand(0, $charlen);
+            $randomString .= $characters[$index];
+        }
+
+        return $randomString;
     }
 
     public function getUuid(): string
@@ -119,50 +143,42 @@ class atoum extends base\test
         return $config;
     }
 
-    #[Stancer\WillChange\PHP8_1\NewInInitializers]
     public function mockEmptyJsonResponse(
-        Psr\Http\Message\ResponseInterface $response = null
+        Psr\Http\Message\ResponseInterface $response = new mock\Stancer\Http\Response(200)
     ): Psr\Http\Message\ResponseInterface
     {
         return $this->mockResponse('{}', $response);
     }
 
-    #[Stancer\WillChange\PHP8_1\NewInInitializers]
     public function mockJsonResponse(
         string $dir,
         string $file,
-        Psr\Http\Message\ResponseInterface $response = null
+        Psr\Http\Message\ResponseInterface $response = new mock\Stancer\Http\Response(200)
     ): Psr\Http\Message\ResponseInterface
     {
         return $this->mockResponse($this->getFixture($dir, $file), $response);
     }
 
-    #[Stancer\WillChange\PHP8_1\NewInInitializers]
     public function mockJsonResponses(
         array $files,
-        Psr\Http\Message\ResponseInterface $response = null
+        Psr\Http\Message\ResponseInterface $response = new mock\Stancer\Http\Response(200)
     ): Psr\Http\Message\ResponseInterface
     {
-        $resp = $response ?? new mock\Stancer\Http\Response(200);
-
         foreach ($files as $file) {
-            $this->calling($resp)->getBody[] = new Stancer\Http\Stream($this->getFixture(...$file));
+            $this->calling($response)->getBody[] = new Stancer\Http\Stream($this->getFixture(...$file));
         }
 
-        return $resp;
+        return $response;
     }
 
-    #[Stancer\WillChange\PHP8_1\NewInInitializers]
     public function mockResponse(
         string $body,
-        Psr\Http\Message\ResponseInterface $response = null
+        Psr\Http\Message\ResponseInterface $response = new mock\Stancer\Http\Response(200)
     ): Psr\Http\Message\ResponseInterface
     {
-        $resp = $response ?? new mock\Stancer\Http\Response(200);
+        $this->calling($response)->getBody = new Stancer\Http\Stream($body);
 
-        $this->calling($resp)->getBody = new Stancer\Http\Stream($body);
-
-        return $resp;
+        return $response;
     }
 
     public function mockRequestOptions(Stancer\Config $config, array $more = []): array

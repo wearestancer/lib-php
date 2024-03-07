@@ -11,12 +11,9 @@ use Psr;
  */
 class RedirectionException extends HttpException implements ExceptionInterface
 {
-    /** @var string */
-    protected static $defaultMessage = 'Redirection';
+    protected static string $defaultMessage = 'Redirection';
 
-    /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::WARNING;
+    protected static string $logLevel = Psr\Log\LogLevel::WARNING;
 
-    /** @var string */
-    protected static $status = '3xx';
+    protected static string $status = '3xx';
 }

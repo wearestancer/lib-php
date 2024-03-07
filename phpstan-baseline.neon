@@ -1,27 +1,17 @@
 parameters:
 	ignoreErrors:
 		-
-			message: "#^Call to function property_exists\\(\\) with \\$this\\(Stancer\\\\Core\\\\AbstractObject\\) and 'dataModel' will always evaluate to true\\.$#"
-			count: 2
-			path: src/Core/AbstractObject.php
-
-		-
-			message: "#^Invalid type object to throw\\.$#"
-			count: 4
-			path: src/Core/AbstractObject.php
-
-		-
-			message: "#^Property Stancer\\\\Core\\\\AbstractObject\\:\\:\\$apiData \\(array\\<string, mixed\\>\\) does not accept mixed\\.$#"
-			count: 1
-			path: src/Core/AbstractObject.php
-
-		-
 			message: "#^Call to function method_exists\\(\\) with class\\-string\\<static\\(Stancer\\\\Payment\\)\\> and 'filterListParams' will always evaluate to true\\.$#"
 			count: 1
 			path: src/Payment.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of static method Stancer\\\\Payment\\:\\:validateDateRelativeFilter\\(\\) expects DateTimeInterface\\|int, DatePeriod\\|DateTimeInterface\\|int\\|string given\\.$#"
+			message: "#^Parameter \\#1 \\$value of static method Stancer\\\\Payment\\:\\:validateDateRelativeFilter\\(\\) expects DateTimeInterface\\|int, DatePeriod\\<DateTimeInterface, DateTimeInterface\\|null, int\\>\\|DateTimeInterface\\|int\\|string given\\.$#"
+			count: 1
+			path: src/Payment.php
+
+		-
+			message: "#^PHPDoc tag @var with type array\\{account_holder_name\\?\\: string, account_number\\?\\: string, id\\?\\: string, source\\: array\\{id\\?\\: string\\}\\|string\\} is not subtype of type array\\{\\}\\|array\\{id\\: string\\}\\.$#"
 			count: 1
 			path: src/Payment.php
 
@@ -29,8 +19,3 @@ parameters:
 			message: "#^Parameter \\#1 \\$data \\(array\\{amount\\: int, created\\: int, currency\\: string, date_bank\\?\\: int, date_paym\\: int, fees\\?\\: int, id\\: string, live_mode\\: bool, \\.\\.\\.\\}\\) of method Stancer\\\\Payout\\:\\:hydrate\\(\\) should be contravariant with parameter \\$data \\(array\\<string, mixed\\>\\) of method Stancer\\\\Core\\\\AbstractObject\\:\\:hydrate\\(\\)$#"
 			count: 1
 			path: src/Payout.php
-
-		-
-			message: "#^Parameter \\#1 \\$class of method Stancer\\\\Payout\\\\Details\\\\Inner\\:\\:search\\(\\) expects class\\-string\\<Stancer\\\\Payout\\\\Details\\\\Inner\\>, 'Stancer\\\\\\\\Dispute'\\|'Stancer\\\\\\\\Payment'\\|'Stancer\\\\\\\\Refund' given\\.$#"
-			count: 1
-			path: src/Payout/Details/Inner.php

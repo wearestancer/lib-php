@@ -6,20 +6,25 @@ use Stancer;
 
 class Auth extends Stancer\Tests\atoum
 {
+    public function randomStatus(): Stancer\Auth\Status
+    {
+        return $this->choose(Stancer\Auth\Status::cases());
+    }
+
     public function testClass()
     {
         $this
             ->currentlyTestedClass
                 ->extends(Stancer\Core\AbstractObject::class)
 
-            ->string($this->newTestedInstance->getStatus())
+            ->enum($this->newTestedInstance->getStatus())
                 ->isIdenticalTo(Stancer\Auth\Status::REQUEST)
 
             ->array($this->testedInstance->jsonSerialize())
                 ->hasSize(1)
                 ->hasKey('status')
                 ->string['status']
-                    ->isIdenticalTo(Stancer\Auth\Status::REQUEST)
+                    ->isIdenticalTo('request')
         ;
     }
 
@@ -137,35 +142,35 @@ class Auth extends Stancer\Tests\atoum
     public function testGetStatus()
     {
         $this
-            ->given($status = uniqid())
+            ->given($status = $this->randomStatus())
             ->and($data = ['status' => $status])
 
             ->if($this->newTestedInstance)
             ->then
-                ->string($this->testedInstance->getStatus())
+                ->enum($this->testedInstance->getStatus())
                     ->isIdenticalTo(Stancer\Auth\Status::REQUEST)
 
-                ->string($this->testedInstance->status)
+                ->enum($this->testedInstance->status)
                     ->isIdenticalTo(Stancer\Auth\Status::REQUEST)
 
-                ->string($this->testedInstance->get_status())
+                ->enum($this->testedInstance->get_status())
                     ->isIdenticalTo(Stancer\Auth\Status::REQUEST)
 
-                ->string($this->testedInstance->status)
+                ->enum($this->testedInstance->status)
                     ->isIdenticalTo(Stancer\Auth\Status::REQUEST)
 
             ->if($this->testedInstance->hydrate($data))
             ->then
-                ->string($this->testedInstance->getStatus())
+                ->enum($this->testedInstance->getStatus())
                     ->isIdenticalTo($status)
 
-                ->string($this->testedInstance->status)
+                ->enum($this->testedInstance->status)
                     ->isIdenticalTo($status)
 
-                ->string($this->testedInstance->get_status())
+                ->enum($this->testedInstance->get_status())
                     ->isIdenticalTo($status)
 
-                ->string($this->testedInstance->status)
+                ->enum($this->testedInstance->status)
                     ->isIdenticalTo($status)
         ;
     }

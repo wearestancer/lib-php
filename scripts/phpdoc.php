@@ -19,6 +19,38 @@ $defaultModel = [
 ];
 
 /**
+ * Format a PHPDoc line.
+ *
+ * @param string $line The line to format.
+ * @return string[]
+ */
+function formatDocLine(string $line): array
+{
+    if (strlen($line) > 117) {
+        $lines = explode('|||', wordwrap($line, 110, '|||'));
+        $first = array_shift($lines);
+
+        return [
+            ' * ' . $first,
+            ...array_map(fn($l) => ' *   ' . $l, $lines),
+        ];
+    }
+
+    return [' * ' . $line];
+}
+
+/**
+ * Format the PHPDoc block.
+ *
+ * @param string|string[] $lines PHPDoc lines.
+ * @return string[]
+ */
+function formatPhpDoc(array $lines): array
+{
+    return array_merge(...array_values(array_map('formatDocLine', $lines)));
+}
+
+/**
  * Prepare parameter/property data.
  *
  * Will define type, return type and descriptions for each line of documentation.
@@ -48,11 +80,19 @@ function prepareData(string $action, array $data): array
 
         $types = is_array($data['type']) ? $data['type'] : [$data['type']];
         $rewriteTypes = function (string $value): string {
-            if ($value === 'bool') {
-                return 'boolean';
+            $val = str_replace(['?', '\\'], '', $value);
+            $isNullable = strpos($value, '?') === 0;
+            $isEscaped = strpos($value, '\\') === 0;
+
+            if ($val === 'bool') {
+                return ($isNullable ? '?': '') . 'boolean';
             }
 
-            if (in_array($value, ['$this', 'array', 'boolean', 'float', 'integer', 'mixed', 'string'], true)) {
+            if (in_array($val, ['$this', 'array', 'boolean', 'float', 'integer', 'mixed', 'string'], true)) {
+                return $value;
+            }
+
+            if ($isEscaped) {
                 return $value;
             }
 
@@ -99,7 +139,9 @@ function prepareData(string $action, array $data): array
 // Initialize specific classes.
 $classes = [
     Stancer\Config::class => [
-        'instance' => [],
+        'instance' => [
+            [],
+        ],
     ],
     Stancer\Core\AbstractObject::class => [
         'instance' => new class() extends Stancer\Core\AbstractObject implements Documentation {},
@@ -107,6 +149,17 @@ $classes = [
         'throws' => [
             [Stancer\Exceptions\BadMethodCallException::class, 'when calling an unknown method'],
             [Stancer\Exceptions\BadPropertyAccessException::class, 'when calling an unknown property'],
+        ],
+    ],
+    Stancer\Http\Request::class => [
+        'instance' => [
+            'GET',
+            'http://127.0.0.1'
+        ],
+    ],
+    Stancer\Http\Response::class => [
+        'instance' => [
+            200,
         ],
     ],
 ];
@@ -128,23 +181,14 @@ foreach ($iterator as $file) {
                 continue;
             }
 
-            // the documentation helper...
-            if (strpos($className, 'Stancer\\Core\\Documentation\\') !== false) {
-                continue;
-            }
+            $reflect = new ReflectionClass($className);
+            $traits = array_keys($reflect->getTraits());
 
-            // the HTTP client (as it does not have magical properties)...
-            if (strpos($className, 'Stancer\\Http\\') !== false) {
-                continue;
-            }
-
-            // interfaces, for the same reason...
-            if (strpos($className, 'Stancer\\Interfaces\\') !== false) {
-                continue;
-            }
-
-            // and traits, same again.
-            if (strpos($className, 'Stancer\\Traits\\') !== false) {
+            if (
+                $className !== Stancer\Core\AbstractObject::class
+                && !$reflect->isSubclassOf(Stancer\Core\AbstractObject::class)
+                && !in_array(Stancer\Traits\AliasTrait::class, $traits, true)
+            ) {
                 continue;
             }
 
@@ -172,7 +216,7 @@ foreach ($classes as $className => $classData) {
         if ($classData['instance'] instanceof Documentation) {
             $obj = $classData['instance'];
         } else {
-            $obj = new $className($classData['instance']);
+            $obj = new $className(...$classData['instance']);
         }
     } else {
         $obj = new $className();
@@ -561,11 +605,18 @@ foreach ($classes as $className => $classData) {
                     array_push($lines, $last);
                 }
 
-                $lines = array_merge($lines, array_map(fn($l) => ' * ' . $l, $doc));
+                $lines = array_merge($lines, formatPhpDoc($doc));
             }
 
             $parsingTags = true;
-        } elseif ($line !== ' *' || !$parsingTags) {
+        } elseif ($line === ' */') {
+            if (!$parsingTags) {
+                $lines = array_merge($lines, formatPhpDoc($doc));
+            }
+
+            $lines[] = ' */';
+            $parsingTags = false;
+        } elseif (!$parsingTags) {
             $lines[] = $line;
         }
     }

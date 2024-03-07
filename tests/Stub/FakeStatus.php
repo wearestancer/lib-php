@@ -2,12 +2,9 @@
 
 namespace Stancer\Stub;
 
-use Stancer;
-
-#[Stancer\WillChange\PHP8_1\Enumeration]
-class FakeStatus
+enum FakeStatus: string
 {
-    public const ACTIVE = 'active';
-    public const DONE = 'done';
-    public const PENDING = 'pending';
+    case ACTIVE = 'active';
+    case DONE = 'done';
+    case PENDING = 'pending';
 }

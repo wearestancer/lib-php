@@ -7,13 +7,6 @@ $runner
 
 // Extensions
 
-// autoloop
-$runner
-    ->getExtension(atoum\atoum\autoloop\extension::class)
-        ->setWatchedFiles(array(__DIR__ . '/src', __DIR__ . '/tests/Stub'))
-;
-
-
 // Reports (and bonus branch coverage)
 if (extension_loaded('xdebug') === true) {
     // Show default report

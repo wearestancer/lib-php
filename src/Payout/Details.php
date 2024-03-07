@@ -46,22 +46,70 @@ use Stancer;
  * @property-read ?\Stancer\Payout\Details\Inner $refunds Refunds details.
  * @property-read string $uri Entity resource location.
  */
-#[Stancer\Core\Documentation\AddMethod('disputes', ['array $terms'], '\Generator<Stancer\Dispute>', description: 'List every disputes in the payout.')]
-#[Stancer\Core\Documentation\AddMethod('listDisputes', ['array $terms'], '\Generator<Stancer\Dispute>', description: 'List every disputes in the payout.')]
-#[Stancer\Core\Documentation\AddMethod('listDisputes', ['SearchFilters $terms'], '\Generator<Stancer\Dispute>', description: 'List every disputes in the payout.', stan: true)]
-#[Stancer\Core\Documentation\AddMethod('payments', ['array $terms'], '\Generator<Stancer\Payment>', description: 'List every payments in the payout.')]
-#[Stancer\Core\Documentation\AddMethod('listPayments', ['array $terms'], '\Generator<Stancer\Payment>', description: 'List every payments in the payout.')]
-#[Stancer\Core\Documentation\AddMethod('listPayments', ['SearchFilters $terms'], '\Generator<Stancer\Payment>', description: 'List every payments in the payout.', stan: true)]
-#[Stancer\Core\Documentation\AddMethod('refunds', ['array $terms'], '\Generator<Stancer\Refund>', description: 'List every refunds in the payout.')]
-#[Stancer\Core\Documentation\AddMethod('listRefunds', ['array $terms'], '\Generator<Stancer\Refund>', description: 'List every refunds in the payout.')]
-#[Stancer\Core\Documentation\AddMethod('listRefunds', ['SearchFilters $terms'], '\Generator<Stancer\Refund>', description: 'List every refunds in the payout.', stan: true)]
+#[Stancer\Core\Documentation\AddMethod(
+    'disputes',
+    ['array $terms'],
+    '\Generator<Stancer\Dispute>',
+    description: 'List every disputes in the payout.',
+)]
+#[Stancer\Core\Documentation\AddMethod(
+    'listDisputes',
+    ['array $terms'],
+    '\Generator<Stancer\Dispute>',
+    description: 'List every disputes in the payout.',
+)]
+#[Stancer\Core\Documentation\AddMethod(
+    'listDisputes',
+    ['SearchFilters $terms'],
+    '\Generator<Stancer\Dispute>',
+    description: 'List every disputes in the payout.',
+    stan: true,
+)]
+#[Stancer\Core\Documentation\AddMethod(
+    'payments',
+    ['array $terms'],
+    '\Generator<Stancer\Payment>',
+    description: 'List every payments in the payout.',
+)]
+#[Stancer\Core\Documentation\AddMethod(
+    'listPayments',
+    ['array $terms'],
+    '\Generator<Stancer\Payment>',
+    description: 'List every payments in the payout.',
+)]
+#[Stancer\Core\Documentation\AddMethod(
+    'listPayments',
+    ['SearchFilters $terms'],
+    '\Generator<Stancer\Payment>',
+    description: 'List every payments in the payout.',
+    stan: true,
+)]
+#[Stancer\Core\Documentation\AddMethod(
+    'refunds',
+    ['array $terms'],
+    '\Generator<Stancer\Refund>',
+    description: 'List every refunds in the payout.',
+)]
+#[Stancer\Core\Documentation\AddMethod(
+    'listRefunds',
+    ['array $terms'],
+    '\Generator<Stancer\Refund>',
+    description: 'List every refunds in the payout.',
+)]
+#[Stancer\Core\Documentation\AddMethod(
+    'listRefunds',
+    ['SearchFilters $terms'],
+    '\Generator<Stancer\Refund>',
+    description: 'List every refunds in the payout.',
+    stan: true,
+)]
 class Details extends Stancer\Core\AbstractObject
 {
     /**
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [
+    protected array $dataModel = [
         'disputes' => [
             'desc' => 'Disputes details',
             'restricted' => true,
@@ -90,8 +138,7 @@ class Details extends Stancer\Core\AbstractObject
      * @throws Stancer\Exceptions\BadMethodCallException When an unhandled method is called.
      */
     #[Override]
-    #[ReturnTypeWillChange, Stancer\WillChange\PHP8_0\MixedType]
-    public function __call(string $method, array $arguments)
+    public function __call(string $method, array $arguments): mixed
     {
         $name = Stancer\Helper::snakeCaseToCamelCase($method);
         $action = substr($name, 0, 4);

@@ -15,7 +15,7 @@ use Throwable;
 class Exception extends \Exception implements Stancer\Interfaces\ExceptionInterface
 {
     /** @var string Default log level */
-    protected static $logLevel = Psr\Log\LogLevel::NOTICE;
+    protected static string $logLevel = Psr\Log\LogLevel::NOTICE;
 
     /**
      * Construct the exception.
@@ -37,8 +37,7 @@ class Exception extends \Exception implements Stancer\Interfaces\ExceptionInterf
      *
      * @phpstan-param CreateExceptionParameters $params
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public static function create(array $params = []): self
+    public static function create(array $params = []): static
     {
         $code = 0;
         $message = null;

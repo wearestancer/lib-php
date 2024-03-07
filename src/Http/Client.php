@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace Stancer\Http;
 
+use CurlHandle;
 use Stancer;
 use Psr;
 
@@ -11,21 +12,17 @@ use Psr;
  */
 class Client implements Stancer\Interfaces\HttpClientInterface
 {
-    /** @var resource */
-    #[Stancer\WillChange\PHP8_0\CurlHandler]
-    protected $curl;
+    protected CurlHandle $curl;
 
     /**
      * @var mixed[]
      * @phpstan-var array<string, string[]>
      */
-    protected $headers = [];
+    protected array $headers = [];
 
-    /** @var Stancer\Http\Request|null */
-    protected $lastRequest;
+    protected ?Stancer\Http\Request $lastRequest = null;
 
-    /** @var Stancer\Http\Response|null */
-    protected $lastResponse;
+    protected ?Stancer\Http\Response $lastResponse = null;
 
     /**
      * Creation of a new client instance.
@@ -50,10 +47,9 @@ class Client implements Stancer\Interfaces\HttpClientInterface
      *
      * This is mainly use for testing purpose. Be carefull if you need to use it.
      *
-     * @return resource
+     * @return CurlHandle
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\CurlHandler]
-    public function getCurlResource()
+    public function getCurlResource(): CurlHandle
     {
         return $this->curl;
     }
@@ -95,12 +91,11 @@ class Client implements Stancer\Interfaces\HttpClientInterface
      *
      * As written in documentation "Return the number of bytes written.".
      *
-     * @param resource $curl Actual cURL resource (not used but mandatory).
+     * @param CurlHandle $curl Actual cURL resource (not used but mandatory).
      * @param string $line One header line.
      * @return integer
      */
-    #[Stancer\WillChange\PHP8_0\CurlHandler]
-    public function parseHeaderLine($curl, string $line): int
+    public function parseHeaderLine(CurlHandle $curl, string $line): int
     {
         if (!trim($line)) {
             return strlen($line);
@@ -150,17 +145,24 @@ class Client implements Stancer\Interfaces\HttpClientInterface
      * @phpstan-param array{body?: string, headers?: array<string, string|string[]>, timeout?: int} $options
      *   Request options to apply.
      */
-    #[Stancer\WillChange\PHP8_0\MatchExpression]
     public function request(string $method, string $uri, array $options = []): Psr\Http\Message\ResponseInterface
     {
         $config = Stancer\Config::getGlobal();
         $logger = $config->getLogger();
 
         // Set URL.
-        curl_setopt($this->curl, CURLOPT_URL, trim($uri));
+        $trimmed = trim($uri);
+
+        if ($trimmed) {
+            curl_setopt($this->curl, CURLOPT_URL, $trimmed);
+        }
 
         // Set HTTP method.
-        curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, trim($method));
+        $trimmed = trim($method);
+
+        if ($trimmed) {
+            curl_setopt($this->curl, CURLOPT_CUSTOMREQUEST, $trimmed);
+        }
 
         // Timeout.
         if (array_key_exists('timeout', $options)) {
@@ -243,6 +245,7 @@ class Client implements Stancer\Interfaces\HttpClientInterface
                     json_last_error() === JSON_ERROR_NONE
                     && is_array($json)
                     && array_key_exists('error', $json)
+                    && is_array($json['error'])
                     && array_key_exists('message', $json['error'])
                     && $json['error']['message']
                 ) {
@@ -271,23 +274,12 @@ class Client implements Stancer\Interfaces\HttpClientInterface
             $logMethod = $class::getLogLevel();
             $logMessage = null;
 
-            switch ($code) {
-                case 401:
-                    $logMessage = 'HTTP 401 - Invalid credential: ' . $config->getSecretKey();
-                    break;
-
-                case 404:
-                    $logMessage = 'HTTP 404 - Not Found';
-                    break;
-
-                case 500:
-                    $logMessage = 'HTTP 500 - Internal Server Error';
-                    break;
-
-                default:
-                    $logMessage = $params['message'] ?? $class::getDefaultMessage();
-                    break;
-            }
+            $logMessage = match ($code) {
+                401 => 'HTTP 401 - Invalid credential: ' . $config->getSecretKey(),
+                404 => 'HTTP 404 - Not Found',
+                500 => 'HTTP 500 - Internal Server Error',
+                default => $params['message'] ?? $class::getDefaultMessage(),
+            };
 
             $logger->$logMethod($logMessage);
 

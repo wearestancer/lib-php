@@ -50,14 +50,14 @@ use Stancer;
  */
 class Customer extends Stancer\Core\AbstractObject
 {
-    /** @var string */
-    protected $endpoint = 'customers';
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
+    final public const ENDPOINT = 'customers';
 
     /**
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [
+    protected array $dataModel = [
         'email' => [
             'desc' => 'Customer\'s email',
             'size' => [
@@ -100,7 +100,7 @@ class Customer extends Stancer\Core\AbstractObject
      *    or a phone number.
      */
     #[Override]
-    public function send(): Stancer\Core\AbstractObject
+    public function send(): static
     {
         if (!$this->getId() && !$this->getEmail() && !$this->getMobile()) {
             $message = 'You must provide an email or a phone number to create a customer.';

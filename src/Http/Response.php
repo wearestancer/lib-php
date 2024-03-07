@@ -6,25 +6,36 @@ declare(strict_types=1);
 
 namespace Stancer\Http;
 
-use Stancer;
 use Psr;
+use Stancer;
 
 /**
  * Basic HTTP response.
+ *
+ * @method static with_body(Psr\Http\Message\StreamInterface $body) Return an instance with the specified message body.
+ * @method static with_status(int $code, string $reason_phrase = null) Return an instance with the specified
+ *   status code and, optionally, reason phrase.
+ * @method static without_header(string $name) Return an instance without the specified header.
+ * @method static with_header(string $name, $value) Return an instance with the provided value replacing the
+ *   specified header.
+ * @method static with_modified_body($in, $out) Return an instance with obfuscated message body.
+ * @method static with_protocol_version(string $version) Return an instance with the specified HTTP protocol version.
+ * @method Psr\Http\Message\StreamInterface get_body() Gets the body of the message.
+ * @method array get_header(string $name) Retrieves a message header value by the given case-insensitive name.
+ * @method string get_header_line(string $name) Retrieves a comma-separated string of the values for a single header.
+ * @method array get_headers() Retrieves all message header values.
+ * @method string get_protocol_version() Retrieves the HTTP protocol version as a string.
+ * @method string get_reason_phrase() Gets the response reason phrase associated with the status code.
+ * @method int get_status_code() Gets the response status code.
+ * @method boolean has_header(string $name) Checks if a header exists by the given case-insensitive name.
  */
 class Response implements Psr\Http\Message\ResponseInterface
 {
     use Stancer\Traits\AliasTrait;
     use MessageTrait;
 
-    /** @var integer */
-    protected $code;
-
-    /** @var string */
-    protected $reason;
-
     /** @var array<int, string> HTTP status list */
-    protected $status = [
+    protected array $status = [
         100 => 'Continue',
         101 => 'Switching Protocols',
         102 => 'Processing',
@@ -95,27 +106,20 @@ class Response implements Psr\Http\Message\ResponseInterface
      * @param integer $code Status code.
      * @param Psr\Http\Message\StreamInterface|string|null $body Response body.
      * @param array<string, string|string[]> $headers Response headers.
-     * @param string $version Protocol version.
-     * @param string|null $reason  Reason phrase (when empty a default will be used based on the status code).
+     * @param string $protocol Protocol version.
+     * @param string|null $reason Reason phrase (when empty a default will be used based on the status code).
      */
     public function __construct(
-        int $code,
-        $body = null,
+        protected int $code,
+        Psr\Http\Message\StreamInterface|string|null $body = null,
         array $headers = [],
-        string $version = '1.1',
-        $reason = null
+        protected string $protocol = '1.1',
+        protected ?string $reason = null
     ) {
-        $this->code = $code;
-        $this->protocol = $version;
-
         if ($body instanceof Psr\Http\Message\StreamInterface) {
             $this->body = $body;
         } else {
             $this->body = new Stream($body ?? '');
-        }
-
-        if ($reason) {
-            $this->reason = $reason;
         }
 
         foreach ($headers as $name => $value) {
@@ -174,13 +178,12 @@ class Response implements Psr\Http\Message\ResponseInterface
      * @link http://tools.ietf.org/html/rfc7231#section-6
      * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
      * @param integer $code The 3-digit integer result code to set.
-     * @param string $reasonPhrase The reason phrase to use with the
+     * @param string|null $reasonPhrase The reason phrase to use with the
      *     provided status code; if none is provided, implementations MAY
      *     use the defaults as suggested in the HTTP specification.
      * @return static
      */
-    #[\ReturnTypeWillChange, Stancer\WillChange\PHP8_0\StaticReturnType]
-    public function withStatus($code, $reasonPhrase = ''): self
+    public function withStatus(int $code, ?string $reasonPhrase = null): static
     {
         $obj = clone $this;
         $obj->code = $code;

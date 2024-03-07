@@ -45,14 +45,14 @@ class Dispute extends Stancer\Core\AbstractObject
 {
     use Stancer\Traits\SearchTrait;
 
-    /** @var string */
-    protected $endpoint = 'disputes';
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
+    final public const ENDPOINT = 'disputes';
 
     /**
      * @var array
      * @phpstan-var array<string, DataModel>
      */
-    protected $dataModel = [
+    protected array $dataModel = [
         'amount' => [
             'desc' => 'The disputed amount',
             'nullable' => false,

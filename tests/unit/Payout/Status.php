@@ -10,6 +10,9 @@ class Status extends Stancer\Tests\atoum
     {
         $this
             ->currentlyTestedClass
+                ->isBackedEnum()
+
+            ->currentlyTestedClass
                 ->hasConstant('FAILED')
                 ->constant('FAILED')
                     ->isEqualTo('failed')
