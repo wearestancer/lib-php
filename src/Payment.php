@@ -320,7 +320,7 @@ class Payment extends Stancer\Core\AbstractObject
 
         // @phpstan-ignore-next-line The method is not defined in parent object so it will trigger __call ...
         return parent::addMethodsAllowed($method);
-        // ... and that's that we want
+        // ... and that's what we want
     }
 
     /**

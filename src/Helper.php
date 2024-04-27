@@ -20,10 +20,14 @@ class Helper
             return '_' . strtolower($matches[0]);
         };
 
-        $rep = preg_replace_callback('`[A-Z]`', $replace, $text);
+        $rep = preg_replace_callback('`[0-9]*[A-Z]+`', $replace, $text);
 
         if (!$rep) {
             return '';
+        }
+
+        if (strpos($rep, '_') === 0) {
+            return substr($rep, 1);
         }
 
         return $rep;
@@ -40,7 +44,7 @@ class Helper
             return strtoupper(ltrim($matches[0], '_'));
         };
 
-        $rep = preg_replace_callback('`_[a-z]`', $replace, $text);
+        $rep = preg_replace_callback('`_([a-z]|(?:[0-9][a-z]+))`', $replace, $text);
 
         if (!$rep) {
             return '';
