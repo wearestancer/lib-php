@@ -364,6 +364,10 @@ foreach ($classes as $className => $classData) {
         if ($instance instanceof Stancer\Core\Documentation\AddProperty) {
             $classData[$instance->getName()] = $instance->getData();
         }
+
+        if ($instance instanceof Stancer\Core\Documentation\PropertyAlias) {
+            $classData[$instance->getName()] = $model[$instance->getAliasedName()];
+        }
     }
 
     // Merging everything together.
