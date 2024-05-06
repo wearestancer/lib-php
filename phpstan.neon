@@ -164,6 +164,14 @@ parameters:
         start?: int,
       }
     '''
+    SearchFiltered: '''
+          array{
+        created?: DateTimeInterface|DatePeriod<DateTimeInterface, ?DateTimeInterface, int>|int,
+        created_until?: DateTimeInterface|int,
+        limit?: int,
+        start: int,
+      }
+    '''
 
     SearchResult: '''
       array{

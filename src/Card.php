@@ -26,6 +26,7 @@ use Stancer;
  * @method ?string get_brand_name() Get formatted brand name.
  * @method ?string get_country() Get card country.
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method ?string get_cvc() Get card Validation Code.
  * @method string get_endpoint() Get API endpoint.
@@ -78,6 +79,8 @@ use Stancer;
  * @property-read ?string $brand_name Formatted brand name.
  * @property-read ?string $country Card country.
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $endpoint API endpoint.

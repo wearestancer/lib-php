@@ -4,13 +4,20 @@ declare(strict_types=1);
 
 namespace Stancer\Core;
 
+use BackedEnum;
+use DateTimeImmutable;
+use DateTimeInterface;
+use JsonSerializable;
+use ReflectionClass;
 use Stancer;
+use Stringable;
 
 /**
  * Manage common code between API object.
  *
  * @method ?\DateTimeImmutable getCreated() Get creation date.
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_endpoint() Get API endpoint.
  * @method string get_entity_name() Get entity name.
@@ -24,6 +31,8 @@ use Stancer;
  * @method string to_string() Return a string representation (as a JSON) of the current object.
  *
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $endpoint API endpoint.
@@ -285,6 +294,21 @@ abstract class AbstractObject implements \JsonSerializable
         return $this->created;
     }
 
+   /**
+     * Return creation date.
+     *
+     * @return DateTimeImmutable|null
+     */
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Creation date',
+        restricted: true,
+        type: DateTimeImmutable::class,
+    )]
+    public function getCreatedAt(): ?DateTimeImmutable
+    {
+        return $this->created;
+    }
+
     /**
      * Return API endpoint.
      */
@@ -366,16 +390,17 @@ abstract class AbstractObject implements \JsonSerializable
             Stancer\Config::getGlobal()->getUri(),
             $this->getEndpoint(),
         ];
+        $endslash = '/';
 
         if ($this->getId()) {
             $tmp[] = $this->getId();
+            $endslash = '';
         }
 
         $trim = function ($value): string {
             return trim($value, '/');
         };
-
-        return implode('/', array_map($trim, $tmp));
+        return implode('/', array_map($trim, $tmp)) . $endslash;
     }
 
     /**
@@ -620,10 +645,12 @@ abstract class AbstractObject implements \JsonSerializable
                     $value = $value->value;
                 } elseif (in_array($prop, $this->modified, true) || ($value instanceof self && $value->isModified())) {
                     $supp = false;
+                }
 
-                    if ($value instanceof \JsonSerializable) {
-                        $value = $value->jsonSerialize();
-                    }
+                if ($value instanceof JsonSerializable) {
+                    $value = $value->jsonSerialize();
+                } elseif ($value instanceof Stringable) {
+                    $value = (string) $value;
                 }
             }
 
@@ -631,10 +658,14 @@ abstract class AbstractObject implements \JsonSerializable
                 $keepIt = false;
 
                 foreach ($value as &$val) {
-                    if (gettype($val) === 'object') {
+                    if (is_object($val)) {
                         if ($val instanceof self) {
                             $keepIt |= $val->isModified();
                             $val = $val->jsonSerialize();
+                        } elseif ($val instanceof JsonSerializable) {
+                            $val = $val->jsonSerialize();
+                        } elseif ($val instanceof Stringable) {
+                            $val = (string) $val;
                         }
                     }
 
@@ -1026,21 +1057,23 @@ abstract class AbstractObject implements \JsonSerializable
         $type = gettype($value);
         $length = $value;
 
-        $mismatchType = $type !== $model['type'];
+        if ($model['type'] !== self::MIXED) {
+            $mismatchType = $type !== $model['type'];
 
-        if (is_object($value)) {
-            $mismatchType = !($value instanceof $model['type']);
-        }
+            if (is_object($value)) {
+                $mismatchType = !($value instanceof $model['type']);
+            }
 
-        if ($mismatchType) {
-            $params = [
-                $type,
-                $model['type'],
-            ];
+            if ($mismatchType) {
+                $params = [
+                    $type,
+                    $model['type'],
+                ];
 
-            $message = vsprintf('Type mismatch, given "%s" expected "%s".', $params);
+                $message = vsprintf('Type mismatch, given "%s" expected "%s".', $params);
 
-            throw new $exceptionClass($message);
+                throw new $exceptionClass($message);
+            }
         }
 
         if ($model['allowedValues']) {

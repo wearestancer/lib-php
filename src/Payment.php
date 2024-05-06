@@ -41,6 +41,7 @@ use Stancer;
  * @method ?\Stancer\Card get_card() Get card object.
  * @method ?string get_country()
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method ?\Stancer\Currency get_currency() Get processed currency.
  * @method ?\Stancer\Customer get_customer() Get customer object.
@@ -124,6 +125,8 @@ use Stancer;
  * @property ?string $unique_id Unicity key.
  *
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read ?\DateTimeImmutable $dateBank Delivery date of the funds traded by the bank.
@@ -482,6 +485,7 @@ class Payment extends Stancer\Core\AbstractObject
      */
     public function getPaymentPageUrl(array $params = [], bool $force = false): string
     {
+        // TODO: Think about a cleanier way to get Config.
         $config = Stancer\Config::getGlobal();
 
         $data = [
@@ -740,6 +744,12 @@ class Payment extends Stancer\Core\AbstractObject
         $card = $this->getCard();
         $sepa = $this->getSepa();
 
+        // We only send the status in V1.
+        if (null !== $auth) {
+            $config = Stancer\Config::getGlobal();
+            $authStatus = $config->version === 1 ? true : false;
+            $auth->setExportablestatus($authStatus);
+        }
         if (!is_object($this->getDevice())) {
             $mandatoryDevice = is_object($auth) && $auth->getReturnUrl();
 

@@ -18,7 +18,8 @@ class PropertyAlias
      * @param string $name New property name.
      * @param string $for Property name aliased.
      */
-    public function __construct(protected string $name, protected string $for) {
+    public function __construct(protected string $name, protected string $for)
+    {
     }
 
     /**

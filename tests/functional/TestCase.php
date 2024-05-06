@@ -29,6 +29,7 @@ class TestCase extends Stancer\Tests\atoum
         $env = [
             'API_HOST' => '',
             'API_KEY' => '',
+            'API_VERSION' =>'',
         ];
 
         foreach ($env as $key => &$value) {
@@ -38,8 +39,29 @@ class TestCase extends Stancer\Tests\atoum
                 $this->skip('Missing env ' . $key);
             }
         }
-
-        $this->config->setKeys($env['API_KEY'])->setHost($env['API_HOST']);
+        // We had a check to run test only if we can contact the server.
+        $this->config->setKeys($env['API_KEY'])->setHost($env['API_HOST'])->setVersion($env['API_VERSION']);
+        $client = $this->config->getHttpClient();
+        $verb = 'get';
+        $options['headers']['Authorization'] = $this->config->getBasicAuthHeader();
+        $options['headers']['Content-Type'] = 'application/json';
+        $options['headers']['User-Agent'] = $this->config->getDefaultUserAgent();
+        $version = $this->config->getVersion();
+        $location= "https://" . $this->config->getHost() . '/v' . $version . '/cards/?start=1';
+        try{
+            $client->request($verb,$location,$options);
+        }
+        catch(Stancer\Exceptions\ClientException $e){
+            if ($e->getCode() == 401){
+                $this->skip('You don\'t have permission, check your key and host');
+            }
+        }
+        catch(Stancer\Exceptions\HttpException){
+            $this->skip("The server cannot be contacted, check it's name or your certifications.");
+        }
+        catch(\Exception $e ){
+            $this->skip("Contacting the server result in a ".$e->getCode()."error, ".$e->getMessage());
+        }
     }
 
     public function getDisputedCardNumber()
@@ -53,6 +75,17 @@ class TestCase extends Stancer\Tests\atoum
         shuffle($cards);
 
         return array_shift($cards);
+    }
+
+    public function getNotFoundExceptionMessage($id,$ressource_name): string
+    {
+        if ($this->config->version == 1){
+            return "No such " . $ressource_name . " " . $id;
+        }
+        else
+        {
+            return "Resource not found";
+        }
     }
 
     public function getValidCardNumber()

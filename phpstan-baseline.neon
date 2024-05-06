@@ -11,6 +11,36 @@ parameters:
 			path: src/Payment.php
 
 		-
+			message: "#^Call to function method_exists\\(\\) with class\\-string\\<static\\(Stancer\\\\Payment\\\\Intent\\)\\> and 'filterListParams' will always evaluate to true\\.$#"
+			count: 1
+			path: src/Payment/Intent.php
+
+		-
+			message: "#^PHPDoc tag @method has invalid value \\(\\$this set3DS\\(\\\\Stancer\\\\ThreeDomainsSecure\\\\Status \\$3DS\\) Set ask for an authenticated payment\\.\\)\\: Unexpected token \"\\$3DS\\)\", expected variable at offset 3168 on line 47$#"
+			count: 2
+			path: src/Payment/Intent.php
+
+		-
+			message: "#^PHPDoc tag @method has invalid value \\(\\$this set_3ds\\(\\\\Stancer\\\\ThreeDomainsSecure\\\\Status \\$3ds\\) Set ask for an authenticated payment\\.\\)\\: Unexpected token \"\\$3ds\\)\", expected variable at offset 3784 on line 54$#"
+			count: 2
+			path: src/Payment/Intent.php
+
+		-
+			message: "#^PHPDoc tag @property has invalid value \\(\\?\\\\Stancer\\\\ThreeDomainsSecure\\\\Status \\$3DS Ask for an authenticated payment\\.\\)\\: Unexpected token \"\\$3DS\", expected variable at offset 5031 on line 70$#"
+			count: 2
+			path: src/Payment/Intent.php
+
+		-
+			message: "#^PHPDoc tag @property has invalid value \\(\\?\\\\Stancer\\\\ThreeDomainsSecure\\\\Status \\$3ds Ask for an authenticated payment\\.\\)\\: Unexpected token \"\\$3ds\", expected variable at offset 5119 on line 71$#"
+			count: 2
+			path: src/Payment/Intent.php
+
+		-
+			message: "#^Parameter \\#3 \\$terms of method Stancer\\\\Payment\\\\Intent\\:\\:search\\(\\) expects array\\{created\\?\\: DatePeriod\\<DateTimeInterface, DateTimeInterface\\|null, int\\>\\|DateTimeInterface\\|int, created_until\\?\\: DateTimeInterface\\|int, limit\\?\\: int, start\\?\\: int\\}, array given\\.$#"
+			count: 1
+			path: src/Payment/Intent.php
+
+		-
 			message: "#^Parameter \\#1 \\$data \\(array\\{amount\\: int, created\\: int, currency\\: string, date_bank\\?\\: int, date_paym\\: int, fees\\?\\: int, id\\: string, live_mode\\: bool, \\.\\.\\.\\}\\) of method Stancer\\\\Payout\\:\\:hydrate\\(\\) should be contravariant with parameter \\$data \\(array\\<string, mixed\\>\\) of method Stancer\\\\Core\\\\AbstractObject\\:\\:hydrate\\(\\)$#"
 			count: 1
 			path: src/Payout.php

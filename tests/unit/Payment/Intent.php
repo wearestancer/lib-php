@@ -2,7 +2,14 @@
 
 namespace Stancer\tests\unit\Payment;
 
+use atoum\atoum\asserters\mock as AssertersMock;
+use DateTime;
+use DateInterval;
+use DateTimeImmutable;
+use mock;
 use Stancer;
+use Stancer\Payment\Intent as testedClass;
+use stdClass;
 
 class Intent extends Stancer\Tests\atoum
 {
@@ -69,24 +76,21 @@ class Intent extends Stancer\Tests\atoum
                         ->isFalse
 
                 ->assert('Aliases')
-                    ->variable($this->newTestedInstance->get_capture())->isNull
+                ->if($this->newTestedInstance)
+                ->and($this->testedInstance->amount=100)
+                ->and($this->testedInstance->currency='eur')
+                    ->variable($this->testedInstance->get_capture())->isNull
                     ->object($this->testedInstance->set_capture(true))->isTestedInstance
                     ->boolean($this->testedInstance->get_capture())->isTrue
                     ->object($this->testedInstance->set_capture(false))->isTestedInstance
                     ->boolean($this->testedInstance->get_capture())->isFalse
-
-                    ->variable($this->newTestedInstance->capture)->isNull
-                    ->variable($this->testedInstance->capture = false)
-                    ->boolean($this->testedInstance->capture)->isFalse
-                    ->variable($this->testedInstance->capture = true)
-                    ->boolean($this->testedInstance->capture)->isTrue
         ;
     }
 
     public function testCard()
     {
         $this
-            ->if($card = new Stancer\Card)
+            ->if($card = new Stancer\Card('card_'.$this->getRandomString(24)))
             ->then
                 ->assert('Default value')
                     ->variable($this->newTestedInstance->getCard())
@@ -97,16 +101,18 @@ class Intent extends Stancer\Tests\atoum
                         ->isTestedInstance
 
                     ->object($this->testedInstance->getCard())
-                        ->isIdenticalTo($card)
+                        ->isInstanceof(Stancer\Card::class)
+                    ->string($this->testedInstance->getCard()->getId())
+                        ->isIdenticalTo($card->getId())
 
                 ->assert('Aliases')
                     ->variable($this->newTestedInstance->get_card())->isNull
                     ->object($this->testedInstance->set_card($card))->isTestedInstance
-                    ->object($this->testedInstance->get_card())->isIdenticalTo($card)
+                    ->string($this->testedInstance->get_card()->getId())->isIdenticalTo($card->getId())
 
                     ->variable($this->newTestedInstance->card)->isNull
                     ->variable($this->testedInstance->card = $card)
-                    ->object($this->testedInstance->card)->isIdenticalTo($card)
+                    ->string($this->testedInstance->card->getId())->isIdenticalTo($card->getId())
         ;
     }
 
@@ -219,10 +225,84 @@ class Intent extends Stancer\Tests\atoum
         }
     }
 
+    public function testCreationDate()
+    {
+        $this
+            ->given($pi =$this->newTestedInstance)
+            ->if($created = new DateTimeImmutable())
+            ->then
+                ->assert('Default value and Aliases')
+
+                    ->variable($pi->getCreated())->isNull
+
+                    ->variable($pi->created())->isNull
+
+                    ->variable($pi->get_creation_date())->isNull
+
+                    ->variable($pi->getCreationDate())->isNull
+
+                    ->variable($pi->get_creation_date())->isNull
+
+                    ->variable($pi->getCreatedAt())->isNull
+
+                    ->variable($pi->get_created_at())->isNull
+
+                    ->variable($pi->createdAt)->isNull
+
+                    ->variable($pi->created_at)->isNull
+                ->assert('Date Creation is not settable')
+
+                    ->exception(function () {
+                        $this->newTestedInstance()->createdAt = new DateTimeImmutable();
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\BadPropertyAccessException::class)
+                        ->message
+                            ->isIdenticalTo('You are not allowed to modify "createdAt".')
+
+            ->given($secret = 'stest_' . bin2hex(random_bytes(12)))
+            ->and($config = Stancer\Config::init([$secret]))
+            ->and($config->setDebug(false))
+            ->if($client = new mock\Stancer\Http\Client)
+            ->and($response = $this->mockJsonResponse('intents','intent'))
+            ->and($this->calling($client)->request = $response)
+            ->and($config->setHttpClient($client))
+            ->and($created = new DateTimeImmutable('@1714742425'))
+            // We set an ID to our instance, to make sure we populate Created_At on call
+            ->and($pi = $this->NewTestedInstance('pi_yWYfCSzsUUhr9KwMv7vuLZHX'))
+                ->assert('test getting created_at from API with aliases.')
+                    ->then
+                            ->dateTime($pi->createdAt)->isImmutable
+                                ->isEqualTo($created)
+
+                            ->dateTime($pi->created())->isImmutable
+                                ->isEqualTo($created)
+
+                            ->dateTime($pi->get_creation_date())->isImmutable
+                                ->isEqualTo($created)
+
+                            ->dateTime($pi->getCreationDate())->isImmutable
+                                ->isEqualTo($created)
+
+                            ->dateTime($pi->get_creation_date())->isImmutable
+                                ->isEqualTo($created)
+
+                            ->dateTime($pi->getCreatedAt())->isImmutable
+                                ->isEqualTo($created)
+
+                            ->dateTime($pi->get_created_at())->isImmutable
+                                ->isEqualTo($created)
+
+                            ->dateTime($pi->createdAt)->isImmutable
+                                ->isEqualTo($created)
+
+                            ->dateTime($pi->created_at)->isImmutable
+                                ->isEqualTo($created);
+    }
+
     public function testCustomer()
     {
         $this
-            ->if($customer = new Stancer\Customer)
+            ->if($customer = new Stancer\Customer('cust_'.$this->getRandomString(24)))
             ->then
                 ->assert('Default value')
                     ->variable($this->newTestedInstance->getCustomer())
@@ -231,18 +311,19 @@ class Intent extends Stancer\Tests\atoum
                 ->assert('Update value')
                     ->object($this->testedInstance->setCustomer($customer))
                         ->isTestedInstance
-
                     ->object($this->testedInstance->getCustomer())
-                        ->isIdenticalTo($customer)
+                        ->isInstanceOf(Stancer\Customer::class)
+                    ->string($this->testedInstance->getCustomer()->id)
+                        ->isEqualTo($customer->id)
 
                 ->assert('Aliases')
                     ->variable($this->newTestedInstance->get_customer())->isNull
                     ->object($this->testedInstance->set_customer($customer))->isTestedInstance
-                    ->object($this->testedInstance->get_customer())->isIdenticalTo($customer)
+                    ->string($this->testedInstance->get_customer()->getId())->isIdenticalTo($customer->getId())
 
                     ->variable($this->newTestedInstance->customer)->isNull
                     ->variable($this->testedInstance->customer = $customer)
-                    ->object($this->testedInstance->customer)->isIdenticalTo($customer)
+                    ->string($this->testedInstance->customer->getId())->isIdenticalTo($customer->getId())
         ;
     }
 
@@ -301,6 +382,717 @@ class Intent extends Stancer\Tests\atoum
 
                 ->string($this->testedInstance->endpoint)
                     ->isIdenticalTo('payment_intents')
+        ;
+    }
+
+    public function testList()
+    {
+        $this
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($response = $this->mockJsonResponse('intents', 'list'))
+            ->and($this->calling($client)->request = $response)
+            ->and($config = $this->mockConfig($client))
+            ->and($options = $this->mockRequestOptions($config))
+
+            ->assert('Invalid limit')
+                ->exception(function () {
+                    testedClass::list(['limit' => 0]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchLimitException::class)
+                    ->message
+                        ->isIdenticalTo('Limit must be between 1 and 100.')
+
+                ->exception(function () {
+                    testedClass::list(['limit' => 101]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchLimitException::class)
+                    ->message
+                        ->isIdenticalTo('Limit must be between 1 and 100.')
+
+                ->exception(function () {
+                    testedClass::list(['limit' => uniqid()]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchLimitException::class)
+                    ->message
+                        ->isIdenticalTo('Limit must be between 1 and 100.')
+
+            ->assert('Invalid start')
+                ->exception(function () {
+                    testedClass::list(['start' => -1]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchStartException::class)
+                    ->message
+                        ->isIdenticalTo('Start must be a positive integer.')
+
+                ->exception(function () {
+                    testedClass::list(['start' => uniqid()]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchStartException::class)
+                    ->message
+                        ->isIdenticalTo('Start must be a positive integer.')
+
+            ->assert('No terms')
+                ->exception(function () {
+                    testedClass::list([]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Invalid search filters.')
+
+                ->exception(function () {
+                    testedClass::list(['foo' => 'bar']);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Invalid search filters.')
+
+            ->assert('Invalid created filter')
+                ->exception(function () {
+                    testedClass::list(['created' => time() + 100]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchCreationFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Created must be in the past.')
+
+                ->exception(function () {
+                    $date = new DateTime();
+                    $date->add(new DateInterval('P1D'));
+
+                    testedClass::list(['created' => $date]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchCreationFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Created must be in the past.')
+
+                ->exception(function () {
+                    testedClass::list(['created' => 0]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchCreationFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Created must be a positive integer, a DateTime object or a DatePeriod object.')
+
+                ->exception(function () {
+                    testedClass::list(['created' => uniqid()]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchCreationFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Created must be a positive integer, a DateTime object or a DatePeriod object.')
+
+            ->assert('Invalid order id filter')
+                ->exception(function () {
+                    testedClass::list(['order_id' => '']);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchOrderIdFilterException::class)
+                    ->message
+                        ->isIdenticalTo('A valid order ID must be between 1 and 36 characters.')
+
+                ->exception(function () {
+                    testedClass::list(['order_id' => rand(0, PHP_INT_MAX)]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchOrderIdFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Order ID must be a string.')
+
+            ->assert('Invalid card filter')
+                ->exception(function () {
+                    testedClass::list(['card' => '']);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchCardFilterException::class)
+                    ->message
+                        ->isIdenticalTo('A valid Card reference must have 29 characters.')
+
+                ->exception(function () {
+                    testedClass::list(['card' => rand(0, PHP_INT_MAX)]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchCardFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Card must be a string.')
+
+            ->assert('Invalid sepa filter')
+                ->exception(function () {
+                    testedClass::list(['sepa' => '']);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchSepaFilterException::class)
+                    ->message
+                        ->isIdenticalTo('A valid SEPA reference must have 29 characters.')
+
+                ->exception(function () {
+                    testedClass::list(['sepa' => rand(0, PHP_INT_MAX)]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchSepaFilterException::class)
+                    ->message
+                        ->isIdenticalTo('SEPA must be a string.')
+
+            ->assert('Make request')
+                ->if($limit = rand(1, 100))
+                ->and($start = rand(0, PHP_INT_MAX))
+                ->and($orderId = uniqid())
+                ->and($created = time() - rand(10, 1000000))
+                ->and($card = 'card_' . $this->getRandomString(24))
+                ->and($sepa = 'sepa_' . $this->getRandomString(24))
+
+                ->and($location = $this->newTestedInstance->getUri())
+                ->and($terms1 = [
+                    'created' => $created,
+                    'limit' => $limit,
+                    'start' => $start,
+                    'card' => $card,
+                    'order_id' => $orderId,
+                    'sepa' => $sepa,
+                ])
+                ->and($location1 = $location . '?' . http_build_query($terms1))
+
+                ->and($terms2 = [
+                    'created' => $created,
+                    'limit' => $limit,
+                    'start' => $start + 2, // Based on json sample
+                    'card' => $card,
+                    'order_id' => $orderId,
+                    'sepa' => $sepa,
+                ])
+                ->and($location2 = $location . '?' . http_build_query($terms2))
+                ->then
+                    ->generator($gen = testedClass::list($terms1))
+                        ->yields
+                            ->object
+                                ->isInstanceOf(testedClass::class)
+                                ->toString
+                                    ->isIdenticalTo('"pi_3G2eWFsPOQSdWVXb7HnDP7Zt"')
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location1, $options)
+                                ->once
+                            ->withArguments('GET', $location2, $options)
+                                ->never
+
+                     ->generator($gen = testedClass::list($terms2))
+                        ->yields
+                            ->object
+                                ->isInstanceOf(testedClass::class)
+                                ->toString
+                                    ->isIdenticalTo('"pi_3G2eWFsPOQSdWVXb7HnDP7Zt"')
+                        ->yields
+                            ->object
+                                ->isInstanceOf(testedClass::class)
+                                ->toString
+                                    ->isIdenticalTo('"pi_hX59mjTCvC0TuGbkTEAFOF7l"')
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location1, $options)
+                                ->once // Called the first time
+                            ->withArguments('GET', $location2, $options)
+                                ->once
+
+            ->assert('Empty response')
+                ->given($body = [
+                    'payment_intents' => [],
+                    'range' => [
+                        'has_more' => false,
+                        'limit' => 10,
+                    ],
+                ])
+                ->and($this->calling($response)->getBody = new Stancer\Http\Stream(json_encode($body)))
+
+                ->if($limit = rand(1, 100))
+                ->and($terms = [
+                    'limit' => $limit,
+                ])
+                ->and($query = http_build_query(['limit' => $limit, 'start' => 0]))
+                ->and($location = $this->newTestedInstance->getUri() . '?' . $query)
+                ->then
+                    ->generator($gen = testedClass::list($terms))
+                        ->yields
+                            ->variable
+                                ->isNull
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location, $options)
+                                ->once
+
+            ->assert('Invalid response')
+                ->given($this->calling($response)->getBody = new Stancer\Http\Stream(''))
+
+                ->if($limit = rand(1, 100))
+                ->and($terms = [
+                    'limit' => $limit,
+                ])
+                ->and($query = http_build_query(['limit' => $limit, 'start' => 0]))
+                ->and($location = $this->newTestedInstance->getUri() . '?' . $query)
+                ->then
+                    ->generator($gen = testedClass::list($terms))
+                        ->yields
+                            ->variable
+                                ->isNull
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location, $options)
+                                ->once
+        ;
+
+
+    }
+    public function testListNoMore()
+    {
+        $this
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($response = $this->mockJsonResponse('intents', 'list-two-pi'))
+            ->and($this->calling($client)->request = $response)
+            ->and($config = $this->mockConfig($client))
+            ->and($options = $this->mockRequestOptions($config))
+            ->assert('make request with only two pi')
+                ->if($limit = 2)
+                ->and($start = 0)
+                ->and($orderId = uniqid())
+                ->and($created = time() - rand(10, 1000000))
+                ->and($card = 'card_' . $this->getRandomString(24))
+                ->and($sepa = 'sepa_' . $this->getRandomString(24))
+
+                ->and($location = $this->newTestedInstance->getUri())
+                ->and($terms1 = [
+                    'created' => $created,
+                    'start' => $start,
+                    'limit' => $limit,
+                    'card' => $card,
+                    'order_id' => $orderId,
+                    'sepa' => $sepa,
+                ])
+                ->and($location1 = $location . '?' . http_build_query($terms1))
+                ->then
+                    ->generator($gen = testedClass::list($terms1))
+                        ->yields
+                            ->object
+                                ->isInstanceOf(testedClass::class)
+                                ->toString
+                                    ->isIdenticalTo('"pi_3G2eWFsPOQSdWVXb7HnDP7Zt"')
+                        ->yields
+                            ->object
+                                ->isInstanceOf(testedClass::class)
+                                ->toString
+                                    ->isIdenticalTo('"pi_hX59mjTCvC0TuGbkTEAFOF7l"')
+                        ->yields
+                            ->variable
+                                ->isNull
+
+                    ->mock($client)
+                    ->call('request')
+                        ->withArguments('GET', $location1, $options)
+                            ->once // Called the first time
+        ;
+    }
+
+    public function testListPayments()
+    {
+        $this
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($response = $this->mockJsonResponse('payment', 'list'))
+            ->and($this->calling($client)->request = $response)
+            ->and($config = $this->mockConfig($client))
+            ->and($options = $this->mockRequestOptions($config))
+
+            ->assert('Invalid limit')
+                ->exception(function () {
+                    testedClass::list(['limit' => 0]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchLimitException::class)
+                    ->message
+                        ->isIdenticalTo('Limit must be between 1 and 100.')
+
+                ->exception(function () {
+                    testedClass::list(['limit' => 101]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchLimitException::class)
+                    ->message
+                        ->isIdenticalTo('Limit must be between 1 and 100.')
+
+                ->exception(function () {
+                    testedClass::list(['limit' => uniqid()]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchLimitException::class)
+                    ->message
+                        ->isIdenticalTo('Limit must be between 1 and 100.')
+
+            ->assert('Invalid start')
+                ->exception(function () {
+                    testedClass::list(['start' => -1]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchStartException::class)
+                    ->message
+                        ->isIdenticalTo('Start must be a positive integer.')
+
+                ->exception(function () {
+                    testedClass::list(['start' => uniqid()]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchStartException::class)
+                    ->message
+                        ->isIdenticalTo('Start must be a positive integer.')
+
+            ->assert('No terms')
+                ->exception(function () {
+                    testedClass::list([]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Invalid search filters.')
+
+                ->exception(function () {
+                    testedClass::list(['foo' => 'bar']);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Invalid search filters.')
+
+            ->assert('Invalid created filter')
+                ->exception(function () {
+                    testedClass::list(['created' => time() + 100]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchCreationFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Created must be in the past.')
+
+                ->exception(function () {
+                    $date = new DateTime();
+                    $date->add(new DateInterval('P1D'));
+
+                    testedClass::list(['created' => $date]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchCreationFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Created must be in the past.')
+
+                ->exception(function () {
+                    testedClass::list(['created' => 0]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchCreationFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Created must be a positive integer, a DateTime object or a DatePeriod object.')
+
+                ->exception(function () {
+                    testedClass::list(['created' => uniqid()]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchCreationFilterException::class)
+                    ->message
+                        ->isIdenticalTo('Created must be a positive integer, a DateTime object or a DatePeriod object.')
+
+            ->assert('Make request')
+                ->if($limit = rand(1, 100))
+                ->and($start = rand(0, PHP_INT_MAX))
+                ->and($created = time() - rand(10, 1000000))
+
+                ->and($location = $this->newTestedInstance('pi_' . $this->getRandomString(24))->getUri())
+                ->and($terms1 = [
+                    'created' => $created,
+                    'limit' => $limit,
+                    'start' => $start,
+                ])
+                ->and($location1 = $location . '/payments?' . http_build_query($terms1))
+
+                ->and($terms2 = [
+                    'created' => $created,
+                    'limit' => $limit,
+                    'start' => $start + 2, // Based on json sample
+                ])
+                ->and($location2 = $location . '/payments?' . http_build_query($terms2))
+                ->then
+                    ->generator($gen = $this->testedInstance->listPayments($terms1))
+                        ->yields
+                            ->object
+                                ->isInstanceOf(Stancer\Payment::class)
+                                ->toString
+                                    ->isIdenticalTo('"paym_JnU7xyTGJvxRWZuxvj78qz7e"') // From json sample
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location1, $options)
+                                ->once
+                            ->withArguments('GET', $location2, $options)
+                                ->never
+
+                    ->generator($gen)
+                        ->yields
+                            ->object
+                                ->isInstanceOf(Stancer\Payment::class)
+                                ->toString
+                                    ->isIdenticalTo('"paym_p5tjCrXHy93xtVtVqvEJoC1c"') // From json sample
+                        ->yields
+                            ->object
+                                ->isInstanceOf(Stancer\Payment::class)
+                                ->toString
+                                    ->isIdenticalTo('"paym_JnU7xyTGJvxRWZuxvj78qz7e"') // From json sample
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location1, $options)
+                                ->once // Called the first time
+                            ->withArguments('GET', $location2, $options)
+                                ->once
+
+            ->assert('Empty response')
+                ->given($body = [
+                    'payments' => [],
+                    'range' => [
+                        'has_more' => false,
+                        'limit' => 10,
+                    ],
+                ])
+                ->and($this->calling($response)->getBody = new Stancer\Http\Stream(json_encode($body)))
+
+                ->if($limit = rand(1, 100))
+                ->and($terms = [
+                    'limit' => $limit,
+                ])
+                ->and($query = http_build_query(['limit' => $limit, 'start' => 0]))
+                ->and($location = $this->newTestedInstance('pi_' . $this->getRandomString(24))->getUri() . '/payments?' . $query)
+                ->then
+                    ->generator($gen = $this->testedInstance->listPayments($terms))
+                        ->yields
+                            ->variable
+                                ->isNull
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location, $options)
+                                ->once
+
+             ->assert('Invalid response')
+                ->given($this->calling($response)->getBody = new Stancer\Http\Stream(''))
+
+                ->if($limit = rand(1, 100))
+                ->and($terms = [
+                    'limit' => $limit,
+                ])
+                ->and($query = http_build_query(['limit' => $limit, 'start' => 0]))
+                ->and($location = $this->newTestedInstance('pi_' . $this->getRandomString(24))->getUri() . '/payments?' . $query)
+                ->then
+                    ->generator($gen = $this->testedInstance->listPayments($terms))
+                        ->yields
+                            ->variable
+                                ->isNull
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location, $options)
+                                ->once
+
+            ->assert('Make request','alias')
+                ->given($client = new mock\Stancer\Http\Client)
+                ->and($response = $this->mockJsonResponse('payment', 'list'))
+                ->and($this->calling($client)->request = $response)
+                ->and($config = $this->mockConfig($client))
+                ->and($options = $this->mockRequestOptions($config))
+
+                ->if($limit = rand(1, 100))
+                ->and($start = rand(0, PHP_INT_MAX))
+                ->and($created = time() - rand(10, 1000000))
+
+                ->and($location = $this->newTestedInstance('pi_' . $this->getRandomString(24))->getUri())
+                ->and($terms1 = [
+                    'created' => $created,
+                    'limit' => $limit,
+                    'start' => $start,
+                ])
+                ->and($location1 = $location . '/payments?' . http_build_query($terms1))
+
+                ->and($terms2 = [
+                    'created' => $created,
+                    'limit' => $limit,
+                    'start' => $start + 2, // Based on json sample
+                ])
+                ->and($location2 = $location . '/payments?' . http_build_query($terms2))
+                ->then
+                    ->generator($gen = $this->testedInstance->listPayments($terms1))
+                        ->yields
+                            ->object
+                                ->isInstanceOf(Stancer\Payment::class)
+                                ->toString
+                                    ->isIdenticalTo('"paym_JnU7xyTGJvxRWZuxvj78qz7e"') // From json sample
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location1, $options)
+                                ->once
+                            ->withArguments('GET', $location2, $options)
+                                ->never
+
+                    ->generator($gen)
+                        ->yields
+                            ->object
+                                ->isInstanceOf(Stancer\Payment::class)
+                                ->toString
+                                    ->isIdenticalTo('"paym_p5tjCrXHy93xtVtVqvEJoC1c"') // From json sample
+                        ->yields
+                            ->object
+                                ->isInstanceOf(Stancer\Payment::class)
+                                ->toString
+                                    ->isIdenticalTo('"paym_JnU7xyTGJvxRWZuxvj78qz7e"') // From json sample
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location1, $options)
+                                ->once // Called the first time
+                            ->withArguments('GET', $location2, $options)
+                                ->once
+
+
+            ->assert('Empty response, alias')
+                ->given($body = [
+                    'payments' => [],
+                    'range' => [
+                        'has_more' => false,
+                        'limit' => 10,
+                    ],
+                ])
+                ->and($this->calling($response)->getBody = new Stancer\Http\Stream(json_encode($body)))
+
+                ->if($limit = rand(1, 100))
+                ->and($terms = [
+                    'limit' => $limit,
+                ])
+                ->and($query = http_build_query(['limit' => $limit, 'start' => 0]))
+                ->and($location = $this->newTestedInstance('pi_' . $this->getRandomString(24))->getUri() . '/payments?' . $query)
+                ->then
+                    ->generator($gen = $this->testedInstance->payments($terms))
+                        ->yields
+                            ->variable
+                                ->isNull
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location, $options)
+                                ->once
+
+            ->assert('Invalid response, alias')
+                ->given($this->calling($response)->getBody = new Stancer\Http\Stream(''))
+
+                ->if($limit = rand(1, 100))
+                ->and($terms = [
+                    'limit' => $limit,
+                ])
+                ->and($query = http_build_query(['limit' => $limit, 'start' => 0]))
+                ->and($location = $this->newTestedInstance('pi_' . $this->getRandomString(24))->getUri() . '/payments?' . $query)
+                ->then
+                    ->generator($gen = $this->testedInstance->payments($terms))
+                        ->yields
+                            ->variable
+                                ->isNull
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('GET', $location, $options)
+                                ->once
+        ;
+    }
+
+    public function testMetadata()
+    {
+        $this
+            ->given($asString = $this->getRandomString(10))
+            ->and($asInteger = $this->getRandomInteger(0, 100))
+            ->and($asArray = [$asString, $asInteger])
+            ->and($asDict = ['string' => $asString, 'integer' => $asInteger])
+            ->and($asJsonObject = new Stancer\Stub\Core\StubObject(['string1' => $asString]))
+            ->and($asStringable = new Stancer\Stub\Stringable($asString))
+
+            ->assert('Allow strings')
+                ->object($this->newTestedInstance->setMetadata($asString))
+                    ->isTestedInstance
+
+                ->string($this->testedInstance->getMetadata())
+                    ->isIdenticalTo($asString)
+
+            ->assert('Allow integers')
+                ->object($this->newTestedInstance->setMetadata($asInteger))
+                    ->isTestedInstance
+
+                ->integer($this->testedInstance->getMetadata())
+                    ->isIdenticalTo($asInteger)
+
+            ->assert('Allow arrays')
+                ->object($this->newTestedInstance->setMetadata($asArray))
+                    ->isTestedInstance
+
+                ->array($this->testedInstance->getMetadata())
+                    ->hasSize(2)
+                    ->string[0]
+                        ->isIdenticalTo($asString)
+                    ->integer[1]
+                        ->isIdenticalTo($asInteger)
+
+            ->assert('Allow associative arrays')
+                ->object($this->newTestedInstance->setMetadata($asDict))
+                    ->isTestedInstance
+
+                ->array($this->testedInstance->getMetadata())
+                    ->hasSize(2)
+                    ->string['string']
+                        ->isIdenticalTo($asString)
+                    ->integer['integer']
+                        ->isIdenticalTo($asInteger)
+
+            ->assert('Allow JSON compatible objects')
+                ->object($this->newTestedInstance->setMetadata($asJsonObject))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getMetadata())
+                    ->isIdenticalTo($asJsonObject)
+
+                ->array($this->testedInstance->jsonSerialize())
+                    ->hasSize(1)
+                    ->hasKey('metadata')
+                    ->child['metadata'](function ($metadata) use ($asString) {
+                        $metadata
+                            ->hasSize(1)
+                            ->hasKey('string1')
+                            ->string['string1']
+                                ->isEqualTo($asString)
+                        ;
+                    })
+
+            ->assert('Allow stringable objects')
+                ->object($this->newTestedInstance->setMetadata($asStringable))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getMetadata())
+                    ->isIdenticalTo($asStringable)
+
+                ->array($this->testedInstance->jsonSerialize())
+                    ->hasSize(1)
+                    ->hasKey('metadata')
+                    ->string['metadata']
+                        ->isEqualTo($asString)
+
+            ->assert('Does not allow other objects')
+                ->exception(function () {
+                    $this->newTestedInstance->setMetadata(new stdClass);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidMetadataException::class)
+                    ->message
+                        ->isIdenticalTo('Objects are not allowed if not JSON serializable or stringable.')
+
+            ->assert('Aliases')
+                ->variable($this->newTestedInstance->metadata = $asString)
+                ->string($this->testedInstance->metadata)->isIdenticalTo($asString)
+
+                ->variable($this->newTestedInstance->metadata = $asInteger)
+                ->integer($this->testedInstance->Metadata)->isIdenticalTo($asInteger)
+
+                ->variable($this->newTestedInstance->metadata = $asArray)
+                ->array($this->testedInstance->metadata)->hasSize(2)
+
+                ->variable($this->newTestedInstance->metadata = $asDict)
+                ->array($this->testedInstance->metadata)->hasSize(2)
+
+                ->variable($this->newTestedInstance->metadata = $asJsonObject)
+                ->object($this->testedInstance->metadata)->isIdenticalTo($asJsonObject)
+
+                ->variable($this->newTestedInstance->metadata = $asStringable)
+                ->object($this->testedInstance->metadata)->isIdenticalTo($asStringable)
+
+                ->exception(function () {
+                    $this->newTestedInstance->metadata = new stdClass;
+                })->isInstanceOf(Stancer\Exceptions\InvalidMetadataException::class)
         ;
     }
 

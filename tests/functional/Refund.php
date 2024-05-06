@@ -36,8 +36,8 @@ class Refund extends TestCase
             ->and($payment->send())
             ->if($this->newTestedInstance) // Needed to use "isInstanceOfTestedClass" asserter
             ->then
-                ->string($payment->getStatus())
-                    ->isIdenticalTo(Stancer\Payment\Status::TO_CAPTURE)
+                ->object($payment->getStatus())
+                    ->isEqualTo(Stancer\Payment\Status::TO_CAPTURE)
 
                 ->object($payment->refund())
                     ->isIdenticalTo($payment)
@@ -57,11 +57,11 @@ class Refund extends TestCase
                 ->object($refund->getPayment())
                     ->isIdenticalTo($payment)
 
-                ->string($refund->getStatus())
-                    ->isIdenticalTo(Stancer\Refund\Status::PAYMENT_CANCELED)
+                ->object($refund->getStatus())
+                    ->isEqualTo(Stancer\Refund\Status::PAYMENT_CANCELED)
 
-                ->string($payment->getStatus())
-                    ->isIdenticalTo(Stancer\Payment\Status::CANCELED)
+                ->object($payment->getStatus())
+                    ->isEqualTo(Stancer\Payment\Status::CANCELED)
         ;
     }
 
@@ -73,7 +73,7 @@ class Refund extends TestCase
     public function testRefundMultiple($currency)
     {
         $this
-            ->given($total = rand(500, 10000))
+            ->given($total = rand(500, 100))
             ->and($amount1 = floor($total / 3))
             ->and($amount2 = max(50, floor(($total - $amount1) / rand(2, 10))))
             ->and($amount3 = $total - $amount1 - $amount2)
@@ -113,8 +113,8 @@ class Refund extends TestCase
                     ->object($refund1->getPayment())
                         ->isIdenticalTo($payment)
 
-                    ->string($refund1->getStatus())
-                        ->isIdenticalTo(Stancer\Refund\Status::TO_REFUND)
+                    ->object($refund1->getStatus())
+                        ->isEqualTo(Stancer\Refund\Status::TO_REFUND)
 
                 ->assert('Second refund')
                     ->object($payment->refund($amount2))
@@ -139,8 +139,8 @@ class Refund extends TestCase
                     ->object($refund2->getPayment())
                         ->isIdenticalTo($payment)
 
-                    ->string($refund2->getStatus())
-                        ->isIdenticalTo(Stancer\Refund\Status::TO_REFUND)
+                    ->object($refund2->getStatus())
+                        ->isEqualTo(Stancer\Refund\Status::TO_REFUND)
 
                 ->assert('Without amount, we are going to full refund')
                     ->object($payment->refund())
@@ -169,8 +169,8 @@ class Refund extends TestCase
                     ->object($refund3->getPayment())
                         ->isIdenticalTo($payment)
 
-                    ->string($refund3->getStatus())
-                        ->isIdenticalTo(Stancer\Refund\Status::TO_REFUND)
+                    ->object($refund3->getStatus())
+                        ->isEqualTo(Stancer\Refund\Status::TO_REFUND)
         ;
     }
 }

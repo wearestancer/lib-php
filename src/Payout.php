@@ -20,6 +20,7 @@ use Stancer;
  * @method \Stancer\Payout\Status getStatus() Get payout status.
  * @method integer get_amount() Get the total credit transfer amount you will receive.
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_currency() Get processed currency.
  * @method ?\DateTimeImmutable get_date_bank() Get the date you will receive the credit transfer.
@@ -36,6 +37,8 @@ use Stancer;
  *
  * @property-read integer $amount The total credit transfer amount you will receive.
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $currency Processed currency.

@@ -18,14 +18,22 @@ class Auth extends Stancer\Tests\atoum
                 ->extends(Stancer\Core\AbstractObject::class)
 
             ->enum($this->newTestedInstance->getStatus())
-                ->isIdenticalTo(Stancer\Auth\Status::REQUEST)
-
+                ->isIdenticalTo(Stancer\Auth\Status::REQUEST);
+        if(\Stancer\Config::getGlobal()->version ==1 ){
+            $this
+            ->currentlyTestedClass
             ->array($this->testedInstance->jsonSerialize())
                 ->hasSize(1)
                 ->hasKey('status')
                 ->string['status']
-                    ->isIdenticalTo('request')
-        ;
+                    ->isIdenticalTo('request');
+        }
+        else {
+            $this
+            ->currentlyTestedClass
+            ->boolean($this->testedInstance->jsonSerialize())
+                ->isTrue;
+        }
     }
 
     public function testGetRedirectUrl()

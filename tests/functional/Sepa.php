@@ -22,7 +22,7 @@ class Sepa extends TestCase
                     })
                         ->isInstanceOf(Stancer\Exceptions\NotFoundException::class)
                         ->message
-                            ->isIdenticalTo('No such sepa ' . $id)
+                            ->isIdenticalTo($this->getNotFoundExceptionMessage($id, 'sepa'))
 
             ->assert('Get test sepa')
                 ->if($this->newTestedInstance('sepa_bIvCZePYqfMlU11TANT8IqL1'))

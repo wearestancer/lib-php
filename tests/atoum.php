@@ -77,17 +77,31 @@ class atoum extends base\test
         return sprintf('%04d-%02d-%02d', $year, $month, $day);
     }
 
+    public function getRandomInteger(int $min, int $max): int
+    {
+        return random_int($min, $max);
+    }
+
     public function getRandomNumber(): string
     {
         // Simulate a french mobile phone number
         $first = rand(0, 1) + 6;
-        $loop = 4;
+        $loop = 3;
 
         $number = '+33' . $first;
 
         if ($first === 7) {
             $number .= str_pad(rand(30, 99), 2, '0');
-            $loop--;
+        }
+        if ($first === 6){
+            $nine_list = ['5','8','9'];
+            $first_number_duo =[
+                str_pad((string)rand(0,20),2,'0'),
+                (string)rand(40,80),
+                '3' . (string)rand(0,8),
+                '9' . $nine_list[rand(0,2)],
+            ];
+            $number .= $first_number_duo[rand(0,3)];
         }
 
         for ($idx = 0; $idx < $loop; $idx++) {

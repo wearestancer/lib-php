@@ -11,6 +11,15 @@ use Stancer;
  */
 class Card extends TestCase
 {
+    public function personalTypo():string
+    {
+        if ($this->config->version == 1){
+            return 'personnal';
+        }
+        else{
+            return 'personal';
+        }
+    }
     public function testGetData()
     {
         $this
@@ -22,7 +31,7 @@ class Card extends TestCase
                     })
                         ->isInstanceOf(Stancer\Exceptions\NotFoundException::class)
                         ->message
-                            ->isIdenticalTo('No such card ' . $id)
+                            ->isIdenticalTo($this->getNotFoundExceptionMessage($id, 'card'))
 
             ->assert('Get test user')
                 ->if($this->newTestedInstance('card_9bKZ9cr0Ji0qSPs5c1uMQG5z'))
@@ -40,7 +49,7 @@ class Card extends TestCase
                         ->isIdenticalTo('3055')
 
                     ->string($this->testedInstance->getNature())
-                        ->isIdenticalTo('personnal')
+                        ->isIdenticalTo($this->personalTypo())
 
                     ->string($this->testedInstance->getNetwork())
                         ->isIdenticalTo('visa')
@@ -84,14 +93,24 @@ class Card extends TestCase
                 ->and($this->testedInstance->setExpMonth($month))
                 ->and($this->testedInstance->setExpYear($year))
                 ->and($this->testedInstance->setNumber($number))
-                ->then
-                    ->exception(function () {
+                ->then;
+                if($this->config->version == 1){
+                    $this->exception(function () {
                         $this->testedInstance->send();
                     })
                         ->isInstanceOf(Stancer\Exceptions\ConflictException::class)
                         ->message
-                            ->isIdenticalTo('Card already exists, you may want to update it instead creating a new one (' . $id . ')')
+                            ->isIdenticalTo('Card already exists, you may want to update it instead creating a new one (' . $id . ')');
+                } else {
+                    $this->object($this->testedInstance->send())
+                        ->isInstanceOf(Stancer\Card::class)
+                        ->string($this->testedInstance->getId())
+                            ->isNotEmpty
+                        ->integer($this->testedInstance->getExpMonth())
+                            ->isIdenticalTo($month);
+                }
 
+            $this
             ->assert('Update')
                 ->if($this->newTestedInstance($id))
                 ->then
@@ -155,7 +174,7 @@ class Card extends TestCase
                     })
                         ->isInstanceOf(Stancer\Exceptions\NotFoundException::class)
                         ->message
-                            ->isIdenticalTo('No such card ' . $id)
+                            ->isIdenticalTo($this->getNotFoundExceptionMessage($id,'card'))
         ;
     }
 }

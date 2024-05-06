@@ -14,6 +14,7 @@ use Stancer;
  * @method ?string getReturnUrl() Get the return URL at end of the authentification session.
  * @method \Stancer\Auth\Status getStatus() Get the authentification status.
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_endpoint() Get API endpoint.
  * @method string get_entity_name() Get entity name.
@@ -22,12 +23,15 @@ use Stancer;
  * @method ?string get_return_url() Get the return URL at end of the authentification session.
  * @method \Stancer\Auth\Status get_status() Get the authentification status.
  * @method string get_uri() Get entity resource location.
+ * @method $this set_exportablestatus(boolean $exportable = false)
  * @method $this set_return_url(string $return_url) Set the return URL at end of the authentification session.
  *
  * @property ?string $returnUrl The return URL at end of the authentification session.
  * @property ?string $return_url The return URL at end of the authentification session.
  *
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $endpoint API endpoint.
@@ -87,5 +91,18 @@ class Auth extends Stancer\Core\AbstractObject
         }
 
         return parent::setReturnUrl($url);
+    }
+
+    /**
+     * Set Exportable property of auth data.
+     * Depending of api version auth is or isn't exportable.
+     *
+     * @param boolean $exportable Boolean that set the Exportation value.
+     * @return self
+     */
+    public function setExportablestatus(bool $exportable = false): self
+    {
+        $this->dataModel['status']['exportable'] = $exportable;
+        return $this;
     }
 }

@@ -3,23 +3,26 @@ declare(strict_types=1);
 
 namespace Stancer\Payment;
 
+use DateTimeImmutable;
+use Exception;
+use Generator;
 use Override;
 use Stancer;
+use Stancer\Stub\Payment;
 use ValueError;
 
 /**
  * Representation of an intent.
  *
- *
  * @method static add_methods_allowed($method) Add an allowed method.
+ * @method static array filter_list_params(array $terms) Filter for list method.
  * @method ?\Stancer\ThreeDomainsSecure\Status get3DS() Get ask for an authenticated payment.
  * @method ?integer getAmount() Get intent amount.
  * @method ?boolean getCapture() Get capture immediately the payment.
- * @method ?\Stancer\Card getCard() Get card object.
  * @method ?\DateTimeImmutable getCreated() Get creation date.
  * @method ?\Stancer\Currency getCurrency() Get processed currency.
- * @method ?\Stancer\Customer getCustomer() Get customer object.
  * @method ?string getDescription() Get intent description.
+ * @method ?mixed getMetadata() Get arbitrary metadata.
  * @method Stancer\Payment\MethodsAllowed[] getMethodsAllowed() Get list of payment methods allowed for this intent.
  * @method ?string getOrderId() Get order identifier.
  * @method ?\Stancer\Payment getPayment() Get finalized payment.
@@ -34,13 +37,15 @@ use ValueError;
  * @method ?boolean get_capture() Get capture immediately the payment.
  * @method ?\Stancer\Card get_card() Get card object.
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method ?\Stancer\Currency get_currency() Get processed currency.
  * @method ?\Stancer\Customer get_customer() Get customer object.
  * @method ?string get_description() Get intent description.
  * @method string get_endpoint() Get API endpoint.
- * @method string get_entity_name() Get entity name.
+ * @method string get_entity_name()
  * @method ?string get_id() Get object ID.
+ * @method ?mixed get_metadata() Get arbitrary metadata.
  * @method Stancer\Payment\MethodsAllowed[] get_methods_allowed() Get list of payment methods allowed for this intent.
  * @method ?string get_order_id() Get order identifier.
  * @method ?\Stancer\Payment get_payment() Get finalized payment.
@@ -49,12 +54,11 @@ use ValueError;
  * @method ?\Stancer\Payment\Intent\Status get_status() Get status of the intent.
  * @method ?\Stancer\ThreeDomainsSecure\Status get_three_ds() Get ask for an authenticated payment.
  * @method ?\Stancer\ThreeDomainsSecure\Status get_threeds() Get ask for an authenticated payment.
- * @method string get_uri() Get entity resource location.
+ * @method string get_uri() Return resource location.
  * @method ?string get_url() Get payment page URL.
+ * @method Generator list_payments(array $terms) List payment associated to the payment intent.
  * @method $this set3DS(\Stancer\ThreeDomainsSecure\Status $3DS) Set ask for an authenticated payment.
  * @method $this setCapture(boolean $capture) Set capture immediately the payment.
- * @method $this setCard(\Stancer\Card $card) Set card object.
- * @method $this setCustomer(\Stancer\Customer $customer) Set customer object.
  * @method $this setDescription(string $description) Set intent description.
  * @method $this setOrderId(string $orderId) Set order identifier.
  * @method $this setSepa(\Stancer\Sepa $sepa) Set SEPA object.
@@ -67,6 +71,7 @@ use ValueError;
  * @method $this set_currency(\Stancer\Currency $currency) Set processed currency.
  * @method $this set_customer(\Stancer\Customer $customer) Set customer object.
  * @method $this set_description(string $description) Set intent description.
+ * @method $this set_metadata(mixed $metadata) Set arbitrary metadata.
  * @method $this set_methods_allowed(Stancer\Payment\MethodsAllowed[] $methods_allowed) Set list of payment
  *   methods allowed for this intent.
  * @method $this set_order_id(string $order_id) Set order identifier.
@@ -83,6 +88,7 @@ use ValueError;
  * @property ?\Stancer\Currency $currency Processed currency.
  * @property ?\Stancer\Customer $customer Customer object.
  * @property ?string $description Intent description.
+ * @property ?mixed $metadata Arbitrary metadata.
  * @property Stancer\Payment\MethodsAllowed[] $methodsAllowed List of payment methods allowed for this intent.
  * @property Stancer\Payment\MethodsAllowed[] $methods_allowed List of payment methods allowed for this intent.
  * @property ?string $orderId Order identifier.
@@ -95,15 +101,14 @@ use ValueError;
  * @property ?\Stancer\ThreeDomainsSecure\Status $threeds Ask for an authenticated payment.
  *
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $endpoint API endpoint.
- * @property-read string $entityName Entity name.
- * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
  * @property-read ?\Stancer\Payment $payment Finalized payment.
  * @property-read ?\Stancer\Payment\Intent\Status $status Status of the intent.
- * @property-read string $uri Entity resource location.
  * @property-read ?string $url Payment page URL.
  */
 #[Stancer\Core\Documentation\PropertyAlias('3DS', 'threeds')]
@@ -142,6 +147,11 @@ class Intent extends Stancer\Core\AbstractObject
             'desc' => 'Customer object',
             'type' => Stancer\Customer::class,
         ],
+        'createdAt' => [
+            'desc' => 'Date of creation',
+            'restricted' => true,
+            'type' => DateTimeImmutable::class,
+        ],
         'description' => [
             'desc' => 'Intent description',
             'size' => [
@@ -149,6 +159,10 @@ class Intent extends Stancer\Core\AbstractObject
                 'max' => 64,
             ],
             'type' => self::STRING,
+        ],
+        'metadata' => [
+            'desc' => 'Arbitrary metadata',
+            'type' => self::MIXED,
         ],
         'methodsAllowed' => [
             'desc' => 'List of payment methods allowed for this intent',
@@ -218,14 +232,23 @@ class Intent extends Stancer\Core\AbstractObject
             case 'getthreeds':
             case 'get_three_ds':
                 return parent::__call('getthreeds', $arguments);
+
             case 'set3ds':
             case 'set_3ds':
             case 'setthreeds':
             case 'set_three_ds':
                 return parent::__call('setthreeds', $arguments);
-        }
 
-        return parent::__call($method, $arguments);
+            case 'list_payments':
+            case 'payments':
+                return $this->listPayments($arguments[0]);
+
+            case 'created':
+                return parent::getCreatedAt();
+
+            default:
+                return parent::__call($method, $arguments);
+        }
     }
 
     /**
@@ -250,6 +273,167 @@ class Intent extends Stancer\Core\AbstractObject
         // ... and that's that we want
     }
 
+    /**
+     * Capture a Payment Intent
+     *
+     * TODO: Finish The capture.
+     *
+     * @return static
+     */
+    public function capture()
+    {
+        $this->send();
+        return $this;
+    }
+
+    /**
+     * Filter for list method.
+     *
+     * `$terms` must be an associative array with one of the following key : `order_id`, `card`, `sepa`.
+     *
+     * `order_id`, `card` and `sepa` will be treated as a string and will filter payments corresponding to the data
+     * you specified in your initial payment request.
+     *
+     * @param array $terms Search terms. May have `order_id`, `card` or `sepa` key.
+     * @return array
+     * @throws Stancer\Exceptions\InvalidSearchOrderIdFilterException When `order_id` is invalid.
+     * @throws Stancer\Exceptions\InvalidSearchCardFilterException When `card` is invalid.
+     * @throws Stancer\Exceptions\InvalidSearchSepaFilterException When `sepa` is invalid.
+     *
+     * @phpstan-param array{card?: string, order_id?: string, sepa?: string} $terms
+     * @phpstan-return array{card?: string, order_id?: string, sepa?: string}
+     */
+    public static function filterListParams(array $terms): array
+    {
+        $params = [];
+
+        if (array_key_exists('card', $terms)) {
+            $params['card'] = $terms['card'];
+            $type = gettype($terms['card']);
+
+            if ($type !== 'string') {
+                throw new Stancer\Exceptions\InvalidSearchCardFilterException('Card must be a string.');
+            }
+
+            if (strlen($terms['card']) !== 29) {
+                $message = 'A valid Card reference must have 29 characters.';
+
+                throw new Stancer\Exceptions\InvalidSearchCardFilterException($message);
+            }
+        }
+
+        if (array_key_exists('order_id', $terms)) {
+            $params['order_id'] = $terms['order_id'];
+            $type = gettype($terms['order_id']);
+
+            if ($type !== 'string') {
+                throw new Stancer\Exceptions\InvalidSearchOrderIdFilterException('Order ID must be a string.');
+            }
+
+            if (strlen($terms['order_id']) > 36 || !$terms['order_id']) {
+                $message = 'A valid order ID must be between 1 and 36 characters.';
+
+                throw new Stancer\Exceptions\InvalidSearchOrderIdFilterException($message);
+            }
+        }
+
+        if (array_key_exists('sepa', $terms)) {
+            $params['sepa'] = $terms['sepa'];
+            $type = gettype($terms['sepa']);
+
+            if ($type !== 'string') {
+                throw new Stancer\Exceptions\InvalidSearchSepaFilterException('SEPA must be a string.');
+            }
+
+            if (strlen($terms['sepa']) !== 29) {
+                $message = 'A valid SEPA reference must have 29 characters.';
+
+                throw new Stancer\Exceptions\InvalidSearchSepaFilterException($message);
+            }
+        }
+        return $params;
+    }
+
+    /**
+     * Return a card from an ID.
+     *
+     * @return Stancer\Card|null
+     */
+    public function getCard(): ?Stancer\Card
+    {
+        $card = parent::getCard();
+        if ($card === null) {
+            return null;
+        }
+        return new Stancer\Card($card);
+    }
+
+    /**
+     * Return a customer from an ID.
+     *
+     * @return Stancer\Customer|null
+     */
+    public function getCustomer(): ?Stancer\Customer
+    {
+        $customer = parent::getCustomer();
+        if ($customer === null) {
+            return null;
+        }
+        return new Stancer\Customer($customer);
+    }
+
+    /**
+     * Return creation date.
+     *
+     * @return DateTimeImmutable|null
+     */
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Creation date',
+        restricted: true,
+        type: DateTimeImmutable::class,
+    )]
+    public function getCreationDate(): ?DateTimeImmutable
+    {
+        return parent::getCreatedAt();
+    }
+
+    /**
+     * Return the entity name
+     * This could lead to bugs as, for all other entities, their names are the Class name.
+     *
+     * @return string
+     */
+    #[\Override]
+    public function getEntityName(): string
+    {
+        return 'payment_intent';
+    }
+
+    /**
+     * Return resource location.
+     *
+     * @return string
+     */
+    #[\Override]
+    public function getUri(): string
+    {
+        return parent::getUri();
+    }
+
+    /**
+     * List payment associated to the payment intent.
+     *
+     * @param mixed|array<mixed> $terms Research parameters.
+     * @return Generator A generator that yelds the objects listed.
+     * @throws Stancer\Exceptions\InvalidSearchFilterException Invalid parameter to listPayments.
+     */
+    public function listPayments(mixed $terms): Generator
+    {
+        if (!is_array($terms)) {
+            throw new Stancer\Exceptions\InvalidSearchFilterException();
+        }
+        return $this->search(Payment::class, 'payments', $terms, 'payments');
+    }
 
     /**
      * Set the intent amount.
@@ -267,6 +451,27 @@ class Intent extends Stancer\Core\AbstractObject
         }
 
         return parent::setAmount($amount);
+    }
+
+    /**
+     * Set A card, by id or by object.
+     *
+     * @param Stancer\Card|string $card A card Object or it's ID.
+     * @return $this
+     * @throws Stancer\Exceptions\InvalidUniqueIdException When the card is invalid.
+     */
+    public function setCard(Stancer\Card|string $card): static
+    {
+        try {
+            if (is_string($card)) {
+                $new = $card;
+            } else {
+                $new = $card->getId() ?? $card->send()->getId();
+            }
+        } catch (ValueError $exception) {
+            throw new Stancer\Exceptions\InvalidUniqueIdException();
+        }
+        return parent::setCard($new);
     }
 
     /**
@@ -304,6 +509,45 @@ class Intent extends Stancer\Core\AbstractObject
         }
 
         return parent::setCurrency($new);
+    }
+
+    /**
+     * Set a customer by id or by object.
+     *
+     * @param Stancer\Customer|string $customer A customer object or it's ID.
+     * @return $this
+     * @throws Stancer\Exceptions\InvalidUniqueIdException When the customer is invalid.
+     */
+    public function setCustomer(Stancer\Customer|string $customer): static
+    {
+        try {
+            if (is_string($customer)) {
+                $new = $customer;
+            } else {
+                $new = $customer->getId() ?? $customer->send()->getId();
+            }
+        } catch (ValueError $exception) {
+            throw new Stancer\Exceptions\InvalidUniqueIdException();
+        }
+        return parent::setCustomer($new);
+    }
+
+    /**
+     * Set metadata.
+     *
+     * @param mixed $data Arbitrary data.
+     * @return $this
+     * @throws Stancer\Exceptions\InvalidMetadataException When data is neither a JSON serializable or stringable object.
+     */
+    public function setMetadata(mixed $data): static
+    {
+        if (is_object($data) && !($data instanceof \JsonSerializable || $data instanceof \Stringable)) {
+            $message = 'Objects are not allowed if not JSON serializable or stringable.';
+
+            throw new Stancer\Exceptions\InvalidMetadataException($message);
+        }
+
+        return parent::setMetadata($data);
     }
 
     /**

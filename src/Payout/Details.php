@@ -15,6 +15,7 @@ use Stancer;
  * @method ?\Stancer\Payout\Details\Inner getPayments() Get payments details.
  * @method ?\Stancer\Payout\Details\Inner getRefunds() Get refunds details.
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method ?\Stancer\Payout\Details\Inner get_disputes() Get disputes details.
  * @method string get_endpoint() Get API endpoint.
@@ -34,6 +35,8 @@ use Stancer;
  * @phpstan-method \Generator<Stancer\Refund> listRefunds(SearchFilters $terms) List every refunds in the payout.
  *
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read ?\Stancer\Payout\Details\Inner $disputes Disputes details.

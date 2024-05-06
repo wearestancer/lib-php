@@ -168,6 +168,12 @@ $classes = [
             200,
         ],
     ],
+    Stancer\Payment\SearchObject::class => [
+        'instance' => [
+            'paym_123456789123456',
+            'payment'
+        ],
+    ],
 ];
 
 // Iterate through our sources.

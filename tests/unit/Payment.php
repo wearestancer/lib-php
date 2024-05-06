@@ -2207,13 +2207,14 @@ class Payment extends Stancer\Tests\atoum
                         ->object($this->testedInstance->send())
                             ->isTestedInstance
 
+                        ->string($this->testedInstance->getId())
+                            ->isIdenticalTo('paym_KIVaaHi7G8QAYMQpQOYBrUQE')
+
                         ->mock($client)
                             ->call('request')
                                 ->withArguments('POST', $location, $options)
                                     ->once
 
-                        ->string($this->testedInstance->getId())
-                            ->isIdenticalTo('paym_KIVaaHi7G8QAYMQpQOYBrUQE')
         ;
     }
 
@@ -2287,6 +2288,8 @@ class Payment extends Stancer\Tests\atoum
 
     public function testSetAuth()
     {
+        $config = Stancer\Config::getGlobal();
+        $config->version = 1;
         $this
             ->assert('With an Auth object')
                 ->if($auth = new Stancer\Auth())
@@ -2358,6 +2361,106 @@ class Payment extends Stancer\Tests\atoum
                     ->variable($this->testedInstance->getAuth())
                         ->isNull
         ;
+    }
+    public function testSetAuthVersionTwo(){
+        $config = Stancer\Config::getGlobal();
+        $this
+        ->given($config->version = 2)
+        ->assert('Without Card all and Auth object or url')
+            ->if($auth = new Stancer\Auth)
+            ->and($https = 'https://www.example.org?' . uniqid())
+            ->and($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getAuth())
+                    ->isNull
+
+                ->exception(function () use ($auth){
+                    $this->testedInstance->setAuth($auth);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidAuthException::class)
+                    ->message
+                        ->isIdenticalTo("your payment cannot be auth without card")
+                ->exception(function () use ($https){
+                    $this->testedInstance->setAuth($https);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidAuthException::class)
+                        ->message
+                        ->isIdenticalTo("your payment cannot be auth without card")
+
+
+        ->assert('With a true value')
+            ->if($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getAuth())
+                    ->isNull
+
+                ->object($this->testedInstance->setAuth(true))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getAuth())
+                    ->isInstanceOf(Stancer\Auth::class)
+
+                ->variable($this->testedInstance->getAuth()->getReturnUrl())
+                    ->isNull
+
+                ->enum($this->testedInstance->getAuth()->getStatus())
+                    ->isIdenticalTo(Stancer\Auth\Status::REQUEST)
+
+        ->assert('With false')
+            ->if($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getAuth())
+                    ->isNull
+
+                ->object($this->testedInstance->setAuth(false))
+                    ->isTestedInstance
+
+                ->variable($this->testedInstance->getAuth())
+                    ->isNull
+
+        ->given($this->newtestedInstance)
+        ->given($card = new Card())
+        ->and($this->newtestedInstance->setCard($card))
+        ->assert('With card and URL')
+            ->if($https = 'https://www.example.org?' . uniqid())
+            ->and($http = 'http://www.example.org?' . uniqid())
+            ->and($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getAuth())
+                    ->isNull
+
+                ->object($this->testedInstance->setAuth($https))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getAuth())
+                    ->isInstanceOf(Stancer\Auth::class)
+
+                ->string($this->testedInstance->getAuth()->getReturnUrl())
+                    ->isIdenticalTo($https)
+
+                ->enum($this->testedInstance->getAuth()->getStatus())
+                    ->isIdenticalTo(Stancer\Auth\Status::REQUEST)
+
+                ->exception(function () use ($http) {
+                    $this->testedInstance->setAuth($http);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidUrlException::class)
+                    ->message
+                        ->isIdenticalTo('You must provide an HTTPS URL.')
+
+        ->assert('With an Auth object')
+            ->if($auth = new Stancer\Auth)
+            ->and($this->newTestedInstance)
+            ->then
+                ->variable($this->testedInstance->getAuth())
+                    ->isNull
+
+                ->object($this->testedInstance->setAuth($auth))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getAuth())
+                    ->isIdenticalTo($auth)
+    ;
     }
 
     public function testSetCard()

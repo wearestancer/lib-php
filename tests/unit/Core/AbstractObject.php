@@ -291,10 +291,10 @@ class AbstractObject extends Stancer\Tests\atoum
                 ->if($this->newTestedInstance)
                 ->then
                     ->string($this->testedInstance->getUri())
-                        ->isIdenticalTo($config->getUri() . $this->testedInstance->getEndpoint())
+                        ->isIdenticalTo($config->getUri() . $this->testedInstance->getEndpoint().'/')
 
                     ->string($this->testedInstance->uri)
-                        ->isIdenticalTo($config->getUri() . $this->testedInstance->endpoint)
+                        ->isIdenticalTo($config->getUri() . $this->testedInstance->endpoint .'/')
 
             ->assert('With an id')
                 ->if($id = uniqid())
