@@ -80,11 +80,11 @@ class TestCase extends Stancer\Tests\atoum
     public function getNotFoundExceptionMessage($id,$ressource_name): string
     {
         if ($this->config->version == 1){
-            return "No such " . $ressource_name . " " . $id;
+            return "No such " . strtolower($ressource_name) . " " . $id;
         }
         else
         {
-            return "Resource not found";
+            return $ressource_name." `".$id."` not found";
         }
     }
 

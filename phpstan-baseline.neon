@@ -16,22 +16,22 @@ parameters:
 			path: src/Payment/Intent.php
 
 		-
-			message: "#^PHPDoc tag @method has invalid value \\(\\$this set3DS\\(\\\\Stancer\\\\ThreeDomainsSecure\\\\Status \\$3DS\\) Set ask for an authenticated payment\\.\\)\\: Unexpected token \"\\$3DS\\)\", expected variable at offset 3168 on line 47$#"
+			message: "#^PHPDoc tag @method has invalid value \\(\\$this set3DS\\(\\\\Stancer\\\\ThreeDomainsSecure\\\\Status \\$3DS\\) Set ask for an authenticated payment\\.\\)\\: Unexpected token \"\\$3DS\\)\", expected variable at offset 3191 on line 47$#"
 			count: 2
 			path: src/Payment/Intent.php
 
 		-
-			message: "#^PHPDoc tag @method has invalid value \\(\\$this set_3ds\\(\\\\Stancer\\\\ThreeDomainsSecure\\\\Status \\$3ds\\) Set ask for an authenticated payment\\.\\)\\: Unexpected token \"\\$3ds\\)\", expected variable at offset 3784 on line 54$#"
+			message: "#^PHPDoc tag @method has invalid value \\(\\$this set_3ds\\(\\\\Stancer\\\\ThreeDomainsSecure\\\\Status \\$3ds\\) Set ask for an authenticated payment\\.\\)\\: Unexpected token \"\\$3ds\\)\", expected variable at offset 3807 on line 54$#"
 			count: 2
 			path: src/Payment/Intent.php
 
 		-
-			message: "#^PHPDoc tag @property has invalid value \\(\\?\\\\Stancer\\\\ThreeDomainsSecure\\\\Status \\$3DS Ask for an authenticated payment\\.\\)\\: Unexpected token \"\\$3DS\", expected variable at offset 5031 on line 70$#"
+			message: "#^PHPDoc tag @property has invalid value \\(\\?\\\\Stancer\\\\ThreeDomainsSecure\\\\Status \\$3DS Ask for an authenticated payment\\.\\)\\: Unexpected token \"\\$3DS\", expected variable at offset 5054 on line 70$#"
 			count: 2
 			path: src/Payment/Intent.php
 
 		-
-			message: "#^PHPDoc tag @property has invalid value \\(\\?\\\\Stancer\\\\ThreeDomainsSecure\\\\Status \\$3ds Ask for an authenticated payment\\.\\)\\: Unexpected token \"\\$3ds\", expected variable at offset 5119 on line 71$#"
+			message: "#^PHPDoc tag @property has invalid value \\(\\?\\\\Stancer\\\\ThreeDomainsSecure\\\\Status \\$3ds Ask for an authenticated payment\\.\\)\\: Unexpected token \"\\$3ds\", expected variable at offset 5142 on line 71$#"
 			count: 2
 			path: src/Payment/Intent.php
 

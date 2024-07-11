@@ -16,6 +16,7 @@ use Stringable;
  * Manage common code between API object.
  *
  * @method ?\DateTimeImmutable getCreated() Get creation date.
+ * @method ?\DateTimeImmutable getCreated_at() Get creation date.
  * @method ?\DateTimeImmutable get_created() Get creation date.
  * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
@@ -62,7 +63,11 @@ use Stringable;
     restricted: true,
     type: \DateTimeImmutable::class,
 )]
-abstract class AbstractObject implements \JsonSerializable
+#[Stancer\Core\Documentation\PropertyAlias(
+    'createdAt',
+    'created'
+)]
+abstract class AbstractObject implements JsonSerializable
 {
     use Stancer\Traits\AliasTrait;
 
@@ -79,6 +84,9 @@ abstract class AbstractObject implements \JsonSerializable
 
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     public const ENDPOINT = '';
+
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
+    public const API_VERSION = 1;
 
     /**
      * @phpstan-var array<string, mixed>|string
@@ -102,10 +110,15 @@ abstract class AbstractObject implements \JsonSerializable
     /**
      * Create or get an API object.
      *
-     * @param array<string, mixed>|string|null $id Object id or data for hydration.
+     * @param string|array<string, mixed>|null $id Object id or data for hydration.
+     * @throws Stancer\Exceptions\BadApiVersionException Raised if the route doesn't exist in this version.
      */
     public function __construct($id = null)
     {
+        $version = Stancer\Config::getGlobal()->getVersion();
+        if (static::API_VERSION > $version) {
+            throw new Stancer\Exceptions\BadApiVersionException();
+        }
         $defaultModel = [
             'allowedValues' => null,
             'coerce' => null,
@@ -414,6 +427,11 @@ abstract class AbstractObject implements \JsonSerializable
     {
         foreach ($data as $key => $value) {
             $property = Stancer\Helper::snakeCaseToCamelCase($key);
+
+            // Property created & createdAt are the same field with different name in the API.
+            if ($property === 'createdAt') {
+                $property = 'created';
+            }
 
             if ($property === 'id') {
                 if (is_string($value) || is_null($value)) {

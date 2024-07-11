@@ -23,7 +23,7 @@ use Stancer;
  * @method ?string get_return_url() Get the return URL at end of the authentification session.
  * @method \Stancer\Auth\Status get_status() Get the authentification status.
  * @method string get_uri() Get entity resource location.
- * @method $this set_exportablestatus(boolean $exportable = false)
+ * @method $this set_exportablestatus(boolean $exportable = false) Set Exportable property of auth data.
  * @method $this set_return_url(string $return_url) Set the return URL at end of the authentification session.
  *
  * @property ?string $returnUrl The return URL at end of the authentification session.
@@ -75,6 +75,28 @@ class Auth extends Stancer\Core\AbstractObject
     protected array $modified = [
         'status',
     ];
+
+    /**
+     * Override of jsonSerialize to let us send a boolean even if we have an AuthObject.
+     *
+     * @return array<string,mixed>|bool|int|string|null
+     */
+    #[\Override]
+    public function jsonSerialize(): mixed
+    {
+        $version = Stancer\Config::getGlobal()->getVersion();
+        if ($version === 1) {
+            return parent::jsonSerialize();
+        }
+        $struct = parent::jsonSerialize();
+        if (!is_array($struct)) {
+            return $struct;
+        }
+        if (array_key_exists('return_url', $struct) || array_key_exists('device', $struct)) {
+            return $struct;
+        }
+        return true;
+    }
 
     /**
      * Update return URL.

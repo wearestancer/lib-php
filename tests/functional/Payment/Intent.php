@@ -33,7 +33,7 @@ class Intent extends TestCase
                     })
                         ->isInstanceOf(Stancer\Exceptions\NotFoundException::class)
                         ->message
-                            ->isIdenticalTo('Resource not found')
+                            ->isIdenticalTo($this->getNotFoundExceptionMessage($id,'Payment intent'))
             ->assert('Get A Payment Intent')
                 ->if($this->newTestedInstance($id= "pi_cFGdU9TtJfU9NbhMLGjyMXCq"))
                 ->then
@@ -46,8 +46,7 @@ class Intent extends TestCase
 
                     //test Created At when implemented.
 
-                      ->DateTime($this->testedInstance->getCreatedAt())
-                      ->isImmutable()
+                      ->variable($this->testedInstance->getCreatedAt())
                       ->isEqualTo((\DateTimeImmutable::createFromFormat('U',1718635874)))
 
 
@@ -87,7 +86,9 @@ class Intent extends TestCase
         $methods_allowed=[Stancer\Payment\MethodsAllowed::CARD];
         $capture= false;
         $threeds= Stancer\ThreeDomainsSecure\Status::NONE;
-        $customer= new Stancer\Customer(["mobile"=>"+33634343434","email"=>"test@test.com"]);
+        $name= "test" . $this->getRandomString(4);
+        $email = $name . "@test.com";
+        $customer= new Stancer\Customer(["email"=>$email,"name"=>$name]);
         $this
             ->given($this->newTestedInstance())
             ->assert('create a payment intent')
@@ -147,6 +148,7 @@ class Intent extends TestCase
                 ->and($this->testedInstance->setAmount($amount))
                 ->and($this->testedInstance->set3ds($threeds))
                 ->and($this->testedInstance->setCard($card))
+                ->and($this->testedInstance->setCapture(false))
                 ->and($this->testedInstance->setCustomer($customer))
                 ->and($this->testedInstance->setCurrency($currency))
                 ->and($this->testedInstance->setDescription($description))
@@ -358,6 +360,7 @@ class Intent extends TestCase
 
                 ->if($this->testedInstance->setAmount($amount))
                 ->and($this->testedInstance->setCard($card))
+                ->and($this->testedInstance->setCapture(false))
                 ->and($this->testedInstance->setCurrency($currency))
                 ->and($this->testedInstance->setDescription($description))
                 ->and($this->testedInstance->setCustomer($customer))
@@ -414,6 +417,7 @@ class Intent extends TestCase
                 ->and($this->testedInstance->setCurrency($currency))
                 ->and($this->testedInstance->setDescription($description))
                 ->and($this->testedInstance->setCustomer($customer))
+                ->and($this->testedInstance->setCapture(false))
 
                 ->then
                     ->object($this->testedInstance->send())

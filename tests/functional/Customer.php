@@ -32,7 +32,7 @@ class Customer extends TestCase
                 })
                     ->isInstanceOf(Stancer\Exceptions\NotFoundException::class)
                     ->message
-                        ->isIdenticalTo($this->getNotFoundExceptionMessage($id,'customer'))
+                        ->isIdenticalTo($this->getNotFoundExceptionMessage($id,'Customer'))
         ;
     }
 
@@ -47,7 +47,7 @@ class Customer extends TestCase
                     })
                         ->isInstanceOf(Stancer\Exceptions\NotFoundException::class)
                         ->message
-                            ->isIdenticalTo($this->getNotFoundExceptionMessage($id,'customer'))
+                            ->isIdenticalTo($this->getNotFoundExceptionMessage($id,'Customer'))
 
             ->assert('Get test user')
                 ->if($this->newTestedInstance('cust_PpdYwq0ZPdoags46d5cB9HpQ'))

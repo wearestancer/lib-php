@@ -70,6 +70,79 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    public function testBillingAddress()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+            ->assert('Full new address')
+                ->if($address = new Stancer\Address())
+                ->and($address->setCity($this->getRandomString(1, 50)))
+                ->and($address->setCountry($this->getRandomString(2)))
+                ->and($address->setLine1($this->getRandomString(1, 50)))
+                ->and($address->setLine2($this->getRandomString(1, 50)))
+                ->and($address->setLine3($this->getRandomString(1, 50)))
+                ->and($address->setMetadata([$this->getRandomString(1, 50)]))
+                ->and($address->setState($this->getRandomString(1, 3)))
+                ->and($address->setzipCode($this->getRandomString(1, 16)))
+
+                ->variable($this->newTestedInstance->getBillingAddress())
+                    ->isNull
+
+                ->object($this->testedInstance->setBillingAddress($address))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getBillingAddress())
+                    ->isIdenticalTo($address)
+
+            ->given($this->newTestedInstance)
+            ->assert('ID address')
+                ->if($address = new Stancer\Address('addr_' . $this->getRandomString(24)))
+
+                ->variable($this->testedInstance->getBillingAddress())
+                    ->isNull
+
+                ->object($this->testedInstance->setBillingAddress($address))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getBillingAddress())
+                    ->isIdenticalTo($address)
+        ;
+    }
+
+    public function versionAuthReturnUrlProvider():array
+    {
+        return array(
+            [
+                1,
+                fn($url) => [
+                        'return_url'=>$url,
+                        'status' => Stancer\Auth\Status::REQUEST,
+                    ],
+            ],
+            [
+                2,
+                fn($url) => [
+                    'return_url' => $url
+                ],
+            ]
+        );
+    }
+    public function versionAuthStatusProvider():array
+    {
+        return array(
+            [
+                1,
+                [
+                    'status' => Stancer\Auth\Status::REQUEST,
+                ],
+            ],
+            [
+                2,
+                true,
+            ]
+        );
+    }
     public function testCharge()
     {
         $this
@@ -359,6 +432,7 @@ class Payment extends Stancer\Tests\atoum
     {
         $this
             ->assert('Default as v1')
+            ->given(Stancer\Config::init([])->setVersion(1))
                 ->given($this->newTestedInstance)
                 ->then
                     ->string($this->testedInstance->getEndpoint())
@@ -1625,11 +1699,15 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
-    public function testSend_authenticatedPayment()
+
+    /**
+     * @dataProvider versionAuthReturnUrlProvider
+     */
+    public function testSend_authenticatedPayment($version,$auth)
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client))
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($config = $this->mockConfig($client,$version))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-card-auth'))
             ->and($this->calling($client)->request = $response)
@@ -1670,10 +1748,7 @@ class Payment extends Stancer\Tests\atoum
 
             ->and($json = json_encode([
                 'amount' => $amount,
-                'auth' => [
-                    'return_url' => $url,
-                    'status' => Stancer\Auth\Status::REQUEST,
-                ],
+                'auth' =>   $auth($url),
                 'card' => [
                     'cvc' => $card->getCvc(),
                     'exp_month' => $card->getExpMonth(),
@@ -1770,11 +1845,14 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
-    public function testSend_fullyCustomAuthenticatedPayment()
+    /**
+     * @dataProvider versionAuthReturnUrlProvider
+     */
+    public function testSend_fullyCustomAuthenticatedPayment($version,$authjson)
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client))
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($config = $this->mockConfig($client,$version))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-card-auth'))
             ->and($this->calling($client)->request = $response)
@@ -1807,10 +1885,7 @@ class Payment extends Stancer\Tests\atoum
 
             ->and($json = json_encode([
                 'amount' => $amount,
-                'auth' => [
-                    'return_url' => $url,
-                    'status' => Stancer\Auth\Status::REQUEST,
-                ],
+                'auth' => $authjson($url),
                 'card' => [
                     'cvc' => $card->getCvc(),
                     'exp_month' => $card->getExpMonth(),
@@ -1985,12 +2060,14 @@ class Payment extends Stancer\Tests\atoum
                     ->isNull
         ;
     }
-
-    public function testSend_authenticationAndPaymentPage()
+    /**
+     * @dataProvider versionAuthStatusProvider
+     */
+    public function testSend_authenticationAndPaymentPage($version,$authjson)
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client))
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($config = $this->mockConfig($client,$version))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-no-method-auth'))
             ->and($this->calling($client)->request = $response)
@@ -2007,9 +2084,7 @@ class Payment extends Stancer\Tests\atoum
 
             ->and($json = json_encode([
                 'amount' => $amount,
-                'auth' => [
-                    'status' => Stancer\Auth\Status::REQUEST,
-                ],
+                'auth' => $authjson,
                 'currency' => strtolower($currency),
                 'description' => $description,
             ]))
@@ -2115,14 +2190,18 @@ class Payment extends Stancer\Tests\atoum
                     ->call('request')
                         ->withArguments('PATCH', $location, $options)
                             ->once
+                ->variable($this->testedInstance->getAuth()->getId())
+                    ->isNull
         ;
     }
-
-    public function testSend_device()
+    /**
+     * @dataProvider versionAuthReturnUrlProvider
+     */
+    public function testSend_device($version,$authjson)
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client))
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($config = $this->mockConfig($client,$version))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-card'))
             ->and($this->calling($client)->request = $response)
@@ -2154,12 +2233,18 @@ class Payment extends Stancer\Tests\atoum
             ->and($this->testedInstance->setCustomer($customer))
             ->and($this->testedInstance->setDescription(uniqid()))
 
-            ->and($json = json_encode(array_merge($this->testedInstance->toArray(), [
-                'device' => [
-                    'ip' => $addr,
-                    'port' => $port,
-                ],
-            ])))
+            ->and($json = json_encode(
+                array_merge(
+                    $this->testedInstance->toArray(),
+                    [
+                        'device' => [
+                            'ip' => $addr,
+                            'port' => $port,
+                        ],
+                        'auth' => $authjson($url)
+                    ]
+                )))
+
             ->and($options = $this->mockRequestOptions($config, [
                 'body' => $json,
             ]))
@@ -2286,11 +2371,13 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags tag
+     */
     public function testSetAuth()
     {
-        $config = Stancer\Config::getGlobal();
-        $config->version = 1;
         $this
+            ->given(Stancer\Config::init([])->setVersion(1))
             ->assert('With an Auth object')
                 ->if($auth = new Stancer\Auth())
                 ->and($this->newTestedInstance)
@@ -2360,106 +2447,6 @@ class Payment extends Stancer\Tests\atoum
 
                     ->variable($this->testedInstance->getAuth())
                         ->isNull
-        ;
-    }
-    public function testSetAuthVersionTwo(){
-        $config = Stancer\Config::getGlobal();
-        $this
-        ->given($config->version = 2)
-        ->assert('Without Card all and Auth object or url')
-            ->if($auth = new Stancer\Auth)
-            ->and($https = 'https://www.example.org?' . uniqid())
-            ->and($this->newTestedInstance)
-            ->then
-                ->variable($this->testedInstance->getAuth())
-                    ->isNull
-
-                ->exception(function () use ($auth){
-                    $this->testedInstance->setAuth($auth);
-                })
-                    ->isInstanceOf(Stancer\Exceptions\InvalidAuthException::class)
-                    ->message
-                        ->isIdenticalTo("your payment cannot be auth without card")
-                ->exception(function () use ($https){
-                    $this->testedInstance->setAuth($https);
-                })
-                    ->isInstanceOf(Stancer\Exceptions\InvalidAuthException::class)
-                        ->message
-                        ->isIdenticalTo("your payment cannot be auth without card")
-
-
-        ->assert('With a true value')
-            ->if($this->newTestedInstance)
-            ->then
-                ->variable($this->testedInstance->getAuth())
-                    ->isNull
-
-                ->object($this->testedInstance->setAuth(true))
-                    ->isTestedInstance
-
-                ->object($this->testedInstance->getAuth())
-                    ->isInstanceOf(Stancer\Auth::class)
-
-                ->variable($this->testedInstance->getAuth()->getReturnUrl())
-                    ->isNull
-
-                ->enum($this->testedInstance->getAuth()->getStatus())
-                    ->isIdenticalTo(Stancer\Auth\Status::REQUEST)
-
-        ->assert('With false')
-            ->if($this->newTestedInstance)
-            ->then
-                ->variable($this->testedInstance->getAuth())
-                    ->isNull
-
-                ->object($this->testedInstance->setAuth(false))
-                    ->isTestedInstance
-
-                ->variable($this->testedInstance->getAuth())
-                    ->isNull
-
-        ->given($this->newtestedInstance)
-        ->given($card = new Card())
-        ->and($this->newtestedInstance->setCard($card))
-        ->assert('With card and URL')
-            ->if($https = 'https://www.example.org?' . uniqid())
-            ->and($http = 'http://www.example.org?' . uniqid())
-            ->and($this->newTestedInstance)
-            ->then
-                ->variable($this->testedInstance->getAuth())
-                    ->isNull
-
-                ->object($this->testedInstance->setAuth($https))
-                    ->isTestedInstance
-
-                ->object($this->testedInstance->getAuth())
-                    ->isInstanceOf(Stancer\Auth::class)
-
-                ->string($this->testedInstance->getAuth()->getReturnUrl())
-                    ->isIdenticalTo($https)
-
-                ->enum($this->testedInstance->getAuth()->getStatus())
-                    ->isIdenticalTo(Stancer\Auth\Status::REQUEST)
-
-                ->exception(function () use ($http) {
-                    $this->testedInstance->setAuth($http);
-                })
-                    ->isInstanceOf(Stancer\Exceptions\InvalidUrlException::class)
-                    ->message
-                        ->isIdenticalTo('You must provide an HTTPS URL.')
-
-        ->assert('With an Auth object')
-            ->if($auth = new Stancer\Auth)
-            ->and($this->newTestedInstance)
-            ->then
-                ->variable($this->testedInstance->getAuth())
-                    ->isNull
-
-                ->object($this->testedInstance->setAuth($auth))
-                    ->isTestedInstance
-
-                ->object($this->testedInstance->getAuth())
-                    ->isIdenticalTo($auth)
     ;
     }
 

@@ -25,7 +25,9 @@ class atoum extends base\test
     public function beforeTestMethod($method)
     {
         if ($method !== 'testGetGlobal_SetGlobal') {
-            Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]);
+            Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))])
+                ->setVersion(getenv('API_VERSION') ?? 1);
+
         }
     }
 
@@ -148,11 +150,12 @@ class atoum extends base\test
     /**
      * @param mock\Psr\Http\Client\ClientInterface|Psr\Http\Client\ClientInterface $client
      */
-    public function mockConfig($client): Stancer\Config
+    public function mockConfig($client,$version=1): Stancer\Config
     {
         $config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]);
         $config->setHttpClient($client);
         $config->setDebug(false);
+        $config->setVersion($version);
 
         return $config;
     }

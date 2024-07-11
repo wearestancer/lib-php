@@ -92,6 +92,7 @@ class HttpException extends Exception implements Stancer\Interfaces\ExceptionInt
             408 => RequestTimeoutException::class,
             409 => ConflictException::class,
             410 => GoneException::class,
+            422 => UnprocessableEntityException::class,
             500 => InternalServerErrorException::class,
         ];
 

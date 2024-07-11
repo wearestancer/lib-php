@@ -1,6 +1,10 @@
 {
   "amount": 10000,
-  "auth": "requested",
+  "auth": {
+    "redirect_url": null,
+    "return_url": null,
+    "status": "requested"
+  },
   "country": "",
   "created": 1562085759,
   "currency": "eur",

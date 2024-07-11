@@ -14,10 +14,10 @@ use Stancer\Traits\SearchTrait;
  * @method ?\DateTimeImmutable get_created() Get creation date.
  * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
- * @method string get_endpoint()
+ * @method string get_endpoint() Get the endpoint of the "outer" object.
  * @method string get_entity_name() Get entity name.
  * @method ?string get_id() Get object ID.
- * @method string get_uri()
+ * @method string get_uri() Get the uri of our search route.
  *
  * @property-read ?\DateTimeImmutable $created Creation date.
  * @property-read ?\DateTimeImmutable $createdAt Creation date.

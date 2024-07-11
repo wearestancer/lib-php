@@ -31,7 +31,7 @@ class Card extends TestCase
                     })
                         ->isInstanceOf(Stancer\Exceptions\NotFoundException::class)
                         ->message
-                            ->isIdenticalTo($this->getNotFoundExceptionMessage($id, 'card'))
+                            ->isIdenticalTo($this->getNotFoundExceptionMessage($id, 'Card'))
 
             ->assert('Get test user')
                 ->if($this->newTestedInstance('card_9bKZ9cr0Ji0qSPs5c1uMQG5z'))

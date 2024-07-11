@@ -43,7 +43,7 @@ use ValueError;
  * @method ?\Stancer\Customer get_customer() Get customer object.
  * @method ?string get_description() Get intent description.
  * @method string get_endpoint() Get API endpoint.
- * @method string get_entity_name()
+ * @method string get_entity_name() Return the entity name
  * @method ?string get_id() Get object ID.
  * @method ?mixed get_metadata() Get arbitrary metadata.
  * @method Stancer\Payment\MethodsAllowed[] get_methods_allowed() Get list of payment methods allowed for this intent.
@@ -56,7 +56,7 @@ use ValueError;
  * @method ?\Stancer\ThreeDomainsSecure\Status get_threeds() Get ask for an authenticated payment.
  * @method string get_uri() Return resource location.
  * @method ?string get_url() Get payment page URL.
- * @method Generator list_payments(array $terms) List payment associated to the payment intent.
+ * @method Generator list_payments(mixed $terms) List payment associated to the payment intent.
  * @method $this set3DS(\Stancer\ThreeDomainsSecure\Status $3DS) Set ask for an authenticated payment.
  * @method $this setCapture(boolean $capture) Set capture immediately the payment.
  * @method $this setDescription(string $description) Set intent description.
@@ -120,6 +120,8 @@ class Intent extends Stancer\Core\AbstractObject
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     final public const ENDPOINT = 'payment_intents';
 
+    final public const API_VERSION = 2;
+
     /**
      * @var array
      * @phpstan-var array<string, DataModel>
@@ -146,11 +148,6 @@ class Intent extends Stancer\Core\AbstractObject
         'customer' => [
             'desc' => 'Customer object',
             'type' => Stancer\Customer::class,
-        ],
-        'createdAt' => [
-            'desc' => 'Date of creation',
-            'restricted' => true,
-            'type' => DateTimeImmutable::class,
         ],
         'description' => [
             'desc' => 'Intent description',
@@ -365,7 +362,7 @@ class Intent extends Stancer\Core\AbstractObject
         if ($card === null) {
             return null;
         }
-        return new Stancer\Card($card);
+        return $card;
     }
 
     /**
@@ -379,7 +376,7 @@ class Intent extends Stancer\Core\AbstractObject
         if ($customer === null) {
             return null;
         }
-        return new Stancer\Customer($customer);
+        return $customer;
     }
 
     /**
@@ -459,19 +456,24 @@ class Intent extends Stancer\Core\AbstractObject
      * @param Stancer\Card|string $card A card Object or it's ID.
      * @return $this
      * @throws Stancer\Exceptions\InvalidUniqueIdException When the card is invalid.
+     * @throws Stancer\Exceptions\BadMethodCallException If We send a non modified object without ID.
      */
     public function setCard(Stancer\Card|string $card): static
     {
         try {
             if (is_string($card)) {
-                $new = $card;
+                $card = new Stancer\Customer($card);
             } else {
-                $new = $card->getId() ?? $card->send()->getId();
+                $card = $card->send();
             }
         } catch (ValueError $exception) {
             throw new Stancer\Exceptions\InvalidUniqueIdException();
+        } catch (Stancer\Exceptions\BadMethodCallException $exception) {
+            if ($card->id === null) {
+                throw $exception;
+            }
         }
-        return parent::setCard($new);
+        return parent::setCard($card);
     }
 
     /**
@@ -517,19 +519,25 @@ class Intent extends Stancer\Core\AbstractObject
      * @param Stancer\Customer|string $customer A customer object or it's ID.
      * @return $this
      * @throws Stancer\Exceptions\InvalidUniqueIdException When the customer is invalid.
+     * @throws Stancer\Exceptions\BadMethodCallException  If We send a non modified object without ID.
      */
     public function setCustomer(Stancer\Customer|string $customer): static
     {
         try {
             if (is_string($customer)) {
-                $new = $customer;
+                $customer = new Stancer\Customer($customer);
             } else {
-                $new = $customer->getId() ?? $customer->send()->getId();
+                $customer = $customer->send();
             }
         } catch (ValueError $exception) {
             throw new Stancer\Exceptions\InvalidUniqueIdException();
+        } catch (Stancer\Exceptions\BadMethodCallException  $exception) {
+            if ($customer->id === null) {
+                throw $exception;
+            }
         }
-        return parent::setCustomer($new);
+
+        return parent::setCustomer($customer);
     }
 
     /**

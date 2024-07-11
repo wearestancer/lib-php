@@ -253,15 +253,16 @@ class Intent extends Stancer\Tests\atoum
                 ->assert('Date Creation is not settable')
 
                     ->exception(function () {
-                        $this->newTestedInstance()->createdAt = new DateTimeImmutable();
+                        $this->newTestedInstance()->created = new DateTimeImmutable();
                     })
                         ->isInstanceOf(Stancer\Exceptions\BadPropertyAccessException::class)
                         ->message
-                            ->isIdenticalTo('You are not allowed to modify "createdAt".')
+                            ->isIdenticalTo('You are not allowed to modify the creation date.')
 
             ->given($secret = 'stest_' . bin2hex(random_bytes(12)))
             ->and($config = Stancer\Config::init([$secret]))
             ->and($config->setDebug(false))
+            ->and($config->setVersion(2))
             ->if($client = new mock\Stancer\Http\Client)
             ->and($response = $this->mockJsonResponse('intents','intent'))
             ->and($this->calling($client)->request = $response)
@@ -385,13 +386,16 @@ class Intent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag Generator_Unexpected_behaviour
+     */
     public function testList()
     {
         $this
             ->given($client = new mock\Stancer\Http\Client)
             ->and($response = $this->mockJsonResponse('intents', 'list'))
             ->and($this->calling($client)->request = $response)
-            ->and($config = $this->mockConfig($client))
+            ->and($config = $this->mockConfig($client,2))
             ->and($options = $this->mockRequestOptions($config))
 
             ->assert('Invalid limit')
@@ -640,7 +644,7 @@ class Intent extends Stancer\Tests\atoum
             ->given($client = new mock\Stancer\Http\Client)
             ->and($response = $this->mockJsonResponse('intents', 'list-two-pi'))
             ->and($this->calling($client)->request = $response)
-            ->and($config = $this->mockConfig($client))
+            ->and($config = $this->mockConfig($client,2))
             ->and($options = $this->mockRequestOptions($config))
             ->assert('make request with only two pi')
                 ->if($limit = 2)
@@ -689,7 +693,7 @@ class Intent extends Stancer\Tests\atoum
             ->given($client = new mock\Stancer\Http\Client)
             ->and($response = $this->mockJsonResponse('payment', 'list'))
             ->and($this->calling($client)->request = $response)
-            ->and($config = $this->mockConfig($client))
+            ->and($config = $this->mockConfig($client,2))
             ->and($options = $this->mockRequestOptions($config))
 
             ->assert('Invalid limit')
@@ -880,7 +884,7 @@ class Intent extends Stancer\Tests\atoum
                 ->given($client = new mock\Stancer\Http\Client)
                 ->and($response = $this->mockJsonResponse('payment', 'list'))
                 ->and($this->calling($client)->request = $response)
-                ->and($config = $this->mockConfig($client))
+                ->and($config = $this->mockConfig($client,2))
                 ->and($options = $this->mockRequestOptions($config))
 
                 ->if($limit = rand(1, 100))
