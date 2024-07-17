@@ -150,12 +150,12 @@ abstract class AbstractObject implements JsonSerializable
 
         /** @var DataModel $data */
         foreach ($this->dataModel as &$data) {
+            $data = $this->modifyDataVersion($version, $data);
+
             $size = array_merge($defaultModel['size'], $data['size'] ?? []);
             $data = array_merge($defaultModel, $data, ['size' => $size]);
 
-            if (array_key_exists('changed', $data)) {
-                $data = $this->modifyDataVersion($version, $data);
-            }
+
             if (is_null($data['exportable'])) {
                 $data['exportable'] = !$data['restricted'];
             }
@@ -713,14 +713,18 @@ abstract class AbstractObject implements JsonSerializable
      * @param integer $version The version of our API.
      * @param array $data The parameter we want to change.
      * @return array $data The Parameter changed depending on API version.
-     * @phpstan-param  array<int,mixed> $data
-     * @phpstan-return array<int,mixed>
+     * @phpstan-param  DataModel $data
+     * @phpstan-return DataModel
      */
     private function modifyDataVersion(int $version, array $data): array
     {
+        if (! array_key_exists('changed', $data)) {
+            return $data;
+        }
         foreach ($data['changed'] as $change) {
             if ($change['sinceVersion'] <= $version) {
                 unset($change['sinceVersion']);
+                /** @var DataModel $data */
                 $data = array_merge($data, $change);
             }
         }

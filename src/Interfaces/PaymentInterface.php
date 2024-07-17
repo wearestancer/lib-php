@@ -8,5 +8,11 @@ namespace Stancer\Interfaces;
  */
 interface PaymentInterface
 {
+    /**
+     * Capture a Payment(or payment intent).
+     *
+     * @return static
+     * @throws \Stancer\Exceptions\BadRequestException If the payment isn't Capturable.
+     */
     public function capture(): static;
 }

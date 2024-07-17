@@ -334,6 +334,12 @@ class Payment extends Stancer\Core\AbstractObject implements PaymentInterface
         // ... and that's what we want
     }
 
+    /**
+     * Capture an authorized payment.
+     *
+     * @return static
+     * @throws Stancer\Exceptions\BadRequestException If the payment isn't Capturable.
+     */
     public function capture(): static
     {
         if (null === $this->getStatus() || ! $this->getStatus()->isCapturable()) {

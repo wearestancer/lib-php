@@ -275,6 +275,7 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
      * Capture a Payment Intent
      *
      * @return static
+     * @throws Stancer\Exceptions\BadRequestException If the payment isn't Capturable.
      */
     public function capture(): static
     {
@@ -286,7 +287,8 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
         // We post the serialized object, jsonSerialize if notModified return the ID, that's what we want!
         $response = $request->post($capture);
 
-        // maybe make this a protected function "hydrateFromResponse(string $response) :static
+        // Maybe make this a protected function "hydrateFromResponse(string $response) :static.
+        /** @phpstan-var array<string, mixed> $body */
         $body = json_decode($response, true);
 
         if ($body) {
@@ -475,7 +477,7 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
      * @param Stancer\Card|string $card A card Object or it's ID.
      * @return $this
      * @throws Stancer\Exceptions\InvalidUniqueIdException When the card is invalid.
-     * @throws Stancer\Exceptions\BadMethodCallException If We send a non modified object without ID.
+     * @throws Stancer\Exceptions\InvalidArgumentException If the card we try to set is incomplete.
      */
     public function setCard(Stancer\Card|string $card): static
     {
@@ -565,7 +567,7 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
      *
      * @param mixed $data Arbitrary data.
      * @return $this
-     * @throws Stancer\Exceptions\InvalidMetadataException When data is neither a JSON serializable or stringable object.
+     * @throws Stancer\Exceptions\InvalidMetadataException If data is neither a JSON serializable nor stringable object.
      */
     public function setMetadata(mixed $data): static
     {
@@ -652,7 +654,7 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
      * @param Stancer\Sepa|string $sepa A sepa object or it's ID.
      * @return $this
      * @throws Stancer\Exceptions\InvalidUniqueIdException When the sepa is invalid.
-     * @throws Stancer\Exceptions\BadMethodCallException  If We send a non modified object without ID.
+     * @throws Stancer\Exceptions\InvalidArgumentException If the sepa we try to set is incomplete.
      */
     public function setSepa(Stancer\Sepa|string $sepa): static
     {

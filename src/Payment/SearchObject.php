@@ -37,6 +37,7 @@ class SearchObject extends AbstractObject
      *
      * @param string $id The id of the Outer Object.
      * @param string $innerPath The inner path.
+     * @param string $endpoint The endpoint of the outer object.
      */
     public function __construct(string $id, protected string $innerPath, protected string $endpoint = 'payment_intents')
     {
@@ -66,9 +67,11 @@ class SearchObject extends AbstractObject
     /**
      * Serialize the object as only his ID.
      *
-     * @return mixed
+     * @return array
+     *
+     * @phpstan-return array<string,string|null>
      */
-    public function jsonSerialize(): mixed
+    public function jsonSerialize(): array
     {
         return ['id' => $this->id];
     }
