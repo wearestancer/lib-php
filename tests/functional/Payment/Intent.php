@@ -266,19 +266,6 @@ class Intent extends TestCase
                     ->dateTime($customer->getCreationDate())
                         ->hasDay(date('d'))
 
-                        // TODO: change IT for threeds fields
-                    // ->object($auth = $this->testedInstance->getAuth())
-                    //     ->isInstanceOf(Stancer\Auth::class)
-
-                    // ->variable($auth->getReturnUrl())
-                    //     ->isNull
-
-                    // ->variable($auth->getRedirectUrl())
-                    //     ->isNull
-
-                    // ->string($auth->getStatus())
-                    //     ->isIdenticalTo(Stancer\Auth\Status::REQUESTED)
-
             ->assert('Patch card and status')
                 ->given($this->newTestedInstance)
                 ->and($amount = rand(50, 100))

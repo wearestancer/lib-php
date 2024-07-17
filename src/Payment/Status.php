@@ -20,4 +20,12 @@ enum Status: string
     case FAILED = 'failed';
     case REFUSED = 'refused';
     case TO_CAPTURE = 'to_capture';
+
+    public function isCapturable():bool
+    {
+        return match($this->value){
+            static::AUTHORIZE->value | static::AUTHORIZED->value => true,
+            default => false,
+        };
+    }
 }

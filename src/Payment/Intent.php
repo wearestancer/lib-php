@@ -4,10 +4,11 @@ declare(strict_types=1);
 namespace Stancer\Payment;
 
 use DateTimeImmutable;
-use Exception;
 use Generator;
 use Override;
 use Stancer;
+use Stancer\Core\Request;
+use Stancer\Interfaces\PaymentInterface;
 use Stancer\Stub\Payment;
 use ValueError;
 
@@ -113,7 +114,7 @@ use ValueError;
  */
 #[Stancer\Core\Documentation\PropertyAlias('3DS', 'threeds')]
 #[Stancer\Core\Documentation\PropertyAlias('threeDS', 'threeds')]
-class Intent extends Stancer\Core\AbstractObject
+class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
 {
     use Stancer\Traits\SearchTrait;
 
@@ -273,13 +274,31 @@ class Intent extends Stancer\Core\AbstractObject
     /**
      * Capture a Payment Intent
      *
-     * TODO: Finish The capture.
-     *
      * @return static
      */
-    public function capture()
+    public function capture(): static
     {
-        $this->send();
+        if (null === $this->getId() || null === $this->getStatus() || ! $this->getStatus()->isCapturable()) {
+            throw new Stancer\Exceptions\BadRequestException('The payment intent must be authorized to be captured.');
+        }
+        $capture = new SearchObject($this->getId(), 'capture');
+        $request = new Request();
+        // We post the serialized object, jsonSerialize if notModified return the ID, that's what we want!
+        $response = $request->post($capture);
+
+        // maybe make this a protected function "hydrateFromResponse(string $response) :static
+        $body = json_decode($response, true);
+
+        if ($body) {
+            $this->cleanModified = true;
+            $this->hydrate($body);
+        }
+
+        $this->modified = [];
+
+        $message = sprintf('%s "%s" %s', $this->getEntityName(), $this->id, 'capture');
+        Stancer\Config::getGlobal()->getLogger()->info($message);
+
         return $this;
     }
 
@@ -462,7 +481,7 @@ class Intent extends Stancer\Core\AbstractObject
     {
         try {
             if (is_string($card)) {
-                $card = new Stancer\Customer($card);
+                $card = new Stancer\Card($card);
             } else {
                 $card = $card->send();
             }
@@ -470,7 +489,8 @@ class Intent extends Stancer\Core\AbstractObject
             throw new Stancer\Exceptions\InvalidUniqueIdException();
         } catch (Stancer\Exceptions\BadMethodCallException $exception) {
             if ($card->id === null) {
-                throw $exception;
+                $message = 'You need to set a complete Card (with at least number, month and year).';
+                throw new Stancer\Exceptions\InvalidArgumentException($message);
             }
         }
         return parent::setCard($card);
@@ -624,5 +644,34 @@ class Intent extends Stancer\Core\AbstractObject
         }
 
         return parent::setReturnUrl($url);
+    }
+
+    /**
+     * Set a Sepa by id or by object.
+     *
+     * @param Stancer\Sepa|string $sepa A sepa object or it's ID.
+     * @return $this
+     * @throws Stancer\Exceptions\InvalidUniqueIdException When the sepa is invalid.
+     * @throws Stancer\Exceptions\BadMethodCallException  If We send a non modified object without ID.
+     */
+    public function setSepa(Stancer\Sepa|string $sepa): static
+    {
+        try {
+            if (is_string($sepa)) {
+                $sepa = new Stancer\Sepa($sepa);
+            } else {
+                $sepa = $sepa->send();
+            }
+        } catch (ValueError $exception) {
+            throw new Stancer\Exceptions\InvalidUniqueIdException();
+        } catch (Stancer\Exceptions\BadMethodCallException  $exception) {
+            if ($sepa->id === null) {
+                throw new Stancer\Exceptions\InvalidArgumentException(
+                    'You need to set a complete SEPA (with at least name and iban).'
+                );
+            }
+        }
+
+        return parent::setSepa($sepa);
     }
 }

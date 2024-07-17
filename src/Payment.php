@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Stancer;
 
 use Stancer;
+use Stancer\Interfaces\PaymentInterface;
+use ValueError;
 
 /**
  * Representation of a payment.
@@ -169,7 +171,7 @@ use Stancer;
     ],
 )]
 #[Stancer\Core\Documentation\AddProperty('refunds', restricted: true)]
-class Payment extends Stancer\Core\AbstractObject
+class Payment extends Stancer\Core\AbstractObject implements PaymentInterface
 {
     use Stancer\Traits\AmountTrait;
     use Stancer\Traits\SearchTrait;
@@ -207,6 +209,12 @@ class Payment extends Stancer\Core\AbstractObject
             'type' => self::STRING,
         ],
         'currency' => [
+            'changed' => [
+                [
+                    'sinceVersion' => 2,
+                    'required' => false,
+                ],
+            ],
             'desc' => 'Processed currency',
             'required' => true,
             'type' => Stancer\Currency::class,
@@ -324,6 +332,17 @@ class Payment extends Stancer\Core\AbstractObject
         // @phpstan-ignore-next-line The method is not defined in parent object so it will trigger __call ...
         return parent::addMethodsAllowed($method);
         // ... and that's what we want
+    }
+
+    public function capture(): static
+    {
+        if (null === $this->getStatus() || ! $this->getStatus()->isCapturable()) {
+            $message = 'The payment must be authorized to be captured.';
+            throw new Stancer\Exceptions\BadRequestException($message);
+        }
+        $this->setStatus(Stancer\Payment\Status::CAPTURE);
+        $this->send();
+        return $this;
     }
 
     /**
@@ -485,7 +504,6 @@ class Payment extends Stancer\Core\AbstractObject
      */
     public function getPaymentPageUrl(array $params = [], bool $force = false): string
     {
-        // TODO: Think about a cleanier way to get Config.
         $config = Stancer\Config::getGlobal();
 
         $data = [
@@ -724,7 +742,7 @@ class Payment extends Stancer\Core\AbstractObject
         if ($this->getId() && $this->isModified()) {
             return parent::send();
         }
-
+        $config = Stancer\Config::getGlobal();
         $amount = $this->getAmount();
         $currency = $this->getCurrency();
 
@@ -732,7 +750,7 @@ class Payment extends Stancer\Core\AbstractObject
             throw new Stancer\Exceptions\InvalidAmountException();
         }
 
-        if (!$currency) {
+        if (!$currency && $config->version === 1) {
             throw new Stancer\Exceptions\InvalidCurrencyException();
         }
 
@@ -746,7 +764,6 @@ class Payment extends Stancer\Core\AbstractObject
 
         // We only send the status in V1.
         if (null !== $auth) {
-            $config = Stancer\Config::getGlobal();
             $authStatus = $config->version === 1 ? true : false;
             $auth->setExportablestatus($authStatus);
         }

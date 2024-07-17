@@ -14,4 +14,12 @@ enum Status: string
     case REQUIRE_AUTHENTICATION = 'require_authentication';
     case REQUIRE_PAYMENT_METHOD = 'require_payment_method';
     case UNPAID = 'unpaid';
+
+    public function isCapturable():bool
+    {
+        return match($this){
+            static::AUTHORIZED => true,
+            default => false,
+        };
+    }
 }

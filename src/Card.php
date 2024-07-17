@@ -118,6 +118,12 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
             'desc' => 'Card Validation Code',
             'exception' => Stancer\Exceptions\InvalidCardCvcException::class,
             'required' => true,
+            'changed' => [
+                [
+                    'sinceVersion' => 2,
+                    'required' => false,
+                ],
+            ],
             'size' => [
                 'fixed' => 3,
             ],

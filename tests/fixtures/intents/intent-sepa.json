@@ -1,7 +1,7 @@
 {
   "amount": 300,
   "capture": true,
-  "card": "card_XZ8h7vcnEIecJkDdlnI5gyD5",
+  "card": null,
   "created_at": 1714742425,
   "currency": "eur",
   "customer": "cust_dFM2igoh05T3CYpJ2TUJtZGh",
@@ -15,7 +15,7 @@
   "order_id": null,
   "payment": null,
   "return_url": null,
-  "sepa": null,
+  "sepa": "sepa_bIvCZePYqfMlU11TANT8IqL1",
   "status": "require_authentication",
   "threeds": "required",
   "url": "https://payment.stancer.com/test_pi_zoiuKRVPoeSUKufHxghJn99T"

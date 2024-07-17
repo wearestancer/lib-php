@@ -13,6 +13,9 @@ class Status extends Stancer\Tests\atoum
                 ->isBackedEnum()
 
             ->currentlyTestedClass
+                ->hasMethod('isCapturable')
+
+            ->currentlyTestedClass
                 ->hasConstant('AUTHORIZE')
                 ->constant('AUTHORIZE')
                     ->isEqualTo('authorize')

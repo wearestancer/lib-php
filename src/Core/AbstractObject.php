@@ -153,6 +153,9 @@ abstract class AbstractObject implements JsonSerializable
             $size = array_merge($defaultModel['size'], $data['size'] ?? []);
             $data = array_merge($defaultModel, $data, ['size' => $size]);
 
+            if (array_key_exists('changed', $data)) {
+                $data = $this->modifyDataVersion($version, $data);
+            }
             if (is_null($data['exportable'])) {
                 $data['exportable'] = !$data['restricted'];
             }
@@ -701,6 +704,27 @@ abstract class AbstractObject implements JsonSerializable
         }
 
         return $struct;
+    }
+
+    /**
+     * Change the data Attribute dynamically depending on the API version
+     * For now we only change the required field on Card.
+     *
+     * @param integer $version The version of our API.
+     * @param array $data The parameter we want to change.
+     * @return array $data The Parameter changed depending on API version.
+     * @phpstan-param  array<int,mixed> $data
+     * @phpstan-return array<int,mixed>
+     */
+    private function modifyDataVersion(int $version, array $data): array
+    {
+        foreach ($data['changed'] as $change) {
+            if ($change['sinceVersion'] <= $version) {
+                unset($change['sinceVersion']);
+                $data = array_merge($data, $change);
+            }
+        }
+        return $data;
     }
 
     /**

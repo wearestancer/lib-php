@@ -24,9 +24,13 @@ class atoum extends base\test
 
     public function beforeTestMethod($method)
     {
+        $version = 1;
+        if(getenv('API_VERSION')){
+            $version = getenv('API_VERSION');
+        }
         if ($method !== 'testGetGlobal_SetGlobal') {
             Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))])
-                ->setVersion(getenv('API_VERSION') ?? 1);
+                ->setVersion($version);
 
         }
     }

@@ -1265,6 +1265,74 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    public function testPost_capture(){
+        $this
+            ->given($client = new mock\Stancer\Http\Client)
+            ->and($config = $this->mockConfig($client,2))
+            ->given($this->newTestedInstance->setAmount(100))
+
+                ->assert('Does not allow capture new payment')
+                    ->exception(function () {
+                        $this->testedInstance->capture();
+                    })
+                    ->isInstanceOf(Stancer\Exceptions\BadRequestException::class)
+                        ->message
+                            ->isEqualTo('The payment must be authorized to be captured.')
+
+            ->given($response = $this->mockJsonResponse('payment','refused'))
+            ->and($this->calling($client)->request = $response)
+
+                ->assert('Does not allow capture not authorized payment.')
+
+                    ->object($this->testedInstance->send())
+                        ->isTestedInstance
+
+                    ->object($this->testedInstance->getStatus())
+                        ->isEqualTo(Stancer\Payment\Status::REFUSED)
+
+                    ->exception(function (){
+                        $this->testedInstance->capture();
+                    })
+
+                    ->isInstanceOf(Stancer\Exceptions\BadRequestException::class)
+                        ->message
+                            ->isIdenticalTo('The payment must be authorized to be captured.')
+
+            ->given($authorizeresponse = $this->mockJsonResponse('payment','authorized'))
+            ->and($this->calling($client)->request = $authorizeresponse)
+            ->and($this->newTestedInstance->setAmount(300))
+                    ->assert('Capture an authorize payment')
+                        ->object($this->testedInstance->send())
+                            ->isTestedInstance
+                        ->object($this->testedInstance->getStatus())
+                            ->isEqualTo(Stancer\Payment\Status::AUTHORIZED)
+                        ->boolean($this->testedInstance->getCapture())
+                            ->isFalse()
+
+                    ->then
+                        ->given($captureResponse = $this->mockJsonResponse('payment','captured'))
+                        ->and($this->calling($client)->request = $captureResponse)
+                        ->and($location = $this->testedInstance->uri)
+                        ->and($options = $this->mockRequestOptions($config,[
+                            'body'=>json_encode([
+                                'status'=> Stancer\Payment\Status::CAPTURE->value
+                                ])
+                            ]))
+                        ->dump($options)
+                        ->object($this->testedInstance->capture())
+                                ->isTestedInstance
+                        ->mock($client)
+                            ->call('request')
+                                ->withArguments('PATCH',$location,$options)
+                                    ->once
+
+                        ->object($this->testedInstance->getStatus())
+                            ->isInstanceOf(Stancer\Payment\Status::class)
+                            ->isEqualTo(Stancer\Payment\Status::TO_CAPTURE)
+                        ->boolean($this->testedInstance->getCapture())
+                                ->isTrue();
+    }
+
     public function testRefund()
     {
         $this

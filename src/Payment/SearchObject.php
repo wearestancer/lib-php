@@ -38,9 +38,8 @@ class SearchObject extends AbstractObject
      * @param string $id The id of the Outer Object.
      * @param string $innerPath The inner path.
      */
-    public function __construct(string $id, protected string $innerPath)
+    public function __construct(string $id, protected string $innerPath, protected string $endpoint = 'payment_intents')
     {
-        $this->innerPath = $innerPath;
         parent::__construct($id);
     }
 
@@ -56,12 +55,21 @@ class SearchObject extends AbstractObject
 
     /**
      * Get the endpoint of the "outer" object.
-     * TODO: Don't hardcode it.
      *
      * @return string
      */
     public function getEndpoint(): string
     {
-        return 'payment_intents';
+        return $this->endpoint;
+    }
+
+    /**
+     * Serialize the object as only his ID.
+     *
+     * @return mixed
+     */
+    public function jsonSerialize(): mixed
+    {
+        return ['id' => $this->id];
     }
 }

@@ -6,11 +6,19 @@ use Stancer;
 
 class Status extends Stancer\Tests\atoum
 {
+    /**
+     * @tags test
+     *
+     * @return void
+     */
     public function testClass()
     {
         $this
             ->currentlyTestedClass
                 ->isEnum()
+
+            ->currentlyTestedClass
+                ->hasMethod('isCapturable')
 
             ->currentlyTestedClass
                 ->hasConstant('AUTHORIZED')
