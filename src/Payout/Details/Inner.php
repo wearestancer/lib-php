@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Stancer\Payout\Details;
 
-use Generator;
-use Override;
 use Stancer;
 
 /**
@@ -96,6 +94,8 @@ class Inner extends Stancer\Core\AbstractObject
      *
      * @param array $terms Search terms. May have `created`, `limit` or `start` key.
      *
+     * @phpstan-param SearchFilters $terms
+     *
      * @return \Generator<Stancer\Core\AbstractObject>
      * @throws Stancer\Exceptions\InvalidSearchFilterException When `$terms` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchCreationFilterException When `created` is invalid.
@@ -103,8 +103,6 @@ class Inner extends Stancer\Core\AbstractObject
      * @throws Stancer\Exceptions\InvalidSearchCreationUntilFilterException When `created_until` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchLimitException When `limit` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchStartException When `start` is invalid.
-     *
-     * @phpstan-param SearchFilters $terms
      */
     public function __invoke(array $terms): \Generator
     {
@@ -120,7 +118,7 @@ class Inner extends Stancer\Core\AbstractObject
     /**
      * Return resource location.
      */
-    #[Override]
+    #[\Override]
     #[Stancer\Core\Documentation\FormatProperty(
         description: 'Current resource location',
         nullable: false,

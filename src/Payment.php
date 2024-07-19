@@ -6,7 +6,6 @@ namespace Stancer;
 
 use Stancer;
 use Stancer\Interfaces\PaymentInterface;
-use ValueError;
 
 /**
  * Representation of a payment.
@@ -106,6 +105,8 @@ use ValueError;
  *
  * @property ?integer $amount Transaction amount.
  * @property boolean|\Stancer\Auth|string|null $auth Auth object, must be set for 3-D Secure card payments.
+ * @property ?\Stancer\Address $billingAddress The billing address links to the payment.
+ * @property ?\Stancer\Address $billing_address The billing address links to the payment.
  * @property ?boolean $capture Capture immediately the payment.
  * @property ?\Stancer\Card $card Card object.
  * @property ?string $country
@@ -337,17 +338,41 @@ class Payment extends Stancer\Core\AbstractObject implements PaymentInterface
     /**
      * Capture an authorized payment.
      *
-     * @return static
      * @throws Stancer\Exceptions\BadRequestException If the payment isn't Capturable.
      */
     public function capture(): static
     {
-        if (null === $this->getStatus() || ! $this->getStatus()->isCapturable()) {
+        $config = Stancer\Config::getGlobal();
+        if ($config->version < 2) {
+            $this->setStatus(Stancer\Payment\Status::CAPTURE);
+            $this->send();
+
+            return $this;
+        }
+        if ($this->getId() === null || $this->getStatus() === null || !$this->getStatus()->isCapturable()) {
             $message = 'The payment must be authorized to be captured.';
+
             throw new Stancer\Exceptions\BadRequestException($message);
         }
-        $this->setStatus(Stancer\Payment\Status::CAPTURE);
-        $this->send();
+        $capture = new Stancer\Payment\SearchObject($this->getId(), 'capture', 'payments');
+        $request = new Stancer\Core\Request();
+        // We post the serialized object, jsonSerialize if notModified return the ID, that's what we want!
+        $response = $request->post($capture);
+
+        // Maybe make this a protected function "hydrateFromResponse(string $response) :static.
+        /** @phpstan-var array<string, mixed> $body */
+        $body = json_decode($response, true);
+
+        if ($body) {
+            $this->cleanModified = true;
+            $this->hydrate($body);
+        }
+
+        $this->modified = [];
+
+        $message = sprintf('%s "%s" %s', $this->getEntityName(), $this->id, 'capture');
+        Stancer\Config::getGlobal()->getLogger()->info($message);
+
         return $this;
     }
 
@@ -358,9 +383,9 @@ class Payment extends Stancer\Core\AbstractObject implements PaymentInterface
      *
      * @param array $options Charge options.
      *
-     * @return $this
-     *
      * @phpstan-param PaymentChargeOptions $options
+     *
+     * @return $this
      */
     public static function charge(array $options): static
     {
@@ -410,9 +435,9 @@ class Payment extends Stancer\Core\AbstractObject implements PaymentInterface
      *
      * @see self::refund()
      *
-     * @throws Stancer\Exceptions\BadMethodCallException On every call, this method is not allowed in this context.
-     *
      * @phpstan-return $this
+     *
+     * @throws Stancer\Exceptions\BadMethodCallException On every call, this method is not allowed in this context.
      */
     #[\Override]
     public function delete(): static
@@ -432,12 +457,12 @@ class Payment extends Stancer\Core\AbstractObject implements PaymentInterface
      *
      * @param array $terms Search terms. May have `order_id` or `unique_id` key.
      *
-     * @throws Stancer\Exceptions\InvalidSearchOrderIdFilterException When `order_id` is invalid.
-     * @throws Stancer\Exceptions\InvalidSearchUniqueIdFilterException When `unique_id` is invalid.
-     *
      * @phpstan-param array{order_id?: string, unique_id?: string} $terms
      *
      * @phpstan-return array{order_id?: string, unique_id?: string}
+     *
+     * @throws Stancer\Exceptions\InvalidSearchOrderIdFilterException When `order_id` is invalid.
+     * @throws Stancer\Exceptions\InvalidSearchUniqueIdFilterException When `unique_id` is invalid.
      */
     public static function filterListParams(array $terms): array
     {
@@ -478,8 +503,6 @@ class Payment extends Stancer\Core\AbstractObject implements PaymentInterface
 
     /**
      * Return API endpoint.
-     *
-     * @return string
      */
     public function getEndpoint(): string
     {
@@ -502,11 +525,11 @@ class Payment extends Stancer\Core\AbstractObject implements PaymentInterface
      * @param array $params Parameters to add to the URL.
      * @param boolean $force Get the payment page url even without return URL.
      *
+     * @phpstan-param array{lang?: string} $params Parameters to add to the URL.
+     *
      * @throws Stancer\Exceptions\MissingApiKeyException When no public key was given in configuration.
      * @throws Stancer\Exceptions\MissingReturnUrlException When no return URL was given to payment data.
      * @throws Stancer\Exceptions\MissingPaymentIdException When no payment has no ID.
-     *
-     * @phpstan-param array{lang?: string} $params Parameters to add to the URL.
      */
     public function getPaymentPageUrl(array $params = [], bool $force = false): string
     {
@@ -769,7 +792,7 @@ class Payment extends Stancer\Core\AbstractObject implements PaymentInterface
         $sepa = $this->getSepa();
 
         // We only send the status in V1.
-        if (null !== $auth) {
+        if ($auth !== null) {
             $authStatus = $config->version === 1 ? true : false;
             $auth->setExportablestatus($authStatus);
         }

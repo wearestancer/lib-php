@@ -4,19 +4,12 @@ declare(strict_types=1);
 
 namespace Stancer\Core;
 
-use BackedEnum;
-use DateTimeImmutable;
-use DateTimeInterface;
-use JsonSerializable;
-use ReflectionClass;
 use Stancer;
-use Stringable;
 
 /**
  * Manage common code between API object.
  *
  * @method ?\DateTimeImmutable getCreated() Get creation date.
- * @method ?\DateTimeImmutable getCreated_at() Get creation date.
  * @method ?\DateTimeImmutable get_created() Get creation date.
  * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
@@ -67,7 +60,7 @@ use Stringable;
     'createdAt',
     'created'
 )]
-abstract class AbstractObject implements JsonSerializable
+abstract class AbstractObject implements \JsonSerializable
 {
     use Stancer\Traits\AliasTrait;
 
@@ -110,7 +103,8 @@ abstract class AbstractObject implements JsonSerializable
     /**
      * Create or get an API object.
      *
-     * @param string|array<string, mixed>|null $id Object id or data for hydration.
+     * @param array<string, mixed>|string|null $id Object id or data for hydration.
+     *
      * @throws Stancer\Exceptions\BadApiVersionException Raised if the route doesn't exist in this version.
      */
     public function __construct($id = null)
@@ -154,7 +148,6 @@ abstract class AbstractObject implements JsonSerializable
 
             $size = array_merge($defaultModel['size'], $data['size'] ?? []);
             $data = array_merge($defaultModel, $data, ['size' => $size]);
-
 
             if (is_null($data['exportable'])) {
                 $data['exportable'] = !$data['restricted'];
@@ -310,17 +303,15 @@ abstract class AbstractObject implements JsonSerializable
         return $this->created;
     }
 
-   /**
+    /**
      * Return creation date.
-     *
-     * @return DateTimeImmutable|null
      */
     #[Stancer\Core\Documentation\FormatProperty(
         description: 'Creation date',
         restricted: true,
-        type: DateTimeImmutable::class,
+        type: \DateTimeImmutable::class,
     )]
-    public function getCreatedAt(): ?DateTimeImmutable
+    public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->created;
     }
@@ -416,6 +407,7 @@ abstract class AbstractObject implements JsonSerializable
         $trim = function ($value): string {
             return trim($value, '/');
         };
+
         return implode('/', array_map($trim, $tmp)) . $endslash;
     }
 
@@ -668,9 +660,9 @@ abstract class AbstractObject implements JsonSerializable
                     $supp = false;
                 }
 
-                if ($value instanceof JsonSerializable) {
+                if ($value instanceof \JsonSerializable) {
                     $value = $value->jsonSerialize();
-                } elseif ($value instanceof Stringable) {
+                } elseif ($value instanceof \Stringable) {
                     $value = (string) $value;
                 }
             }
@@ -683,9 +675,9 @@ abstract class AbstractObject implements JsonSerializable
                         if ($val instanceof self) {
                             $keepIt |= $val->isModified();
                             $val = $val->jsonSerialize();
-                        } elseif ($val instanceof JsonSerializable) {
+                        } elseif ($val instanceof \JsonSerializable) {
                             $val = $val->jsonSerialize();
-                        } elseif ($val instanceof Stringable) {
+                        } elseif ($val instanceof \Stringable) {
                             $val = (string) $val;
                         }
                     }
@@ -704,31 +696,6 @@ abstract class AbstractObject implements JsonSerializable
         }
 
         return $struct;
-    }
-
-    /**
-     * Change the data Attribute dynamically depending on the API version
-     * For now we only change the required field on Card.
-     *
-     * @param integer $version The version of our API.
-     * @param array $data The parameter we want to change.
-     * @return array $data The Parameter changed depending on API version.
-     * @phpstan-param  DataModel $data
-     * @phpstan-return DataModel
-     */
-    private function modifyDataVersion(int $version, array $data): array
-    {
-        if (! array_key_exists('changed', $data)) {
-            return $data;
-        }
-        foreach ($data['changed'] as $change) {
-            if ($change['sinceVersion'] <= $version) {
-                unset($change['sinceVersion']);
-                /** @var DataModel $data */
-                $data = array_merge($data, $change);
-            }
-        }
-        return $data;
     }
 
     /**
@@ -1231,5 +1198,37 @@ abstract class AbstractObject implements JsonSerializable
         }
 
         return $value;
+    }
+
+    // REGION Private method
+
+    /**
+     * Change the data Attribute dynamically depending on the API version
+     * For now we only change the required field on Card.
+     *
+     * @param integer $version The version of our API.
+     * @param array $data The parameter we want to change.
+     *
+     * @phpstan-param  DataModel $data
+     *
+     * @return array $data The Parameter changed depending on API version.
+     *
+     * @phpstan-return DataModel
+     */
+    private function modifyDataVersion(int $version, array $data): array
+    {
+        if (!array_key_exists('changed', $data)) {
+            return $data;
+        }
+        foreach ($data['changed'] as $change) {
+            if ($change['sinceVersion'] <= $version) {
+                unset($change['sinceVersion']);
+
+                /** @var DataModel $data */
+                $data = array_merge($data, $change);
+            }
+        }
+
+        return $data;
     }
 }

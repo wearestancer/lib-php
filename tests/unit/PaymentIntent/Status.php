@@ -1,6 +1,6 @@
 <?php
 
-namespace Stancer\tests\unit\Payment\Intent;
+namespace Stancer\tests\unit\PaymentIntent;
 
 use Stancer;
 
@@ -8,8 +8,6 @@ class Status extends Stancer\Tests\atoum
 {
     /**
      * @tags test
-     *
-     * @return void
      */
     public function testClass()
     {

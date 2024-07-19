@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Exceptions;
 
-use Stancer\Interfaces\ExceptionInterface;
 use Psr;
+use Stancer\Interfaces\ExceptionInterface;
 
 /**
  * The server did not find a current representation for the target resource.
@@ -20,12 +21,13 @@ class UnprocessableEntityException extends ClientException implements ExceptionI
     protected static string $status = '422';
 
     /**
-     * Create an Unprocessable Entity Exception and craft the message with info available
+     * Create an Unprocessable Entity Exception and craft the message with info available.
      *
      * @param array<string,mixed> $params The response array.
-     * @return static The Exception
      *
      * @phpstan-param CreateExceptionParameters $params
+     *
+     * @return static The Exception
      */
     public static function create(array $params = []): static
     {
@@ -44,9 +46,7 @@ class UnprocessableEntityException extends ClientException implements ExceptionI
             }
         }
         $params['message'] = $message;
-        $obj = parent::create($params);
 
-
-        return $obj;
+        return parent::create($params);
     }
 }

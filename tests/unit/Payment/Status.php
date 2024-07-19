@@ -71,4 +71,25 @@ class Status extends Stancer\Tests\atoum
                     ->isEqualTo('to_capture')
         ;
     }
+
+    public function testCapturable()
+    {
+        $this
+            ->given($authorize = Stancer\Payment\Status::AUTHORIZED)
+            ->then
+                ->string($authorize->value)
+                ->isIdenticalTo('authorized')
+
+                ->boolean($authorize->isCapturable())
+                ->isTrue
+
+            ->given($refused = Stancer\Payment\Status::REFUSED)
+            ->then
+                ->string($refused->value)
+                ->isIdenticalTo('refused')
+
+                ->boolean($refused->isCapturable())
+                ->isFalse
+        ;
+    }
 }

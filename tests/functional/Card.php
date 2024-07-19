@@ -11,15 +11,15 @@ use Stancer;
  */
 class Card extends TestCase
 {
-    public function personalTypo():string
+    public function personalTypo(): string
     {
-        if ($this->config->version == 1){
+        if ($this->config->version == 1) {
             return 'personnal';
         }
-        else{
-            return 'personal';
-        }
+
+        return 'personal';
     }
+
     public function testGetData()
     {
         $this
@@ -93,88 +93,91 @@ class Card extends TestCase
                 ->and($this->testedInstance->setExpMonth($month))
                 ->and($this->testedInstance->setExpYear($year))
                 ->and($this->testedInstance->setNumber($number))
-                ->then;
-                if($this->config->version == 1){
-                    $this->exception(function () {
-                        $this->testedInstance->send();
-                    })
-                        ->isInstanceOf(Stancer\Exceptions\ConflictException::class)
-                        ->message
-                            ->isIdenticalTo('Card already exists, you may want to update it instead creating a new one (' . $id . ')');
-                } else {
-                    $this->object($this->testedInstance->send())
-                        ->isInstanceOf(Stancer\Card::class)
-                        ->string($this->testedInstance->getId())
-                            ->isNotEmpty
-                        ->integer($this->testedInstance->getExpMonth())
-                            ->isIdenticalTo($month);
-                }
-
-            $this
-            ->assert('Update')
-                ->if($this->newTestedInstance($id))
                 ->then
-                    ->variable($this->testedInstance->getName())
-                        ->isNull
+        ;
+        if ($this->config->version == 1) {
+            $this->exception(function () {
+                $this->testedInstance->send();
+            })
+                ->isInstanceOf(Stancer\Exceptions\ConflictException::class)
+                ->message
+                    ->isIdenticalTo('Card already exists, you may want to update it instead creating a new one (' . $id . ')')
+            ;
+        } else {
+            $this->object($this->testedInstance->send())
+                ->isInstanceOf(Stancer\Card::class)
+                ->string($this->testedInstance->getId())
+                    ->isNotEmpty
+                ->integer($this->testedInstance->getExpMonth())
+                    ->isIdenticalTo($month)
+            ;
+        }
 
-                    ->object($this->testedInstance->setName($name)->send())
-                        ->isTestedInstance
+        $this
+        ->assert('Update')
+            ->if($this->newTestedInstance($id))
+            ->then
+                ->variable($this->testedInstance->getName())
+                    ->isNull
 
-                    ->string($this->newTestedInstance($id)->getName())
-                        ->isIdenticalTo($name)
+                ->object($this->testedInstance->setName($name)->send())
+                    ->isTestedInstance
 
-            ->assert('Read data / Name')
-                ->if($this->newTestedInstance($id))
-                ->then
-                    ->string($this->testedInstance->getName())
-                        ->isIdenticalTo($name)
+                ->string($this->newTestedInstance($id)->getName())
+                    ->isIdenticalTo($name)
 
-            ->assert('Read data / Expiration month')
-                ->if($this->newTestedInstance($id))
-                ->then
-                    ->integer($this->testedInstance->getExpMonth())
-                        ->isIdenticalTo($month)
+        ->assert('Read data / Name')
+            ->if($this->newTestedInstance($id))
+            ->then
+                ->string($this->testedInstance->getName())
+                    ->isIdenticalTo($name)
 
-            ->assert('Read data / Expiration year')
-                ->if($this->newTestedInstance($id))
-                ->then
-                    ->integer($this->testedInstance->getExpYear())
-                        ->isIdenticalTo($year)
+        ->assert('Read data / Expiration month')
+            ->if($this->newTestedInstance($id))
+            ->then
+                ->integer($this->testedInstance->getExpMonth())
+                    ->isIdenticalTo($month)
 
-            ->assert('Read data / Other field')
-                ->if($this->newTestedInstance($id))
-                ->then
-                    // Could not be return by the API
-                    ->variable($this->testedInstance->getCvc())
-                        ->isNull
+        ->assert('Read data / Expiration year')
+            ->if($this->newTestedInstance($id))
+            ->then
+                ->integer($this->testedInstance->getExpYear())
+                    ->isIdenticalTo($year)
 
-                    // Could not be return by the API
-                    ->variable($this->testedInstance->getNumber())
-                        ->isNull
+        ->assert('Read data / Other field')
+            ->if($this->newTestedInstance($id))
+            ->then
+                // Could not be return by the API
+                ->variable($this->testedInstance->getCvc())
+                    ->isNull
 
-                    // We could not validate the value
-                    ->string($this->testedInstance->getFunding())
-                    ->string($this->testedInstance->getNature())
-                    ->string($this->testedInstance->getNetwork())
+                // Could not be return by the API
+                ->variable($this->testedInstance->getNumber())
+                    ->isNull
 
-            ->assert('Delete card')
-                ->if($this->newTestedInstance($id))
-                ->then
-                    ->object($this->testedInstance->delete())
-                        ->isTestedInstance
+                // We could not validate the value
+                ->string($this->testedInstance->getFunding())
+                ->string($this->testedInstance->getNature())
+                ->string($this->testedInstance->getNetwork())
 
-                    ->variable($this->testedInstance->getId())
-                        ->isNull
+        ->assert('Delete card')
+            ->if($this->newTestedInstance($id))
+            ->then
+                ->object($this->testedInstance->delete())
+                    ->isTestedInstance
 
-            ->assert('No more data')
-                ->if($this->newTestedInstance($id))
-                ->then
-                    ->exception(function () {
-                        $this->testedInstance->getName();
-                    })
-                        ->isInstanceOf(Stancer\Exceptions\NotFoundException::class)
-                        ->message
-                            ->isIdenticalTo($this->getNotFoundExceptionMessage($id,'card'))
+                ->variable($this->testedInstance->getId())
+                    ->isNull
+
+        ->assert('No more data')
+            ->if($this->newTestedInstance($id))
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->getName();
+                })
+                    ->isInstanceOf(Stancer\Exceptions\NotFoundException::class)
+                    ->message
+                        ->isIdenticalTo($this->getNotFoundExceptionMessage($id, 'card'))
         ;
     }
 }

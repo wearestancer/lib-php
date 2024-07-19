@@ -1,7 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
-namespace Stancer\Payment\Intent;
+namespace Stancer\PaymentIntent;
 
 use Stancer\Traits\CapturableTrait;
 

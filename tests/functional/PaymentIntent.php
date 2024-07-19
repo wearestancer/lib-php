@@ -1,19 +1,21 @@
 <?php
 
-namespace Stancer\tests\functional\Payment;
+namespace Stancer\tests\functional\PaymentIntent;
 
-use Stancer\Tests\atoum;
 use Stancer;
+use Stancer\Tests\atoum;
 use Stancer\Tests\functional\TestCase;
-
 
 /**
  * @namespace tests\functional
-*/
-class Intent extends TestCase
+ *
+ * @internal
+ */
+class PaymentIntent extends TestCase
 {
     use Stancer\Tests\Provider\Currencies;
     use Stancer\Tests\Provider\Network;
+
     public function testGetData()
     {
         $this
@@ -21,34 +23,34 @@ class Intent extends TestCase
             ->if($this->newTestedInstance())
             ->then
                 ->object($this->testedInstance)
-                ->isInstanceOf(\Stancer\Payment\Intent::class);
+                ->isInstanceOf(\Stancer\PaymentIntent::class)
+        ;
         $this
             ->assert('Unkwown payment intent result a 404 exception')
-                ->if($this->newTestedInstance($id= "pi_" . $this->getRandomString(24)))
+                ->if($this->newTestedInstance($id = 'pi_' . $this->getRandomString(24)))
                 ->then
                     ->string($this->testedInstance->getId())
                     ->isIdenticalTo($id)
-                    ->exception(function (){
+                    ->exception(function () {
                         $this->testedInstance->getAmount();
                     })
                         ->isInstanceOf(Stancer\Exceptions\NotFoundException::class)
                         ->message
-                            ->isIdenticalTo($this->getNotFoundExceptionMessage($id,'Payment intent'))
+                            ->isIdenticalTo($this->getNotFoundExceptionMessage($id, 'Payment intent'))
             ->assert('Get A Payment Intent')
-                ->if($this->newTestedInstance($id= "pi_cFGdU9TtJfU9NbhMLGjyMXCq"))
+                ->if($this->newTestedInstance($id = 'pi_cFGdU9TtJfU9NbhMLGjyMXCq'))
                 ->then
 
                     ->string($this->testedInstance->getCustomer()->getId())
-                        ->isEqualTo("cust_yKdNid3wEcUkHt1oNboYGg3D")
+                        ->isEqualTo('cust_yKdNid3wEcUkHt1oNboYGg3D')
 
                     ->string($this->testedInstance->getCard()->getId())
-                        ->isIdenticalTo("card_XZ8h7vcnEIecJkDdlnI5gyD5")
+                        ->isIdenticalTo('card_XZ8h7vcnEIecJkDdlnI5gyD5')
 
-                    //test Created At when implemented.
+                    // test Created At when implemented.
 
                       ->variable($this->testedInstance->getCreatedAt())
-                      ->isEqualTo((\DateTimeImmutable::createFromFormat('U',1718635874)))
-
+                      ->isEqualTo(\DateTimeImmutable::createFromFormat('U', 1718635874))
 
                      ->integer($this->testedInstance->getAmount())
                         ->isIdenticalTo(3000)
@@ -62,43 +64,43 @@ class Intent extends TestCase
                     ->string($this->testedInstance->getDescription())
                         ->isIdenticalTo('test get pi')
 
-                    //Because we have an array of Enum, the Array should be EqualTo [enum::card,enum::sepa]
-                    //But Atoum doesn't check Enums correctly
+                    // Because we have an array of Enum, the Array should be EqualTo [enum::card,enum::sepa]
+                    // But Atoum doesn't check Enums correctly
                     ->array($this->testedInstance->getMethodsAllowed())
                         ->contains(Stancer\Payment\MethodsAllowed::CARD)
                         ->contains(Stancer\Payment\MethodsAllowed::SEPA)
 
                     ->object($this->testedInstance->getStatus())
-                        ->isEqualTo(Stancer\Payment\Intent\Status::REQUIRE_AUTHENTICATION)
+                        ->isEqualTo(Stancer\PaymentIntent\Status::REQUIRE_AUTHENTICATION)
 
                     ->object($this->testedInstance->getThreeds())
                         ->isEqualTo(Stancer\ThreeDomainsSecure\Status::REQUIRED)
 
                     ->string($this->testedInstance->getUrl())
-                        ->isIdenticalTo("https://payment.stancer.com/test_pi_cFGdU9TtJfU9NbhMLGjyMXCq");
+                        ->isIdenticalTo('https://payment.stancer.com/test_pi_cFGdU9TtJfU9NbhMLGjyMXCq')
+        ;
     }
-
 
     public function testSend()
     {
-        $amount= $this->getRandomInteger(50,100);
-        $desc=$this->getRandomString(3,64);
-        $methods_allowed=[Stancer\Payment\MethodsAllowed::CARD];
-        $capture= false;
-        $threeds= Stancer\ThreeDomainsSecure\Status::NONE;
-        $name= "test" . $this->getRandomString(4);
-        $email = $name . "@test.com";
-        $customer= new Stancer\Customer(["email"=>$email,"name"=>$name]);
+        $amount = $this->getRandomInteger(50, 100);
+        $desc = $this->getRandomString(3, 64);
+        $methods_allowed = [Stancer\Payment\MethodsAllowed::CARD];
+        $capture = false;
+        $threeds = Stancer\ThreeDomainsSecure\Status::NONE;
+        $name = 'test' . $this->getRandomString(4);
+        $email = $name . '@test.com';
+        $customer = new Stancer\Customer(['email' => $email, 'name' => $name]);
         $this
             ->given($this->newTestedInstance())
             ->assert('create a payment intent')
-                ->object($this->testedInstance->setAmount($amount) )
+                ->object($this->testedInstance->setAmount($amount))
                     ->isTestedInstance
 
                 ->object($this->testedInstance->setCurrency('EUR'))
                     ->isTestedInstance
 
-                ->object($this->testedInstance->setDescription ($desc))
+                ->object($this->testedInstance->setDescription($desc))
                     ->isTestedInstance
 
                 ->object($this->testedInstance->setMethodsAllowed($methods_allowed))
@@ -116,14 +118,13 @@ class Intent extends TestCase
                 ->object($this->testedInstance->send())
                     ->isTestedInstance
 
-                ->string($this->testedInstance->getId());
-
-
+                ->string($this->testedInstance->getId())
+        ;
     }
 
     public function testPaymentIntent()
     {
-        $currency="eur";
+        $currency = 'eur';
         $this
             ->assert('With authentication')
                 ->given($amount = rand(50, 99999))
@@ -132,13 +133,13 @@ class Intent extends TestCase
                     $currency,
                 ]))
 
-                ->if($card = new Stancer\Card)
+                ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
                 ->and($card->setExpirationMonth(rand(1, 12)))
                 ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
                 ->and($card->setCvc((string) rand(100, 999)))
 
-                ->if($customer = new Stancer\Customer)
+                ->if($customer = new Stancer\Customer())
                 ->and($customer->setName('John Doe'))
                 ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
 
@@ -166,7 +167,7 @@ class Intent extends TestCase
                          ->hasDay(date('d'))
 
                     ->object($this->testedInstance->getStatus())
-                        ->isEqualTo(Stancer\Payment\Intent\Status::REQUIRE_AUTHENTICATION)
+                        ->isEqualTo(Stancer\PaymentIntent\Status::REQUIRE_AUTHENTICATION)
 
                     ->string($card->getId())
                         ->startWith('card_')
@@ -198,7 +199,7 @@ class Intent extends TestCase
                     $currency,
                 ]))
 
-                ->if($customer = new Stancer\Customer)
+                ->if($customer = new Stancer\Customer())
                 ->and($customer->setName('John Doe'))
                 ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
 
@@ -233,7 +234,7 @@ class Intent extends TestCase
                     $currency,
                 ]))
 
-                ->if($customer = new Stancer\Customer)
+                ->if($customer = new Stancer\Customer())
                 ->and($customer->setName('John Doe'))
                 ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
 
@@ -254,10 +255,8 @@ class Intent extends TestCase
                     ->dateTime($this->testedInstance->getCreationDate())
                          ->hasDay(date('d'))
 
-
-
                     ->object($this->testedInstance->getStatus())
-                        ->isEqualTo(Stancer\Payment\Intent\Status::REQUIRE_PAYMENT_METHOD)
+                        ->isEqualTo(Stancer\PaymentIntent\Status::REQUIRE_PAYMENT_METHOD)
 
                     ->string($customer->getId())
                         ->startWith('cust_')
@@ -271,7 +270,7 @@ class Intent extends TestCase
                 ->and($amount = rand(50, 100))
                 ->and($description = sprintf('Automatic test, PATCH card, %.02f %s', $amount / 100, $currency))
 
-                ->if($customer = new Stancer\Customer)
+                ->if($customer = new Stancer\Customer())
                 ->and($customer->setName('John Doe'))
                 ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
 
@@ -280,7 +279,7 @@ class Intent extends TestCase
                 ->and($this->testedInstance->setDescription($description))
                 ->and($this->testedInstance->setCustomer($customer))
 
-                ->if($card = new Stancer\Card)
+                ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
                 ->and($card->setExpirationMonth(rand(1, 12)))
                 ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
@@ -294,7 +293,6 @@ class Intent extends TestCase
                         ->startWith('pi_')
                         ->hasLength(27)
 
-
                     ->variable($this->testedInstance->getCard())
                         ->isNull
 
@@ -302,14 +300,13 @@ class Intent extends TestCase
                         ->isNull
 
                     ->object($this->testedInstance->getStatus())
-                        ->isEqualTo(Stancer\Payment\Intent\Status::REQUIRE_PAYMENT_METHOD)
+                        ->isEqualTo(Stancer\PaymentIntent\Status::REQUIRE_PAYMENT_METHOD)
 
                     ->object($this->testedInstance->setCard($card))
                         ->isTestedInstance
 
                     ->object($this->testedInstance->send())
                         ->isTestedInstance
-
 
                     ->string($this->testedInstance->getCard()->getId())
                         ->isIdenticalTo($card->getId())
@@ -322,7 +319,7 @@ class Intent extends TestCase
                         ->hasLength(29)
 
                     ->object($this->testedInstance->getStatus())
-                        ->isEqualTo(Stancer\Payment\Intent\Status::REQUIRE_AUTHENTICATION)
+                        ->isEqualTo(Stancer\PaymentIntent\Status::REQUIRE_AUTHENTICATION)
 
             ->assert('With order ID')
                 ->given($this->newTestedInstance)
@@ -334,13 +331,13 @@ class Intent extends TestCase
                 ->and($email = 'pickle.rick' . $this->getRandomString(10) . '@example.com')
                 ->and($mobile = $this->getRandomNumber())
 
-                ->if($card = new Stancer\Card)
+                ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
                 ->and($card->setExpirationMonth(rand(1, 12)))
                 ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
                 ->and($card->setCvc((string) rand(100, 999)))
 
-                ->if($customer = new Stancer\Customer)
+                ->if($customer = new Stancer\Customer())
                 ->and($customer->setName($name))
                 ->and($customer->setEmail($email))
                 ->and($customer->setMobile($mobile))
@@ -388,13 +385,13 @@ class Intent extends TestCase
                 ->and($amount = rand(50, 100))
                 ->and($description = sprintf('Automatic test, duplicate customer, %.02f %s', $amount / 100, $currency))
 
-                ->if($card = new Stancer\Card)
+                ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
                 ->and($card->setExpirationMonth(rand(1, 12)))
                 ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
                 ->and($card->setCvc((string) rand(100, 999)))
 
-                ->if($customer = new Stancer\Customer)
+                ->if($customer = new Stancer\Customer())
                 ->and($customer->setName($name)) // From previous test
                 ->and($customer->setEmail($email)) // From previous test
                 ->and($customer->setMobile($mobile)) // From previous test
@@ -427,7 +424,7 @@ class Intent extends TestCase
                     ->string($customer->getId())
                         ->startWith('cust_')
                         ->hasLength(29)
-                        //->isIdenticalTo($customerID) // From previous test
+                        // ->isIdenticalTo($customerID) // From previous test
         ;
     }
 }

@@ -743,7 +743,7 @@ class Request extends Stancer\Tests\atoum
                 ->and($config->setLogger($logger))
                 ->and($debugMessage = vsprintf('API call : %s %s', [
                     (string) $method,
-                    $config->getUri() . $object->getEndpoint().'/',
+                    $config->getUri() . $object->getEndpoint() . '/',
                 ]))
                 ->and($errorMessage = sprintf('Unknown error : %s', $exceptionMessage))
                 ->then

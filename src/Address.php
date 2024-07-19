@@ -23,6 +23,7 @@ use Stancer\Core\AbstractObject;
  * @method ?string get_city() Get the name of the city.
  * @method ?string get_country() Get ISO 3166-1 alpha-3 country code.
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method ?boolean get_deleted() Get if the address is deleted or not.
  * @method string get_endpoint() Get API endpoint.
@@ -31,11 +32,12 @@ use Stancer\Core\AbstractObject;
  * @method ?string get_line1() Get the street number and name, line 1.
  * @method ?string get_line2() Get the street number and name, line 2.
  * @method ?string get_line3() Get the street number and name, line 3.
- * @method ?string get_metadata() Get A json object, with various usefull data.
+ * @method string get_metadata() Get A json object, with various usefull data.
  * @method ?string get_state() Get ISO 3166-2 state or province.
  * @method string get_uri() Get entity resource location.
  * @method ?string get_zip_code() Get the zip code.
  * @method $this setCity(string $city) Set the name of the city.
+ * @method $this setCountry(string $country) Set ISO 3166-1 alpha-3 country code.
  * @method $this setDeleted(boolean $deleted) Set if the address is deleted or not.
  * @method $this setLine1(string $line1) Set the street number and name, line 1.
  * @method $this setLine2(string $line2) Set the street number and name, line 2.
@@ -58,12 +60,14 @@ use Stancer\Core\AbstractObject;
  * @property ?string $line1 The street number and name, line 1.
  * @property ?string $line2 The street number and name, line 2.
  * @property ?string $line3 The street number and name, line 3.
- * @property ?string $metadata A json object, with various usefull data.
+ * @property string $metadata A json object, with various usefull data.
  * @property ?string $state ISO 3166-2 state or province.
  * @property ?string $zipCode The zip code.
  * @property ?string $zip_code The zip code.
  *
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $endpoint API endpoint.
@@ -81,7 +85,7 @@ class Address extends AbstractObject
      */
     protected array $dataModel = [
         'city' => [
-            'desc' => 'City name',
+            'desc' => 'The name of the city',
             'type' => self::STRING,
             'size' => [
                 'min' => 1,
@@ -96,7 +100,7 @@ class Address extends AbstractObject
             ],
         ],
         'deleted' => [
-            'desc' => 'Is the address deleted?',
+            'desc' => 'If the address is deleted or not',
             'type' => self::BOOLEAN,
         ],
         'line1' => [

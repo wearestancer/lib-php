@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Payment;
@@ -27,6 +28,8 @@ use Stancer\Traits\SearchTrait;
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
+ * @property-read array<mixed> $jsonSerialize Alias for `Stancer\Payment\SearchObject::jsonSerialize()`.
+ * @property-read array<mixed> $json_serialize Alias for `Stancer\Payment\SearchObject::jsonSerialize()`.
  */
 class SearchObject extends AbstractObject
 {
@@ -46,8 +49,6 @@ class SearchObject extends AbstractObject
 
     /**
      * Get the uri of our search route.
-     *
-     * @return string
      */
     public function getUri(): string
     {
@@ -56,8 +57,6 @@ class SearchObject extends AbstractObject
 
     /**
      * Get the endpoint of the "outer" object.
-     *
-     * @return string
      */
     public function getEndpoint(): string
     {
@@ -66,8 +65,6 @@ class SearchObject extends AbstractObject
 
     /**
      * Serialize the object as only his ID.
-     *
-     * @return array
      *
      * @phpstan-return array<string,string|null>
      */

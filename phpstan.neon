@@ -10,6 +10,7 @@ parameters:
     - '/^Short ternary operator is not allowed/'
     - '/^Binary operation "%" between string and 97 results in an error./'
     - '/^Call to vsprintf contains [0-9]\-?[0-9]? placeholders, [0-9\-?] values given./'
+    - '/^.* Unexpected token "\$(3DS|3ds)\)?", expected variable/'
 
     - message: '/Unsafe usage of new static/'
       paths:

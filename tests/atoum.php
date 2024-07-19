@@ -25,13 +25,13 @@ class atoum extends base\test
     public function beforeTestMethod($method)
     {
         $version = 1;
-        if(getenv('API_VERSION')){
+        if (getenv('API_VERSION')) {
             $version = getenv('API_VERSION');
         }
         if ($method !== 'testGetGlobal_SetGlobal') {
             Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))])
-                ->setVersion($version);
-
+                ->setVersion($version)
+            ;
         }
     }
 
@@ -99,15 +99,15 @@ class atoum extends base\test
         if ($first === 7) {
             $number .= str_pad(rand(30, 99), 2, '0');
         }
-        if ($first === 6){
-            $nine_list = ['5','8','9'];
-            $first_number_duo =[
-                str_pad((string)rand(0,20),2,'0'),
-                (string)rand(40,80),
-                '3' . (string)rand(0,8),
-                '9' . $nine_list[rand(0,2)],
+        if ($first === 6) {
+            $nine_list = ['5', '8', '9'];
+            $first_number_duo = [
+                str_pad((string) rand(0, 20), 2, '0'),
+                (string) rand(40, 80),
+                '3' . (string) rand(0, 8),
+                '9' . $nine_list[rand(0, 2)],
             ];
-            $number .= $first_number_duo[rand(0,3)];
+            $number .= $first_number_duo[rand(0, 3)];
         }
 
         for ($idx = 0; $idx < $loop; $idx++) {
@@ -153,8 +153,9 @@ class atoum extends base\test
 
     /**
      * @param mock\Psr\Http\Client\ClientInterface|Psr\Http\Client\ClientInterface $client
+     * @param mixed $version
      */
-    public function mockConfig($client,$version=1): Stancer\Config
+    public function mockConfig($client, $version = 1): Stancer\Config
     {
         $config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]);
         $config->setHttpClient($client);

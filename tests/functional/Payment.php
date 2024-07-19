@@ -51,7 +51,7 @@ class Payment extends TestCase
                     })
                         ->isInstanceOf(Stancer\Exceptions\NotFoundException::class)
                         ->message
-                            ->isIdenticalTo($this->getNotFoundExceptionMessage($id,'Payment'))
+                            ->isIdenticalTo($this->getNotFoundExceptionMessage($id, 'Payment'))
 
             ->assert('Get test payment')
                 ->if($this->newTestedInstance('paym_FQgpGVJpyGPVJVIuQtO3zy6i'))
@@ -655,7 +655,7 @@ class Payment extends TestCase
                     $currency,
                 ]))
 
-                ->if($sepa = new Stancer\Sepa)
+                ->if($sepa = new Stancer\Sepa())
                 ->and($sepa->setDateMandate(rand(946681200, 1693452400)))
                 ->and($sepa->setIban($this->getValidIban()))
                 ->and($sepa->setMandate($this->getRandomString(34)))

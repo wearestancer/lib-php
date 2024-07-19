@@ -1,9 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Traits;
-
-use Stancer;
 
 /**
  * Simple trait to handle everything around amounts.

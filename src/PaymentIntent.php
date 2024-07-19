@@ -1,22 +1,19 @@
 <?php
+
 declare(strict_types=1);
 
-namespace Stancer\Payment;
+namespace Stancer;
 
-use DateTimeImmutable;
 use Generator;
-use Override;
 use Stancer;
-use Stancer\Core\Request;
 use Stancer\Interfaces\PaymentInterface;
 use Stancer\Stub\Payment;
-use ValueError;
 
 /**
  * Representation of an intent.
  *
  * @method static add_methods_allowed($method) Add an allowed method.
- * @method static array filter_list_params(array $terms) Filter for list method.
+ * @method static array<mixed> filter_list_params(array<mixed> $terms) Filter for list method.
  * @method ?\Stancer\ThreeDomainsSecure\Status get3DS() Get ask for an authenticated payment.
  * @method ?integer getAmount() Get intent amount.
  * @method ?boolean getCapture() Get capture immediately the payment.
@@ -57,12 +54,11 @@ use ValueError;
  * @method ?\Stancer\ThreeDomainsSecure\Status get_threeds() Get ask for an authenticated payment.
  * @method string get_uri() Return resource location.
  * @method ?string get_url() Get payment page URL.
- * @method Generator list_payments(mixed $terms) List payment associated to the payment intent.
+ * @method \Generator list_payments(mixed $terms) List payment associated to the payment intent.
  * @method $this set3DS(\Stancer\ThreeDomainsSecure\Status $3DS) Set ask for an authenticated payment.
  * @method $this setCapture(boolean $capture) Set capture immediately the payment.
  * @method $this setDescription(string $description) Set intent description.
  * @method $this setOrderId(string $orderId) Set order identifier.
- * @method $this setSepa(\Stancer\Sepa $sepa) Set SEPA object.
  * @method $this setThreeDS(\Stancer\ThreeDomainsSecure\Status $threeDS) Set ask for an authenticated payment.
  * @method $this setThreeds(\Stancer\ThreeDomainsSecure\Status $threeds) Set ask for an authenticated payment.
  * @method $this set_3ds(\Stancer\ThreeDomainsSecure\Status $3ds) Set ask for an authenticated payment.
@@ -114,7 +110,7 @@ use ValueError;
  */
 #[Stancer\Core\Documentation\PropertyAlias('3DS', 'threeds')]
 #[Stancer\Core\Documentation\PropertyAlias('threeDS', 'threeds')]
-class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
+class PaymentIntent extends Stancer\Core\AbstractObject implements PaymentInterface
 {
     use Stancer\Traits\SearchTrait;
 
@@ -124,7 +120,6 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
     final public const API_VERSION = 2;
 
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [
@@ -195,7 +190,7 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
         'status' => [
             'desc' => 'Status of the intent',
             'restricted' => true,
-            'type' => Stancer\Payment\Intent\Status::class,
+            'type' => Stancer\PaymentIntent\Status::class,
         ],
         'threeds' => [
             'desc' => 'Ask for an authenticated payment',
@@ -214,12 +209,13 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
      * @uses self::dataModelAdder() When method starts with `add`.
      * @uses self::dataModelGetter() When method starts with `get`.
      * @uses self::dataModelSetter() When method starts with `set`.
+     *
      * @param string $method Method called.
      * @param mixed[] $arguments Arguments used during the call.
-     * @return mixed
+     *
      * @throws Stancer\Exceptions\BadMethodCallException When an unhandled method is called.
      */
-    #[Override]
+    #[\Override]
     public function __call(string $method, array $arguments): mixed
     {
         $lower = strtolower($method);
@@ -253,6 +249,7 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
      * Add an allowed method.
      *
      * @param Stancer\Payment\MethodsAllowed|string $method New method.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When currency is EUR and trying to set "sepa" method.
      */
@@ -272,18 +269,17 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
     }
 
     /**
-     * Capture a Payment Intent
+     * Capture a Payment Intent.
      *
-     * @return static
      * @throws Stancer\Exceptions\BadRequestException If the payment isn't Capturable.
      */
     public function capture(): static
     {
-        if (null === $this->getId() || null === $this->getStatus() || ! $this->getStatus()->isCapturable()) {
+        if ($this->getId() === null || $this->getStatus() === null || !$this->getStatus()->isCapturable()) {
             throw new Stancer\Exceptions\BadRequestException('The payment intent must be authorized to be captured.');
         }
-        $capture = new SearchObject($this->getId(), 'capture');
-        $request = new Request();
+        $capture = new Stancer\Payment\SearchObject($this->getId(), 'capture');
+        $request = new Stancer\Core\Request();
         // We post the serialized object, jsonSerialize if notModified return the ID, that's what we want!
         $response = $request->post($capture);
 
@@ -313,13 +309,14 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
      * you specified in your initial payment request.
      *
      * @param array $terms Search terms. May have `order_id`, `card` or `sepa` key.
-     * @return array
+     *
+     * @phpstan-param array{card?: string, order_id?: string, sepa?: string} $terms
+     *
+     * @phpstan-return array{card?: string, order_id?: string, sepa?: string}
+     *
      * @throws Stancer\Exceptions\InvalidSearchOrderIdFilterException When `order_id` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchCardFilterException When `card` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchSepaFilterException When `sepa` is invalid.
-     *
-     * @phpstan-param array{card?: string, order_id?: string, sepa?: string} $terms
-     * @phpstan-return array{card?: string, order_id?: string, sepa?: string}
      */
     public static function filterListParams(array $terms): array
     {
@@ -369,13 +366,12 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
                 throw new Stancer\Exceptions\InvalidSearchSepaFilterException($message);
             }
         }
+
         return $params;
     }
 
     /**
      * Return a card from an ID.
-     *
-     * @return Stancer\Card|null
      */
     public function getCard(): ?Stancer\Card
     {
@@ -383,13 +379,12 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
         if ($card === null) {
             return null;
         }
+
         return $card;
     }
 
     /**
      * Return a customer from an ID.
-     *
-     * @return Stancer\Customer|null
      */
     public function getCustomer(): ?Stancer\Customer
     {
@@ -397,29 +392,13 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
         if ($customer === null) {
             return null;
         }
-        return $customer;
-    }
 
-    /**
-     * Return creation date.
-     *
-     * @return DateTimeImmutable|null
-     */
-    #[Stancer\Core\Documentation\FormatProperty(
-        description: 'Creation date',
-        restricted: true,
-        type: DateTimeImmutable::class,
-    )]
-    public function getCreationDate(): ?DateTimeImmutable
-    {
-        return parent::getCreatedAt();
+        return $customer;
     }
 
     /**
      * Return the entity name
      * This could lead to bugs as, for all other entities, their names are the Class name.
-     *
-     * @return string
      */
     #[\Override]
     public function getEntityName(): string
@@ -429,8 +408,6 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
 
     /**
      * Return resource location.
-     *
-     * @return string
      */
     #[\Override]
     public function getUri(): string
@@ -441,15 +418,17 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
     /**
      * List payment associated to the payment intent.
      *
-     * @param mixed|array<mixed> $terms Research parameters.
-     * @return Generator A generator that yelds the objects listed.
+     * @param array<mixed>|mixed $terms Research parameters.
+     *
+     * @return \Generator A generator that yelds the objects listed.
      * @throws Stancer\Exceptions\InvalidSearchFilterException Invalid parameter to listPayments.
      */
-    public function listPayments(mixed $terms): Generator
+    public function listPayments(mixed $terms): \Generator
     {
         if (!is_array($terms)) {
             throw new Stancer\Exceptions\InvalidSearchFilterException();
         }
+
         return $this->search(Payment::class, 'payments', $terms, 'payments');
     }
 
@@ -457,8 +436,6 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
      * Set the intent amount.
      *
      * @param integer $amount New amount.
-     *
-     * @return self
      *
      * @throws Stancer\Exceptions\InvalidAmountException If the amount is less than 50.
      */
@@ -475,6 +452,7 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
      * Set A card, by id or by object.
      *
      * @param Stancer\Card|string $card A card Object or it's ID.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidUniqueIdException When the card is invalid.
      * @throws Stancer\Exceptions\InvalidArgumentException If the card we try to set is incomplete.
@@ -487,14 +465,16 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
             } else {
                 $card = $card->send();
             }
-        } catch (ValueError $exception) {
+        } catch (\ValueError $exception) {
             throw new Stancer\Exceptions\InvalidUniqueIdException();
         } catch (Stancer\Exceptions\BadMethodCallException $exception) {
             if ($card->id === null) {
                 $message = 'You need to set a complete Card (with at least number, month and year).';
+
                 throw new Stancer\Exceptions\InvalidArgumentException($message);
             }
         }
+
         return parent::setCard($card);
     }
 
@@ -502,6 +482,7 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
      * Set the currency.
      *
      * @param Stancer\Currency|string $currency The currency.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidCurrencyException When currency is EUR and "sepa" is already allowed.
      * @throws Stancer\Exceptions\InvalidCurrencyException When the currency is invalid.
@@ -514,10 +495,10 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
             } else {
                 $new = $currency;
             }
-        } catch (ValueError $exception) {
+        } catch (\ValueError $exception) {
             $params = [
                 $currency,
-                implode(', ', array_map(fn(Stancer\Currency $case): string => $case->value, Stancer\Currency::cases())),
+                implode(', ', array_map(fn (Stancer\Currency $case): string => $case->value, Stancer\Currency::cases())),
             ];
             $message = vsprintf('"%s" is not a valid currency, please use one of the following: %s', $params);
 
@@ -539,6 +520,7 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
      * Set a customer by id or by object.
      *
      * @param Stancer\Customer|string $customer A customer object or it's ID.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidUniqueIdException When the customer is invalid.
      * @throws Stancer\Exceptions\BadMethodCallException  If We send a non modified object without ID.
@@ -551,7 +533,7 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
             } else {
                 $customer = $customer->send();
             }
-        } catch (ValueError $exception) {
+        } catch (\ValueError $exception) {
             throw new Stancer\Exceptions\InvalidUniqueIdException();
         } catch (Stancer\Exceptions\BadMethodCallException  $exception) {
             if ($customer->id === null) {
@@ -566,6 +548,7 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
      * Set metadata.
      *
      * @param mixed $data Arbitrary data.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidMetadataException If data is neither a JSON serializable nor stringable object.
      */
@@ -584,6 +567,7 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
      * Set allowed methods.
      *
      * @param non-empty-array<Stancer\Currency|string> $methods New methods.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When currency is EUR and trying to set "sepa" method.
      * @throws Stancer\Exceptions\InvalidArgumentException When the method is invalid.
@@ -591,7 +575,7 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
     public function setMethodsAllowed(array $methods): static
     {
         $new = [];
-        $cast = fn(Stancer\Payment\MethodsAllowed $case): string => $case->value;
+        $cast = fn (Stancer\Payment\MethodsAllowed $case): string => $case->value;
 
         foreach ($methods as $method) {
             try {
@@ -600,7 +584,7 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
                 } else {
                     $new[] = $method;
                 }
-            } catch (ValueError $exception) {
+            } catch (\ValueError $exception) {
                 $params = [
                     $method,
                     implode(', ', array_map($cast, Stancer\Payment\MethodsAllowed::cases())),
@@ -614,8 +598,8 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
         $currency = $this->getCurrency();
         $status = [
             null,
-            Stancer\Payment\Intent\Status::REQUIRE_PAYMENT_METHOD,
-            Stancer\Payment\Intent\Status::UNPAID,
+            Stancer\PaymentIntent\Status::REQUIRE_PAYMENT_METHOD,
+            Stancer\PaymentIntent\Status::UNPAID,
         ];
 
         if (
@@ -636,6 +620,7 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
      * Update return URL.
      *
      * @param string $url New HTTPS URL.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidUrlException When URL is not an HTTPS URL.
      */
@@ -652,6 +637,7 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
      * Set a Sepa by id or by object.
      *
      * @param Stancer\Sepa|string $sepa A sepa object or it's ID.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidUniqueIdException When the sepa is invalid.
      * @throws Stancer\Exceptions\InvalidArgumentException If the sepa we try to set is incomplete.
@@ -664,7 +650,7 @@ class Intent extends Stancer\Core\AbstractObject implements PaymentInterface
             } else {
                 $sepa = $sepa->send();
             }
-        } catch (ValueError $exception) {
+        } catch (\ValueError $exception) {
             throw new Stancer\Exceptions\InvalidUniqueIdException();
         } catch (Stancer\Exceptions\BadMethodCallException  $exception) {
             if ($sepa->id === null) {

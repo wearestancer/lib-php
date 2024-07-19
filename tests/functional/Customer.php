@@ -32,7 +32,7 @@ class Customer extends TestCase
                 })
                     ->isInstanceOf(Stancer\Exceptions\NotFoundException::class)
                     ->message
-                        ->isIdenticalTo($this->getNotFoundExceptionMessage($id,'Customer'))
+                        ->isIdenticalTo($this->getNotFoundExceptionMessage($id, 'Customer'))
         ;
     }
 
@@ -47,7 +47,7 @@ class Customer extends TestCase
                     })
                         ->isInstanceOf(Stancer\Exceptions\NotFoundException::class)
                         ->message
-                            ->isIdenticalTo($this->getNotFoundExceptionMessage($id,'Customer'))
+                            ->isIdenticalTo($this->getNotFoundExceptionMessage($id, 'Customer'))
 
             ->assert('Get test user')
                 ->if($this->newTestedInstance('cust_PpdYwq0ZPdoags46d5cB9HpQ'))
@@ -93,91 +93,97 @@ class Customer extends TestCase
                 ->given($this->newTestedInstance)
                 ->and($this->testedInstance->setName($name))
                 ->and($this->testedInstance->setEmail($email))
-                ->and($this->testedInstance->setMobile($mobile));
-            if($this->config->version == 1){
-                $this
-                    ->then
-                    ->exception(function () {
-                                $this->testedInstance->send();
-                        })
-                        ->isInstanceOf(Stancer\Exceptions\ConflictException::class)
-                            ->message
-                                ->isIdenticalTo('Customer already exists, you may want to update it instead creating a new one (' . $id . ')');
-            } else {
-                $this
-                    ->then
-                        ->object($this->testedInstance->send())
-                            ->isInstanceOf(Stancer\Customer::class)
-                        ->string($this->testedInstance->id)
-                            ->isNotEmpty
-                            ->isNotEqualTo($id)
-                        ->string($this->testedInstance->name)
-                            ->isEqualTo($name);
-            }
+                ->and($this->testedInstance->setMobile($mobile))
+        ;
+        if ($this->config->version == 1) {
             $this
-            ->assert('External ID are used in conflicts resolver')
-                ->given($externalId = $this->getUuid())
-
-                ->if($this->newTestedInstance)
-                ->and($this->testedInstance->setName($name))
-                ->and($this->testedInstance->setEmail($email))
-                ->and($this->testedInstance->setMobile($mobile))
-                ->and($this->testedInstance->setExternalId($externalId))
                 ->then
-                    ->object($this->testedInstance->send())
-                        ->isTestedInstance
-
-                    ->string($withUuid = $this->testedInstance->getId())
-                        ->startWith('cust_')
-                        ->isNotEqualTo($id)
-
-                ->if($this->newTestedInstance)
-                ->and($this->testedInstance->setName($name))
-                ->and($this->testedInstance->setEmail($email))
-                ->and($this->testedInstance->setMobile($mobile))
-                ->and($this->testedInstance->setExternalId($externalId))
-                ->then;
-                if($this->config->version == 1){
-                    $this->exception(function () {
-                        $this->testedInstance->send();
-                    })
-                        ->isInstanceOf(Stancer\Exceptions\ConflictException::class)
+                ->exception(function () {
+                    $this->testedInstance->send();
+                })
+                    ->isInstanceOf(Stancer\Exceptions\ConflictException::class)
                         ->message
-                            ->isIdenticalTo('Customer already exists, you may want to update it instead creating a new one (' . $withUuid . ')');
-                } else{
-                    $this->object($this->testedInstance->send())
-                        ->isTestedInstance
-
-                    ->string($withUuid = $this->testedInstance->getId())
-                        ->startWith('cust_')
-                        ->isEqualTo($withUuid);
-                }
-            $this->assert('Only email is good')
-                ->given($this->newTestedInstance)
-                ->and($key = uniqid())
-                ->and($this->testedInstance->setEmail('john.doe+' . $key . '@example.com'))
+                            ->isIdenticalTo('Customer already exists, you may want to update it instead creating a new one (' . $id . ')')
+            ;
+        } else {
+            $this
                 ->then
-                    ->variable($this->testedInstance->getId())
-                        ->isNull
-
                     ->object($this->testedInstance->send())
-                        ->isTestedInstance
-
-                    ->string($this->testedInstance->getId())
+                        ->isInstanceOf(Stancer\Customer::class)
+                    ->string($this->testedInstance->id)
                         ->isNotEmpty
+                        ->isNotEqualTo($id)
+                    ->string($this->testedInstance->name)
+                        ->isEqualTo($name)
+            ;
+        }
+        $this
+        ->assert('External ID are used in conflicts resolver')
+            ->given($externalId = $this->getUuid())
 
-            ->assert('Only mobile is good')
-                ->given($this->newTestedInstance)
-                ->and($this->testedInstance->setMobile($this->getRandomNumber()))
-                ->then
-                    ->variable($this->testedInstance->getId())
-                        ->isNull
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setName($name))
+            ->and($this->testedInstance->setEmail($email))
+            ->and($this->testedInstance->setMobile($mobile))
+            ->and($this->testedInstance->setExternalId($externalId))
+            ->then
+                ->object($this->testedInstance->send())
+                    ->isTestedInstance
 
-                    ->object($this->testedInstance->send())
-                        ->isTestedInstance
+                ->string($withUuid = $this->testedInstance->getId())
+                    ->startWith('cust_')
+                    ->isNotEqualTo($id)
 
-                    ->string($this->testedInstance->getId())
-                        ->isNotEmpty
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setName($name))
+            ->and($this->testedInstance->setEmail($email))
+            ->and($this->testedInstance->setMobile($mobile))
+            ->and($this->testedInstance->setExternalId($externalId))
+            ->then
+        ;
+        if ($this->config->version == 1) {
+            $this->exception(function () {
+                $this->testedInstance->send();
+            })
+                ->isInstanceOf(Stancer\Exceptions\ConflictException::class)
+                ->message
+                    ->isIdenticalTo('Customer already exists, you may want to update it instead creating a new one (' . $withUuid . ')')
+            ;
+        } else {
+            $this->object($this->testedInstance->send())
+                ->isTestedInstance
+
+            ->string($withUuid = $this->testedInstance->getId())
+                ->startWith('cust_')
+                ->isEqualTo($withUuid)
+            ;
+        }
+        $this->assert('Only email is good')
+            ->given($this->newTestedInstance)
+            ->and($key = uniqid())
+            ->and($this->testedInstance->setEmail('john.doe+' . $key . '@example.com'))
+            ->then
+                ->variable($this->testedInstance->getId())
+                    ->isNull
+
+                ->object($this->testedInstance->send())
+                    ->isTestedInstance
+
+                ->string($this->testedInstance->getId())
+                    ->isNotEmpty
+
+        ->assert('Only mobile is good')
+            ->given($this->newTestedInstance)
+            ->and($this->testedInstance->setMobile($this->getRandomNumber()))
+            ->then
+                ->variable($this->testedInstance->getId())
+                    ->isNull
+
+                ->object($this->testedInstance->send())
+                    ->isTestedInstance
+
+                ->string($this->testedInstance->getId())
+                    ->isNotEmpty
         ;
     }
 

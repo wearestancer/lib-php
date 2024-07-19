@@ -38,6 +38,8 @@ use Stancer;
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
+ * @property-read ?mixed $jsonSerialize Alias for `Stancer\Auth::jsonSerialize()`.
+ * @property-read ?mixed $json_serialize Alias for `Stancer\Auth::jsonSerialize()`.
  * @property-read ?string $redirectUrl The redirection URL to start an authentification session.
  * @property-read ?string $redirect_url The redirection URL to start an authentification session.
  * @property-read \Stancer\Auth\Status $status The authentification status.
@@ -95,6 +97,7 @@ class Auth extends Stancer\Core\AbstractObject
         if (array_key_exists('return_url', $struct) || array_key_exists('device', $struct)) {
             return $struct;
         }
+
         return true;
     }
 
@@ -120,11 +123,11 @@ class Auth extends Stancer\Core\AbstractObject
      * Depending of api version auth is or isn't exportable.
      *
      * @param boolean $exportable Boolean that set the Exportation value.
-     * @return self
      */
     public function setExportablestatus(bool $exportable = false): self
     {
         $this->dataModel['status']['exportable'] = $exportable;
+
         return $this;
     }
 }

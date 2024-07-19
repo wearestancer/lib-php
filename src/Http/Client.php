@@ -126,6 +126,9 @@ class Client implements Stancer\Interfaces\HttpClientInterface
      * @param string $uri URI string.
      * @param mixed[] $options Request options to apply.
      *
+     * @phpstan-param array{body?: string, headers?: array<string, string|string[]>, timeout?: int} $options
+     *   Request options to apply.
+     *
      * @throws Stancer\Exceptions\HttpException On cURL error.
      * @throws Stancer\Exceptions\TooManyRedirectsException On 310 HTTP error.
      * @throws Stancer\Exceptions\RedirectionException On over 300 level HTTP error.
@@ -135,9 +138,6 @@ class Client implements Stancer\Interfaces\HttpClientInterface
      * @throws Stancer\Exceptions\ConflictException On 409 HTTP error.
      * @throws Stancer\Exceptions\ClientException On over 400 level HTTP error.
      * @throws Stancer\Exceptions\ServerException On over 500 level HTTP error.
-     *
-     * @phpstan-param array{body?: string, headers?: array<string, string|string[]>, timeout?: int} $options
-     *   Request options to apply.
      */
     public function request(string $method, string $uri, array $options = []): Psr\Http\Message\ResponseInterface
     {
@@ -244,9 +244,9 @@ class Client implements Stancer\Interfaces\HttpClientInterface
                     && array_key_exists('error', $json)
                 ) {
                     if (
-                        is_array($json['error']) &&
-                        array_key_exists('message', $json['error']) &&
-                        $json['error']['message']
+                        is_array($json['error'])
+                        && array_key_exists('message', $json['error'])
+                        && $json['error']['message']
                     ) {
                         $params['message'] = $json['error']['message'];
 

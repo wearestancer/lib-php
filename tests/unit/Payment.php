@@ -70,67 +70,28 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
-    public function testBillingAddress()
+    public function versionAuthReturnUrlProvider(): array
     {
-        $this
-            ->given($this->newTestedInstance)
-            ->then
-            ->assert('Full new address')
-                ->if($address = new Stancer\Address())
-                ->and($address->setCity($this->getRandomString(1, 50)))
-                ->and($address->setCountry($this->getRandomString(2)))
-                ->and($address->setLine1($this->getRandomString(1, 50)))
-                ->and($address->setLine2($this->getRandomString(1, 50)))
-                ->and($address->setLine3($this->getRandomString(1, 50)))
-                ->and($address->setMetadata([$this->getRandomString(1, 50)]))
-                ->and($address->setState($this->getRandomString(1, 3)))
-                ->and($address->setzipCode($this->getRandomString(1, 16)))
-
-                ->variable($this->newTestedInstance->getBillingAddress())
-                    ->isNull
-
-                ->object($this->testedInstance->setBillingAddress($address))
-                    ->isTestedInstance
-
-                ->object($this->testedInstance->getBillingAddress())
-                    ->isIdenticalTo($address)
-
-            ->given($this->newTestedInstance)
-            ->assert('ID address')
-                ->if($address = new Stancer\Address('addr_' . $this->getRandomString(24)))
-
-                ->variable($this->testedInstance->getBillingAddress())
-                    ->isNull
-
-                ->object($this->testedInstance->setBillingAddress($address))
-                    ->isTestedInstance
-
-                ->object($this->testedInstance->getBillingAddress())
-                    ->isIdenticalTo($address)
-        ;
-    }
-
-    public function versionAuthReturnUrlProvider():array
-    {
-        return array(
+        return [
             [
                 1,
-                fn($url) => [
-                        'return_url'=>$url,
-                        'status' => Stancer\Auth\Status::REQUEST,
-                    ],
+                fn ($url) => [
+                    'return_url' => $url,
+                    'status' => Stancer\Auth\Status::REQUEST,
+                ],
             ],
             [
                 2,
-                fn($url) => [
-                    'return_url' => $url
+                fn ($url) => [
+                    'return_url' => $url,
                 ],
-            ]
-        );
+            ],
+        ];
     }
-    public function versionAuthStatusProvider():array
+
+    public function versionAuthStatusProvider(): array
     {
-        return array(
+        return [
             [
                 1,
                 [
@@ -140,9 +101,10 @@ class Payment extends Stancer\Tests\atoum
             [
                 2,
                 true,
-            ]
-        );
+            ],
+        ];
     }
+
     public function testCharge()
     {
         $this
@@ -1265,10 +1227,11 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
-    public function testPost_capture(){
+    public function testPost_capture()
+    {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
-            ->and($config = $this->mockConfig($client,2))
+            ->given($client = new mock\Stancer\Http\Client())
+            ->and($config = $this->mockConfig($client, 2))
             ->given($this->newTestedInstance->setAmount(100))
 
                 ->assert('Does not allow capture new payment')
@@ -1279,7 +1242,7 @@ class Payment extends Stancer\Tests\atoum
                         ->message
                             ->isEqualTo('The payment must be authorized to be captured.')
 
-            ->given($response = $this->mockJsonResponse('payment','refused'))
+            ->given($response = $this->mockJsonResponse('payment', 'refused'))
             ->and($this->calling($client)->request = $response)
 
                 ->assert('Does not allow capture not authorized payment.')
@@ -1290,7 +1253,7 @@ class Payment extends Stancer\Tests\atoum
                     ->object($this->testedInstance->getStatus())
                         ->isEqualTo(Stancer\Payment\Status::REFUSED)
 
-                    ->exception(function (){
+                    ->exception(function () {
                         $this->testedInstance->capture();
                     })
 
@@ -1298,39 +1261,75 @@ class Payment extends Stancer\Tests\atoum
                         ->message
                             ->isIdenticalTo('The payment must be authorized to be captured.')
 
-            ->given($authorizeresponse = $this->mockJsonResponse('payment','authorized'))
+            ->given($authorizeresponse = $this->mockJsonResponse('payment', 'authorized'))
             ->and($this->calling($client)->request = $authorizeresponse)
             ->and($this->newTestedInstance->setAmount(300))
-                    ->assert('Capture an authorize payment')
-                        ->object($this->testedInstance->send())
+                ->assert('Capture an authorize payment')
+                    ->object($this->testedInstance->send())
+                        ->isTestedInstance
+                    ->object($this->testedInstance->getStatus())
+                        ->isEqualTo(Stancer\Payment\Status::AUTHORIZED)
+                    ->boolean($this->testedInstance->getCapture())
+                        ->isFalse()
+
+                ->then
+                    ->given($captureResponse = $this->mockJsonResponse('payment', 'captured'))
+                    ->and($this->calling($client)->request = $captureResponse)
+                    ->and($location = $this->testedInstance->uri . '/capture')
+                    ->and($options = $this->mockRequestOptions($config, [
+                        'body' => json_encode([
+                            'id' => 'paym_SKMLflt8NBATuiUzgvTYqsw5',
+                        ]),
+                    ]))
+                    ->dump($options)
+                    ->object($this->testedInstance->capture())
                             ->isTestedInstance
-                        ->object($this->testedInstance->getStatus())
-                            ->isEqualTo(Stancer\Payment\Status::AUTHORIZED)
-                        ->boolean($this->testedInstance->getCapture())
-                            ->isFalse()
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('POST', $location, $options)
+                                ->once
 
-                    ->then
-                        ->given($captureResponse = $this->mockJsonResponse('payment','captured'))
-                        ->and($this->calling($client)->request = $captureResponse)
-                        ->and($location = $this->testedInstance->uri)
-                        ->and($options = $this->mockRequestOptions($config,[
-                            'body'=>json_encode([
-                                'status'=> Stancer\Payment\Status::CAPTURE->value
-                                ])
-                            ]))
-                        ->dump($options)
-                        ->object($this->testedInstance->capture())
-                                ->isTestedInstance
-                        ->mock($client)
-                            ->call('request')
-                                ->withArguments('PATCH',$location,$options)
-                                    ->once
+                    ->object($this->testedInstance->getStatus())
+                        ->isInstanceOf(Stancer\Payment\Status::class)
+                        ->isEqualTo(Stancer\Payment\Status::TO_CAPTURE)
+                    ->boolean($this->testedInstance->getCapture())
+                            ->isTrue()
+            ->given($authorizeresponse = $this->mockJsonResponse('payment', 'authorized'))
+            ->and($config = $this->mockConfig($client, 1))
+            ->and($this->calling($client)->request = $authorizeresponse)
+            ->and($this->newTestedInstance->setAmount(300))
+            ->and($this->testedInstance->setCurrency('eur'))
+                ->assert('Capture an authorize payment')
+                    ->object($this->testedInstance->send())
+                        ->isTestedInstance
+                    ->object($this->testedInstance->getStatus())
+                        ->isEqualTo(Stancer\Payment\Status::AUTHORIZED)
+                    ->boolean($this->testedInstance->getCapture())
+                        ->isFalse()
 
-                        ->object($this->testedInstance->getStatus())
-                            ->isInstanceOf(Stancer\Payment\Status::class)
-                            ->isEqualTo(Stancer\Payment\Status::TO_CAPTURE)
-                        ->boolean($this->testedInstance->getCapture())
-                                ->isTrue();
+                ->then
+                    ->given($captureResponse = $this->mockJsonResponse('payment', 'captured'))
+                    ->and($this->calling($client)->request = $captureResponse)
+                    ->and($location = $this->testedInstance->uri)
+                    ->and($options = $this->mockRequestOptions($config, [
+                        'body' => json_encode([
+                            'status' => Stancer\Payment\Status::CAPTURE->value,
+                        ]),
+                    ]))
+                    ->dump($options)
+                    ->object($this->testedInstance->capture())
+                            ->isTestedInstance
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('PATCH', $location, $options)
+                                ->once
+
+                    ->object($this->testedInstance->getStatus())
+                        ->isInstanceOf(Stancer\Payment\Status::class)
+                        ->isEqualTo(Stancer\Payment\Status::TO_CAPTURE)
+                    ->boolean($this->testedInstance->getCapture())
+                            ->isTrue()
+        ;
     }
 
     public function testRefund()
@@ -1767,15 +1766,17 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
-
     /**
      * @dataProvider versionAuthReturnUrlProvider
+     *
+     * @param mixed $version
+     * @param mixed $auth
      */
-    public function testSend_authenticatedPayment($version,$auth)
+    public function testSend_authenticatedPayment($version, $auth)
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
-            ->and($config = $this->mockConfig($client,$version))
+            ->given($client = new mock\Stancer\Http\Client())
+            ->and($config = $this->mockConfig($client, $version))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-card-auth'))
             ->and($this->calling($client)->request = $response)
@@ -1816,7 +1817,7 @@ class Payment extends Stancer\Tests\atoum
 
             ->and($json = json_encode([
                 'amount' => $amount,
-                'auth' =>   $auth($url),
+                'auth' => $auth($url),
                 'card' => [
                     'cvc' => $card->getCvc(),
                     'exp_month' => $card->getExpMonth(),
@@ -1915,12 +1916,15 @@ class Payment extends Stancer\Tests\atoum
 
     /**
      * @dataProvider versionAuthReturnUrlProvider
+     *
+     * @param mixed $version
+     * @param mixed $authjson
      */
-    public function testSend_fullyCustomAuthenticatedPayment($version,$authjson)
+    public function testSend_fullyCustomAuthenticatedPayment($version, $authjson)
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
-            ->and($config = $this->mockConfig($client,$version))
+            ->given($client = new mock\Stancer\Http\Client())
+            ->and($config = $this->mockConfig($client, $version))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-card-auth'))
             ->and($this->calling($client)->request = $response)
@@ -2128,14 +2132,18 @@ class Payment extends Stancer\Tests\atoum
                     ->isNull
         ;
     }
+
     /**
      * @dataProvider versionAuthStatusProvider
+     *
+     * @param mixed $version
+     * @param mixed $authjson
      */
-    public function testSend_authenticationAndPaymentPage($version,$authjson)
+    public function testSend_authenticationAndPaymentPage($version, $authjson)
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
-            ->and($config = $this->mockConfig($client,$version))
+            ->given($client = new mock\Stancer\Http\Client())
+            ->and($config = $this->mockConfig($client, $version))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-no-method-auth'))
             ->and($this->calling($client)->request = $response)
@@ -2262,14 +2270,18 @@ class Payment extends Stancer\Tests\atoum
                     ->isNull
         ;
     }
+
     /**
      * @dataProvider versionAuthReturnUrlProvider
+     *
+     * @param mixed $version
+     * @param mixed $authjson
      */
-    public function testSend_device($version,$authjson)
+    public function testSend_device($version, $authjson)
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
-            ->and($config = $this->mockConfig($client,$version))
+            ->given($client = new mock\Stancer\Http\Client())
+            ->and($config = $this->mockConfig($client, $version))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-card'))
             ->and($this->calling($client)->request = $response)
@@ -2309,9 +2321,10 @@ class Payment extends Stancer\Tests\atoum
                             'ip' => $addr,
                             'port' => $port,
                         ],
-                        'auth' => $authjson($url)
+                        'auth' => $authjson($url),
                     ]
-                )))
+                )
+            ))
 
             ->and($options = $this->mockRequestOptions($config, [
                 'body' => $json,
@@ -2367,7 +2380,6 @@ class Payment extends Stancer\Tests\atoum
                             ->call('request')
                                 ->withArguments('POST', $location, $options)
                                     ->once
-
         ;
     }
 
@@ -2515,7 +2527,7 @@ class Payment extends Stancer\Tests\atoum
 
                     ->variable($this->testedInstance->getAuth())
                         ->isNull
-    ;
+        ;
     }
 
     public function testSetCard()

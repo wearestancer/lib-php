@@ -1,16 +1,12 @@
 <?php
 
-namespace Stancer\tests\unit\Payment;
+namespace Stancer\tests\unit;
 
-use DateTime;
-use DateInterval;
-use DateTimeImmutable;
 use mock;
 use Stancer;
-use Stancer\Payment\Intent as testedClass;
-use stdClass;
+use Stancer\PaymentIntent as testedClass;
 
-class Intent extends Stancer\Tests\atoum
+class PaymentIntent extends Stancer\Tests\atoum
 {
     use Stancer\Tests\Provider\Currencies;
 
@@ -18,17 +14,17 @@ class Intent extends Stancer\Tests\atoum
      * Run before test, set api version as 2 by default for intents.
      *
      * @param string $method
-     * @return void
      */
     public function beforeTestMethod($method)
     {
         $version = 2;
-        if(getenv('API_VERSION')){
+        if (getenv('API_VERSION')) {
             $version = getenv('API_VERSION');
         }
         if ($method !== 'testGetGlobal_SetGlobal') {
             Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))])
-                ->setVersion($version);
+                ->setVersion($version)
+            ;
         }
     }
 
@@ -78,7 +74,6 @@ class Intent extends Stancer\Tests\atoum
                     ->variable($this->testedInstance->getCapture())
                         ->isNull
 
-
                 ->assert('Update value')
                     ->object($this->testedInstance->setCapture(true))
                         ->isTestedInstance
@@ -94,8 +89,8 @@ class Intent extends Stancer\Tests\atoum
 
                 ->assert('Aliases')
                     ->if($this->newTestedInstance)
-                    ->and($this->testedInstance->amount=100)
-                    ->and($this->testedInstance->currency='eur')
+                    ->and($this->testedInstance->amount = 100)
+                    ->and($this->testedInstance->currency = 'eur')
 
                         ->variable($this->testedInstance->get_capture())->isNull
                         ->object($this->testedInstance->set_capture(true))->isTestedInstance
@@ -108,7 +103,7 @@ class Intent extends Stancer\Tests\atoum
     public function testCard()
     {
         $this
-            ->if($card = new Stancer\Card('card_'.$this->getRandomString(24)))
+            ->if($card = new Stancer\Card('card_' . $this->getRandomString(24)))
             ->then
                 ->assert('Default value')
                     ->variable($this->newTestedInstance->getCard())
@@ -145,6 +140,8 @@ class Intent extends Stancer\Tests\atoum
 
     /**
      * @dataProvider cardCurrencyDataProvider
+     *
+     * @param mixed $currency
      */
     public function testCurrency_card($currency)
     {
@@ -189,9 +186,10 @@ class Intent extends Stancer\Tests\atoum
         ;
     }
 
-
     /**
      * @dataProvider sepaCurrencyDataProvider
+     *
+     * @param mixed $currency
      */
     public function testCurrency_sepa($currency)
     {
@@ -247,8 +245,8 @@ class Intent extends Stancer\Tests\atoum
     public function testCreationDate()
     {
         $this
-            ->given($pi =$this->newTestedInstance)
-            ->if($created = new DateTimeImmutable())
+            ->given($pi = $this->newTestedInstance)
+            ->if($created = new \DateTimeImmutable())
             ->then
                 ->assert('Default value and Aliases')
 
@@ -272,7 +270,7 @@ class Intent extends Stancer\Tests\atoum
                 ->assert('Date Creation is not settable')
 
                     ->exception(function () {
-                        $this->newTestedInstance()->created = new DateTimeImmutable();
+                        $this->newTestedInstance()->created = new \DateTimeImmutable();
                     })
                         ->isInstanceOf(Stancer\Exceptions\BadPropertyAccessException::class)
                         ->message
@@ -283,11 +281,11 @@ class Intent extends Stancer\Tests\atoum
             ->and($config->setDebug(false))
             ->and($config->setVersion(2))
 
-            ->if($client = new mock\Stancer\Http\Client)
-            ->and($response = $this->mockJsonResponse('intents','intent'))
+            ->if($client = new mock\Stancer\Http\Client())
+            ->and($response = $this->mockJsonResponse('intents', 'intent'))
             ->and($this->calling($client)->request = $response)
             ->and($config->setHttpClient($client))
-            ->and($created = new DateTimeImmutable('@1714742425'))
+            ->and($created = new \DateTimeImmutable('@1714742425'))
             // We set an ID to our instance, to make sure we populate Created_At on call
             ->and($pi = $this->NewTestedInstance('pi_yWYfCSzsUUhr9KwMv7vuLZHX'))
 
@@ -318,13 +316,14 @@ class Intent extends Stancer\Tests\atoum
                                 ->isEqualTo($created)
 
                             ->dateTime($pi->created_at)->isImmutable
-                                ->isEqualTo($created);
+                                ->isEqualTo($created)
+        ;
     }
 
     public function testCustomer()
     {
         $this
-            ->if($customer = new Stancer\Customer('cust_'.$this->getRandomString(24)))
+            ->if($customer = new Stancer\Customer('cust_' . $this->getRandomString(24)))
             ->then
                 ->assert('Default value')
                     ->variable($this->newTestedInstance->getCustomer())
@@ -416,10 +415,10 @@ class Intent extends Stancer\Tests\atoum
     public function testList()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($response = $this->mockJsonResponse('intents', 'list'))
             ->and($this->calling($client)->request = $response)
-            ->and($config = $this->mockConfig($client,2))
+            ->and($config = $this->mockConfig($client, 2))
             ->and($options = $this->mockRequestOptions($config))
 
             ->assert('Invalid limit')
@@ -483,8 +482,8 @@ class Intent extends Stancer\Tests\atoum
                         ->isIdenticalTo('Created must be in the past.')
 
                 ->exception(function () {
-                    $date = new DateTime();
-                    $date->add(new DateInterval('P1D'));
+                    $date = new \DateTime();
+                    $date->add(new \DateInterval('P1D'));
 
                     testedClass::list(['created' => $date]);
                 })
@@ -580,30 +579,33 @@ class Intent extends Stancer\Tests\atoum
                 ])
                 ->and($location2 = $location . '?' . http_build_query($terms2))
                 ->then
-                    ->generator($gen = testedClass::list($terms1))
+                    ->generator(testedClass::list($terms1))
                         ->yields
                             ->object
                                 ->isInstanceOf(testedClass::class)
                                 ->toString
                                     ->isIdenticalTo('"pi_3G2eWFsPOQSdWVXb7HnDP7Zt"')
-                    ->mock($client)
+                        /*
+                         * This test is build a bit weirdly:
+                         * the yields method of atoum call next(), this result in weirdly called requests.
+                         * But we still test properly that we call the first page then the second page of PI.
+                         */
+                        ->mock($client)
                         ->call('request')
                             ->withArguments('GET', $location1, $options)
                                 ->once
                             ->withArguments('GET', $location2, $options)
                                 ->never
-
-                     ->generator($gen = testedClass::list($terms2))
-                        ->yields
-                            ->object
-                                ->isInstanceOf(testedClass::class)
-                                ->toString
-                                    ->isIdenticalTo('"pi_3G2eWFsPOQSdWVXb7HnDP7Zt"')
                         ->yields
                             ->object
                                 ->isInstanceOf(testedClass::class)
                                 ->toString
                                     ->isIdenticalTo('"pi_hX59mjTCvC0TuGbkTEAFOF7l"')
+                        ->yields
+                            ->object
+                                ->isInstanceOf(testedClass::class)
+                                ->toString
+                                    ->isIdenticalTo('"pi_3G2eWFsPOQSdWVXb7HnDP7Zt"')
 
                     ->mock($client)
                         ->call('request')
@@ -659,16 +661,15 @@ class Intent extends Stancer\Tests\atoum
                             ->withArguments('GET', $location, $options)
                                 ->once
         ;
-
-
     }
+
     public function testListNoMore()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($response = $this->mockJsonResponse('intents', 'list-two-pi'))
             ->and($this->calling($client)->request = $response)
-            ->and($config = $this->mockConfig($client,2))
+            ->and($config = $this->mockConfig($client, 2))
             ->and($options = $this->mockRequestOptions($config))
 
             ->assert('make request with only two pi')
@@ -715,10 +716,10 @@ class Intent extends Stancer\Tests\atoum
     public function testListPayments()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($response = $this->mockJsonResponse('payment', 'list'))
             ->and($this->calling($client)->request = $response)
-            ->and($config = $this->mockConfig($client,2))
+            ->and($config = $this->mockConfig($client, 2))
             ->and($options = $this->mockRequestOptions($config))
 
             ->assert('Invalid limit')
@@ -782,8 +783,8 @@ class Intent extends Stancer\Tests\atoum
                         ->isIdenticalTo('Created must be in the past.')
 
                 ->exception(function () {
-                    $date = new DateTime();
-                    $date->add(new DateInterval('P1D'));
+                    $date = new \DateTime();
+                    $date->add(new \DateInterval('P1D'));
 
                     testedClass::list(['created' => $date]);
                 })
@@ -905,11 +906,11 @@ class Intent extends Stancer\Tests\atoum
                             ->withArguments('GET', $location, $options)
                                 ->once
 
-            ->assert('Make request','alias')
-                ->given($client = new mock\Stancer\Http\Client)
+            ->assert('Make request', 'alias')
+                ->given($client = new mock\Stancer\Http\Client())
                 ->and($response = $this->mockJsonResponse('payment', 'list'))
                 ->and($this->calling($client)->request = $response)
-                ->and($config = $this->mockConfig($client,2))
+                ->and($config = $this->mockConfig($client, 2))
                 ->and($options = $this->mockRequestOptions($config))
 
                 ->if($limit = rand(1, 100))
@@ -963,7 +964,6 @@ class Intent extends Stancer\Tests\atoum
                                 ->once // Called the first time
                             ->withArguments('GET', $location2, $options)
                                 ->once
-
 
             ->assert('Empty response, alias')
                 ->given($body = [
@@ -1094,7 +1094,7 @@ class Intent extends Stancer\Tests\atoum
 
             ->assert('Does not allow other objects')
                 ->exception(function () {
-                    $this->newTestedInstance->setMetadata(new stdClass);
+                    $this->newTestedInstance->setMetadata(new \stdClass());
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidMetadataException::class)
                     ->message
@@ -1120,13 +1120,15 @@ class Intent extends Stancer\Tests\atoum
                 ->object($this->testedInstance->metadata)->isIdenticalTo($asStringable)
 
                 ->exception(function () {
-                    $this->newTestedInstance->metadata = new stdClass;
+                    $this->newTestedInstance->metadata = new \stdClass();
                 })->isInstanceOf(Stancer\Exceptions\InvalidMetadataException::class)
         ;
     }
 
     /**
      * @dataProvider cardCurrencyDataProvider
+     *
+     * @param mixed $currency
      */
     public function testMethodsAllowed($currency)
     {
@@ -1305,13 +1307,13 @@ class Intent extends Stancer\Tests\atoum
                     })->isInstanceOf(Stancer\Exceptions\InvalidOrderIdException::class)
                     ->variable($this->newTestedInstance->order_id = $orderId)
                     ->string($this->testedInstance->order_id)->isIdenticalTo($orderId)
-            ;
+        ;
     }
 
     public function testPayment()
     {
         $this
-            ->if($payment = new Stancer\Payment)
+            ->if($payment = new Stancer\Payment())
             ->then
                 ->assert('Null as default')
                     ->variable($this->newTestedInstance->getPayment())
@@ -1345,70 +1347,69 @@ class Intent extends Stancer\Tests\atoum
     public function testPost_capture()
     {
         $this
-        ->given($this->newTestedInstance->setAmount("300"))
-        ->and($this->testedInstance->setCurrency("eur"))
+        ->given($this->newTestedInstance->setAmount('300'))
+        ->and($this->testedInstance->setCurrency('eur'))
 
         ->assert('Does not allow Capture new payment')
-            ->exception(function (){
+            ->exception(function () {
                 $this->testedInstance->capture();
             })
                 ->isInstanceOf(Stancer\Exceptions\BadRequestException::class)
                 ->message
                     ->isIdenticalTo('The payment intent must be authorized to be captured.')
 
-
         ->assert('Does not allow Capture non authorized payment')
-            ->given($client = new mock\Stancer\Http\Client)
-            ->and($config = $this->mockConfig($client,2))
-            ->if($response = $this->mockJsonResponse('intents','intent'))
+            ->given($client = new mock\Stancer\Http\Client())
+            ->and($config = $this->mockConfig($client, 2))
+            ->if($response = $this->mockJsonResponse('intents', 'intent'))
             ->and($this->calling($client)->request = $response)
 
             ->object($this->testedInstance->send())
                 ->isTestedInstance
 
             ->object($this->testedInstance->getStatus())
-                ->isEqualTo(Stancer\Payment\Intent\Status::REQUIRE_AUTHENTICATION)
+                ->isEqualTo(Stancer\PaymentIntent\Status::REQUIRE_AUTHENTICATION)
 
-            ->exception(function (){
+            ->exception(function () {
                 $this->testedInstance->capture();
             })
             ->isInstanceOf(Stancer\Exceptions\BadRequestException::class)
             ->message
                 ->isIdenticalTo('The payment intent must be authorized to be captured.')
 
-
         ->assert('Capture an authorize payment')
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($this->testedInstance->setDescription('adding a field to send non-empty object'))
-            ->and($config = $this->mockConfig($client,2))
-            ->if($response = $this->mockJsonResponse('intents','authorized-pi'))
+            ->and($config = $this->mockConfig($client, 2))
+            ->if($response = $this->mockJsonResponse('intents', 'authorized-pi'))
             ->and($this->calling($client)->request = $response)
 
                 ->object($this->testedInstance->send())
                     ->isTestedInstance
 
                 ->object($this->testedInstance->getStatus())
-                    ->isEqualTo(Stancer\Payment\Intent\Status::AUTHORIZED)
+                    ->isEqualTo(Stancer\PaymentIntent\Status::AUTHORIZED)
 
             ->then
-                ->if($newresponse = $this->mockJsonResponse('intents','capture'))
+                ->if($newresponse = $this->mockJsonResponse('intents', 'capture'))
                 ->and($this->calling($client)->request = $newresponse)
-                ->and($options = $this->mockRequestOptions($config,['body'=>json_encode(['id'=>'pi_UBW7wgcQiRv0YsfnaKjc4XvM'])]))
-                ->and($location = $this->testedInstance->uri .'/capture')
+                ->and($options = $this->mockRequestOptions($config, ['body' => json_encode(['id' => 'pi_UBW7wgcQiRv0YsfnaKjc4XvM'])]))
+                ->and($location = $this->testedInstance->uri . '/capture')
 
                     ->object($this->testedInstance->capture())
                         ->isTestedInstance
 
                     ->mock($client)
                         ->call('request')
-                            ->withArguments('POST',$location,$options)
+                            ->withArguments('POST', $location, $options)
                                 ->once
 
                     ->object($this->testedInstance->getStatus())
-                        ->isInstanceOf(Stancer\Payment\Intent\Status::class)
-                        ->isEqualTo(Stancer\Payment\Intent\Status::CAPTURED)
+                        ->isInstanceOf(Stancer\PaymentIntent\Status::class)
+                        ->isEqualTo(Stancer\PaymentIntent\Status::CAPTURED)
         ;
     }
+
     public function testReturnUrl()
     {
         $this
@@ -1448,36 +1449,35 @@ class Intent extends Stancer\Tests\atoum
                     ->variable($this->newTestedInstance->return_url)->isNull
                     ->variable($this->testedInstance->return_url = $https)
                     ->string($this->testedInstance->return_url)->isIdenticalTo($https)
-
         ;
     }
 
     public function testSend_patchCard()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
-            ->and($config = $this->mockConfig($client,2))
-            ->and($response = $this->mockJsonResponse('intents','create-no-method'))
+            ->given($client = new mock\Stancer\Http\Client())
+            ->and($config = $this->mockConfig($client, 2))
+            ->and($response = $this->mockJsonResponse('intents', 'create-no-method'))
 
-            ->given($this->newTestedInstance->setCustomer("cust_dFM2igoh05T3CYpJ2TUJtZGh"))
-            ->and($this->testedInstance->setAmount("300"))
-            ->and($this->testedInstance->setCurrency("eur"))
+            ->given($this->newTestedInstance->setCustomer('cust_dFM2igoh05T3CYpJ2TUJtZGh'))
+            ->and($this->testedInstance->setAmount('300'))
+            ->and($this->testedInstance->setCurrency('eur'))
             ->and($this->testedInstance->setThreeds(Stancer\ThreeDomainsSecure\Status::REQUIRED))
 
             ->then
                 ->assert('send Payment Intent without payment method.')
                     ->and($json = [
-                        'amount'=> 300,
-                        'currency'=> "eur",
-                        'customer'=> "cust_dFM2igoh05T3CYpJ2TUJtZGh",
-                        'threeds'=> "required",
-                        ])
+                        'amount' => 300,
+                        'currency' => 'eur',
+                        'customer' => 'cust_dFM2igoh05T3CYpJ2TUJtZGh',
+                        'threeds' => 'required',
+                    ])
 
                     ->and($options = $this->mockRequestOptions(
                         $config,
-                        ['body' => json_encode($json)]))
+                        ['body' => json_encode($json)]
+                    ))
                     ->and($location = $this->testedInstance->getUri())
-
 
                         ->then
                         ->if($this->calling($client)->request = $response)
@@ -1490,11 +1490,11 @@ class Intent extends Stancer\Tests\atoum
                                         ->once
             ->then
                 ->assert('adding payment method')
-                    ->if($response = $this->mockJsonResponse('intents','intent'))
+                    ->if($response = $this->mockJsonResponse('intents', 'intent'))
 
-                    ->given($json = ['card' => "card_XZ8h7vcnEIecJkDdlnI5gyD5"])
-                    ->and($this->testedInstance->setCard("card_XZ8h7vcnEIecJkDdlnI5gyD5"))
-                    ->and($newOption = $this->mockRequestOptions($config,['body' => json_encode($json)]))
+                    ->given($json = ['card' => 'card_XZ8h7vcnEIecJkDdlnI5gyD5'])
+                    ->and($this->testedInstance->setCard('card_XZ8h7vcnEIecJkDdlnI5gyD5'))
+                    ->and($newOption = $this->mockRequestOptions($config, ['body' => json_encode($json)]))
                     ->and($newlocation = $this->testedInstance->uri)
                     ->then
                         ->object($this->testedInstance->send())
@@ -1502,18 +1502,20 @@ class Intent extends Stancer\Tests\atoum
 
                         ->mock($client)
                             ->call('request')
-                                ->withArguments('PATCH',$newlocation,$newOption)
-                                    ->once;
+                                ->withArguments('PATCH', $newlocation, $newOption)
+                                    ->once
+        ;
     }
-    public function testSend_withCard(){
 
+    public function testSend_withCard()
+    {
         $this
-        ->given($client = new mock\Stancer\Http\Client)
-        ->and($config = $this->mockConfig($client,2))
+        ->given($client = new mock\Stancer\Http\Client())
+        ->and($config = $this->mockConfig($client, 2))
 
-        ->given($this->newTestedInstance->setCustomer("cust_dFM2igoh05T3CYpJ2TUJtZGh"))
-        ->and($this->testedInstance->setAmount("300"))
-        ->and($this->testedInstance->setCurrency("eur"))
+        ->given($this->newTestedInstance->setCustomer('cust_dFM2igoh05T3CYpJ2TUJtZGh'))
+        ->and($this->testedInstance->setAmount('300'))
+        ->and($this->testedInstance->setCurrency('eur'))
         ->and($this->testedInstance->setThreeds(Stancer\ThreeDomainsSecure\Status::REQUIRED))
 
         ->if($card = new Stancer\Card())
@@ -1525,7 +1527,7 @@ class Intent extends Stancer\Tests\atoum
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                     ->message
-                        ->isIdenticalTo("You need to set a complete Card (with at least number, month and year).")
+                        ->isIdenticalTo('You need to set a complete Card (with at least number, month and year).')
 
         ->then
             ->assert('incomplete Card')
@@ -1535,13 +1537,12 @@ class Intent extends Stancer\Tests\atoum
                     })
                         ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                         ->message
-                            ->isIdenticalTo("You need to provide a value for : expMonth, expYear")
-
+                            ->isIdenticalTo('You need to provide a value for : expMonth, expYear')
 
         ->then
             ->given($card = new Stancer\card())
             ->assert('create card')
-                ->given($response = $this->mockJsonResponse('card','read'))
+                ->given($response = $this->mockJsonResponse('card', 'read'))
                 ->if($card = new Stancer\card())
                 ->and($card->setNumber('4242424242424242'))
                 ->and($card->setExpMonth(12))
@@ -1555,7 +1556,7 @@ class Intent extends Stancer\Tests\atoum
                 ->then
                     ->if($this->calling($client)->request = $response)
                     ->and($location = $card->uri)
-                    ->and($options = $this->mockRequestOptions($config,['body'=>json_encode($body)]))
+                    ->and($options = $this->mockRequestOptions($config, ['body' => json_encode($body)]))
                         ->object($this->testedInstance->setcard($card))
                             ->isTestedInstance
                         ->mock($client)
@@ -1565,18 +1566,19 @@ class Intent extends Stancer\Tests\atoum
 
         ->then
             ->assert('send Payment Intent with cardObject.')
-                ->given($response = $this->mockJsonResponse('intents','intent'))
+                ->given($response = $this->mockJsonResponse('intents', 'intent'))
                 ->and($json = [
-                    'amount'=> 300,
-                    'card' => "card_XZ8h7vcnEIecJkDdlnI5gyD5",
-                    'currency'=> "eur",
-                    'customer'=> "cust_dFM2igoh05T3CYpJ2TUJtZGh",
-                    'threeds'=> "required",
-                    ])
+                    'amount' => 300,
+                    'card' => 'card_XZ8h7vcnEIecJkDdlnI5gyD5',
+                    'currency' => 'eur',
+                    'customer' => 'cust_dFM2igoh05T3CYpJ2TUJtZGh',
+                    'threeds' => 'required',
+                ])
 
                 ->and($options = $this->mockRequestOptions(
                     $config,
-                    ['body' => json_encode($json)]))
+                    ['body' => json_encode($json)]
+                ))
                 ->and($location = $this->testedInstance->getUri())
                 ->then
                     ->if($this->calling($client)->request = $response)
@@ -1588,20 +1590,20 @@ class Intent extends Stancer\Tests\atoum
                                     ->once
                     ->assert('hydratation is correct based on fixtures')
                         ->object($this->testedInstance)
-                            ->isInstanceOf(Stancer\Payment\Intent::class)
-                        ->object($responseCard =$this->testedInstance->getCard())
+                            ->isInstanceOf(Stancer\PaymentIntent::class)
+                        ->object($responseCard = $this->testedInstance->getCard())
                             ->isInstanceOf(Stancer\Card::class)
                         ->string($responseCard->getId())
-                            ->isIdenticalTo("card_XZ8h7vcnEIecJkDdlnI5gyD5")
+                            ->isIdenticalTo('card_XZ8h7vcnEIecJkDdlnI5gyD5')
                         ->object($responseCustomer = $this->testedInstance->getCustomer())
                             ->isInstanceOf(Stancer\Customer::class)
                         ->string($responseCustomer->getId())
-                            ->isIdenticalTo("cust_dFM2igoh05T3CYpJ2TUJtZGh")
+                            ->isIdenticalTo('cust_dFM2igoh05T3CYpJ2TUJtZGh')
                         ->integer($this->testedInstance->getAmount())
                             ->isIdenticalTo(300)
                         ->boolean($this->testedInstance->getCapture())
                             ->isTrue()
-                        ->object($responseCurrency =$this->testedInstance->getCurrency())
+                        ->object($responseCurrency = $this->testedInstance->getCurrency())
                             ->isInstanceOf(Stancer\Currency::class)
                             ->isEqualTo(Stancer\Currency::EUR)
                         ->string($responseCurrency->value)
@@ -1609,11 +1611,11 @@ class Intent extends Stancer\Tests\atoum
                         ->variable($this->testedInstance->getDescription())
                             ->isNull()
                         ->string($this->testedInstance->getId())
-                            ->isIdenticalTo("pi_zoiuKRVPoeSUKufHxghJn99T")
+                            ->isIdenticalTo('pi_zoiuKRVPoeSUKufHxghJn99T')
                         ->variable($this->testedInstance->getMetadata())
                             ->isNull()
                         ->array($this->testedInstance->getMethodsAllowed())
-                            ->isEqualTo([Stancer\Payment\MethodsAllowed::CARD,Stancer\Payment\MethodsAllowed::SEPA])
+                            ->isEqualTo([Stancer\Payment\MethodsAllowed::CARD, Stancer\Payment\MethodsAllowed::SEPA])
                         ->variable($this->testedInstance->getOrderId())
                             ->isNull()
                         ->variable($this->testedInstance->getPayment())
@@ -1623,21 +1625,23 @@ class Intent extends Stancer\Tests\atoum
                         ->variable($this->testedInstance->getSepa())
                             ->isNull()
                         ->object($this->testedInstance->getStatus())
-                            ->isInstanceOf(Stancer\Payment\Intent\Status::class)
-                            ->isIdenticalTo(Stancer\Payment\Intent\Status::REQUIRE_AUTHENTICATION)
+                            ->isInstanceOf(Stancer\PaymentIntent\Status::class)
+                            ->isIdenticalTo(Stancer\PaymentIntent\Status::REQUIRE_AUTHENTICATION)
                         ->object($this->testedInstance->getThreeds())
                             ->isInstanceOf(Stancer\ThreeDomainsSecure\Status::class)
-                            ->isIdenticalTo(Stancer\ThreeDomainsSecure\Status::REQUIRED);
+                            ->isIdenticalTo(Stancer\ThreeDomainsSecure\Status::REQUIRED)
+        ;
     }
-    public function testSend_withSepa(){
 
+    public function testSend_withSepa()
+    {
         $this
-        ->given($client = new mock\Stancer\Http\Client)
-        ->and($config = $this->mockConfig($client,2))
+        ->given($client = new mock\Stancer\Http\Client())
+        ->and($config = $this->mockConfig($client, 2))
 
-        ->given($this->newTestedInstance->setCustomer("cust_dFM2igoh05T3CYpJ2TUJtZGh"))
-        ->and($this->testedInstance->setAmount("300"))
-        ->and($this->testedInstance->setCurrency("eur"))
+        ->given($this->newTestedInstance->setCustomer('cust_dFM2igoh05T3CYpJ2TUJtZGh'))
+        ->and($this->testedInstance->setAmount('300'))
+        ->and($this->testedInstance->setCurrency('eur'))
         ->and($this->testedInstance->setThreeds(Stancer\ThreeDomainsSecure\Status::REQUIRED))
 
         ->if($sepa = new Stancer\Sepa())
@@ -1649,7 +1653,7 @@ class Intent extends Stancer\Tests\atoum
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                     ->message
-                        ->isIdenticalTo("You need to set a complete SEPA (with at least name and iban).")
+                        ->isIdenticalTo('You need to set a complete SEPA (with at least name and iban).')
 
         ->then
             ->assert('incomplete Sepa')
@@ -1659,13 +1663,12 @@ class Intent extends Stancer\Tests\atoum
                     })
                         ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                         ->message
-                            ->isIdenticalTo("You need to provide a value for : name")
-
+                            ->isIdenticalTo('You need to provide a value for : name')
 
         ->then
             ->given($sepa = new Stancer\Sepa())
             ->assert('create Sepa')
-                ->given($response = $this->mockJsonResponse('sepa','read'))
+                ->given($response = $this->mockJsonResponse('sepa', 'read'))
                 ->if($sepa = new Stancer\Sepa())
                 ->and($sepa->setName('John Doe'))
                 ->and($sepa->setIban('SE3550000000054910000003'))
@@ -1677,7 +1680,7 @@ class Intent extends Stancer\Tests\atoum
                 ->then
                     ->if($this->calling($client)->request = $response)
                     ->and($location = $sepa->uri)
-                    ->and($options = $this->mockRequestOptions($config,['body'=>json_encode($body)]))
+                    ->and($options = $this->mockRequestOptions($config, ['body' => json_encode($body)]))
                         ->object($this->testedInstance->setSepa($sepa))
                             ->isTestedInstance
                         ->mock($client)
@@ -1688,18 +1691,18 @@ class Intent extends Stancer\Tests\atoum
         ->then
             ->assert('send Payment Intent with SepaObject.')
                 ->given($json = [
-                    'amount'=> 300,
-                    'currency'=> "eur",
-                    'customer'=> "cust_dFM2igoh05T3CYpJ2TUJtZGh",
-                    'sepa' => "sepa_bIvCZePYqfMlU11TANT8IqL1",
-                    'threeds'=> "required",
-                    ])
+                    'amount' => 300,
+                    'currency' => 'eur',
+                    'customer' => 'cust_dFM2igoh05T3CYpJ2TUJtZGh',
+                    'sepa' => 'sepa_bIvCZePYqfMlU11TANT8IqL1',
+                    'threeds' => 'required',
+                ])
 
                 ->and($options = $this->mockRequestOptions(
                     $config,
-                    ['body' => json_encode($json)]))
+                    ['body' => json_encode($json)]
+                ))
                 ->and($location = $this->testedInstance->getUri())
-
 
                 ->then
                     ->if($this->calling($client)->request = $response)
@@ -1712,22 +1715,23 @@ class Intent extends Stancer\Tests\atoum
 
         ->then
             ->assert('send Payment Intent with SEPA ID')
-                ->given($this->newTestedInstance->setSepa("sepa_bIvCZePYqfMlU11TANT8IqL1"))
-                ->and($this->testedInstance->setAmount("300"))
-                ->and($this->testedInstance->setCurrency("eur"))
-                ->and($json =[
-                    'amount'=> 300,
-                    'currency'=> "eur",
-                    'sepa' => "sepa_bIvCZePYqfMlU11TANT8IqL1",
+                ->given($this->newTestedInstance->setSepa('sepa_bIvCZePYqfMlU11TANT8IqL1'))
+                ->and($this->testedInstance->setAmount('300'))
+                ->and($this->testedInstance->setCurrency('eur'))
+                ->and($json = [
+                    'amount' => 300,
+                    'currency' => 'eur',
+                    'sepa' => 'sepa_bIvCZePYqfMlU11TANT8IqL1',
                 ])
 
                 ->and($newOptions = $this->mockRequestOptions(
                     $config,
-                    ['body' => json_encode($json)]))
+                    ['body' => json_encode($json)]
+                ))
                 ->and($newLocation = $this->testedInstance->getUri())
 
             ->then
-            ->given($response = $this->mockJsonResponse('intents','intent-sepa'))
+            ->given($response = $this->mockJsonResponse('intents', 'intent-sepa'))
                 ->if($this->calling($client)->request = $response)
                     ->object($this->testedInstance->send())
                         ->isTestedInstance
@@ -1737,18 +1741,18 @@ class Intent extends Stancer\Tests\atoum
                                 ->once
                 ->assert('hydratation is correct based on fixtures')
                         ->object($this->testedInstance)
-                            ->isInstanceOf(Stancer\Payment\Intent::class)
+                            ->isInstanceOf(Stancer\PaymentIntent::class)
                         ->variable($this->testedInstance->getCard())
                             ->isNull()
                         ->object($responseCustomer = $this->testedInstance->getCustomer())
                             ->isInstanceOf(Stancer\Customer::class)
                         ->string($responseCustomer->getId())
-                            ->isIdenticalTo("cust_dFM2igoh05T3CYpJ2TUJtZGh")
+                            ->isIdenticalTo('cust_dFM2igoh05T3CYpJ2TUJtZGh')
                         ->integer($this->testedInstance->getAmount())
                             ->isIdenticalTo(300)
                         ->boolean($this->testedInstance->getCapture())
                             ->isTrue()
-                        ->object($responseCurrency =$this->testedInstance->getCurrency())
+                        ->object($responseCurrency = $this->testedInstance->getCurrency())
                             ->isInstanceOf(Stancer\Currency::class)
                             ->isEqualTo(Stancer\Currency::EUR)
                         ->string($responseCurrency->value)
@@ -1756,34 +1760,34 @@ class Intent extends Stancer\Tests\atoum
                         ->variable($this->testedInstance->getDescription())
                             ->isNull()
                         ->string($this->testedInstance->getId())
-                            ->isIdenticalTo("pi_zoiuKRVPoeSUKufHxghJn99T")
+                            ->isIdenticalTo('pi_zoiuKRVPoeSUKufHxghJn99T')
                         ->variable($this->testedInstance->getMetadata())
                             ->isNull()
                         ->array($this->testedInstance->getMethodsAllowed())
-                            ->isEqualTo([Stancer\Payment\MethodsAllowed::CARD,Stancer\Payment\MethodsAllowed::SEPA])
+                            ->isEqualTo([Stancer\Payment\MethodsAllowed::CARD, Stancer\Payment\MethodsAllowed::SEPA])
                         ->variable($this->testedInstance->getOrderId())
                             ->isNull()
                         ->variable($this->testedInstance->getPayment())
                             ->isNull()
                         ->variable($this->testedInstance->getReturnUrl())
                             ->isNull()
-                        ->object($responseSepa =$this->testedInstance->getSepa())
+                        ->object($responseSepa = $this->testedInstance->getSepa())
                             ->isInstanceOf(Stancer\Sepa::class)
                         ->string($responseSepa->getId())
-                            ->isIdenticalTo("sepa_bIvCZePYqfMlU11TANT8IqL1")
+                            ->isIdenticalTo('sepa_bIvCZePYqfMlU11TANT8IqL1')
                         ->object($this->testedInstance->getStatus())
-                            ->isInstanceOf(Stancer\Payment\Intent\Status::class)
-                            ->isIdenticalTo(Stancer\Payment\Intent\Status::REQUIRE_AUTHENTICATION)
+                            ->isInstanceOf(Stancer\PaymentIntent\Status::class)
+                            ->isIdenticalTo(Stancer\PaymentIntent\Status::REQUIRE_AUTHENTICATION)
                         ->object($this->testedInstance->getThreeds())
                             ->isInstanceOf(Stancer\ThreeDomainsSecure\Status::class)
-                            ->isIdenticalTo(Stancer\ThreeDomainsSecure\Status::REQUIRED);
-
+                            ->isIdenticalTo(Stancer\ThreeDomainsSecure\Status::REQUIRED)
+        ;
     }
 
     public function testSepa()
     {
         $this
-            ->if($sepa = new Stancer\Sepa("sepa_".$this->getRandomString(24)))
+            ->if($sepa = new Stancer\Sepa('sepa_' . $this->getRandomString(24)))
             ->then
                 ->assert('Default value')
                     ->variable($this->newTestedInstance->getSepa())
@@ -1812,7 +1816,7 @@ class Intent extends Stancer\Tests\atoum
     public function testStatus()
     {
         $this
-            ->if($status = $this->choose(Stancer\Payment\Intent\Status::cases()))
+            ->if($status = $this->choose(Stancer\PaymentIntent\Status::cases()))
             ->then
                 ->assert('Default value')
                     ->variable($this->newTestedInstance->getStatus())
