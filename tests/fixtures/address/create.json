@@ -1,0 +1,13 @@
+{
+  "city": "Paris",
+  "country": "FRA",
+  "created": 1722435409,
+  "deleted": false,
+  "line1": "10 rue du test",
+  "line2": "Au fond de la cour",
+  "line3":"Deuxième étage porte de gauche",
+  "metadata":{"origin":"test"},
+  "state": "IDF",
+  "id": "addr_m8H4p4n1Oyf1PbaHGBBPfU4a",
+  "zip_code": "7500"
+}
