@@ -89,6 +89,16 @@ class Customer extends Stancer\Core\AbstractObject
             ],
             'type' => self::STRING,
         ],
+        'shippingAddress' => [
+            'desc' => 'Customer\'s shiping address',
+            'type' => Stancer\Address::class,
+            'onlyID' => true,
+        ],
+        'billingAddress' => [
+            'desc' => 'Customer\'s billing address',
+            'type' => Stancer\Address::class,
+            'onlyID' => true,
+        ]
     ];
 
     /**

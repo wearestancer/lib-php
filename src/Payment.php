@@ -181,6 +181,11 @@ class Payment extends Stancer\Core\AbstractObject
             'desc' => 'Auth object, must be set for 3-D Secure card payments',
             'type' => Stancer\Auth::class,
         ],
+        'billingAddress' => [
+            'desc' => 'the billing address links to the payment',
+            'onlyID' => true,
+            'type' => Stancer\Address::class,
+        ],
         'capture' => [
             'desc' => 'Capture immediately the payment',
             'type' => self::BOOLEAN,
@@ -269,6 +274,11 @@ class Payment extends Stancer\Core\AbstractObject
         'sepa' => [
             'desc' => 'SEPA object',
             'type' => Stancer\Sepa::class,
+        ],
+        'shippingAddress' => [
+            'desc' => 'the shipping address links to the payment',
+            'onlyID' => true,
+            'type' => Stancer\Address::class,
         ],
         'status' => [
             'desc' => 'Status of the payment',

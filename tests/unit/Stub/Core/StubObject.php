@@ -2297,6 +2297,106 @@ class StubObject extends Stancer\Tests\atoum
                         ->isFalse
         ;
     }
+    public function testSend_withOnlyID()
+    {
+        $this
+        ->given($this->newTestedInstance)
+
+        ->given($client = new mock\Stancer\Http\Client)
+        ->and($config = $this->mockConfig($client))
+        ->and($cardResponse= $this->mockJsonResponse('card','create'))
+        ->and($this->calling($client)->request = $cardResponse)
+
+        ->given($string1= "this is a string.")
+        ->and($integer1=12)
+        ->if($options = [])
+        ->and($options['headers'] = [
+            'Authorization' => $config->getBasicAuthHeader(),
+            'Content-Type' => 'application/json',
+            'User-Agent' => $config->getDefaultUserAgent(),
+        ])
+        ->and($options['timeout'] = $config->getTimeout())
+        ->and($optionCard = $options)
+        ->and($location = $this->testedInstance->getUri())
+
+        ->if($body =[
+            "string1" => $string1,
+            "integer1" => $integer1,
+            "object4" => "card_m8H4p4n1Oyf1PbaHGBBPfU4a" //from fixtures
+        ])
+        ->and($options['body'] = json_encode($body))
+
+        ->if($card = new Stancer\Card())
+        ->and($card->setCvc("123"))
+        ->and($card->setExpMonth(12))
+        ->and($card->setExpYear(2089))
+        ->and($card->setNumber('4444333322221111'))
+        ->and($optionCard['body'] = json_encode($card))
+        ->and($locationCard = $card->getUri())
+
+        ->if($this->testedInstance)
+        ->and($this->testedInstance->setString1($string1))
+        ->and($this->testedInstance->setInteger1($integer1))
+        ->and($this->testedInstance->setObject4($card))
+
+        ->then
+        ->assert('modified object 4 is sent before the object')
+
+            ->boolean($this->testedInstance->isModified())
+                ->isTrue
+
+            ->boolean($card->isModified())
+                ->isTrue
+
+            ->object($this->testedInstance->send())
+                ->isTestedInstance
+
+            ->object($this->testedInstance->getObject4())
+                ->isInstanceOf(Stancer\Card::class)
+
+            ->string($this->testedInstance->getObject4()->getId())
+                ->isNotEmpty
+
+            ->mock($client)
+                ->call('request')
+                    ->withArguments('POST', $location, $options)
+                        ->once
+                ->call('request')
+                    ->withArguments('POST',$locationCard, $optionCard)
+                        ->once
+
+        ->if($this->newTestedInstance)
+        ->and($this->testedInstance->setString1($string1))
+        ->and($this->testedInstance->setInteger1($integer1))
+        ->if($completeCard = new Stancer\Card("card_m8H4p4n1Oyf1PbaHGBBPfU4a"))
+        ->and($this->testedInstance->setObject4($completeCard))
+        ->assert('ID\'d object4 doesn\'t need to be sent')
+
+            ->boolean($this->testedInstance->isModified())
+                ->isTrue
+
+            ->boolean($completeCard->isModified())
+                ->isFalse
+
+            ->object($this->testedInstance->send())
+                ->isTestedInstance
+
+            ->object($this->testedInstance->getObject4())
+                ->isInstanceOf(Stancer\Card::class)
+
+            ->string($this->testedInstance->getObject4()->getId())
+                ->isNotEmpty
+
+            ->mock($client)
+                ->call('request')
+                    ->withArguments('POST', $location, $options)
+                        ->once
+                ->call('request')
+                    ->withArguments('POST',$locationCard, $optionCard)
+                        ->never
+
+        ;
+    }
 
     public function testToArray()
     {
