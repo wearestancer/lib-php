@@ -1,12 +1,22 @@
 parameters:
 	ignoreErrors:
 		-
+			message: "#^Call to vsprintf contains 2 placeholders, 4 values given\\.$#"
+			count: 1
+			path: src/Core/AbstractObject.php
+
+		-
+			message: "#^Call to vsprintf contains 3 placeholders, 4 values given\\.$#"
+			count: 2
+			path: src/Core/AbstractObject.php
+
+		-
 			message: "#^Call to function method_exists\\(\\) with class\\-string\\<static\\(Stancer\\\\Payment\\)\\> and 'filterListParams' will always evaluate to true\\.$#"
 			count: 1
 			path: src/Payment.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of static method Stancer\\\\Payment\\:\\:validateDateRelativeFilter\\(\\) expects DateTimeInterface\\|int, DatePeriod\\<DateTimeInterface, DateTimeInterface\\|null, int\\>\\|DateTimeInterface\\|int\\|string given\\.$#"
+			message: "#^Call to vsprintf contains 0\\-4 placeholders, 4 values given\\.$#"
 			count: 1
 			path: src/Payment.php
 
@@ -16,6 +26,16 @@ parameters:
 			path: src/Payment.php
 
 		-
+			message: "#^Parameter \\#1 \\$value of static method Stancer\\\\Payment\\:\\:validateDateRelativeFilter\\(\\) expects DateTimeInterface\\|int, DatePeriod\\<DateTimeInterface, DateTimeInterface\\|null, int\\>\\|DateTimeInterface\\|int\\|string given\\.$#"
+			count: 1
+			path: src/Payment.php
+
+		-
 			message: "#^Parameter \\#1 \\$data \\(array\\{amount\\: int, created\\: int, currency\\: string, date_bank\\?\\: int, date_paym\\: int, fees\\?\\: int, id\\: string, live_mode\\: bool, \\.\\.\\.\\}\\) of method Stancer\\\\Payout\\:\\:hydrate\\(\\) should be contravariant with parameter \\$data \\(array\\<string, mixed\\>\\) of method Stancer\\\\Core\\\\AbstractObject\\:\\:hydrate\\(\\)$#"
 			count: 1
 			path: src/Payout.php
+
+		-
+			message: "#^Binary operation \"%%\" between string and 97 results in an error\\.$#"
+			count: 1
+			path: src/Sepa.php

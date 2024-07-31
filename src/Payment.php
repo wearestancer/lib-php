@@ -16,6 +16,7 @@ use ValueError;
  * @method static array filter_list_params(array $terms) Filter for list method.
  * @method ?integer getAmount() Get transaction amount.
  * @method ?\Stancer\Auth getAuth() Get auth object, must be set for 3-D Secure card payments.
+ * @method ?\Stancer\Address getBillingAddress() Get the billing address links to the payment.
  * @method ?boolean getCapture() Get capture immediately the payment.
  * @method ?\Stancer\Card getCard() Get card object.
  * @method ?string getCountry()
@@ -33,10 +34,12 @@ use ValueError;
  * @method ?string getResponseAuthor()
  * @method ?string getReturnUrl() Get URL to redirect back your customer after processing the payment.
  * @method ?\Stancer\Sepa getSepa() Get SEPA object.
+ * @method ?\Stancer\Address getShippingAddress() Get the shipping address links to the payment.
  * @method ?\Stancer\Payment\Status getStatus() Get status of the payment.
  * @method ?string getUniqueId() Get unicity key.
  * @method ?integer get_amount() Get transaction amount.
  * @method ?\Stancer\Auth get_auth() Get auth object, must be set for 3-D Secure card payments.
+ * @method ?\Stancer\Address get_billing_address() Get the billing address links to the payment.
  * @method ?boolean get_capture() Get capture immediately the payment.
  * @method ?\Stancer\Card get_card() Get card object.
  * @method ?string get_country()
@@ -61,6 +64,7 @@ use ValueError;
  * @method ?string get_response_author()
  * @method ?string get_return_url() Get URL to redirect back your customer after processing the payment.
  * @method ?\Stancer\Sepa get_sepa() Get SEPA object.
+ * @method ?\Stancer\Address get_shipping_address() Get the shipping address links to the payment.
  * @method ?\Stancer\Payment\Status get_status() Get status of the payment.
  * @method ?string get_unique_id() Get unicity key.
  * @method string get_uri() Get entity resource location.
@@ -69,15 +73,18 @@ use ValueError;
  * @method boolean is_not_success() Indicates if payment is not a success.
  * @method boolean is_success() Indicates if payment is a success.
  * @method static Generator<static> list(SearchFilters $terms)
+ * @method $this setBillingAddress(\Stancer\Address $billingAddress) Set the billing address links to the payment.
  * @method $this setCapture(boolean $capture) Set capture immediately the payment.
  * @method $this setCountry(string $country)
  * @method $this setCustomer(\Stancer\Customer $customer) Set customer object.
  * @method $this setDescription(string $description) Set payment description.
  * @method $this setDevice(\Stancer\Device $device) Set customer's device object.
  * @method $this setOrderId(string $orderId) Set order identifier.
+ * @method $this setShippingAddress(\Stancer\Address $shippingAddress) Set the shipping address links to the payment.
  * @method $this setUniqueId(string $uniqueId) Set unicity key.
  * @method $this set_amount(integer $amount) Set transaction amount.
  * @method $this set_auth(\Stancer\Auth|boolean|string $auth) Set auth object, must be set for 3-D Secure card payments.
+ * @method $this set_billing_address(\Stancer\Address $billing_address) Set the billing address links to the payment.
  * @method $this set_capture(boolean $capture) Set capture immediately the payment.
  * @method $this set_card(\Stancer\Card $card) Set card object.
  * @method $this set_country(string $country)
@@ -90,6 +97,7 @@ use ValueError;
  * @method $this set_order_id(string $order_id) Set order identifier.
  * @method $this set_return_url(string $return_url) Set URL to redirect back your customer after processing the payment.
  * @method $this set_sepa(\Stancer\Sepa $sepa) Set SEPA object.
+ * @method $this set_shipping_address(\Stancer\Address $shipping_address) Set the shipping address links to the payment.
  * @method $this set_status(\Stancer\Payment\Status $status) Set status of the payment.
  * @method $this set_unique_id(string $unique_id) Set unicity key.
  *
@@ -97,6 +105,8 @@ use ValueError;
  *
  * @property ?integer $amount Transaction amount.
  * @property \Stancer\Auth|boolean|string|null $auth Auth object, must be set for 3-D Secure card payments.
+ * @property ?\Stancer\Address $billingAddress The billing address links to the payment.
+ * @property ?\Stancer\Address $billing_address The billing address links to the payment.
  * @property ?boolean $capture Capture immediately the payment.
  * @property ?\Stancer\Card $card Card object.
  * @property ?string $country
@@ -111,6 +121,8 @@ use ValueError;
  * @property ?string $returnUrl URL to redirect back your customer after processing the payment.
  * @property ?string $return_url URL to redirect back your customer after processing the payment.
  * @property ?\Stancer\Sepa $sepa SEPA object.
+ * @property ?\Stancer\Address $shippingAddress The shipping address links to the payment.
+ * @property ?\Stancer\Address $shipping_address The shipping address links to the payment.
  * @property ?\Stancer\Payment\Status $status Status of the payment.
  * @property ?string $uniqueId Unicity key.
  * @property ?string $unique_id Unicity key.
@@ -182,7 +194,7 @@ class Payment extends Stancer\Core\AbstractObject
             'type' => Stancer\Auth::class,
         ],
         'billingAddress' => [
-            'desc' => 'the billing address links to the payment',
+            'desc' => 'The billing address links to the payment',
             'onlyID' => true,
             'type' => Stancer\Address::class,
         ],
@@ -276,7 +288,7 @@ class Payment extends Stancer\Core\AbstractObject
             'type' => Stancer\Sepa::class,
         ],
         'shippingAddress' => [
-            'desc' => 'the shipping address links to the payment',
+            'desc' => 'The shipping address links to the payment',
             'onlyID' => true,
             'type' => Stancer\Address::class,
         ],

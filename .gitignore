@@ -16,3 +16,4 @@ reports
 # Local files
 .devcontainer/.env
 *.local.php
+.cache/

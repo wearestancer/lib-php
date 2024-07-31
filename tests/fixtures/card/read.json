@@ -1,0 +1,17 @@
+{
+  "brand": "visa",
+  "country": "FR",
+  "created": 1721636516,
+  "customer": null,
+  "deleted": false,
+  "exp_month": 1,
+  "exp_year": 2032,
+  "external_id": null,
+  "funding": "credit",
+  "id": "card_vh9A3vCblHzIqo0lx449uLGG",
+  "last4": "0077",
+  "name": null,
+  "nature": "personal",
+  "network": "national",
+  "zip_code": null
+}

@@ -108,7 +108,7 @@ abstract class AbstractObject implements JsonSerializable
             'exportable' => null,
             'format' => null,
             'list' => false,
-            'onlyID'=>false,
+            'onlyID' => false,
             'restricted' => false,
             'required' => false,
             'size' => [
@@ -364,8 +364,8 @@ abstract class AbstractObject implements JsonSerializable
                 throw new Stancer\Exceptions\InvalidArgumentException($message);
             }
 
-            foreach ($value as $val) {
-                $coercedValues[] = $this->validateDataModel($property, $coerce($val));
+            foreach ($value as $key => $val) {
+                $coercedValues[$key] = $this->validateDataModel($property, $coerce($val));
             }
         } else {
             $coercedValues = $this->validateDataModel($property, $coerce($value));
@@ -891,25 +891,22 @@ abstract class AbstractObject implements JsonSerializable
                 throw new Stancer\Exceptions\InvalidArgumentException($message);
             }
 
-            $sendBeforeFilter = function($model): bool{
-
-                if(!$model['onlyID'] || is_null($model['value']))
-                {
+            $sendBeforeFilter = function ($model): bool {
+                if (!$model['onlyID'] || ! isset($model['value'])) {
                     return false;
                 }
 
-                if(!(is_a($model['value'], self::class)) || $model['value']->isNotModified())
-                {
+                if (!(is_a($model['value'], self::class)) || $model['value']->isNotModified()) {
                     return false;
                 }
                 return true;
             };
-
-            $onlyID = array_filter($this->dataModel, $sendBeforeFilter);
-
-            if($onlyID){
-                array_map( fn ($object) => $object['value']->send(), $onlyID);
-            }
+            $filteredArray = array_filter($this->dataModel, $sendBeforeFilter);
+            array_walk(
+                $filteredArray,
+                // @phpstan-ignore method.nonObject, offsetAccess.notFound (The array_filter already check that.)
+                fn ($model) => $model['value']->send()
+            );
 
             $response = $request->post($this);
         }
@@ -921,7 +918,6 @@ abstract class AbstractObject implements JsonSerializable
 
         if ($body) {
             $this->cleanModified = true;
-
             $this->hydrate($body);
         }
 
