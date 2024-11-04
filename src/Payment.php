@@ -440,6 +440,7 @@ class Payment extends Stancer\Core\AbstractObject
      * Maybe used as an iframe or a redirection page if you needed it.
      *
      * @param array $params Parameters to add to the URL.
+     * @param boolean $force Get the payment page url even without return URL.
      * @return string
      * @throws Stancer\Exceptions\MissingApiKeyException When no public key was given in configuration.
      * @throws Stancer\Exceptions\MissingReturnUrlException When no return URL was given to payment data.
@@ -447,7 +448,7 @@ class Payment extends Stancer\Core\AbstractObject
      *
      * @phpstan-param array{lang?: string} $params Parameters to add to the URL.
      */
-    public function getPaymentPageUrl(array $params = []): string
+    public function getPaymentPageUrl(array $params = [], bool $force = false): string
     {
         $config = Stancer\Config::getGlobal();
 
@@ -456,7 +457,7 @@ class Payment extends Stancer\Core\AbstractObject
             $config->getPublicKey(),
         ];
 
-        if (!$this->getReturnUrl()) {
+        if (!$this->getReturnUrl() && !$force) {
             $message = 'You must provide a return URL before asking for the payment page.';
 
             throw new Stancer\Exceptions\MissingReturnUrlException($message);

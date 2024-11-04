@@ -486,6 +486,25 @@ class Payment extends Stancer\Tests\atoum
                 ->assert('should return the payment page URL / snake_case property')
                     ->string($this->testedInstance->payment_page_url)
                         ->isIdenticalTo($url . $this->testedInstance->id)
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount($amount))
+            ->and($this->testedInstance->setCurrency($currency))
+            ->if($this->testedInstance->send())
+            ->then
+                ->assert('should return the payment page URL without return url / camelCase method ')
+                    ->string($this->testedInstance->getPaymentPageUrl([], true))
+                        ->isIdenticalTo($url . $this->testedInstance->getId())
+
+                    ->string($this->testedInstance->getPaymentPageUrl($params, true))
+                        ->isIdenticalTo($url . $this->testedInstance->getId() . '?lang=' . $lang)
+
+                ->assert('should return the payment page URL without return url / snake_case method')
+                    ->string($this->testedInstance->get_payment_page_url([], true))
+                        ->isIdenticalTo($url . $this->testedInstance->get_id())
+
+                    ->string($this->testedInstance->get_payment_page_url($params, true))
+                        ->isIdenticalTo($url . $this->testedInstance->get_id() . '?lang=' . $lang)
         ;
     }
 
