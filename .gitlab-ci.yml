@@ -50,6 +50,12 @@ workflow:
           - '8.1'
           - '8.2'
           - '8.3'
+          - '8.4'
+
+  rules:
+    - if: '"$VERSION" == "8.4"'
+      allow_failure: true
+    - when: on_success
 
 
 .php::stable-version:
