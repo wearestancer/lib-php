@@ -26,6 +26,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Some tests could fail due to unanticipated random data
+## [Unreleased]
+
+### Added
+- Force parameter for payment page (CMS-259)
 
 
 ## [1.1.3] - 2024-02-20

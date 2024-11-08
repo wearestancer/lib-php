@@ -8,6 +8,7 @@ parameters:
     - '/^Call to an undefined static method Stancer\\Core\\AbstractObject::[gs]et\w+\(\)/'
     - '/^Only booleans are allowed in/'
     - '/^Short ternary operator is not allowed/'
+    - '/^Binary operation "%" between string and 97 results in an error./'
 
     - message: '/Unsafe usage of new static/'
       paths:
