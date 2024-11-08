@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+
+### Added
+- Force parameter for payment page (CMS-259)
+
+
 ## [2.0.0] - 2024-03-06
 
 ### Breaking
@@ -26,10 +32,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Some tests could fail due to unanticipated random data
-## [Unreleased]
-
-### Added
-- Force parameter for payment page (CMS-259)
 
 
 ## [1.1.3] - 2024-02-20
