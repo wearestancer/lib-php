@@ -18,14 +18,13 @@ use ReflectionClass;
  * @method string get_endpoint() Get API endpoint.
  * @method string get_entity_name() Get entity name.
  * @method ?string get_id() Get object ID.
- * @method ?array get_model(string $property = null) Return property model.
+ * @method ?array<mixed> get_model(string $property = null) Return property model.
  * @method string get_uri() Get entity resource location.
  * @method boolean is_modified() Indicate if the current object is modified.
  * @method boolean is_not_modified() Indicate if the current object is not modified.
- * @method array to_array() Return a array representation of the current object.
+ * @method array<mixed> to_array() Return a array representation of the current object.
  * @method string to_json() Return a JSON representation of the current object.
  * @method string to_string() Return a string representation (as a JSON) of the current object.
- *
  * @property-read ?\DateTimeImmutable $created Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
@@ -37,12 +36,12 @@ use ReflectionClass;
  * @property-read boolean $isNotModified Alias for `Stancer\Core\AbstractObject::isNotModified()`.
  * @property-read boolean $is_modified Alias for `Stancer\Core\AbstractObject::isModified()`.
  * @property-read boolean $is_not_modified Alias for `Stancer\Core\AbstractObject::isNotModified()`.
- * @property-read mixed $jsonSerialize Alias for `Stancer\Core\AbstractObject::jsonSerialize()`.
- * @property-read mixed $json_serialize Alias for `Stancer\Core\AbstractObject::jsonSerialize()`.
- * @property-read array $toArray Alias for `Stancer\Core\AbstractObject::toArray()`.
+ * @property-read ?mixed $jsonSerialize Alias for `Stancer\Core\AbstractObject::jsonSerialize()`.
+ * @property-read ?mixed $json_serialize Alias for `Stancer\Core\AbstractObject::jsonSerialize()`.
+ * @property-read array<mixed> $toArray Alias for `Stancer\Core\AbstractObject::toArray()`.
  * @property-read string $toJson Alias for `Stancer\Core\AbstractObject::toJson()`.
  * @property-read string $toString Alias for `Stancer\Core\AbstractObject::toString()`.
- * @property-read array $to_array Alias for `Stancer\Core\AbstractObject::toArray()`.
+ * @property-read array<mixed> $to_array Alias for `Stancer\Core\AbstractObject::toArray()`.
  * @property-read string $to_json Alias for `Stancer\Core\AbstractObject::toJson()`.
  * @property-read string $to_string Alias for `Stancer\Core\AbstractObject::toString()`.
  * @property-read string $uri Entity resource location.
