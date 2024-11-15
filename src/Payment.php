@@ -11,8 +11,8 @@ use Stancer;
 /**
  * Representation of a payment.
  *
- * @method $this add_methods_allowed(string $method) Add an allowed method.
- * @method static array filter_list_params(array $terms) Filter for list method.
+ * @method static add_methods_allowed($method) Add an allowed method.
+ * @method static array<mixed> filter_list_params(array<mixed> $terms) Filter for list method.
  * @method ?integer getAmount() Get transaction amount.
  * @method ?\Stancer\Auth getAuth() Get auth object, must be set for 3-D Secure card payments.
  * @method ?boolean getCapture() Get capture immediately the payment.
@@ -52,7 +52,8 @@ use Stancer;
  * @method ?string get_method() Get payment method used.
  * @method array<'card'|'sepa'> get_methods_allowed() Get list of payment methods allowed for this payment.
  * @method ?string get_order_id() Get order identifier.
- * @method string get_payment_page_url(array $params = []) Return the URL for Stancer payment page.
+ * @method string get_payment_page_url(array<mixed> $params = [], boolean $force = false) Return the URL for Stancer
+ *   payment page.
  * @method int get_refundable_amount() Return the refundable amount.
  * @method int get_refunded_amount() Return the already refunded amount.
  * @method Stancer\Refund[] get_refunds() Get array of refund objects.
@@ -67,7 +68,7 @@ use Stancer;
  * @method boolean is_not_error() Indicates if payment is not an error.
  * @method boolean is_not_success() Indicates if payment is not a success.
  * @method boolean is_success() Indicates if payment is a success.
- * @method static Generator<static> list(SearchFilters $terms)
+ * @method static \Generator<static> list(SearchFilters $terms)
  * @method $this setCapture(boolean $capture) Set capture immediately the payment.
  * @method $this setCountry(string $country)
  * @method $this setCustomer(\Stancer\Customer $customer) Set customer object.

@@ -12,6 +12,28 @@ use Psr;
 
 /**
  * Basic HTTP request.
+ *
+ * @method static with_body(Psr\Http\Message\StreamInterface $body) Return an instance with the specified message body.
+ * @method static with_method(string $method) Return an instance with the provided HTTP method.
+ * @method static without_header(string $name) Return an instance without the specified header.
+ * @method static with_header(string $name, $value) Return an instance with the provided value replacing the
+ *   specified header.
+ * @method static with_modified_body($in, $out) Return an instance with obfuscated message body.
+ * @method static with_request_target(mixed $request_target) Return an instance with the specific request-target.
+ * @method static with_uri(Psr\Http\Message\UriInterface $uri, boolean $preserve_host = false) Returns an
+ *   instance with the provided URI.
+ * @method static with_protocol_version(string $version) Return an instance with the specified HTTP protocol version.
+ *
+ * @method static update_uri($uri) Update URI and host header.
+ * @method Psr\Http\Message\StreamInterface get_body() Gets the body of the message.
+ * @method array<mixed> get_header(string $name) Retrieves a message header value by the given case-insensitive name.
+ * @method string get_header_line(string $name) Retrieves a comma-separated string of the values for a single header.
+ * @method array<mixed> get_headers() Retrieves all message header values.
+ * @method string get_method() Retrieves the HTTP method of the request.
+ * @method string get_protocol_version() Retrieves the HTTP protocol version as a string.
+ * @method string get_request_target() Retrieves the message's request target.
+ * @method Psr\Http\Message\UriInterface get_uri() Retrieves the URI instance.
+ * @method boolean has_header(string $name) Checks if a header exists by the given case-insensitive name.
  */
 class Request implements Psr\Http\Message\RequestInterface
 {

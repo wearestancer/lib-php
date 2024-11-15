@@ -11,6 +11,24 @@ use Psr;
 
 /**
  * Basic HTTP response.
+ *
+ * @method static with_body(Psr\Http\Message\StreamInterface $body) Return an instance with the specified message body.
+ * @method static with_status(int $code, string $reason_phrase = null) Return an instance with the specified
+ *   status code and, optionally, reason phrase.
+ * @method static without_header(string $name) Return an instance without the specified header.
+ * @method static with_header(string $name, $value) Return an instance with the provided value replacing the
+ *   specified header.
+ * @method static with_modified_body($in, $out) Return an instance with obfuscated message body.
+ * @method static with_protocol_version(string $version) Return an instance with the specified HTTP protocol version.
+ *
+ * @method Psr\Http\Message\StreamInterface get_body() Gets the body of the message.
+ * @method array<mixed> get_header(string $name) Retrieves a message header value by the given case-insensitive name.
+ * @method string get_header_line(string $name) Retrieves a comma-separated string of the values for a single header.
+ * @method array<mixed> get_headers() Retrieves all message header values.
+ * @method string get_protocol_version() Retrieves the HTTP protocol version as a string.
+ * @method string get_reason_phrase() Gets the response reason phrase associated with the status code.
+ * @method int get_status_code() Gets the response status code.
+ * @method boolean has_header(string $name) Checks if a header exists by the given case-insensitive name.
  */
 class Response implements Psr\Http\Message\ResponseInterface
 {
