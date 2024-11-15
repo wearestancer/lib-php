@@ -93,7 +93,7 @@ class Config
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     public const TEST_MODE = 'test';
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    public const VERSION = '2.0.0';
+    public const VERSION = '2.0.1';
 
     /** @var non-empty-array<string|null>[] */
     protected array $app = [];
