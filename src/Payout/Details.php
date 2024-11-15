@@ -10,7 +10,7 @@ use Stancer;
 /**
  * Payout details.
  *
- * @method \Generator<Stancer\Dispute> disputes(array $terms) List every disputes in the payout.
+ * @method \Generator<Stancer\Dispute> disputes(array<mixed> $terms) List every disputes in the payout.
  * @method ?\DateTimeImmutable getCreated() Get creation date.
  * @method ?\Stancer\Payout\Details\Inner getDisputes() Get disputes details.
  * @method ?\Stancer\Payout\Details\Inner getPayments() Get payments details.
@@ -24,16 +24,15 @@ use Stancer;
  * @method ?\Stancer\Payout\Details\Inner get_payments() Get payments details.
  * @method ?\Stancer\Payout\Details\Inner get_refunds() Get refunds details.
  * @method string get_uri() Get entity resource location.
- * @method \Generator<Stancer\Dispute> listDisputes(array $terms) List every disputes in the payout.
- * @method \Generator<Stancer\Payment> listPayments(array $terms) List every payments in the payout.
- * @method \Generator<Stancer\Refund> listRefunds(array $terms) List every refunds in the payout.
- * @method \Generator<Stancer\Payment> payments(array $terms) List every payments in the payout.
- * @method \Generator<Stancer\Refund> refunds(array $terms) List every refunds in the payout.
+ * @method \Generator<Stancer\Dispute> listDisputes(array<mixed> $terms) List every disputes in the payout.
+ * @method \Generator<Stancer\Payment> listPayments(array<mixed> $terms) List every payments in the payout.
+ * @method \Generator<Stancer\Refund> listRefunds(array<mixed> $terms) List every refunds in the payout.
+ * @method \Generator<Stancer\Payment> payments(array<mixed> $terms) List every payments in the payout.
+ * @method \Generator<Stancer\Refund> refunds(array<mixed> $terms) List every refunds in the payout.
  *
  * @phpstan-method \Generator<Stancer\Dispute> listDisputes(SearchFilters $terms) List every disputes in the payout.
  * @phpstan-method \Generator<Stancer\Payment> listPayments(SearchFilters $terms) List every payments in the payout.
  * @phpstan-method \Generator<Stancer\Refund> listRefunds(SearchFilters $terms) List every refunds in the payout.
- *
  * @property-read ?\DateTimeImmutable $created Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
