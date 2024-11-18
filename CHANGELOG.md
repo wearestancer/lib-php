@@ -5,6 +5,19 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+- Type casting for more precise SEPA check (CMS-265)
+- Truncate user-agent to 255 character maximum (CMS-551)
+
+
+## [2.1.2] - 2026-06-23
+
+### Changed
+- Change phone randomization to catch less false positive tests
+- Some minor test improvements
+- Object hydration does not populate object property anymore (CMS-523)
+
+
+## [2.1.1] - 2026-05-19
 
 ### Added
 - Get Refund list from payments API V2 (CMS-490)
@@ -12,6 +25,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 - Added Tag in tests (CMS-467)
+- Better tests randomization (CMS-466)
 
 
 ## [2.1.0] - 2026-02-03
@@ -21,9 +35,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Payment intent integration (CMS-138)
 - Adress Integration (CMS-260)
 - Simplify devcontainer shell env
-
-### Changed
-- better test randomization (CMS-466)
 
 
 ## [2.0.1] - 2024-11-15
