@@ -92,6 +92,10 @@ function prepareData(string $action, array $data): array
                 return $value;
             }
 
+            if (str_starts_with($val, 'array<')) {
+                return $value;
+            }
+
             if ($isEscaped) {
                 return $value;
             }
@@ -302,6 +306,10 @@ foreach ($classes as $className => $classData) {
                 $return = '$this';
             }
 
+            if ($return === 'array') {
+                $return = 'array<mixed>';
+            }
+
             if ($return === 'bool') {
                 $return = 'boolean';
             }
@@ -504,6 +512,10 @@ foreach ($classes as $className => $classData) {
                     }
                 }
 
+                if ($type === 'array') {
+                    $type = 'array<mixed>';
+                }
+
                 if ($type === 'bool') {
                     $type = 'boolean';
                 }
@@ -570,9 +582,7 @@ foreach ($classes as $className => $classData) {
         }
 
         if (!array_key_exists($action, $parts)) {
-            $parts[$action] = [
-                '', // the block sep
-            ];
+            $parts[$action] = [];
         }
 
         $parts[$action][$name] = $line;
@@ -580,13 +590,13 @@ foreach ($classes as $className => $classData) {
         ksort($parts[$action]);
     }
 
-    $doc = [];
-
     ksort($parts);
+
+    $doc = [];
 
     // Merging every parts together.
     foreach ($parts as $part) {
-        $doc = array_merge($doc, $part);
+        $doc = array_merge($doc, [''], $part);
     }
 
     // Time for putting it in the file.

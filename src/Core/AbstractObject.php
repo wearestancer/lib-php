@@ -27,6 +27,7 @@ use ReflectionClass;
  * @method array<mixed> to_array() Return a array representation of the current object.
  * @method string to_json() Return a JSON representation of the current object.
  * @method string to_string() Return a string representation (as a JSON) of the current object.
+ *
  * @property-read ?\DateTimeImmutable $created Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.

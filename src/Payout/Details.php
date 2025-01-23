@@ -34,6 +34,7 @@ use Stancer;
  * @phpstan-method \Generator<Stancer\Dispute> listDisputes(SearchFilters $terms) List every disputes in the payout.
  * @phpstan-method \Generator<Stancer\Payment> listPayments(SearchFilters $terms) List every payments in the payout.
  * @phpstan-method \Generator<Stancer\Refund> listRefunds(SearchFilters $terms) List every refunds in the payout.
+ *
  * @property-read ?\DateTimeImmutable $created Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
@@ -48,13 +49,13 @@ use Stancer;
  */
 #[Stancer\Core\Documentation\AddMethod(
     'disputes',
-    ['array $terms'],
+    ['array<mixed> $terms'],
     '\Generator<Stancer\Dispute>',
     description: 'List every disputes in the payout.',
 )]
 #[Stancer\Core\Documentation\AddMethod(
     'listDisputes',
-    ['array $terms'],
+    ['array<mixed> $terms'],
     '\Generator<Stancer\Dispute>',
     description: 'List every disputes in the payout.',
 )]
@@ -67,13 +68,13 @@ use Stancer;
 )]
 #[Stancer\Core\Documentation\AddMethod(
     'payments',
-    ['array $terms'],
+    ['array<mixed> $terms'],
     '\Generator<Stancer\Payment>',
     description: 'List every payments in the payout.',
 )]
 #[Stancer\Core\Documentation\AddMethod(
     'listPayments',
-    ['array $terms'],
+    ['array<mixed> $terms'],
     '\Generator<Stancer\Payment>',
     description: 'List every payments in the payout.',
 )]
@@ -86,13 +87,13 @@ use Stancer;
 )]
 #[Stancer\Core\Documentation\AddMethod(
     'refunds',
-    ['array $terms'],
+    ['array<mixed> $terms'],
     '\Generator<Stancer\Refund>',
     description: 'List every refunds in the payout.',
 )]
 #[Stancer\Core\Documentation\AddMethod(
     'listRefunds',
-    ['array $terms'],
+    ['array<mixed> $terms'],
     '\Generator<Stancer\Refund>',
     description: 'List every refunds in the payout.',
 )]

@@ -54,8 +54,8 @@ use ValueError;
  * @method ?string get_method() Get payment method used.
  * @method Stancer\Payment\MethodsAllowed[] get_methods_allowed() Get list of payment methods allowed for this payment.
  * @method ?string get_order_id() Get order identifier.
- * @method string get_payment_page_url(array<mixed> $params = [], boolean $force = false) Return the URL for Stancer
- *   payment page.
+ * @method string get_payment_page_url(array<mixed> $params = [], boolean $force = false) Return the URL for
+ *   Stancer payment page.
  * @method int get_refundable_amount() Return the refundable amount.
  * @method int get_refunded_amount() Return the already refunded amount.
  * @method Stancer\Refund[] get_refunds() Get array of refund objects.
@@ -142,7 +142,7 @@ use ValueError;
  * @property-read string $uri Entity resource location.
  */
 #[Stancer\Core\Documentation\AddMethod('addRefunds', ['Stancer\Refund $refund'], '$this', stan: true)]
-#[Stancer\Core\Documentation\AddMethod('list', ['SearchFilters $terms'], 'static Generator<static>')]
+#[Stancer\Core\Documentation\AddMethod('list', ['SearchFilters $terms'], 'static \Generator<static>')]
 #[Stancer\Core\Documentation\AddProperty(
     'auth',
     property: [

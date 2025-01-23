@@ -24,7 +24,6 @@ use Psr;
  * @method static with_uri(Psr\Http\Message\UriInterface $uri, boolean $preserve_host = false) Returns an
  *   instance with the provided URI.
  * @method static with_protocol_version(string $version) Return an instance with the specified HTTP protocol version.
- *
  * @method static update_uri($uri) Update URI and host header.
  * @method Psr\Http\Message\StreamInterface get_body() Gets the body of the message.
  * @method array<mixed> get_header(string $name) Retrieves a message header value by the given case-insensitive name.
