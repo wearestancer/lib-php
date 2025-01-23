@@ -50,9 +50,9 @@ class Address extends Stancer\Tests\atoum
         $this
             ->given($this->newTestedInstance)
 
-            ->if($country = $this->getRandomString(3, 3))
-            ->and($countryTooLong = $this->getRandomString(5))
-            ->and($countryTooShort = $this->getRandomString(0, 2))
+            ->if($country = $this->getRandomString(2))
+            ->and($countryTooLong = $this->getRandomString(3, 5))
+            ->and($countryTooShort = $this->getRandomString(0, 1))
 
             ->assert('Country too short')
                 ->exception(function () use ($countryTooShort) {
@@ -60,7 +60,7 @@ class Address extends Stancer\Tests\atoum
                 })
                 ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                 ->message
-                    ->isIdenticalTo('A valid country must have 3 characters.')
+                    ->isIdenticalTo('A valid country must have 2 characters.')
 
             ->assert('Country too long')
                 ->exception(function () use ($countryTooLong) {
@@ -68,11 +68,11 @@ class Address extends Stancer\Tests\atoum
                     })
                     ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                     ->message
-                        ->isIdenticalTo('A valid country must have 3 characters.')
+                        ->isIdenticalTo('A valid country must have 2 characters.')
 
             ->assert('Country null by default')
-                    ->variable($this->testedInstance->getCountry())
-                        ->isNull()
+                ->variable($this->testedInstance->getCountry())
+                    ->isNull()
 
             ->assert('Country can be set')
                 ->object($this->testedInstance->setCountry($country))
@@ -89,7 +89,7 @@ class Address extends Stancer\Tests\atoum
         $this
         ->given($client = new mock\Stancer\Http\Client)
         ->and($this->mockConfig($client))
-        ->and($response = $this->mockJsonResponse('address','read'))
+        ->and($response = $this->mockJsonResponse('address', 'read'))
         ->and($this->calling($client)->request = $response)
 
         ->if($this->newTestedInstance('addr_m8H4p4n1Oyf1PbaHGBBPfU4a'))
@@ -103,7 +103,7 @@ class Address extends Stancer\Tests\atoum
                         ->never
 
             ->string($this->testedInstance->getCountry())
-                ->isIdenticalTo('FRA')
+                ->isIdenticalTo('FR')
 
             ->mock($client)
                 ->call('request')
@@ -148,7 +148,7 @@ class Address extends Stancer\Tests\atoum
             ->given($this->newTestedInstance)
 
             ->if($line1 = $this->getRandomString(1, 50))
-            ->and($lineTooLong= $this->getRandomString(51, 70))
+            ->and($lineTooLong = $this->getRandomString(51, 70))
 
             ->assert('Line1 too long')
                 ->exception(function () use ($lineTooLong) {
@@ -159,8 +159,8 @@ class Address extends Stancer\Tests\atoum
                     ->isIdenticalTo('A valid line1 must be between 1 and 50 characters.')
 
             ->assert('Line1 null by default')
-                    ->variable($this->testedInstance->getLine1())
-                        ->isNull()
+                ->variable($this->testedInstance->getLine1())
+                    ->isNull()
 
             ->assert('line1 can be set')
                 ->object($this->testedInstance->setLine1($line1))
@@ -178,8 +178,8 @@ class Address extends Stancer\Tests\atoum
         $this
             ->given($this->newTestedInstance)
 
-            ->if($line2 = $this->getRandomString(1,50))
-            ->and($lineTooLong= $this->getRandomString(51,70))
+            ->if($line2 = $this->getRandomString(1, 50))
+            ->and($lineTooLong = $this->getRandomString(51, 70))
 
             ->assert('line2 too long')
                 ->exception(function () use ($lineTooLong) {
@@ -208,8 +208,8 @@ class Address extends Stancer\Tests\atoum
         $this
             ->given($this->newTestedInstance)
 
-            ->if($line3 = $this->getRandomString(1,50))
-            ->and($lineTooLong= $this->getRandomString(51,70))
+            ->if($line3 = $this->getRandomString(1, 50))
+            ->and($lineTooLong = $this->getRandomString(51, 70))
 
             ->assert('line3 too long')
                 ->exception(function () use ($lineTooLong) {
@@ -221,7 +221,7 @@ class Address extends Stancer\Tests\atoum
 
             ->assert('Line3 null by default')
                 ->variable($this->testedInstance->getLine3())
-                        ->isNull()
+                    ->isNull()
 
 
             ->assert('line3 can be set')
@@ -238,23 +238,23 @@ class Address extends Stancer\Tests\atoum
     {
         $this
             ->given($this->newTestedInstance)
-            ->and($defaultMetadata = ['origin' => 'sdk_PHP'])
+            ->and($defaultMetadata = [$this->getRandomString(10)])
 
             ->if($data1 = $this->getRandomString(50))
             ->and($data2 = $this->getRandomString(125))
             ->and($metadata = ['data1' => $data1])
-            ->and($addMetadata= ['data2' => $data2])
+            ->and($addMetadata = ['data2' => $data2])
 
-            ->then($finalMetadata=[
+            ->then($finalMetadata = [
                 ...$metadata,
                 ...$addMetadata,
             ])
 
-            ->assert("unset metadata return ['origin' => 'sdk_PHP']")
-                ->variable($this->testedInstance->getMetadata())
-                    ->isEqualTo(['origin' => 'sdk_PHP'])
+            ->assert('unset metadata return an empty array')
+                ->array($this->testedInstance->getMetadata())
+                    ->isEmpty()
 
-            ->assert("we don't accept flat json")
+            ->assert('we don\'t accept flat json')
                 ->if($this->testedInstance->setMetadata($this->getRandomString(25)))
 
                 ->exception(fn() => $this->testedInstance->getMetadata())
@@ -264,25 +264,22 @@ class Address extends Stancer\Tests\atoum
 
                 ->exception(fn() => $this->testedInstance->addMetadata($addMetadata))
                     ->isInstanceOf(Stancer\Exceptions\InvalidJsonException::class)
-                            ->message
-                                ->isIdenticalTo('Invalid Json, couldn\'t be parsed as an array.')
-
+                        ->message
+                            ->isIdenticalTo('Invalid Json, couldn\'t be parsed as an array.')
 
             ->given($this->newTestedInstance)
             ->assert('we can add Metadata even if empty.')
-                    ->object($this->testedInstance->addMetadata($addMetadata))
-                        ->isTestedInstance
-                    ->array($this->testedInstance->getMetadata())
-                        ->isEqualTo(
-                            [
-                            ...$defaultMetadata,
-                            ...$addMetadata
-                            ])
+                ->object($this->testedInstance->addMetadata($addMetadata))
+                    ->isTestedInstance
+                ->array($this->testedInstance->getMetadata())
+                    ->isEqualTo([
+                        ...$addMetadata
+                    ])
 
             ->given($this->newTestedInstance)
             ->assert('Metadata can be set')
-                    ->object($this->testedInstance->setMetadata($metadata))
-                        ->isTestedInstance
+                ->object($this->testedInstance->setMetadata($metadata))
+                    ->isTestedInstance
 
             ->assert('Metadata can have data added')
                 ->object($this->testedInstance->addMetadata($addMetadata))
@@ -291,24 +288,23 @@ class Address extends Stancer\Tests\atoum
             ->assert('Metadata can be get')
                 ->array($this->testedInstance->getMetadata())
                     ->isEqualTo($finalMetadata)
-            ;
-        }
-        public function test_metadata_invalid_json(){
+        ;
+    }
+    public function test_metadata_invalid_json()
+    {
 
         $this
-
             ->given($this->newTestedInstance)
-
             ->if($this->function->json_last_error = 2 )
-            ->and($metadata = 'bad Json')
+            ->and($metadata = $this->getRandomString((10)))
 
-            ->assert("check that errors are thrown when bad json")
-                    ->exception( fn() => $this->testedInstance->setMetadata($metadata))
-                        ->isInstanceOf(Stancer\Exceptions\InvalidJsonException::class)
-                            ->message
-                                ->isIdenticalTo('Invalid Json, cannot be parsed.')
-                ;
-        }
+            ->assert('check that errors are thrown when bad json')
+                ->exception( fn() => $this->testedInstance->setMetadata($metadata))
+                    ->isInstanceOf(Stancer\Exceptions\InvalidJsonException::class)
+                        ->message
+                            ->isIdenticalTo('Invalid Json, cannot be parsed.')
+        ;
+    }
 
     public function test_send()
     {
@@ -322,11 +318,11 @@ class Address extends Stancer\Tests\atoum
 
             ->then
                 ->given($this->testedInstance->setCity('Paris'))
-                ->and($this->testedInstance->setCountry('FRA'))
+                ->and($this->testedInstance->setCountry('FR'))
                 ->and($this->testedInstance->setLine1('10 rue de l\'aumier'))
                 ->and($this->testedInstance->setLine2('truc bidule chouete'))
                 ->and($this->testedInstance->setLine3('deuxième porte à gauche'))
-                ->and($this->testedInstance->setMetadata(['origin' => 'test']))
+                ->and($this->testedInstance->setMetadata([$this->getRandomString(20)]))
                 ->and($this->testedInstance->setState('IDF'))
                 ->and($this->testedInstance->setZipCode('75000'))
 
@@ -365,7 +361,7 @@ class Address extends Stancer\Tests\atoum
                     ->call('request')
                         ->withArguments('PATCH', $location, $patchOptions)
                             ->never
-            ;
+        ;
     }
 
     public function testState()
@@ -373,11 +369,11 @@ class Address extends Stancer\Tests\atoum
         $this
             ->given($this->newTestedInstance)
 
-            ->if($state = $this->getRandomString(3,3))
-            ->and($stateTooLong = $this->getRandomString(4,10))
-            ->and($stateTooShort= '')
+            ->if($state = $this->getRandomString(3))
+            ->and($stateTooLong = $this->getRandomString(4, 10))
+            ->and($stateTooShort = '')
 
-            ->assert('state too long')
+            ->assert('state too short')
                 ->exception(function () use ($stateTooShort) {
                     $this->testedInstance->setstate($stateTooShort);
                 })
@@ -387,16 +383,16 @@ class Address extends Stancer\Tests\atoum
 
             ->assert('state too long')
                 ->exception(function () use ($stateTooLong) {
-                        $this->testedInstance->setstate($stateTooLong);
-                    })
-                    ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
-                    ->message
-                        ->isIdenticalTo('A valid state must be between 1 and 3 characters.')
+                    $this->testedInstance->setstate($stateTooLong);
+                })
+                ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
+                ->message
+                    ->isIdenticalTo('A valid state must be between 1 and 3 characters.')
 
 
             ->assert('State null by default')
-                    ->variable($this->testedInstance->getLine3())
-                            ->isNull()
+                ->variable($this->testedInstance->getLine3())
+                    ->isNull()
 
             ->assert('State can be set')
                 ->object($this->testedInstance->setState($state))
@@ -435,6 +431,6 @@ class Address extends Stancer\Tests\atoum
             ->assert('Zipcode can be get')
                 ->string($this->testedInstance->getZipCode())
                     ->isIdenticalTo($zipCode)
-            ;
+        ;
     }
 }

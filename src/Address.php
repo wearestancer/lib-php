@@ -10,7 +10,7 @@ use Stancer;
 /**
  * Representation of an address.
  *
- * @method static add_metadata(array $new_metadata) Add metadata to our array of metadata.
+ * @method static add_metadata(array<mixed> $new_metadata) Add metadata to our array of metadata.
  * @method ?string getCity() Get the name of the city.
  * @method ?string getCountry() Get ISO 3166-1 alpha-3 country code.
  * @method ?\DateTimeImmutable getCreated() Get creation date.
@@ -82,7 +82,7 @@ class Address extends AbstractObject
      */
     protected array $dataModel = [
         'city' => [
-            'desc' => 'The name of the city',
+            'desc' => 'City name',
             'type' => self::STRING,
             'size' => [
                 'min' => 1,
@@ -93,11 +93,11 @@ class Address extends AbstractObject
             'desc' => 'ISO 3166-1 alpha-3 country code',
             'type' => self::STRING,
             'size' => [
-                'fixed' => 3,
+                'fixed' => 2,
             ],
         ],
         'deleted' => [
-            'desc' => 'If the address is deleted or not',
+            'desc' => 'Is the address deleted?',
             'type' => self::BOOLEAN,
         ],
         'line1' => [
@@ -127,7 +127,7 @@ class Address extends AbstractObject
         'metadata' => [
             'desc' => 'A json object, with various usefull data',
             'type' => self::STRING,
-            'value' => '{"origin":"sdk_PHP"}',
+            'value' => '{}',
         ],
         'state' => [
             'desc' => 'ISO 3166-2 state or province',

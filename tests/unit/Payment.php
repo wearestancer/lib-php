@@ -38,11 +38,11 @@ class Payment extends Stancer\Tests\atoum
             ->assert('Full new address')
                 ->if($address = new Stancer\Address())
                 ->and($address->setCity($this->getRandomString(1, 50)))
-                ->and($address->setCountry($this->getRandomString(3, 3)))
+                ->and($address->setCountry($this->getRandomString(2)))
                 ->and($address->setLine1($this->getRandomString(1, 50)))
                 ->and($address->setLine2($this->getRandomString(1, 50)))
                 ->and($address->setLine3($this->getRandomString(1, 50)))
-                ->and($address->setMetadata(['origin' => $this->getRandomString(1, 50)]))
+                ->and($address->setMetadata([$this->getRandomString(1, 50)]))
                 ->and($address->setState($this->getRandomString(1, 3)))
                 ->and($address->setzipCode($this->getRandomString(1, 16)))
 
@@ -2349,8 +2349,6 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
-
-
     public function testSetCard()
     {
         $this
@@ -2526,11 +2524,11 @@ class Payment extends Stancer\Tests\atoum
             ->assert('Full new address')
                 ->if($address = new Stancer\Address())
                 ->and($address->setCity($this->getRandomString(1, 50)))
-                ->and($address->setCountry($this->getRandomString(3, 3)))
+                ->and($address->setCountry($this->getRandomString(2)))
                 ->and($address->setLine1($this->getRandomString(1, 50)))
                 ->and($address->setLine2($this->getRandomString(1, 50)))
                 ->and($address->setLine3($this->getRandomString(1, 50)))
-                ->and($address->setMetadata(['origin' => $this->getRandomString(1, 50)]))
+                ->and($address->setMetadata([$this->getRandomString(1, 50)]))
                 ->and($address->setState($this->getRandomString(1, 3)))
                 ->and($address->setzipCode($this->getRandomString(1, 16)))
 

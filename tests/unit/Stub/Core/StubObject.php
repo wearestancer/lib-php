@@ -8,6 +8,7 @@ use Stancer;
 
 class StubObject extends Stancer\Tests\atoum
 {
+    use Stancer\Tests\Provider\Cards;
     use Stancer\Tests\Provider\Dates;
 
     public function invalidDataProvider()
@@ -2331,16 +2332,18 @@ class StubObject extends Stancer\Tests\atoum
                         ->isFalse
         ;
     }
+
     public function testSend_withOnlyID()
     {
         $this
             ->given($client = new mock\Stancer\Http\Client)
             ->and($config = $this->mockConfig($client))
-            ->and($cardResponse= $this->mockJsonResponse('card','create'))
+            ->and($cardResponse = $this->mockJsonResponse('card', 'create'))
             ->and($this->calling($client)->request = $cardResponse)
 
-            ->given($string1= $this->getRandomString(10,20))
-            ->and($integer1 = random_int(10,20))
+            ->given($string1 = $this->getRandomString(10, 20))
+            ->and($integer1 = random_int(10, 20))
+            ->and($year = (date('Y') + random_int(1, 50)))
 
             ->if($options = [])
             ->and($options['headers'] = [
@@ -2353,17 +2356,17 @@ class StubObject extends Stancer\Tests\atoum
             ->and($location = $this->newTestedInstance->getUri())
 
             ->if($body =[
-                "string1" => $string1,
-                "integer1" => $integer1,
-                "object4" => "card_m8H4p4n1Oyf1PbaHGBBPfU4a" //from fixtures
+                'string1' => $string1,
+                'integer1' => $integer1,
+                'object4' => 'card_m8H4p4n1Oyf1PbaHGBBPfU4a' //from fixtures
             ])
             ->and($options['body'] = json_encode($body))
 
             ->if($card = new Stancer\Card())
-            ->and($card->setCvc("123"))
-            ->and($card->setExpMonth(12))
-            ->and($card->setExpYear(2089))
-            ->and($card->setNumber('4444333322221111'))
+            ->and($card->setCvc((string) random_int(100, 999)))
+            ->and($card->setExpMonth(random_int(1, 12)))
+            ->and($card->setExpYear($year))
+            ->and($card->setNumber($this->cardNumberDataProvider(true)))
             ->and($optionCard['body'] = json_encode($card))
             ->and($locationCard = $card->getUri())
 
@@ -2394,14 +2397,14 @@ class StubObject extends Stancer\Tests\atoum
                             ->withArguments('POST', $location, $options)
                                 ->once
                         ->call('request')
-                            ->withArguments('POST',$locationCard, $optionCard)
+                            ->withArguments('POST', $locationCard, $optionCard)
                                 ->once
 
 
             ->if($this->newTestedInstance->setString1($string1))
             ->and($this->testedInstance->setInteger1($integer1))
 
-            ->if($completeCard = new Stancer\Card("card_m8H4p4n1Oyf1PbaHGBBPfU4a"))
+            ->if($completeCard = new Stancer\Card('card_m8H4p4n1Oyf1PbaHGBBPfU4a')) //from fixtures
             ->and($this->testedInstance->setObject4($completeCard))
 
             ->then
@@ -2427,7 +2430,7 @@ class StubObject extends Stancer\Tests\atoum
                             ->withArguments('POST', $location, $options)
                                 ->once
                         ->call('request')
-                            ->withArguments('POST',$locationCard, $optionCard)
+                            ->withArguments('POST', $locationCard, $optionCard)
                                 ->never
         ;
     }
