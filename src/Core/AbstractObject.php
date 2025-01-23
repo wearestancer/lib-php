@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Core;
@@ -546,7 +547,7 @@ abstract class AbstractObject implements JsonSerializable
                     static::STRING,
                 ];
 
-                $coerce = fn($v) => $v;
+                $coerce = fn ($v) => $v;
                 $model = $this->getModel($property);
 
                 if (is_callable($model['coerce'])) {
@@ -554,7 +555,7 @@ abstract class AbstractObject implements JsonSerializable
                 }
 
                 if (is_a($model['type'], BackedEnum::class, true)) {
-                    $coerce = fn($data) => is_string($data) ? $model['type']::from($data) : $data;
+                    $coerce = fn ($data) => is_string($data) ? $model['type']::from($data) : $data;
                 }
 
                 if ($value && !in_array($model['type'], $types, true) && !is_object($value)) {
@@ -847,7 +848,7 @@ abstract class AbstractObject implements JsonSerializable
      * @param string $id Identifier of the object.
      * @return static
      */
-    static public function retrieve(string $id): static
+    public static function retrieve(string $id): static
     {
         return new static($id);
     }

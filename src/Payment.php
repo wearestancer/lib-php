@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer;
@@ -824,7 +825,7 @@ class Payment extends Stancer\Core\AbstractObject
         } catch (ValueError $exception) {
             $params = [
                 $currency,
-                implode(', ', array_map(fn(Stancer\Currency $case): string => $case->value, Stancer\Currency::cases())),
+                implode(', ', array_map(fn (Stancer\Currency $case): string => $case->value, Stancer\Currency::cases())),
             ];
             $message = vsprintf('"%s" is not a valid currency, please use one of the following : %s', $params);
 
@@ -853,7 +854,7 @@ class Payment extends Stancer\Core\AbstractObject
     public function setMethodsAllowed(array $methods): static
     {
         $new = [];
-        $cast = fn(Stancer\Payment\MethodsAllowed $case): string => $case->value;
+        $cast = fn (Stancer\Payment\MethodsAllowed $case): string => $case->value;
 
         foreach ($methods as $method) {
             try {

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Traits;
@@ -206,8 +207,7 @@ trait SearchTrait
         string $name,
         string $exception,
         bool $allowPeriod = false
-    ): int
-    {
+    ): int {
         // phpcs:enable
         $timestamp = $value;
 

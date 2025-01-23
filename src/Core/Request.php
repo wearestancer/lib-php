@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 // phpcs:disable Generic.NamingConventions.ConstructorName.OldStyle
@@ -334,23 +335,17 @@ class Request
 
             $logger->debug(sprintf('API call : %s %s', (string) $verb, $location));
             $response = $client->request((string) $verb, $location, array_diff_key($options, ['query' => 1]));
-
-        // Bypass for internal exceptions.
-        } catch (Stancer\Exceptions\Exception $exception) {
+        } catch (Stancer\Exceptions\Exception $exception) { // Bypass for internal exceptions.
             if ($exception instanceof Stancer\Exceptions\HttpException) {
                 $this->addCallWithDefaultClient($object, $exception);
             }
 
             throw $exception;
-
-        // Guzzle / Too many redirection.
-        } catch (GuzzleHttp\Exception\TooManyRedirectsException $exception) {
+        } catch (GuzzleHttp\Exception\TooManyRedirectsException $exception) { // Guzzle / Too many redirection.
             $logMethod = 'critical';
             $excepClass = Stancer\Exceptions\TooManyRedirectsException::class;
             $excepParams['previous'] = $exception;
-
-        // Guzzle / HTTP 4**.
-        } catch (GuzzleHttp\Exception\ClientException $exception) {
+        } catch (GuzzleHttp\Exception\ClientException $exception) { // Guzzle / HTTP 4**.
             $logMethod = 'error';
 
             $response = $exception->getResponse();
@@ -428,16 +423,12 @@ class Request
                     }
                 }
             }
-
-        // Guzzle / HTTP 5**.
-        } catch (GuzzleHttp\Exception\ServerException $exception) {
+        } catch (GuzzleHttp\Exception\ServerException $exception) { // Guzzle / HTTP 5**.
             $logMethod = 'critical';
             $logMessage = 'HTTP 500 - Internal Server Error';
             $excepClass = Stancer\Exceptions\InternalServerErrorException::class;
             $excepParams['previous'] = $exception;
-
-        // Others exceptions ...
-        } catch (Exception $exception) {
+        } catch (Exception $exception) { // Others exceptions ...
             $logMethod = 'error';
             $logMessage = sprintf('Unknown error : %s', $exception->getMessage());
 

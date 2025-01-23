@@ -14,7 +14,7 @@ class SearchTrait extends Stancer\Tests\atoum
     public function testIssueGitLab2()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($config = $this->mockConfig($client))
 
             ->and($this->calling($client)->request = $this->mockJsonResponses([
@@ -131,7 +131,7 @@ class SearchTrait extends Stancer\Tests\atoum
     public function testList()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($config = $this->mockConfig($client))
             ->and($options = $this->mockRequestOptions($config))
 
@@ -396,7 +396,7 @@ class SearchTrait extends Stancer\Tests\atoum
                                     ->once
 
                 ->assert('Empty response (real case)')
-                    ->given($this->calling($client)->request->throw = new Stancer\Exceptions\NotFoundException)
+                    ->given($this->calling($client)->request->throw = new Stancer\Exceptions\NotFoundException())
 
                     ->if($limit = rand(1, 100))
                     ->and($terms = [
@@ -444,7 +444,7 @@ class SearchTrait extends Stancer\Tests\atoum
         ];
 
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($response = new mock\Stancer\Http\Response(200, json_encode($body)))
             ->and($this->calling($client)->request = $response)
             ->and($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
@@ -582,7 +582,7 @@ class SearchTrait extends Stancer\Tests\atoum
         ];
 
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($response = new mock\Stancer\Http\Response(200, json_encode($body)))
             ->and($this->calling($client)->request = $response)
             ->and($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))

@@ -581,8 +581,8 @@ class Client extends Stancer\Tests\atoum
                 ->and($this->function->curl_exec = json_encode($body))
                 ->and($this->function->curl_getinfo = 400)
 
-                ->if($object = new mock\Stancer\Core\AbstractObject)
-                ->and($method = new Stancer\Http\Verb\Post)
+                ->if($object = new mock\Stancer\Core\AbstractObject())
+                ->and($method = new Stancer\Http\Verb\Post())
                 ->then
                     ->exception(function () use ($method, $object) {
                         $this->testedInstance->request($method, $object);
@@ -604,8 +604,8 @@ class Client extends Stancer\Tests\atoum
                 ->and($this->function->curl_exec = json_encode($body))
                 ->and($this->function->curl_getinfo = 400)
 
-                ->if($object = new mock\Stancer\Core\AbstractObject)
-                ->and($method = new Stancer\Http\Verb\Post)
+                ->if($object = new mock\Stancer\Core\AbstractObject())
+                ->and($method = new Stancer\Http\Verb\Post())
                 ->then
                     ->exception(function () use ($method, $object) {
                         $this->testedInstance->request($method, $object);
@@ -628,8 +628,8 @@ class Client extends Stancer\Tests\atoum
                 ->and($this->function->curl_exec = json_encode($body))
                 ->and($this->function->curl_getinfo = 400)
 
-                ->if($object = new mock\Stancer\Core\AbstractObject)
-                ->and($method = new Stancer\Http\Verb\Post)
+                ->if($object = new mock\Stancer\Core\AbstractObject())
+                ->and($method = new Stancer\Http\Verb\Post())
                 ->then
                     ->exception(function () use ($method, $object) {
                         $this->testedInstance->request($method, $object);
@@ -649,8 +649,8 @@ class Client extends Stancer\Tests\atoum
                 ->and($this->function->curl_exec = json_encode($body))
                 ->and($this->function->curl_getinfo = 400)
 
-                ->if($object = new mock\Stancer\Core\AbstractObject)
-                ->and($method = new Stancer\Http\Verb\Post)
+                ->if($object = new mock\Stancer\Core\AbstractObject())
+                ->and($method = new Stancer\Http\Verb\Post())
                 ->then
                     ->exception(function () use ($method, $object) {
                         $this->testedInstance->request($method, $object);
@@ -725,7 +725,7 @@ class Client extends Stancer\Tests\atoum
                     }
                 })
 
-                ->if($logger = new mock\Stancer\Core\Logger)
+                ->if($logger = new mock\Stancer\Core\Logger())
                 ->and($config->setLogger($logger))
                 ->then
                     ->exception(function () {

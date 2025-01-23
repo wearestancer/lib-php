@@ -16,8 +16,7 @@ class TestCase extends Stancer\Tests\atoum
         ?atoum\atoum\asserter\generator $asserterGenerator = null,
         ?atoum\atoum\test\assertion\manager $assertionManager = null,
         ?closure $reflectionClassFactory = null
-    )
-    {
+    ) {
         parent::__construct($adapter, $annotationExtractor, $asserterGenerator, $assertionManager, $reflectionClassFactory);
 
         $this->config = Stancer\Config::setGlobal(new Stancer\Config([]));

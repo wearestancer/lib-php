@@ -32,9 +32,9 @@ class HttpException extends Stancer\Tests\atoum
             ->assert('Complete params')
                 ->given($message = uniqid())
                 ->and($code = rand(0, 100))
-                ->and($previous = new mock\Exception)
-                ->and($request = new mock\Psr\Http\Message\RequestInterface)
-                ->and($response = new mock\Psr\Http\Message\ResponseInterface)
+                ->and($previous = new mock\Exception())
+                ->and($request = new mock\Psr\Http\Message\RequestInterface())
+                ->and($response = new mock\Psr\Http\Message\ResponseInterface())
                 ->and($params = compact('message', 'code', 'previous', 'request', 'response'))
                 ->then
                     ->object($obj = $class::create($params))
@@ -114,7 +114,7 @@ class HttpException extends Stancer\Tests\atoum
                         ->isNull
 
             ->assert('Return object when a Guzzle RequestException is used')
-                ->given($request = new mock\Psr\Http\Message\RequestInterface)
+                ->given($request = new mock\Psr\Http\Message\RequestInterface())
 
                 ->and($previous = new GuzzleHttp\Exception\RequestException(uniqid(), $request))
 
@@ -135,8 +135,8 @@ class HttpException extends Stancer\Tests\atoum
                         ->isNull
 
             ->assert('Return object when a Guzzle RequestException is used')
-                ->given($request = new mock\Psr\Http\Message\RequestInterface)
-                ->and($response = new mock\Psr\Http\Message\ResponseInterface)
+                ->given($request = new mock\Psr\Http\Message\RequestInterface())
+                ->and($response = new mock\Psr\Http\Message\ResponseInterface())
                 ->and($this->calling($response)->getStatusCode = random_int(400, 500))
 
                 ->and($previous = new GuzzleHttp\Exception\RequestException(uniqid(), $request, $response))

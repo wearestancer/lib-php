@@ -10,7 +10,7 @@ class StubObject extends Stancer\Core\AbstractObject
     use Stancer\Stub\TestMethodTrait;
 
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    final const ENDPOINT = 'objects'; // invalid but must be not empty
+    final public const ENDPOINT = 'objects'; // invalid but must be not empty
 
     protected array $dataModel = [
         'date1' => [

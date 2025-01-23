@@ -25,8 +25,8 @@ class Sepa extends Stancer\Tests\atoum
                         ->isNull
 
             ->assert('With ID and without data')
-                ->given($client = new mock\Stancer\Http\Client)
-                ->and($this->calling($client)->request->throw = new Stancer\Exceptions\NotFoundException)
+                ->given($client = new mock\Stancer\Http\Client())
+                ->and($this->calling($client)->request->throw = new Stancer\Exceptions\NotFoundException())
                 ->and($config->setHttpClient($client))
 
                 ->if($id = $this->getRandomString(29))
@@ -39,7 +39,7 @@ class Sepa extends Stancer\Tests\atoum
                         ->isNull
 
             ->assert('With ID and with validation data')
-                ->given($client = new mock\Stancer\Http\Client)
+                ->given($client = new mock\Stancer\Http\Client())
                 ->and($response = new mock\Stancer\Http\Response(200))
                 ->and($body = file_get_contents(__DIR__ . '/../fixtures/sepa/check/read.json'))
                 ->and($this->calling($response)->getBody = new Stancer\Http\Stream($body))
@@ -518,7 +518,7 @@ class Sepa extends Stancer\Tests\atoum
                 ->and($body = file_get_contents(__DIR__ . '/../fixtures/sepa/read.json'))
                 ->and($this->calling($sepaResponse)->getBody = new Stancer\Http\Stream($body))
 
-                ->if($client = new mock\Stancer\Http\Client)
+                ->if($client = new mock\Stancer\Http\Client())
                 ->and($this->calling($client)->request[] = $checkResponse)
                 ->and($this->calling($client)->request[] = $sepaResponse)
                 ->and($config->setHttpClient($client))
@@ -607,7 +607,7 @@ class Sepa extends Stancer\Tests\atoum
                 ->and($body = file_get_contents(__DIR__ . '/../fixtures/sepa/read.json'))
                 ->and($this->calling($sepaResponse)->getBody = new Stancer\Http\Stream($body))
 
-                ->if($client = new mock\Stancer\Http\Client)
+                ->if($client = new mock\Stancer\Http\Client())
                 ->and($this->calling($client)->request[] = $checkResponse)
                 ->and($this->calling($client)->request[] = $sepaResponse)
                 ->and($config->setHttpClient($client))

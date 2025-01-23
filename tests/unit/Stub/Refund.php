@@ -10,7 +10,7 @@ class Refund extends Stancer\Tests\atoum
     public function testIsModified_isNotModified()
     {
         $this
-            ->given($payment = new Stancer\Stub\Payment)
+            ->given($payment = new Stancer\Stub\Payment())
             ->and($payment->testOnlyAddModified('amount'))
 
             ->if($this->newTestedInstance)
@@ -29,7 +29,7 @@ class Refund extends Stancer\Tests\atoum
     {
         $this
             ->assert('With amount')
-                ->given($client = new mock\Stancer\Http\Client)
+                ->given($client = new mock\Stancer\Http\Client())
                 ->and($config = $this->mockConfig($client))
 
                 ->if($this->calling($client)->request[] = new Stancer\Http\Response(200, '{}'))
@@ -76,7 +76,7 @@ class Refund extends Stancer\Tests\atoum
                             ->isIdenticalTo('eur')
 
             ->assert('Without amount')
-                ->given($client = new mock\Stancer\Http\Client)
+                ->given($client = new mock\Stancer\Http\Client())
                 ->and($config = $this->mockConfig($client))
 
                 ->if($this->calling($client)->request[] = new Stancer\Http\Response(200, '{}'))

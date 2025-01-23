@@ -15,7 +15,7 @@ class AbstractObject extends Stancer\Tests\atoum
     public function test__construct()
     {
         $this
-            ->given($client = new mock\GuzzleHttp\Client)
+            ->given($client = new mock\GuzzleHttp\Client())
             ->and($api = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($api->setHttpClient($client))
 
@@ -147,8 +147,8 @@ class AbstractObject extends Stancer\Tests\atoum
         $this
             ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setDebug(false))
-            ->and($client = new mock\Stancer\Http\Client)
-            ->and($logger = new mock\Stancer\Core\Logger)
+            ->and($client = new mock\Stancer\Http\Client())
+            ->and($logger = new mock\Stancer\Core\Logger())
             ->and($config->setHttpClient($client))
             ->and($config->setLogger($logger))
 
@@ -346,7 +346,7 @@ class AbstractObject extends Stancer\Tests\atoum
             ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
             ->assert('No request if no id')
-                ->if($client = new mock\GuzzleHttp\Client)
+                ->if($client = new mock\GuzzleHttp\Client())
                 ->and($config->setHttpClient($client))
 
                 ->then
@@ -357,7 +357,7 @@ class AbstractObject extends Stancer\Tests\atoum
                         ->call('request')->never
 
             ->assert('No request if no endpoint')
-                ->if($client = new mock\GuzzleHttp\Client)
+                ->if($client = new mock\GuzzleHttp\Client())
                 ->and($config->setHttpClient($client))
 
                 ->then

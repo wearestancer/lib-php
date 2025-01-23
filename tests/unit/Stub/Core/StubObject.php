@@ -680,7 +680,7 @@ class StubObject extends Stancer\Tests\atoum
     public function testDataModelGetterWillCallPopulate()
     {
         $this
-            ->given($client = new mock\GuzzleHttp\Client)
+            ->given($client = new mock\GuzzleHttp\Client())
             ->and($id = uniqid())
             ->and($timestamp = time())
             ->and($string1 = $this->makeStringBetween(10, 20))
@@ -1146,7 +1146,7 @@ class StubObject extends Stancer\Tests\atoum
         $this
             ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
-            ->if($client = new mock\Stancer\Http\Client)
+            ->if($client = new mock\Stancer\Http\Client())
             ->and($config->setHttpClient($client))
             ->and($config->setDebug(false))
 
@@ -1193,7 +1193,7 @@ class StubObject extends Stancer\Tests\atoum
             ->if($response = new mock\Stancer\Http\Response(200))
             ->and($this->calling($response)->getBody[] = new Stancer\Http\Stream(json_encode($data)))
 
-            ->if($client = new mock\Stancer\Http\Client)
+            ->if($client = new mock\Stancer\Http\Client())
             ->and($this->calling($client)->request = $response)
 
             ->if($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
@@ -1894,7 +1894,7 @@ class StubObject extends Stancer\Tests\atoum
                 ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($config->setDebug(false))
 
-                ->if($client = new mock\GuzzleHttp\Client)
+                ->if($client = new mock\GuzzleHttp\Client())
                 ->and($id = uniqid())
                 ->and($timestamp = time())
                 ->and($body = '{"id":"' . $id . '","created":' . $timestamp . '}')
@@ -1919,7 +1919,7 @@ class StubObject extends Stancer\Tests\atoum
                 ->and($string1 = $this->makeStringBetween(10, 20))
                 ->and($integer1 = $this->makeIntegerBetween(10, 20))
 
-                ->if($client = new mock\GuzzleHttp\Client)
+                ->if($client = new mock\GuzzleHttp\Client())
                 ->and($body = json_encode(compact('id', 'created', 'string1', 'integer1')))
                 ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
                 ->and($this->calling($client)->request = $response)
@@ -1948,7 +1948,7 @@ class StubObject extends Stancer\Tests\atoum
                 ->and($string1 = $this->makeStringBetween(10, 20))
                 ->and($integer1 = $this->makeIntegerBetween(10, 20))
 
-                ->if($client = new mock\GuzzleHttp\Client)
+                ->if($client = new mock\GuzzleHttp\Client())
                 ->and($body = json_encode(compact('id', 'created', 'string1', 'integer1')))
                 ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
                 ->and($this->calling($client)->request = $response)
@@ -1980,7 +1980,7 @@ class StubObject extends Stancer\Tests\atoum
                 ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($config->setDebug(false))
 
-                ->if($client = new mock\GuzzleHttp\Client)
+                ->if($client = new mock\GuzzleHttp\Client())
                 ->and($id = uniqid())
                 ->and($timestamp = time())
                 ->and($body = '{"id":"' . $id . '","created":' . $timestamp . ',"object2":"' . uniqid() . '","array4":["' . uniqid() . '"]}')
@@ -2031,7 +2031,7 @@ class StubObject extends Stancer\Tests\atoum
                 ->and($handler = GuzzleHttp\HandlerStack::create($mock))
                 ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
 
-                ->if($mock = new mock\GuzzleHttp\Client)
+                ->if($mock = new mock\GuzzleHttp\Client())
                 ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
                 ->and($this->calling($mock)->request = $response)
 
@@ -2082,7 +2082,7 @@ class StubObject extends Stancer\Tests\atoum
                 ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($config->setDebug(false))
 
-                ->if($client = new mock\GuzzleHttp\Client)
+                ->if($client = new mock\GuzzleHttp\Client())
                 ->and($id = uniqid())
                 ->and($timestamp = time())
                 ->and($data = [
@@ -2160,13 +2160,13 @@ class StubObject extends Stancer\Tests\atoum
 
                 ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($body = json_encode(compact('id', 'created', 'string1', 'integer1')))
-                ->and($client = new mock\GuzzleHttp\Client)
+                ->and($client = new mock\GuzzleHttp\Client())
                 ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
                 ->and($this->calling($client)->request = $response)
                 ->and($config->setHttpClient($client))
                 ->and($config->setDebug(false))
 
-                ->and($logger = new mock\Stancer\Core\Logger)
+                ->and($logger = new mock\Stancer\Core\Logger())
                 ->and($config->setLogger($logger))
                 ->and($logMessage = sprintf('StubObject "%s" created', $id))
 
@@ -2210,13 +2210,13 @@ class StubObject extends Stancer\Tests\atoum
 
                 ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($body = json_encode(compact('id', 'created', 'string1')))
-                ->and($client = new mock\GuzzleHttp\Client)
+                ->and($client = new mock\GuzzleHttp\Client())
                 ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
                 ->and($this->calling($client)->request = $response)
                 ->and($config->setHttpClient($client))
                 ->and($config->setDebug(false))
 
-                ->and($logger = new mock\Stancer\Core\Logger)
+                ->and($logger = new mock\Stancer\Core\Logger())
                 ->and($config->setLogger($logger))
                 ->and($logMessage = sprintf('StubObject "%s" updated', $id))
 
@@ -2254,7 +2254,7 @@ class StubObject extends Stancer\Tests\atoum
 
             ->assert('No error if returned body is null (saw with PATCH implementation)')
                 ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-                ->and($client = new mock\Stancer\Http\Client)
+                ->and($client = new mock\Stancer\Http\Client())
                 ->and($config->setHttpClient($client))
                 ->and($config->setDebug(false))
 
@@ -2567,7 +2567,7 @@ class StubObject extends Stancer\Tests\atoum
         // object 1
         $datas[] = [
             'object1',
-            new Stancer\Card,
+            new Stancer\Card(),
             null,
             null,
             null,
@@ -2583,10 +2583,10 @@ class StubObject extends Stancer\Tests\atoum
         $array2 = [];
         $array3 = [];
 
-        for ($idx = 0; $idx <= 3; $idx ++) {
+        for ($idx = 0; $idx <= 3; $idx++) {
             $array1[] = $this->makeStringBetween(10, 20);
             $array2[] = $this->makeIntegerBetween(10, 20);
-            $array3[] = new Stancer\Card;
+            $array3[] = new Stancer\Card();
 
             // array 1, array of string
             $datas[] = [
@@ -2606,7 +2606,7 @@ class StubObject extends Stancer\Tests\atoum
             $datas[] = [
                 'array3',
                 $array3,
-                new Stancer\Card,
+                new Stancer\Card(),
             ];
         }
 

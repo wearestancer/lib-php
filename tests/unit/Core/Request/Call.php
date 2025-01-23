@@ -18,7 +18,7 @@ class Call extends Stancer\Tests\atoum
                         ->isNull
 
             ->assert('Can have an instance')
-                ->given($exception = new Stancer\Exceptions\Exception)
+                ->given($exception = new Stancer\Exceptions\Exception())
 
                 ->if($this->newTestedInstance(['exception' => $exception]))
                 ->then
@@ -30,7 +30,7 @@ class Call extends Stancer\Tests\atoum
                 ->if($this->newTestedInstance)
                 ->then
                     ->exception(function () {
-                        $this->testedInstance->setException(new Stancer\Exceptions\Exception);
+                        $this->testedInstance->setException(new Stancer\Exceptions\Exception());
                     })
                         ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                         ->message
@@ -98,7 +98,7 @@ class Call extends Stancer\Tests\atoum
                         ->isIdenticalTo($response)
 
             ->assert('Can have an instance of GuzzleHttp\Psr7\Response')
-                ->given($response = new GuzzleHttp\Psr7\Response)
+                ->given($response = new GuzzleHttp\Psr7\Response())
 
                 ->if($this->newTestedInstance(['response' => $response]))
                 ->then

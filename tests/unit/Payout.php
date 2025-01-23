@@ -34,7 +34,7 @@ class Payout extends Stancer\Tests\atoum
                     ->message
                         ->isIdenticalTo('You are not allowed to modify "amount".')
 
-            ->if($client = new mock\Stancer\Http\Client)
+            ->if($client = new mock\Stancer\Http\Client())
             ->and($this->mockConfig($client))
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
             ->then
@@ -61,7 +61,7 @@ class Payout extends Stancer\Tests\atoum
                     ->message
                         ->isIdenticalTo('You are not allowed to modify "currency".')
 
-            ->if($client = new mock\Stancer\Http\Client)
+            ->if($client = new mock\Stancer\Http\Client())
             ->and($this->mockConfig($client))
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
             ->then
@@ -88,7 +88,7 @@ class Payout extends Stancer\Tests\atoum
                     ->message
                         ->isIdenticalTo('You are not allowed to modify "dateBank".')
 
-            ->if($client = new mock\Stancer\Http\Client)
+            ->if($client = new mock\Stancer\Http\Client())
             ->and($this->mockConfig($client))
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
             ->then
@@ -117,7 +117,7 @@ class Payout extends Stancer\Tests\atoum
                     ->message
                         ->isIdenticalTo('You are not allowed to modify "datePaym".')
 
-            ->if($client = new mock\Stancer\Http\Client)
+            ->if($client = new mock\Stancer\Http\Client())
             ->and($this->mockConfig($client))
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
             ->then
@@ -142,7 +142,7 @@ class Payout extends Stancer\Tests\atoum
     public function testDisputesDetails()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
 
             ->and($config = $this->mockConfig($client))
@@ -384,7 +384,7 @@ class Payout extends Stancer\Tests\atoum
                     ->message
                         ->isIdenticalTo('You are not allowed to modify "details".')
 
-            ->if($client = new mock\Stancer\Http\Client)
+            ->if($client = new mock\Stancer\Http\Client())
             ->and($this->mockConfig($client))
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
             ->then
@@ -449,7 +449,7 @@ class Payout extends Stancer\Tests\atoum
                     ->message
                         ->isIdenticalTo('You are not allowed to modify "fees".')
 
-            ->if($client = new mock\Stancer\Http\Client)
+            ->if($client = new mock\Stancer\Http\Client())
             ->and($this->mockConfig($client))
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
             ->then
@@ -476,7 +476,7 @@ class Payout extends Stancer\Tests\atoum
                     ->message
                         ->isIdenticalTo('You are not allowed to modify "statementDescription".')
 
-            ->if($client = new mock\Stancer\Http\Client)
+            ->if($client = new mock\Stancer\Http\Client())
             ->and($this->mockConfig($client))
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
             ->then
@@ -503,7 +503,7 @@ class Payout extends Stancer\Tests\atoum
                     ->message
                         ->isIdenticalTo('You are not allowed to modify "status".')
 
-            ->if($client = new mock\Stancer\Http\Client)
+            ->if($client = new mock\Stancer\Http\Client())
             ->and($this->mockConfig($client))
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
             ->then
@@ -518,7 +518,7 @@ class Payout extends Stancer\Tests\atoum
     public function testList()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($config = $this->mockConfig($client))
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'list'))
             ->and($options = $this->mockRequestOptions($config))
@@ -552,7 +552,7 @@ class Payout extends Stancer\Tests\atoum
     public function testPaymentsDetails()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
 
             ->and($config = $this->mockConfig($client))
@@ -786,7 +786,7 @@ class Payout extends Stancer\Tests\atoum
     public function testRefundsDetails()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
 
             ->and($config = $this->mockConfig($client))

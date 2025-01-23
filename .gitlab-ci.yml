@@ -85,15 +85,17 @@ atoum:
       junit: $ATOUM_XUNIT_FILENAME
 
 
-phpcs:
+php-cs-fixer:
   extends:
     - .php::stable-version
 
   stage: lint
 
   script:
-    - composer run phpcs -- --report=full
-    - composer run phpcs -- --report=\\Satesh\\Phpcs\\GitLabReport --report-file=codequality.json
+    - composer run php-cs-check || true
+    # We want to check for method chaining indentation but only in source we use a custom rule in test.
+    - composer run php-cs-check -- --rules=method_chaining_indentation ./src
+    - composer run php-cs-check -- --format=gitlab > codequality.json
 
   artifacts:
     reports:

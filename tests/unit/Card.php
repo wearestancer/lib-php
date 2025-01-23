@@ -440,7 +440,7 @@ class Card extends Stancer\Tests\atoum
 
         $months = [0, 13];
 
-        for ($index = 0; $index < rand(1, 10) ; $index ++) {
+        for ($index = 0; $index < rand(1, 10) ; $index++) {
             $months[] = rand(14, 100);
         }
 

@@ -9,6 +9,7 @@
 				"bmewburn.vscode-intelephense-client",
 				"editorconfig.editorconfig",
 				"felixfbecker.php-debug",
+				"junstyle.php-cs-fixer",
 				"kasik96.latte",
 				"mrmlnc.vscode-apache",
 				"xdebug.php-debug"
@@ -17,11 +18,18 @@
 				"-v", "${env:HOME}/.gnupg/:/home/vscode/.gnupg/"
 			],
 			"settings": {
+				"[php]": {
+					"editor.defaultFormatter": "junstyle.php-cs-fixer"
+				},
 				"editor.rulers": [
 					120
 				],
 				"intelephense.environment.phpVersion": "8.1.0",
+				"php-cs-fixer.config": ".php-cs-fixer.php",
+				"php-cs-fixer.executablePath": "php-cs-fixer",
+				"php-cs-fixer.onsave": true,
 				"php.validate.executablePath": "/usr/local/bin/php"
+
 			}
 		}
 	},

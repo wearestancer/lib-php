@@ -57,7 +57,7 @@ class Uri extends Stancer\Tests\atoum
             ->when(function () use (&$authority, $user, $pass, $host, $port) {
                 $authority = '';
 
-                if ($user || $pass ) {
+                if ($user || $pass) {
                     $authority .= $user . ($pass ? ':' : '') . $pass . '@';
                 }
 
@@ -113,11 +113,11 @@ class Uri extends Stancer\Tests\atoum
             ->when(function () use (&$command, $path, $query, $hash) {
                 $command = $path;
 
-                if ($query ) {
+                if ($query) {
                     $command .= '?' . $query;
                 }
 
-                if ($hash ) {
+                if ($hash) {
                     $command .= '#' . $hash;
                 }
             })

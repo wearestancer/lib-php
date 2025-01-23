@@ -371,7 +371,7 @@ class Request extends Stancer\Tests\atoum
     {
         $this
             ->if($this->newTestedInstance(uniqid(), uniqid()))
-            ->and($mock = new mock\Psr\Http\Message\UriInterface)
+            ->and($mock = new mock\Psr\Http\Message\UriInterface())
             ->then
                 ->exception(function () use ($mock) {
                     $this->testedInstance->withUri($mock);

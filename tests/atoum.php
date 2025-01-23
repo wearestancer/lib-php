@@ -68,7 +68,7 @@ class atoum extends base\test
 
         if ($month == 2) {
             $dMax = 27;
-        } else if (in_array($month, [4, 6, 9, 11])) {
+        } elseif (in_array($month, [4, 6, 9, 11])) {
             $dMax = 30;
         }
 
@@ -145,8 +145,7 @@ class atoum extends base\test
 
     public function mockEmptyJsonResponse(
         Psr\Http\Message\ResponseInterface $response = new mock\Stancer\Http\Response(200)
-    ): Psr\Http\Message\ResponseInterface
-    {
+    ): Psr\Http\Message\ResponseInterface {
         return $this->mockResponse('{}', $response);
     }
 
@@ -154,16 +153,14 @@ class atoum extends base\test
         string $dir,
         string $file,
         Psr\Http\Message\ResponseInterface $response = new mock\Stancer\Http\Response(200)
-    ): Psr\Http\Message\ResponseInterface
-    {
+    ): Psr\Http\Message\ResponseInterface {
         return $this->mockResponse($this->getFixture($dir, $file), $response);
     }
 
     public function mockJsonResponses(
         array $files,
         Psr\Http\Message\ResponseInterface $response = new mock\Stancer\Http\Response(200)
-    ): Psr\Http\Message\ResponseInterface
-    {
+    ): Psr\Http\Message\ResponseInterface {
         foreach ($files as $file) {
             $this->calling($response)->getBody[] = new Stancer\Http\Stream($this->getFixture(...$file));
         }
@@ -174,8 +171,7 @@ class atoum extends base\test
     public function mockResponse(
         string $body,
         Psr\Http\Message\ResponseInterface $response = new mock\Stancer\Http\Response(200)
-    ): Psr\Http\Message\ResponseInterface
-    {
+    ): Psr\Http\Message\ResponseInterface {
         $this->calling($response)->getBody = new Stancer\Http\Stream($body);
 
         return $response;

@@ -91,13 +91,13 @@ class Payment extends TestCase
                 ->and($this->testedInstance->setAmount($amount = rand(50, 10000)))
                 ->and($this->testedInstance->setDescription(sprintf('Automatic test for list, %.02f %s', $amount / 100, $currency)))
                 ->and($this->testedInstance->setCurrency($currency))
-                ->and($this->testedInstance->setCard($card = new Stancer\Card))
+                ->and($this->testedInstance->setCard($card = new Stancer\Card()))
                 ->and($this->testedInstance->setOrderId($this->order))
                 ->and($card->setNumber($this->getValidCardNumber()))
                 ->and($card->setExpirationMonth(rand(1, 12)))
                 ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
                 ->and($card->setCvc((string) rand(100, 999)))
-                ->and($this->testedInstance->setCustomer($customer = new Stancer\Customer))
+                ->and($this->testedInstance->setCustomer($customer = new Stancer\Customer()))
                 ->and($customer->setName('John Doe'))
                 ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
                 ->and($this->testedInstance->send())
@@ -169,7 +169,7 @@ class Payment extends TestCase
                 ->object($this->testedInstance->setCurrency($currency))
                     ->isTestedInstance
 
-                ->object($this->testedInstance->setCard($card = new Stancer\Card))
+                ->object($this->testedInstance->setCard($card = new Stancer\Card()))
                     ->isTestedInstance
 
                 ->object($card->setNumber($this->getValidCardNumber()))
@@ -184,7 +184,7 @@ class Payment extends TestCase
                 ->object($card->setCvc((string) rand(100, 999)))
                     ->isInstanceOf(Stancer\Card::class)
 
-                ->object($this->testedInstance->setCustomer($customer = new Stancer\Customer))
+                ->object($this->testedInstance->setCustomer($customer = new Stancer\Customer()))
                     ->isTestedInstance
 
                 ->object($customer->setName('John Doe'))
@@ -213,13 +213,13 @@ class Payment extends TestCase
                     $currency,
                 ]))
 
-                ->if($card = new Stancer\Card)
+                ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
                 ->and($card->setExpirationMonth(rand(1, 12)))
                 ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
                 ->and($card->setCvc((string) rand(100, 999)))
 
-                ->if($customer = new Stancer\Customer)
+                ->if($customer = new Stancer\Customer())
                 ->and($customer->setName('John Doe'))
                 ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
 
@@ -289,7 +289,7 @@ class Payment extends TestCase
                     $currency,
                 ]))
 
-                ->if($customer = new Stancer\Customer)
+                ->if($customer = new Stancer\Customer())
                 ->and($customer->setName('John Doe'))
                 ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
 
@@ -327,7 +327,7 @@ class Payment extends TestCase
                     $currency,
                 ]))
 
-                ->if($customer = new Stancer\Customer)
+                ->if($customer = new Stancer\Customer())
                 ->and($customer->setName('John Doe'))
                 ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
 
@@ -379,7 +379,7 @@ class Payment extends TestCase
                 ->and($amount = rand(50, 99999))
                 ->and($description = sprintf('Automatic test, PATCH card, %.02f %s', $amount / 100, $currency))
 
-                ->if($customer = new Stancer\Customer)
+                ->if($customer = new Stancer\Customer())
                 ->and($customer->setName('John Doe'))
                 ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
 
@@ -388,7 +388,7 @@ class Payment extends TestCase
                 ->and($this->testedInstance->setDescription($description))
                 ->and($this->testedInstance->setCustomer($customer))
 
-                ->if($card = new Stancer\Card)
+                ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
                 ->and($card->setExpirationMonth(rand(1, 12)))
                 ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
@@ -458,13 +458,13 @@ class Payment extends TestCase
                 ->and($email = 'pickle.rick' . $this->getRandomString(10) . '@example.com')
                 ->and($mobile = $this->getRandomNumber())
 
-                ->if($card = new Stancer\Card)
+                ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
                 ->and($card->setExpirationMonth(rand(1, 12)))
                 ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
                 ->and($card->setCvc((string) rand(100, 999)))
 
-                ->if($customer = new Stancer\Customer)
+                ->if($customer = new Stancer\Customer())
                 ->and($customer->setName($name))
                 ->and($customer->setEmail($email))
                 ->and($customer->setMobile($mobile))
@@ -511,7 +511,7 @@ class Payment extends TestCase
                 ->and($this->testedInstance->setDescription('Will fail'))
                 ->and($this->testedInstance->setUniqueId($uniqueID))
                 ->then
-                    ->exception(function() {
+                    ->exception(function () {
                         $this->testedInstance->send();
                     })
                         ->isInstanceOf(Stancer\Exceptions\ConflictException::class)
@@ -523,13 +523,13 @@ class Payment extends TestCase
                 ->and($amount = rand(50, 99999))
                 ->and($description = sprintf('Automatic test, duplicate customer, %.02f %s', $amount / 100, $currency))
 
-                ->if($card = new Stancer\Card)
+                ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
                 ->and($card->setExpirationMonth(rand(1, 12)))
                 ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
                 ->and($card->setCvc((string) rand(100, 999)))
 
-                ->if($customer = new Stancer\Customer)
+                ->if($customer = new Stancer\Customer())
                 ->and($customer->setName($name)) // From previous test
                 ->and($customer->setEmail($email)) // From previous test
                 ->and($customer->setMobile($mobile)) // From previous test
@@ -580,13 +580,13 @@ class Payment extends TestCase
                 $currency,
             ]))
 
-            ->if($card = new Stancer\Card)
+            ->if($card = new Stancer\Card())
             ->and($card->setNumber($this->getValidCardNumber()))
             ->and($card->setExpirationMonth(rand(1, 12)))
             ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
             ->and($card->setCvc((string) rand(100, 999)))
 
-            ->if($customer = new Stancer\Customer)
+            ->if($customer = new Stancer\Customer())
             ->and($customer->setName('John Doe'))
             ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
 
@@ -644,13 +644,13 @@ class Payment extends TestCase
                     $currency,
                 ]))
 
-                ->if($sepa = new Stancer\Sepa)
+                ->if($sepa = new Stancer\Sepa())
                 ->and($sepa->setDateMandate(rand(946681200, 1893452400)))
                 ->and($sepa->setIban($this->getValidIban()))
                 ->and($sepa->setMandate($this->getRandomString(34)))
                 ->and($sepa->setName($this->fake()->name()))
 
-                ->if($customer = new Stancer\Customer)
+                ->if($customer = new Stancer\Customer())
                 ->and($customer->setName('John Doe'))
                 ->and($customer->setEmail('john.doe+' . $this->getRandomString(10) . '@example.com'))
 
