@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Stancer\Traits;
 
-use ReturnTypeWillChange;
 use Stancer;
 
 /**
@@ -17,7 +16,7 @@ trait AliasTrait
      *
      * @param string $method Method called.
      * @param mixed[] $arguments Arguments used during the call.
-     * @return mixed
+     *
      * @throws Stancer\Exceptions\BadMethodCallException When an unhandled method is called.
      */
     public function __call(string $method, array $arguments): mixed
@@ -46,7 +45,7 @@ trait AliasTrait
      *
      * @param string $method Method called.
      * @param mixed[] $arguments Arguments used during the call.
-     * @return mixed
+     *
      * @throws Stancer\Exceptions\BadMethodCallException When an unhandled method is called.
      */
     public static function __callStatic(string $method, array $arguments): mixed
@@ -66,7 +65,6 @@ trait AliasTrait
      * Handle aliases.
      *
      * @param string $property Property called.
-     * @return mixed
      */
     public function __get(string $property): mixed
     {
@@ -94,7 +92,7 @@ trait AliasTrait
      *
      * @param string $property Property to modify.
      * @param mixed $value New value.
-     * @return void
+     *
      * @throws Stancer\Exceptions\BadPropertyAccessException When an unhandled property is called.
      */
     public function __set(string $property, mixed $value): void

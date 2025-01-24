@@ -139,6 +139,7 @@ class Response implements Psr\Http\Message\ResponseInterface
      *
      * @link http://tools.ietf.org/html/rfc7231#section-6
      * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+     *
      * @return string Reason phrase; must return an empty string if none present.
      */
     public function getReasonPhrase(): string
@@ -178,11 +179,11 @@ class Response implements Psr\Http\Message\ResponseInterface
      *
      * @link http://tools.ietf.org/html/rfc7231#section-6
      * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+     *
      * @param integer $code The 3-digit integer result code to set.
      * @param string|null $reasonPhrase The reason phrase to use with the
      *     provided status code; if none is provided, implementations MAY
      *     use the defaults as suggested in the HTTP specification.
-     * @return static
      */
     public function withStatus(int $code, ?string $reasonPhrase = null): static
     {

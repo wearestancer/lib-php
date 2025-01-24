@@ -7,6 +7,8 @@ use Stancer\Payment as testedClass;
 
 /**
  * @namespace \Tests\functional
+ *
+ * @internal
  */
 class Payment extends TestCase
 {
@@ -82,6 +84,8 @@ class Payment extends TestCase
 
     /**
      * @dataProvider cardCurrencyDataProvider
+     *
+     * @param mixed $currency
      */
     public function testList($currency)
     {
@@ -154,6 +158,8 @@ class Payment extends TestCase
 
     /**
      * @dataProvider cardCurrencyDataProvider
+     *
+     * @param mixed $currency
      */
     public function testPay($currency)
     {
@@ -202,6 +208,8 @@ class Payment extends TestCase
 
     /**
      * @dataProvider cardCurrencyDataProvider
+     *
+     * @param mixed $currency
      */
     public function testSend($currency)
     {
@@ -570,8 +578,10 @@ class Payment extends TestCase
 
     /**
      * @dataProvider cardCurrencyDataProvider
+     *
+     * @param mixed $currency
      */
-    public function testSend_withCard($currency)
+    public function testSendWithCard($currency)
     {
         $this
             ->given($amount = rand(50, 99999))
@@ -633,8 +643,10 @@ class Payment extends TestCase
 
     /**
      * @dataProvider sepaCurrencyDataProvider
+     *
+     * @param mixed $currency
      */
-    public function testSend_withSepa($currency)
+    public function testSendWithSepa($currency)
     {
         $this
             ->assert('With a sepa account')

@@ -8,8 +8,8 @@ declare(strict_types=1);
 
 namespace Stancer\Http;
 
-use Stancer;
 use Psr;
+use Stancer;
 
 /**
  * Basic HTTP request.
@@ -50,7 +50,7 @@ class Request implements Psr\Http\Message\RequestInterface
      * @param Stancer\Http\Verb\AbstractVerb|string $method HTTP method.
      * @param Psr\Http\Message\UriInterface|string $uri URI.
      * @param mixed[] $headers Request headers.
-     * @param Psr\Http\Message\StreamInterface|string|mixed[]|null $body Request body.
+     * @param mixed[]|Psr\Http\Message\StreamInterface|string|null $body Request body.
      * @param string $version Protocol version.
      *
      * @phpstan-param array<string, string | string[]> $headers
@@ -59,7 +59,7 @@ class Request implements Psr\Http\Message\RequestInterface
         Stancer\Http\Verb\AbstractVerb|string $method,
         Psr\Http\Message\UriInterface|string $uri,
         array $headers = [],
-        Psr\Http\Message\StreamInterface|string|array|null $body = null,
+        array|Psr\Http\Message\StreamInterface|string|null $body = null,
         string $version = '1.1'
     ) {
         $this->method = strtoupper((string) $method);
@@ -103,8 +103,6 @@ class Request implements Psr\Http\Message\RequestInterface
      *
      * If no URI is available, and no request-target has been specifically
      * provided, this method MUST return the string "/".
-     *
-     * @return string
      */
     public function getRequestTarget(): string
     {
@@ -131,6 +129,7 @@ class Request implements Psr\Http\Message\RequestInterface
      * We will not implement the real interface as we will not return an UriInterface.
      *
      * @link http://tools.ietf.org/html/rfc3986#section-4.3
+     *
      * @return Psr\Http\Message\UriInterface Returns the URI of the request.
      */
     public function getUri(): Psr\Http\Message\UriInterface
@@ -142,6 +141,7 @@ class Request implements Psr\Http\Message\RequestInterface
      * Update URI and host header.
      *
      * @param Psr\Http\Message\UriInterface|string $uri New URI.
+     *
      * @return $this
      */
     public function updateUri(Psr\Http\Message\UriInterface|string $uri): static
@@ -173,7 +173,6 @@ class Request implements Psr\Http\Message\RequestInterface
      * changed request method.
      *
      * @param string $method Case-sensitive method.
-     * @return static
      */
     public function withMethod(string $method): static
     {
@@ -188,8 +187,8 @@ class Request implements Psr\Http\Message\RequestInterface
      *
      * @link http://tools.ietf.org/html/rfc7230#section-5.3 (for the various
      *     request-target forms allowed in request messages)
+     *
      * @param mixed $requestTarget New target.
-     * @return static
      */
     public function withRequestTarget(mixed $requestTarget): static
     {
@@ -204,7 +203,8 @@ class Request implements Psr\Http\Message\RequestInterface
         $obj->uri = $this->uri
             ->withPath($parse->getPath())
             ->withQuery($parse->getQuery())
-            ->withFragment($parse->getFragment());
+            ->withFragment($parse->getFragment())
+        ;
 
         return $obj;
     }
@@ -235,9 +235,10 @@ class Request implements Psr\Http\Message\RequestInterface
      * new UriInterface instance.
      *
      * @link http://tools.ietf.org/html/rfc3986#section-4.3
+     *
      * @param Psr\Http\Message\UriInterface $uri New request URI to use.
      * @param boolean $preserveHost Preserve the original state of the Host header.
-     * @return static
+     *
      * @throws Stancer\Exceptions\BadMethodCallException For every call.
      */
     public function withUri(Psr\Http\Message\UriInterface $uri, bool $preserveHost = false): static

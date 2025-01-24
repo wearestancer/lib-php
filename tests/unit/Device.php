@@ -227,6 +227,8 @@ class Device extends Stancer\Tests\atoum
 
     /**
      * @dataProvider ipDataProvider
+     *
+     * @param mixed $ip
      */
     public function testGetIp_SetIp($ip)
     {

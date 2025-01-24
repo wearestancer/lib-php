@@ -2,13 +2,11 @@
 
 namespace Stancer\tests\unit;
 
-use DateTime;
-use DateTimeZone;
 use GuzzleHttp;
+use mock;
 use Psr;
 use Stancer;
 use Stancer\Config as testedClass;
-use mock;
 
 class Config extends Stancer\Tests\atoum
 {
@@ -610,6 +608,8 @@ class Config extends Stancer\Tests\atoum
 
     /**
      * @dataProvider timeZoneProvider
+     *
+     * @param mixed $zone
      */
     public function testGetDefaultTimeZone_SetDefaultTimeZone($zone)
     {
@@ -638,42 +638,42 @@ class Config extends Stancer\Tests\atoum
 
             ->assert('Exception if not a DateTimeZone instance')
                 ->exception(function () {
-                    $this->newTestedInstance([])->setDefaultTimeZone(new DateTime());
+                    $this->newTestedInstance([])->setDefaultTimeZone(new \DateTime());
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                     ->message
                         ->isIdenticalTo('Invalid time zone.')
 
                 ->exception(function () {
-                    $this->newTestedInstance([])->set_default_timezone(new DateTime());
+                    $this->newTestedInstance([])->set_default_timezone(new \DateTime());
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                     ->message
                         ->isIdenticalTo('Invalid time zone.')
 
                 ->exception(function () {
-                    $this->newTestedInstance([])->set_default_time_zone(new DateTime());
+                    $this->newTestedInstance([])->set_default_time_zone(new \DateTime());
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                     ->message
                         ->isIdenticalTo('Invalid time zone.')
 
                 ->exception(function () {
-                    $this->newTestedInstance([])->defaultTimeZone = new DateTime();
+                    $this->newTestedInstance([])->defaultTimeZone = new \DateTime();
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                     ->message
                         ->isIdenticalTo('Invalid time zone.')
 
                 ->exception(function () {
-                    $this->newTestedInstance([])->default_timezone = new DateTime();
+                    $this->newTestedInstance([])->default_timezone = new \DateTime();
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                     ->message
                         ->isIdenticalTo('Invalid time zone.')
 
                 ->exception(function () {
-                    $this->newTestedInstance([])->default_time_zone = new DateTime();
+                    $this->newTestedInstance([])->default_time_zone = new \DateTime();
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                     ->message
@@ -729,7 +729,7 @@ class Config extends Stancer\Tests\atoum
                         ->isTestedInstance
 
                     ->object($this->testedInstance->getDefaultTimeZone())
-                        ->isInstanceOf(DateTimeZone::class)
+                        ->isInstanceOf(\DateTimeZone::class)
 
                     ->string($this->testedInstance->getDefaultTimeZone()->getName())
                         ->isIdenticalTo($zone)
@@ -747,7 +747,7 @@ class Config extends Stancer\Tests\atoum
                         ->isTestedInstance
 
                     ->object($this->testedInstance->get_default_timezone())
-                        ->isInstanceOf(DateTimeZone::class)
+                        ->isInstanceOf(\DateTimeZone::class)
 
                     ->string($this->testedInstance->get_default_timezone()->getName())
                         ->isIdenticalTo($zone)
@@ -765,7 +765,7 @@ class Config extends Stancer\Tests\atoum
                         ->isTestedInstance
 
                     ->object($this->testedInstance->get_default_time_zone())
-                        ->isInstanceOf(DateTimeZone::class)
+                        ->isInstanceOf(\DateTimeZone::class)
 
                     ->string($this->testedInstance->get_default_time_zone()->getName())
                         ->isIdenticalTo($zone)
@@ -780,7 +780,7 @@ class Config extends Stancer\Tests\atoum
                 ->if($this->newTestedInstance([])->defaultTimeZone = $zone)
                 ->then
                     ->object($this->testedInstance->defaultTimeZone)
-                        ->isInstanceOf(DateTimeZone::class)
+                        ->isInstanceOf(\DateTimeZone::class)
 
                     ->string($this->testedInstance->defaultTimeZone->getName())
                         ->isIdenticalTo($zone)
@@ -792,12 +792,12 @@ class Config extends Stancer\Tests\atoum
                         ->isNull
 
             ->assert('Update with an instance / snake_case property')
-                ->given($tz = new DateTimeZone($zone))
+                ->given($tz = new \DateTimeZone($zone))
 
                 ->if($this->newTestedInstance([])->default_timezone = $tz)
                 ->then
                     ->object($this->testedInstance->default_timezone)
-                        ->isInstanceOf(DateTimeZone::class)
+                        ->isInstanceOf(\DateTimeZone::class)
 
                     ->string($this->testedInstance->default_timezone->getName())
                         ->isIdenticalTo($zone)
@@ -809,12 +809,12 @@ class Config extends Stancer\Tests\atoum
                         ->isNull
 
             ->assert('Update with an instance / snake_case property alternative')
-                ->given($tz = new DateTimeZone($zone))
+                ->given($tz = new \DateTimeZone($zone))
 
                 ->if($this->newTestedInstance([])->default_time_zone = $tz)
                 ->then
                     ->object($this->testedInstance->default_time_zone)
-                        ->isInstanceOf(DateTimeZone::class)
+                        ->isInstanceOf(\DateTimeZone::class)
 
                     ->string($this->testedInstance->default_time_zone->getName())
                         ->isIdenticalTo($zone)

@@ -4,12 +4,7 @@ declare(strict_types=1);
 
 namespace Stancer\Core;
 
-use BackedEnum;
-use DateTimeImmutable;
-use DateTimeInterface;
 use Stancer;
-use JsonSerializable;
-use ReflectionClass;
 
 /**
  * Manage common code between API object.
@@ -56,9 +51,9 @@ use ReflectionClass;
     'created',
     description: 'Creation date',
     restricted: true,
-    type: DateTimeImmutable::class,
+    type: \DateTimeImmutable::class,
 )]
-abstract class AbstractObject implements JsonSerializable
+abstract class AbstractObject implements \JsonSerializable
 {
     use Stancer\Traits\AliasTrait;
 
@@ -75,13 +70,11 @@ abstract class AbstractObject implements JsonSerializable
     public const ENDPOINT = '';
 
     /**
-     * @var array|string
      * @phpstan-var array<string, mixed>|string
      */
     protected array|string $apiData = [];
 
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [];
@@ -98,7 +91,7 @@ abstract class AbstractObject implements JsonSerializable
     /**
      * Create or get an API object.
      *
-     * @param string|array<string, mixed>|null $id Object id or data for hydration.
+     * @param array<string, mixed>|string|null $id Object id or data for hydration.
      */
     public function __construct($id = null)
     {
@@ -123,7 +116,7 @@ abstract class AbstractObject implements JsonSerializable
             'created' => [
                 'desc' => 'Creation date',
                 'restricted' => true,
-                'type' => DateTimeImmutable::class,
+                'type' => \DateTimeImmutable::class,
             ],
         ];
 
@@ -138,7 +131,7 @@ abstract class AbstractObject implements JsonSerializable
                 $data['exportable'] = !$data['restricted'];
             }
 
-            if (is_a($data['type'], DateTimeInterface::class, true)) {
+            if (is_a($data['type'], \DateTimeInterface::class, true)) {
                 $data['coerce'] = Type\Helper::PARSE_DATE_TIME;
 
                 if (!$data['format']) {
@@ -166,9 +159,10 @@ abstract class AbstractObject implements JsonSerializable
      * @uses self::dataModelAdder() When method starts with `add`.
      * @uses self::dataModelGetter() When method starts with `get`.
      * @uses self::dataModelSetter() When method starts with `set`.
+     *
      * @param string $method Method called.
      * @param mixed[] $arguments Arguments used during the call.
-     * @return mixed
+     *
      * @throws Stancer\Exceptions\BadMethodCallException When an unhandled method is called.
      */
     public function __call(string $method, array $arguments): mixed
@@ -214,7 +208,6 @@ abstract class AbstractObject implements JsonSerializable
      * Return a string representation (as a JSON) of the current object.
      *
      * @uses self::toString()
-     * @return string
      */
     public function __toString(): string
     {
@@ -225,156 +218,12 @@ abstract class AbstractObject implements JsonSerializable
      * Create a fresh instance of an API object.
      *
      * @param mixed[] $data Additional data for creation.
-     * @return static
      */
     public static function create(array $data): static
     {
         $obj = new static();
 
         return $obj->hydrate($data);
-    }
-
-    /**
-     * Add a value stored list in data model.
-     *
-     * @param string $property Property to set.
-     * @param mixed $value Value to set.
-     * @return $this
-     * @uses self::dataModelGetter() To get actual values.
-     * @uses self::dataModelSetter() To set new values.
-     * @throws Stancer\Exceptions\InvalidArgumentException When asking an unknown property.
-     * @throws Stancer\Exceptions\InvalidArgumentException If used on properties not declared as list.
-     */
-    protected function dataModelAdder(string $property, mixed $value): static
-    {
-        $model = $this->getModel($property);
-
-        if (!$model) {
-            throw new Stancer\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
-        }
-
-        if (!$model['list']) {
-            $message = sprintf('"%s" is not a list, you can not add elements in it.', $property);
-
-            throw new Stancer\Exceptions\InvalidArgumentException($message);
-        }
-
-        $values = $this->dataModelGetter($property);
-
-        if (is_array($values)) {
-            $values[] = $value;
-        } else {
-            $values = [$value];
-        }
-
-        return $this->dataModelSetter($property, $values);
-    }
-
-    /**
-     * Get a value stored in data model.
-     *
-     * This was initially in `self::__call()` method, I removed it for simplicity.
-     *
-     * @param string $property Property to get.
-     * @param boolean $autoPopulate Auto populate the property.
-     * @return mixed
-     * @throws Stancer\Exceptions\InvalidArgumentException When asking an unknown property.
-     */
-    protected function dataModelGetter(string $property, bool $autoPopulate = true): mixed
-    {
-        $model = $this->getModel($property);
-
-        if (!$model) {
-            throw new Stancer\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
-        }
-
-        $value = $model['value'];
-
-        if (is_null($value) && $autoPopulate && $this->isNotModified()) {
-            $model = $this->populate()->getModel($property);
-            $value = $model['value'];
-        }
-
-        if (is_null($value) && $model['list']) {
-            return [];
-        }
-
-        if (!is_null($value) && is_a($model['type'], DateTimeInterface::class, true)) {
-            $tz = Stancer\Config::getGlobal()->getDefaultTimeZone();
-
-            if ($tz) {
-                if ($model['list']) {
-                    foreach ($value as &$val) {
-                        $val = $val->setTimezone($tz);
-                    }
-                } else {
-                    $value = $value->setTimezone($tz);
-                }
-            }
-        }
-
-        return $value;
-    }
-
-    /**
-     * Set a value in data model.
-     *
-     * This was initially in `self::__call()` method, I removed it for simplicity.
-     *
-     * @param string $property Property to set.
-     * @param mixed $value Value to set.
-     * @return $this
-     * @uses self::validateDataModel() To check value's integrity.
-     * @throws Stancer\Exceptions\BadMethodCallException When setting a restricted property.
-     * @throws Stancer\Exceptions\InvalidArgumentException When asking an unknown property.
-     * @throws Stancer\Exceptions\InvalidArgumentException When the value do not match expected pattern.
-     */
-    protected function dataModelSetter(string $property, mixed $value): static
-    {
-        $model = $this->getModel($property);
-
-        if (!$model) {
-            throw new Stancer\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
-        }
-
-        if ($model['restricted']) {
-            $message = sprintf('You are not allowed to modify "%s".', $property);
-
-            if ($property === 'created') {
-                $message = 'You are not allowed to modify the creation date.';
-            }
-
-            throw new Stancer\Exceptions\BadMethodCallException($message);
-        }
-
-        $type = gettype($value);
-        $coerce = function ($v) {
-            return $v;
-        };
-        $coercedValues = [];
-
-        if (is_callable($model['coerce'])) {
-            $coerce = $model['coerce'];
-        }
-
-        if ($model['list']) {
-            if (!is_array($value)) {
-                $message = sprintf('Type mismatch, given "%s" expected "array".', $type);
-
-                throw new Stancer\Exceptions\InvalidArgumentException($message);
-            }
-
-            foreach ($value as $val) {
-                $coercedValues[] = $this->validateDataModel($property, $coerce($val));
-            }
-        } else {
-            $coercedValues = $this->validateDataModel($property, $coerce($value));
-        }
-
-        $this->dataModel[$property]['value'] = $coercedValues;
-        $this->modified[] = Stancer\Helper::camelCaseToSnakeCase($property);
-
-        return $this;
     }
 
     /**
@@ -399,9 +248,8 @@ abstract class AbstractObject implements JsonSerializable
      * Return raw data from the API.
      *
      * @param string $attr Optional attribute name.
-     * @return mixed
      */
-    public function get(string $attr = null): mixed
+    public function get(?string $attr = null): mixed
     {
         if ($attr && $this->apiData) {
             $prop = Stancer\Helper::camelCaseToSnakeCase($attr);
@@ -422,23 +270,19 @@ abstract class AbstractObject implements JsonSerializable
 
     /**
      * Return creation date.
-     *
-     * @return DateTimeImmutable|null
      */
     #[Stancer\Core\Documentation\FormatProperty(
         description: 'Creation date',
         restricted: true,
-        type: DateTimeImmutable::class,
+        type: \DateTimeImmutable::class,
     )]
-    public function getCreationDate(): ?DateTimeImmutable
+    public function getCreationDate(): ?\DateTimeImmutable
     {
         return $this->created;
     }
 
     /**
      * Return API endpoint.
-     *
-     * @return string
      */
     #[Stancer\Core\Documentation\FormatProperty(description: 'API endpoint', nullable: false, restricted: true)]
     public function getEndpoint(): string
@@ -448,8 +292,6 @@ abstract class AbstractObject implements JsonSerializable
 
     /**
      * Return entity name.
-     *
-     * @return string
      */
     #[Stancer\Core\Documentation\FormatProperty(description: 'Entity name', nullable: false, restricted: true)]
     public function getEntityName(): string
@@ -462,8 +304,6 @@ abstract class AbstractObject implements JsonSerializable
 
     /**
      * Return object ID.
-     *
-     * @return string|null
      */
     #[Stancer\Core\Documentation\FormatProperty(description: 'Object ID', restricted: true)]
     public function getId(): ?string
@@ -475,11 +315,10 @@ abstract class AbstractObject implements JsonSerializable
      * Return property model.
      *
      * @param string|null $property Property name.
-     * @return array|null
      *
      * @phpstan-return DataModelResolved|array<string, DataModelResolved>|null
      */
-    public function getModel(string $property = null): ?array
+    public function getModel(?string $property = null): ?array
     {
         if ($property) {
             if (array_key_exists($property, $this->dataModel)) {
@@ -500,8 +339,6 @@ abstract class AbstractObject implements JsonSerializable
 
     /**
      * Return resource location.
-     *
-     * @return string
      */
     #[Stancer\Core\Documentation\FormatProperty(
         description: 'Entity resource location',
@@ -530,6 +367,7 @@ abstract class AbstractObject implements JsonSerializable
      * Hydrate the current object.
      *
      * @param array<string, mixed> $data Data for hydration.
+     *
      * @return $this
      */
     public function hydrate(array $data): static
@@ -555,7 +393,7 @@ abstract class AbstractObject implements JsonSerializable
                     $coerce = $model['coerce'];
                 }
 
-                if (is_a($model['type'], BackedEnum::class, true)) {
+                if (is_a($model['type'], \BackedEnum::class, true)) {
                     $coerce = fn ($data) => is_string($data) ? $model['type']::from($data) : $data;
                 }
 
@@ -598,6 +436,7 @@ abstract class AbstractObject implements JsonSerializable
                                         $obj = new $class($id);
 
                                         $obj->cleanModified = $this->cleanModified;
+
                                         /** @var array<string, mixed> $val */
                                         $obj->hydrate($val);
 
@@ -609,7 +448,7 @@ abstract class AbstractObject implements JsonSerializable
                             }
                         }
 
-                        $this->$property = $list;
+                        $this->{$property} = $list;
                     } else {
                         if (is_subclass_of($class, self::class)) {
                             $id = null;
@@ -634,6 +473,7 @@ abstract class AbstractObject implements JsonSerializable
                                 && $this->dataModel[$property]['value'] instanceof self
                             ) {
                                 $this->dataModel[$property]['value']->cleanModified = $this->cleanModified;
+
                                 /** @var array<string, mixed> $value */
                                 $this->dataModel[$property]['value']->hydrate($value);
                             }
@@ -644,7 +484,7 @@ abstract class AbstractObject implements JsonSerializable
                             ) {
                                 $this->dataModel[$property]['value'] = $coerce($value);
                             } else {
-                                $this->$property = $value;
+                                $this->{$property} = $value;
                             }
                         }
                     }
@@ -662,7 +502,7 @@ abstract class AbstractObject implements JsonSerializable
                     ) {
                         $this->dataModel[$property]['value'] = $coerce($value);
                     } else {
-                        $this->$property = $value;
+                        $this->{$property} = $value;
                     }
                 }
 
@@ -705,7 +545,7 @@ abstract class AbstractObject implements JsonSerializable
      */
     public function isModified(): bool
     {
-        if (!!count($this->modified)) {
+        if ((bool) count($this->modified)) {
             return true;
         }
 
@@ -742,7 +582,8 @@ abstract class AbstractObject implements JsonSerializable
      * Return a array representation of the current object for a conversion as JSON.
      *
      * @uses self::toArray()
-     * @return string|integer|boolean|null|array<string, mixed>
+     *
+     * @return array<string, mixed>|boolean|integer|string|null
      */
     public function jsonSerialize(): mixed
     {
@@ -760,12 +601,12 @@ abstract class AbstractObject implements JsonSerializable
             };
 
             if (is_object($value)) {
-                if (is_a($value, BackedEnum::class)) {
+                if (is_a($value, \BackedEnum::class)) {
                     $value = $value->value;
                 } elseif (in_array($prop, $this->modified, true) || ($value instanceof self && $value->isModified())) {
                     $supp = false;
 
-                    if ($value instanceof JsonSerializable) {
+                    if ($value instanceof \JsonSerializable) {
                         $value = $value->jsonSerialize();
                     }
                 }
@@ -814,6 +655,7 @@ abstract class AbstractObject implements JsonSerializable
 
         $request = new Request();
         $response = $request->get($this);
+
         /** @var array<string, array<string, string>|string> $body */
         $body = json_decode($response, true);
 
@@ -847,7 +689,6 @@ abstract class AbstractObject implements JsonSerializable
      * Added to simply transition from Stripe.
      *
      * @param string $id Identifier of the object.
-     * @return static
      */
     public static function retrieve(string $id): static
     {
@@ -858,6 +699,7 @@ abstract class AbstractObject implements JsonSerializable
      * Send the current object.
      *
      * @uses Stancer\Core\Request::post()
+     *
      * @return $this
      * @throws Stancer\Exceptions\BadMethodCallException When the method is called on an empty object.
      * @throws Stancer\Exceptions\InvalidArgumentException When all requirement are not provided.
@@ -949,7 +791,6 @@ abstract class AbstractObject implements JsonSerializable
      * Return a JSON representation of the current object.
      *
      * @uses self::__toString()
-     * @return string
      */
     public function toJson(): string
     {
@@ -958,12 +799,157 @@ abstract class AbstractObject implements JsonSerializable
 
     /**
      * Return a string representation (as a JSON) of the current object.
-     *
-     * @return string
      */
     public function toString(): string
     {
         return $this->toJson();
+    }
+
+    /**
+     * Add a value stored list in data model.
+     *
+     * @uses self::dataModelGetter() To get actual values.
+     * @uses self::dataModelSetter() To set new values.
+     *
+     * @param string $property Property to set.
+     * @param mixed $value Value to set.
+     *
+     * @return $this
+     * @throws Stancer\Exceptions\InvalidArgumentException When asking an unknown property.
+     * @throws Stancer\Exceptions\InvalidArgumentException If used on properties not declared as list.
+     */
+    protected function dataModelAdder(string $property, mixed $value): static
+    {
+        $model = $this->getModel($property);
+
+        if (!$model) {
+            throw new Stancer\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
+        }
+
+        if (!$model['list']) {
+            $message = sprintf('"%s" is not a list, you can not add elements in it.', $property);
+
+            throw new Stancer\Exceptions\InvalidArgumentException($message);
+        }
+
+        $values = $this->dataModelGetter($property);
+
+        if (is_array($values)) {
+            $values[] = $value;
+        } else {
+            $values = [$value];
+        }
+
+        return $this->dataModelSetter($property, $values);
+    }
+
+    /**
+     * Get a value stored in data model.
+     *
+     * This was initially in `self::__call()` method, I removed it for simplicity.
+     *
+     * @param string $property Property to get.
+     * @param boolean $autoPopulate Auto populate the property.
+     *
+     * @throws Stancer\Exceptions\InvalidArgumentException When asking an unknown property.
+     */
+    protected function dataModelGetter(string $property, bool $autoPopulate = true): mixed
+    {
+        $model = $this->getModel($property);
+
+        if (!$model) {
+            throw new Stancer\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
+        }
+
+        $value = $model['value'];
+
+        if (is_null($value) && $autoPopulate && $this->isNotModified()) {
+            $model = $this->populate()->getModel($property);
+            $value = $model['value'];
+        }
+
+        if (is_null($value) && $model['list']) {
+            return [];
+        }
+
+        if (!is_null($value) && is_a($model['type'], \DateTimeInterface::class, true)) {
+            $tz = Stancer\Config::getGlobal()->getDefaultTimeZone();
+
+            if ($tz) {
+                if ($model['list']) {
+                    foreach ($value as &$val) {
+                        $val = $val->setTimezone($tz);
+                    }
+                } else {
+                    $value = $value->setTimezone($tz);
+                }
+            }
+        }
+
+        return $value;
+    }
+
+    /**
+     * Set a value in data model.
+     *
+     * This was initially in `self::__call()` method, I removed it for simplicity.
+     *
+     * @uses self::validateDataModel() To check value's integrity.
+     *
+     * @param string $property Property to set.
+     * @param mixed $value Value to set.
+     *
+     * @return $this
+     * @throws Stancer\Exceptions\BadMethodCallException When setting a restricted property.
+     * @throws Stancer\Exceptions\InvalidArgumentException When asking an unknown property.
+     * @throws Stancer\Exceptions\InvalidArgumentException When the value do not match expected pattern.
+     */
+    protected function dataModelSetter(string $property, mixed $value): static
+    {
+        $model = $this->getModel($property);
+
+        if (!$model) {
+            throw new Stancer\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
+        }
+
+        if ($model['restricted']) {
+            $message = sprintf('You are not allowed to modify "%s".', $property);
+
+            if ($property === 'created') {
+                $message = 'You are not allowed to modify the creation date.';
+            }
+
+            throw new Stancer\Exceptions\BadMethodCallException($message);
+        }
+
+        $type = gettype($value);
+        $coerce = function ($v) {
+            return $v;
+        };
+        $coercedValues = [];
+
+        if (is_callable($model['coerce'])) {
+            $coerce = $model['coerce'];
+        }
+
+        if ($model['list']) {
+            if (!is_array($value)) {
+                $message = sprintf('Type mismatch, given "%s" expected "array".', $type);
+
+                throw new Stancer\Exceptions\InvalidArgumentException($message);
+            }
+
+            foreach ($value as $val) {
+                $coercedValues[] = $this->validateDataModel($property, $coerce($val));
+            }
+        } else {
+            $coercedValues = $this->validateDataModel($property, $coerce($value));
+        }
+
+        $this->dataModel[$property]['value'] = $coercedValues;
+        $this->modified[] = Stancer\Helper::camelCaseToSnakeCase($property);
+
+        return $this;
     }
 
     /**
@@ -974,6 +960,7 @@ abstract class AbstractObject implements JsonSerializable
      *
      * @param string $property Property reference.
      * @param mixed $value Value to validate.
+     *
      * @return mixed Validated value.
      * @throws Stancer\Exceptions\InvalidArgumentException When the value do not match expected pattern.
      */
@@ -998,7 +985,7 @@ abstract class AbstractObject implements JsonSerializable
             }
         }
 
-        if (is_a($model['type'], BackedEnum::class, true) && gettype($value) === 'string') {
+        if (is_a($model['type'], \BackedEnum::class, true) && gettype($value) === 'string') {
             $value = $model['type']::from($value);
         }
 
@@ -1027,7 +1014,7 @@ abstract class AbstractObject implements JsonSerializable
 
             if (is_string($model['allowedValues'])) {
                 $class = $model['allowedValues'];
-                $ref = new ReflectionClass($class);
+                $ref = new \ReflectionClass($class);
 
                 $model['allowedValues'] = $ref->getConstants();
 
@@ -1049,9 +1036,8 @@ abstract class AbstractObject implements JsonSerializable
                         $property,
                         $names,
                     ];
-                    $message = vsprintf('"%s" is not a valid %s, please use one of the following : %s', $params);
 
-                    return $message;
+                    return vsprintf('"%s" is not a valid %s, please use one of the following : %s', $params);
                 }
 
                 return '';

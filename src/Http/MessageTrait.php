@@ -7,7 +7,6 @@ declare(strict_types=1);
 
 namespace Stancer\Http;
 
-use Stancer;
 use Psr;
 
 /**
@@ -19,6 +18,7 @@ trait MessageTrait
 
     /**
      * @var mixed[]
+     *
      * @phpstan-var array<string, array{name: string, values: string[]}>
      */
     protected array $headers = [];
@@ -30,9 +30,10 @@ trait MessageTrait
      *
      * @param string $name Header name.
      * @param string|string[] $value Header value.
+     *
      * @return $this
      */
-    public function addHeader(string $name, string|array $value): static
+    public function addHeader(string $name, array|string $value): static
     {
         $key = strtolower($name);
 
@@ -50,8 +51,6 @@ trait MessageTrait
 
     /**
      * Gets the body of the message.
-     *
-     * @return Psr\Http\Message\StreamInterface
      */
     public function getBody(): Psr\Http\Message\StreamInterface
     {
@@ -68,6 +67,7 @@ trait MessageTrait
      * empty array.
      *
      * @param string $name Case-insensitive header field name.
+     *
      * @return string[] An array of string values as provided for the given
      *    header. If the header does not appear in the message, this method MUST
      *    return an empty array.
@@ -94,6 +94,7 @@ trait MessageTrait
      * an empty string.
      *
      * @param string $name Case-insensitive header field name.
+     *
      * @return string A string of values as provided for the given header
      *    concatenated together using a comma. If the header does not appear in
      *    the message, this method MUST return an empty string.
@@ -139,6 +140,7 @@ trait MessageTrait
      * Checks if a header exists by the given case-insensitive name.
      *
      * @param string $name Case-insensitive header field name.
+     *
      * @return boolean Returns true if any header names match the given header
      *     name using a case-insensitive string comparison. Returns false if
      *     no matching header name is found in the message.
@@ -154,6 +156,7 @@ trait MessageTrait
      * Remove header by name.
      *
      * @param string $name Header name to remove.
+     *
      * @return $this
      */
     public function removeHeader(string $name): static
@@ -173,7 +176,6 @@ trait MessageTrait
      *
      * @param string $name Case-insensitive header field name to add.
      * @param string|string[] $value Header value(s).
-     * @return static
      */
     public function withAddedHeader(string $name, $value): static
     {
@@ -186,7 +188,6 @@ trait MessageTrait
      * Return an instance with the specified message body.
      *
      * @param Psr\Http\Message\StreamInterface $body Body.
-     * @return static
      */
     public function withBody(Psr\Http\Message\StreamInterface $body): static
     {
@@ -201,7 +202,6 @@ trait MessageTrait
      *
      * @param string $name Case-insensitive header field name.
      * @param string|string[] $value Header value(s).
-     * @return static
      */
     public function withHeader(string $name, $value): static
     {
@@ -213,9 +213,8 @@ trait MessageTrait
      *
      * @param string|string[]|null $in Text to search.
      * @param string|string[]|null $out Text for replacement.
-     * @return static
      */
-    public function withModifiedBody(string|array|null $in = '', string|array|null $out = ''): static
+    public function withModifiedBody(array|string|null $in = '', array|string|null $out = ''): static
     {
         $obj = clone $this;
 
@@ -230,7 +229,6 @@ trait MessageTrait
      * Return an instance without the specified header.
      *
      * @param string $name Case-insensitive header field name to remove.
-     * @return static
      */
     public function withoutHeader(string $name): static
     {
@@ -243,7 +241,6 @@ trait MessageTrait
      * Return an instance with the specified HTTP protocol version.
      *
      * @param string $version HTTP protocol version.
-     * @return static
      */
     public function withProtocolVersion(string $version): static
     {

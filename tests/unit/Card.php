@@ -2,7 +2,6 @@
 
 namespace Stancer\tests\unit;
 
-use DateTime;
 use Stancer;
 
 class Card extends Stancer\Tests\atoum
@@ -20,6 +19,9 @@ class Card extends Stancer\Tests\atoum
 
     /**
      * @dataProvider brandDataProvider
+     *
+     * @param mixed $tag
+     * @param mixed $name
      */
     public function testGetBrand($tag, $name)
     {
@@ -65,6 +67,9 @@ class Card extends Stancer\Tests\atoum
 
     /**
      * @dataProvider brandDataProvider
+     *
+     * @param mixed $tag
+     * @param mixed $name
      */
     public function testGetBrandName($tag, $name)
     {
@@ -147,7 +152,7 @@ class Card extends Stancer\Tests\atoum
                 ->and($this->testedInstance->setExpirationMonth($month))
                 ->and($this->testedInstance->setExpirationYear($year))
 
-                ->if($date = new DateTime($year . '-' . $month . '-01T23:59:59'))
+                ->if($date = new \DateTime($year . '-' . $month . '-01T23:59:59'))
                 ->and($date->modify('last day of'))
                 ->then
                     ->dateTime($this->testedInstance->getExpDate())
@@ -440,7 +445,7 @@ class Card extends Stancer\Tests\atoum
 
         $months = [0, 13];
 
-        for ($index = 0; $index < rand(1, 10) ; $index++) {
+        for ($index = 0; $index < rand(1, 10); $index++) {
             $months[] = rand(14, 100);
         }
 
@@ -1214,6 +1219,8 @@ class Card extends Stancer\Tests\atoum
 
     /**
      * @dataProvider cardNumberDataProvider
+     *
+     * @param mixed $number
      */
     public function testSetNumber($number)
     {
@@ -1285,7 +1292,7 @@ class Card extends Stancer\Tests\atoum
 
             ->assert('Throw exception if invalid / Does not contains numbers')
                 ->given($this->newTestedInstance)
-                ->and($badNumber = preg_replace('/\d/', '', uniqid() . 'x' . uniqid()))
+                ->and($badNumber = preg_replace('/\\d/', '', uniqid() . 'x' . uniqid()))
                 ->then
                     ->exception(function () use ($badNumber) {
                         $this->testedInstance->setNumber($badNumber);
@@ -1343,6 +1350,8 @@ class Card extends Stancer\Tests\atoum
 
     /**
      * @dataProvider cardNumberDataProvider
+     *
+     * @param mixed $number
      */
     public function testToArray($number)
     {

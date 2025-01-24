@@ -14,7 +14,5 @@ class Base
      *
      * @param string|null $comment Arbitrary comment to help define what will change.
      */
-    public function __construct(protected ?string $comment = null)
-    {
-    }
+    public function __construct(protected ?string $comment = null) {}
 }

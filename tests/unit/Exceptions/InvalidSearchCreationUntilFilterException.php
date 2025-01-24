@@ -2,9 +2,8 @@
 
 namespace Stancer\tests\unit\Exceptions;
 
-use atoum;
-use Stancer;
 use Psr;
+use Stancer;
 
 class InvalidSearchCreationUntilFilterException extends Stancer\Tests\atoum
 {

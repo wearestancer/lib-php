@@ -74,6 +74,8 @@ class Dispute extends Stancer\Tests\atoum
 
     /**
      * @dataProvider cardCurrencyDataProvider
+     *
+     * @param mixed $currency
      */
     public function testGetCurrency($currency)
     {

@@ -2,11 +2,9 @@
 
 namespace Stancer\tests\unit;
 
-use DateInterval;
-use DateTime;
+use mock;
 use Stancer;
 use Stancer\Payout as testedClass;
-use mock;
 
 class Payout extends Stancer\Tests\atoum
 {
@@ -197,8 +195,8 @@ class Payout extends Stancer\Tests\atoum
                             ->isIdenticalTo('Created must be in the past.')
 
                     ->exception(function () {
-                        $date = new DateTime();
-                        $date->add(new DateInterval('P1D'));
+                        $date = new \DateTime();
+                        $date->add(new \DateInterval('P1D'));
 
                         $this->testedInstance->details->disputes(['created' => $date]);
                     })
@@ -607,8 +605,8 @@ class Payout extends Stancer\Tests\atoum
                             ->isIdenticalTo('Created must be in the past.')
 
                     ->exception(function () {
-                        $date = new DateTime();
-                        $date->add(new DateInterval('P1D'));
+                        $date = new \DateTime();
+                        $date->add(new \DateInterval('P1D'));
 
                         $this->testedInstance->details->payments(['created' => $date]);
                     })
@@ -841,8 +839,8 @@ class Payout extends Stancer\Tests\atoum
                             ->isIdenticalTo('Created must be in the past.')
 
                     ->exception(function () {
-                        $date = new DateTime();
-                        $date->add(new DateInterval('P1D'));
+                        $date = new \DateTime();
+                        $date->add(new \DateInterval('P1D'));
 
                         $this->testedInstance->details->refunds(['created' => $date]);
                     })

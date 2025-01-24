@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Stancer\Auth;
 
-use Stancer;
-
 /**
  * List of a auth status.
  */

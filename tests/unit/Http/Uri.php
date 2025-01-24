@@ -2,8 +2,8 @@
 
 namespace Stancer\Http\tests\unit;
 
-use Stancer;
 use Psr;
+use Stancer;
 
 class Uri extends Stancer\Tests\atoum
 {
@@ -34,6 +34,17 @@ class Uri extends Stancer\Tests\atoum
 
     /**
      * @dataProvider urlProvider
+     *
+     * @param mixed $uri
+     * @param mixed $scheme
+     * @param mixed $host
+     * @param mixed $port
+     * @param mixed $user
+     * @param mixed $pass
+     * @param mixed $path
+     * @param mixed $query
+     * @param mixed $hash
+     * @param mixed $clean
      */
     public function testCastToString($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
@@ -48,6 +59,17 @@ class Uri extends Stancer\Tests\atoum
 
     /**
      * @dataProvider urlProvider
+     *
+     * @param mixed $uri
+     * @param mixed $scheme
+     * @param mixed $host
+     * @param mixed $port
+     * @param mixed $user
+     * @param mixed $pass
+     * @param mixed $path
+     * @param mixed $query
+     * @param mixed $hash
+     * @param mixed $clean
      */
     public function testGetAuthority($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
@@ -75,6 +97,17 @@ class Uri extends Stancer\Tests\atoum
 
     /**
      * @dataProvider urlProvider
+     *
+     * @param mixed $uri
+     * @param mixed $scheme
+     * @param mixed $host
+     * @param mixed $port
+     * @param mixed $user
+     * @param mixed $pass
+     * @param mixed $path
+     * @param mixed $query
+     * @param mixed $hash
+     * @param mixed $clean
      */
     public function testGetComponents($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
@@ -91,6 +124,17 @@ class Uri extends Stancer\Tests\atoum
 
     /**
      * @dataProvider urlProvider
+     *
+     * @param mixed $uri
+     * @param mixed $scheme
+     * @param mixed $host
+     * @param mixed $port
+     * @param mixed $user
+     * @param mixed $pass
+     * @param mixed $path
+     * @param mixed $query
+     * @param mixed $hash
+     * @param mixed $clean
      */
     public function testGetFragment($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
@@ -104,6 +148,17 @@ class Uri extends Stancer\Tests\atoum
 
     /**
      * @dataProvider urlProvider
+     *
+     * @param mixed $uri
+     * @param mixed $scheme
+     * @param mixed $host
+     * @param mixed $port
+     * @param mixed $user
+     * @param mixed $pass
+     * @param mixed $path
+     * @param mixed $query
+     * @param mixed $hash
+     * @param mixed $clean
      */
     public function testGetLocalCommand($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
@@ -129,6 +184,17 @@ class Uri extends Stancer\Tests\atoum
 
     /**
      * @dataProvider urlProvider
+     *
+     * @param mixed $uri
+     * @param mixed $scheme
+     * @param mixed $host
+     * @param mixed $port
+     * @param mixed $user
+     * @param mixed $pass
+     * @param mixed $path
+     * @param mixed $query
+     * @param mixed $hash
+     * @param mixed $clean
      */
     public function testGetHost($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
@@ -142,6 +208,17 @@ class Uri extends Stancer\Tests\atoum
 
     /**
      * @dataProvider urlProvider
+     *
+     * @param mixed $uri
+     * @param mixed $scheme
+     * @param mixed $host
+     * @param mixed $port
+     * @param mixed $user
+     * @param mixed $pass
+     * @param mixed $path
+     * @param mixed $query
+     * @param mixed $hash
+     * @param mixed $clean
      */
     public function testGetPath($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
@@ -155,6 +232,17 @@ class Uri extends Stancer\Tests\atoum
 
     /**
      * @dataProvider urlProvider
+     *
+     * @param mixed $uri
+     * @param mixed $scheme
+     * @param mixed $host
+     * @param mixed $port
+     * @param mixed $user
+     * @param mixed $pass
+     * @param mixed $path
+     * @param mixed $query
+     * @param mixed $hash
+     * @param mixed $clean
      */
     public function testGetPort($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
@@ -168,6 +256,17 @@ class Uri extends Stancer\Tests\atoum
 
     /**
      * @dataProvider urlProvider
+     *
+     * @param mixed $uri
+     * @param mixed $scheme
+     * @param mixed $host
+     * @param mixed $port
+     * @param mixed $user
+     * @param mixed $pass
+     * @param mixed $path
+     * @param mixed $query
+     * @param mixed $hash
+     * @param mixed $clean
      */
     public function testGetQuery($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
@@ -181,6 +280,17 @@ class Uri extends Stancer\Tests\atoum
 
     /**
      * @dataProvider urlProvider
+     *
+     * @param mixed $uri
+     * @param mixed $scheme
+     * @param mixed $host
+     * @param mixed $port
+     * @param mixed $user
+     * @param mixed $pass
+     * @param mixed $path
+     * @param mixed $query
+     * @param mixed $hash
+     * @param mixed $clean
      */
     public function testGetScheme($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
@@ -194,6 +304,17 @@ class Uri extends Stancer\Tests\atoum
 
     /**
      * @dataProvider urlProvider
+     *
+     * @param mixed $uri
+     * @param mixed $scheme
+     * @param mixed $host
+     * @param mixed $port
+     * @param mixed $user
+     * @param mixed $pass
+     * @param mixed $path
+     * @param mixed $query
+     * @param mixed $hash
+     * @param mixed $clean
      */
     public function testGetUserInfo($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
@@ -208,6 +329,17 @@ class Uri extends Stancer\Tests\atoum
 
     /**
      * @dataProvider urlProvider
+     *
+     * @param mixed $uri
+     * @param mixed $scheme
+     * @param mixed $host
+     * @param mixed $port
+     * @param mixed $user
+     * @param mixed $pass
+     * @param mixed $path
+     * @param mixed $query
+     * @param mixed $hash
+     * @param mixed $clean
      */
     public function testWithFragment($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
@@ -235,6 +367,17 @@ class Uri extends Stancer\Tests\atoum
 
     /**
      * @dataProvider urlProvider
+     *
+     * @param mixed $uri
+     * @param mixed $scheme
+     * @param mixed $host
+     * @param mixed $port
+     * @param mixed $user
+     * @param mixed $pass
+     * @param mixed $path
+     * @param mixed $query
+     * @param mixed $hash
+     * @param mixed $clean
      */
     public function testWithHost($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
@@ -262,6 +405,17 @@ class Uri extends Stancer\Tests\atoum
 
     /**
      * @dataProvider urlProvider
+     *
+     * @param mixed $uri
+     * @param mixed $scheme
+     * @param mixed $host
+     * @param mixed $port
+     * @param mixed $user
+     * @param mixed $pass
+     * @param mixed $path
+     * @param mixed $query
+     * @param mixed $hash
+     * @param mixed $clean
      */
     public function testWithPath($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
@@ -289,6 +443,17 @@ class Uri extends Stancer\Tests\atoum
 
     /**
      * @dataProvider urlProvider
+     *
+     * @param mixed $uri
+     * @param mixed $scheme
+     * @param mixed $host
+     * @param mixed $port
+     * @param mixed $user
+     * @param mixed $pass
+     * @param mixed $path
+     * @param mixed $query
+     * @param mixed $hash
+     * @param mixed $clean
      */
     public function testWithPort($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
@@ -316,6 +481,17 @@ class Uri extends Stancer\Tests\atoum
 
     /**
      * @dataProvider urlProvider
+     *
+     * @param mixed $uri
+     * @param mixed $scheme
+     * @param mixed $host
+     * @param mixed $port
+     * @param mixed $user
+     * @param mixed $pass
+     * @param mixed $path
+     * @param mixed $query
+     * @param mixed $hash
+     * @param mixed $clean
      */
     public function testWithQuery($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
@@ -343,6 +519,17 @@ class Uri extends Stancer\Tests\atoum
 
     /**
      * @dataProvider urlProvider
+     *
+     * @param mixed $uri
+     * @param mixed $scheme
+     * @param mixed $host
+     * @param mixed $port
+     * @param mixed $user
+     * @param mixed $pass
+     * @param mixed $path
+     * @param mixed $query
+     * @param mixed $hash
+     * @param mixed $clean
      */
     public function testWithScheme($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {
@@ -370,6 +557,17 @@ class Uri extends Stancer\Tests\atoum
 
     /**
      * @dataProvider urlProvider
+     *
+     * @param mixed $uri
+     * @param mixed $scheme
+     * @param mixed $host
+     * @param mixed $port
+     * @param mixed $user
+     * @param mixed $pass
+     * @param mixed $path
+     * @param mixed $query
+     * @param mixed $hash
+     * @param mixed $clean
      */
     public function testWithUserInfo($uri, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {

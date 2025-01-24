@@ -2,9 +2,9 @@
 
 namespace Stancer\tests\unit\Exceptions;
 
-use Stancer;
 use mock;
 use Psr;
+use Stancer;
 
 class Exception extends Stancer\Tests\atoum
 {

@@ -2,11 +2,12 @@
 
 namespace Stancer\Tests\functional;
 
-use DateTime;
 use Stancer;
 
 /**
  * @namespace \Tests\functional
+ *
+ * @internal
  */
 class Card extends TestCase
 {
@@ -49,7 +50,7 @@ class Card extends TestCase
                         ->hasMonth(2)
 
                     ->dateTime($this->testedInstance->getCreationDate())
-                        ->isEqualTo(new DateTime('@1579024205'))
+                        ->isEqualTo(new \DateTime('@1579024205'))
         ;
     }
 

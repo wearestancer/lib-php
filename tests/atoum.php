@@ -3,23 +3,23 @@
 namespace Stancer\Tests;
 
 use atoum\atoum as base;
-use Stancer;
 use Faker;
-use Psr;
 use mock;
+use Psr;
+use Stancer;
 
 class atoum extends base\test
 {
     public function __construct(
-        base\adapter $adapter = null,
-        base\annotations\extractor $annotationExtractor = null,
-        base\asserter\generator $asserterGenerator = null,
-        base\test\assertion\manager $assertionManager = null,
-        \closure $reflectionClassFactory = null
+        ?base\adapter $adapter = null,
+        ?base\annotations\extractor $annotationExtractor = null,
+        ?base\asserter\generator $asserterGenerator = null,
+        ?base\test\assertion\manager $assertionManager = null,
+        ?\Closure $reflectionClassFactory = null
     ) {
         parent::__construct($adapter, $annotationExtractor, $asserterGenerator, $assertionManager, $reflectionClassFactory);
 
-        $this->getAsserterGenerator()->addNamespace('Stancer\Tests\asserters');
+        $this->getAsserterGenerator()->addNamespace('Stancer\\Tests\\asserters');
     }
 
     public function beforeTestMethod($method)
@@ -55,7 +55,7 @@ class atoum extends base\test
         return json_decode($this->getFixture(...$parts), true);
     }
 
-    public function getRandomDate(int $min, int $max = null): string
+    public function getRandomDate(int $min, ?int $max = null): string
     {
         if (!$max) {
             $max = date('Y');
@@ -97,7 +97,7 @@ class atoum extends base\test
         return $number;
     }
 
-    public function getRandomString(int $min, int $max = null): string
+    public function getRandomString(int $min, ?int $max = null): string
     {
         if (!$max) {
             $max = $min;
@@ -125,14 +125,14 @@ class atoum extends base\test
     {
         $data = random_bytes(16);
 
-        $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
-        $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+        $data[6] = chr(ord($data[6]) & 0x0F | 0x40);
+        $data[8] = chr(ord($data[8]) & 0x3F | 0x80);
 
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
 
     /**
-     * @param Psr\Http\Client\ClientInterface|mock\Psr\Http\Client\ClientInterface $client
+     * @param mock\Psr\Http\Client\ClientInterface|Psr\Http\Client\ClientInterface $client
      */
     public function mockConfig($client): Stancer\Config
     {

@@ -4,9 +4,6 @@ declare(strict_types=1);
 
 namespace Stancer;
 
-use DateInterval;
-use DateTimeImmutable;
-use SensitiveParameter;
 use Stancer;
 
 /**
@@ -33,10 +30,10 @@ use Stancer;
  * @method ?string get_cvc() Get card Validation Code.
  * @method string get_endpoint() Get API endpoint.
  * @method string get_entity_name() Get entity name.
- * @method DateTimeImmutable get_exp_date() Return the expiration date.
+ * @method \DateTimeImmutable get_exp_date() Return the expiration date.
  * @method ?integer get_exp_month() Get card expiration month.
  * @method ?integer get_exp_year() Get card expiration year.
- * @method DateTimeImmutable get_expiration_date() Alias for `self::getExpDate()`.
+ * @method \DateTimeImmutable get_expiration_date() Alias for `self::getExpDate()`.
  * @method ?int get_expiration_month() Alias for `self::getExpMonth()`.
  * @method ?int get_expiration_year() Alias for `self::getExpYear()`.
  * @method ?string get_funding() Get card funding.
@@ -101,7 +98,6 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
     final public const ENDPOINT = 'cards';
 
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [
@@ -188,8 +184,6 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      *
      * Whereas `Card::getBrand()` returns brand as a simple normalized string like "amex",
      * `Card::getBrandName()` will return a complete and real brand name, like "American Express".
-     *
-     * @return string|null
      */
     #[Stancer\Core\Documentation\FormatProperty(description: 'Formatted brand name', restricted: true)]
     public function getBrandName(): ?string
@@ -218,11 +212,10 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      *
      * The DateTime object is at last second of the last day in the expiration month.
      *
-     * @return DateTimeImmutable
      * @throws Stancer\Exceptions\InvalidExpirationMonthException When month is not set.
      * @throws Stancer\Exceptions\InvalidExpirationYearException When year is not set.
      */
-    public function getExpDate(): DateTimeImmutable
+    public function getExpDate(): \DateTimeImmutable
     {
         $month = $this->getExpMonth();
         $year = $this->getExpYear();
@@ -239,10 +232,10 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
             throw new Stancer\Exceptions\InvalidExpirationYearException($message);
         }
 
-        $date = new DateTimeImmutable(sprintf('%d-%d-01', $year, $month));
+        $date = new \DateTimeImmutable(sprintf('%d-%d-01', $year, $month));
 
-        $oneMonth = new DateInterval('P1M');
-        $oneSecond = new DateInterval('PT1S');
+        $oneMonth = new \DateInterval('P1M');
+        $oneSecond = new \DateInterval('PT1S');
 
         return $date->add($oneMonth)->sub($oneSecond);
     }
@@ -251,9 +244,8 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      * Alias for `self::getExpDate()`.
      *
      * @see self::getExpDate() Return the expiration date.
-     * @return DateTimeImmutable
      */
-    public function getExpirationDate(): DateTimeImmutable
+    public function getExpirationDate(): \DateTimeImmutable
     {
         return $this->getExpDate();
     }
@@ -262,6 +254,7 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      * Alias for `self::getExpMonth()`.
      *
      * @see self::getExpMonth() Return the expiration month.
+     *
      * @return integer|null
      */
     public function getExpirationMonth(): ?int
@@ -273,6 +266,7 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      * Alias for `self::getExpYear()`.
      *
      * @see self::getExpYear() Return the expiration year.
+     *
      * @return integer|null
      */
     public function getExpirationYear(): ?int
@@ -313,6 +307,7 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      * Alias for `Stancer\Card::getTokenize()`.
      *
      * @see Stancer\Card::getTokenize()
+     *
      * @return boolean
      */
     public function isTokenized(): bool
@@ -324,7 +319,9 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      * Alias for `self::setExpMonth()`.
      *
      * @see self::setExpMonth() Return the expiration month.
+     *
      * @param integer $month The expiration month.
+     *
      * @return $this
      */
     public function setExpirationMonth(int $month): self
@@ -336,7 +333,9 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      * Alias for `self::setExpYear()`.
      *
      * @see self::setExpYear() Return the expiration year.
+     *
      * @param integer $year The expiration year.
+     *
      * @return $this
      */
     public function setExpirationYear(int $year): self
@@ -348,6 +347,7 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      * Update the expiration month.
      *
      * @param integer $month The expiration month.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidExpirationMonthException When expiration is invalid (not between 1 and 12).
      */
@@ -369,15 +369,16 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      * Add a card number.
      *
      * @param string $number A valid card number.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidCardNumberException When the card number is invalid.
      */
     public function setNumber(
-        #[SensitiveParameter]
+        #[\SensitiveParameter]
         string $number
     ): self {
-        $spaceless = preg_replace('/\s/', '', $number);
-        $numb = preg_replace('/\D/', '', $number);
+        $spaceless = preg_replace('/\\s/', '', $number);
+        $numb = preg_replace('/\\D/', '', $number);
 
         if (!$numb) {
             $message = sprintf('"%s" is not a valid credit card number.', $spaceless);

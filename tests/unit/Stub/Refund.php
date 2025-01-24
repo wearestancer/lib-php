@@ -2,8 +2,8 @@
 
 namespace Stancer\tests\unit\Stub;
 
-use Stancer;
 use mock;
+use Stancer;
 
 class Refund extends Stancer\Tests\atoum
 {

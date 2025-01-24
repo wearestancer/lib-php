@@ -6,10 +6,10 @@ declare(strict_types=1);
 
 namespace Stancer\Core;
 
-use GuzzleHttp;
 use Exception;
-use Stancer;
+use GuzzleHttp;
 use Psr;
+use Stancer;
 
 /**
  * Handle request on API.
@@ -20,8 +20,8 @@ class Request
      * Simple proxy for a DELETE request.
      *
      * @see self::request() For full documentation.
+     *
      * @param Stancer\Core\AbstractObject $object Object.
-     * @return string
      */
     public function delete(AbstractObject $object): string
     {
@@ -34,9 +34,9 @@ class Request
      * Simple proxy for a GET request.
      *
      * @see self::request() For full documentation.
+     *
      * @param Stancer\Core\AbstractObject $object Object.
      * @param mixed[] $params Query parameters.
-     * @return string
      */
     public function get(AbstractObject $object, array $params = []): string
     {
@@ -55,8 +55,8 @@ class Request
      * Simple proxy for a PATCH request.
      *
      * @see self::request() For full documentation.
+     *
      * @param Stancer\Core\AbstractObject $object Object.
-     * @return string
      */
     public function patch(AbstractObject $object): string
     {
@@ -76,8 +76,8 @@ class Request
      * Simple proxy for a POST request.
      *
      * @see self::request() For full documentation.
+     *
      * @param Stancer\Core\AbstractObject $object Object.
-     * @return string
      */
     public function post(AbstractObject $object): string
     {
@@ -97,8 +97,8 @@ class Request
      * Simple proxy for a PUT request.
      *
      * @see self::request() For full documentation.
+     *
      * @param Stancer\Core\AbstractObject $object Object.
-     * @return string
      */
     public function put(AbstractObject $object): string
     {
@@ -118,162 +118,12 @@ class Request
      * Alias for patch method.
      *
      * @see self::patch() The patch method.
+     *
      * @param Stancer\Core\AbstractObject $object Object.
-     * @return string
      */
     public function update(AbstractObject $object): string
     {
         return $this->patch($object);
-    }
-
-    /**
-     * Add a new call made with default client.
-     *
-     * @param Stancer\Core\AbstractObject $object Object used during call.
-     * @param Stancer\Exceptions\Exception $exception Exception thrown during call.
-     * @return $this
-     */
-    private function addCallWithDefaultClient(
-        AbstractObject $object,
-        Stancer\Exceptions\Exception $exception = null
-    ): self {
-        $config = Stancer\Config::getGlobal();
-        $client = $config->getHttpClient();
-
-        if (!$config->getDebug() || !($client instanceof Stancer\Http\Client)) {
-            return $this;
-        }
-
-        $in = null;
-        $out = null;
-
-        if ($object instanceof Stancer\Payment) {
-            $card = $object->getModel('card')['value'];
-            $sepa = $object->getModel('sepa')['value'];
-
-            if ($card instanceof Stancer\Card) {
-                /** @phpstan-var string|null $in */
-                $in = $card->getModel('number')['value'];
-
-                if ($in) {
-                    $last4 = $card->getModel('last4')['value'];
-
-                    if (is_string($last4)) {
-                        $out = str_pad($last4, strlen($in), 'x', STR_PAD_LEFT);
-                    }
-                }
-            }
-
-            if ($sepa instanceof Stancer\Sepa) {
-                /** @phpstan-var string|null $in */
-                $in = $sepa->getModel('iban')['value'];
-
-                if ($in) {
-                    $last4 = $sepa->getModel('last4')['value'];
-
-                    if (is_string($last4)) {
-                        $out = str_pad($last4, strlen($in), 'x', STR_PAD_LEFT);
-                    }
-                }
-            }
-        }
-
-        $params = [
-            'exception' => $exception,
-        ];
-
-        $request = $client->getLastRequest();
-        $response = $client->getLastResponse();
-
-        if ($request) {
-            $params['request'] = $request->withModifiedBody($in, $out);
-        }
-
-        if ($response) {
-            $params['response'] = $response->withModifiedBody();
-        }
-
-        $call = new Stancer\Core\Request\Call($params);
-        $config->addCall($call);
-
-        return $this;
-    }
-
-    /**
-     * Add a new call made with other client.
-     *
-     * @param Psr\Http\Message\RequestInterface $request Request.
-     * @param Psr\Http\Message\ResponseInterface|null $response Response.
-     * @param Stancer\Core\AbstractObject $object Object used during call.
-     * @param Stancer\Exceptions\Exception $exception Exception thrown during call.
-     * @return $this
-     */
-    private function addCallWithOtherClient(
-        Psr\Http\Message\RequestInterface $request,
-        $response,
-        AbstractObject $object,
-        Stancer\Exceptions\Exception $exception = null
-    ): self {
-        $config = Stancer\Config::getGlobal();
-        $client = $config->getHttpClient();
-
-        if (!$config->getDebug() || !($client instanceof GuzzleHttp\ClientInterface)) {
-            return $this;
-        }
-
-        $params = [
-            'exception' => $exception,
-            'request' => $request,
-            'response' => $response,
-        ];
-
-        if ($object instanceof Stancer\Payment) {
-            $in = null;
-            $out = '';
-
-            $card = $object->getModel('card')['value'];
-            $sepa = $object->getModel('sepa')['value'];
-
-            if ($card instanceof Stancer\Card) {
-                /** @phpstan-var string|null $in */
-                $in = $card->getModel('number')['value'];
-
-                if ($in) {
-                    $last4 = $card->getModel('last4')['value'];
-
-                    if (is_string($last4)) {
-                        $out = str_pad($last4, strlen($in), 'x', STR_PAD_LEFT);
-                    }
-                }
-            }
-
-            if ($sepa instanceof Stancer\Sepa) {
-                /** @phpstan-var string|null $in */
-                $in = $sepa->getModel('iban')['value'];
-
-                if ($in) {
-                    $last4 = $sepa->getModel('last4')['value'];
-
-                    if (is_string($last4)) {
-                        $out = str_pad($last4, strlen($in), 'x', STR_PAD_LEFT);
-                    }
-                }
-            }
-
-            if ($in) {
-                $params['request'] = new GuzzleHttp\Psr7\Request(
-                    $request->getMethod(),
-                    $request->getUri(),
-                    $request->getHeaders(),
-                    str_replace($in, $out, (string) $request->getBody())
-                );
-            }
-        }
-
-        $call = new Stancer\Core\Request\Call($params);
-        $config->addCall($call);
-
-        return $this;
     }
 
     // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
@@ -283,10 +133,11 @@ class Request
      * Make a call to API.
      *
      * @uses Stancer\Config
+     *
      * @param Stancer\Http\Verb\AbstractVerb $verb HTTP verb for the call.
      * @param Stancer\Core\AbstractObject $object Object.
      * @param array $options Guzzle options.
-     * @return string
+     *
      * @throws Stancer\Exceptions\InvalidArgumentException When calling with unsupported verb.
      * @throws Stancer\Exceptions\TooManyRedirectsException On too many redirection case (HTTP 310).
      * @throws Stancer\Exceptions\NotAuthorizedException On credential problem (HTTP 401).
@@ -368,11 +219,13 @@ class Request
             switch ($response->getStatusCode()) {
                 case 400:
                     $logMethod = 'critical';
+
                     break;
 
                 case 401:
                     $logMethod = 'notice';
                     $logMessage = sprintf('HTTP 401 - Invalid credential : %s', $config->getSecretKey());
+
                     break;
 
                 case 404:
@@ -384,14 +237,17 @@ class Request
 
                     $logMethod = 'error';
                     $logMessage = sprintf('HTTP 404 - Not found : %s', $excepParams['message']);
+
                     break;
 
                 case 405:
                     $logMethod = 'critical';
+
                     break;
 
                 default:
                     $logMethod = 'error';
+
                     break;
             }
 
@@ -428,7 +284,7 @@ class Request
             $logMessage = 'HTTP 500 - Internal Server Error';
             $excepClass = Stancer\Exceptions\InternalServerErrorException::class;
             $excepParams['previous'] = $exception;
-        } catch (Exception $exception) { // Others exceptions ...
+        } catch (\Exception $exception) { // Others exceptions ...
             $logMethod = 'error';
             $logMessage = sprintf('Unknown error : %s', $exception->getMessage());
 
@@ -446,7 +302,7 @@ class Request
                 $logMessage = $excepClass::getDefaultMessage();
             }
 
-            $logger->$logMethod($logMessage);
+            $logger->{$logMethod}($logMessage);
         }
 
         $exception = null;
@@ -479,6 +335,158 @@ class Request
         }
 
         return (string) $response->getBody();
+    }
+
+    /**
+     * Add a new call made with default client.
+     *
+     * @param Stancer\Core\AbstractObject $object Object used during call.
+     * @param Stancer\Exceptions\Exception $exception Exception thrown during call.
+     *
+     * @return $this
+     */
+    private function addCallWithDefaultClient(
+        AbstractObject $object,
+        ?Stancer\Exceptions\Exception $exception = null
+    ): self {
+        $config = Stancer\Config::getGlobal();
+        $client = $config->getHttpClient();
+
+        if (!$config->getDebug() || !($client instanceof Stancer\Http\Client)) {
+            return $this;
+        }
+
+        $in = null;
+        $out = null;
+
+        if ($object instanceof Stancer\Payment) {
+            $card = $object->getModel('card')['value'];
+            $sepa = $object->getModel('sepa')['value'];
+
+            if ($card instanceof Stancer\Card) {
+                /** @phpstan-var string|null $in */
+                $in = $card->getModel('number')['value'];
+
+                if ($in) {
+                    $last4 = $card->getModel('last4')['value'];
+
+                    if (is_string($last4)) {
+                        $out = str_pad($last4, strlen($in), 'x', STR_PAD_LEFT);
+                    }
+                }
+            }
+
+            if ($sepa instanceof Stancer\Sepa) {
+                /** @phpstan-var string|null $in */
+                $in = $sepa->getModel('iban')['value'];
+
+                if ($in) {
+                    $last4 = $sepa->getModel('last4')['value'];
+
+                    if (is_string($last4)) {
+                        $out = str_pad($last4, strlen($in), 'x', STR_PAD_LEFT);
+                    }
+                }
+            }
+        }
+
+        $params = [
+            'exception' => $exception,
+        ];
+
+        $request = $client->getLastRequest();
+        $response = $client->getLastResponse();
+
+        if ($request) {
+            $params['request'] = $request->withModifiedBody($in, $out);
+        }
+
+        if ($response) {
+            $params['response'] = $response->withModifiedBody();
+        }
+
+        $call = new Stancer\Core\Request\Call($params);
+        $config->addCall($call);
+
+        return $this;
+    }
+
+    /**
+     * Add a new call made with other client.
+     *
+     * @param Psr\Http\Message\RequestInterface $request Request.
+     * @param Psr\Http\Message\ResponseInterface|null $response Response.
+     * @param Stancer\Core\AbstractObject $object Object used during call.
+     * @param Stancer\Exceptions\Exception $exception Exception thrown during call.
+     *
+     * @return $this
+     */
+    private function addCallWithOtherClient(
+        Psr\Http\Message\RequestInterface $request,
+        $response,
+        AbstractObject $object,
+        ?Stancer\Exceptions\Exception $exception = null
+    ): self {
+        $config = Stancer\Config::getGlobal();
+        $client = $config->getHttpClient();
+
+        if (!$config->getDebug() || !($client instanceof GuzzleHttp\ClientInterface)) {
+            return $this;
+        }
+
+        $params = [
+            'exception' => $exception,
+            'request' => $request,
+            'response' => $response,
+        ];
+
+        if ($object instanceof Stancer\Payment) {
+            $in = null;
+            $out = '';
+
+            $card = $object->getModel('card')['value'];
+            $sepa = $object->getModel('sepa')['value'];
+
+            if ($card instanceof Stancer\Card) {
+                /** @phpstan-var string|null $in */
+                $in = $card->getModel('number')['value'];
+
+                if ($in) {
+                    $last4 = $card->getModel('last4')['value'];
+
+                    if (is_string($last4)) {
+                        $out = str_pad($last4, strlen($in), 'x', STR_PAD_LEFT);
+                    }
+                }
+            }
+
+            if ($sepa instanceof Stancer\Sepa) {
+                /** @phpstan-var string|null $in */
+                $in = $sepa->getModel('iban')['value'];
+
+                if ($in) {
+                    $last4 = $sepa->getModel('last4')['value'];
+
+                    if (is_string($last4)) {
+                        $out = str_pad($last4, strlen($in), 'x', STR_PAD_LEFT);
+                    }
+                }
+            }
+
+            if ($in) {
+                $params['request'] = new GuzzleHttp\Psr7\Request(
+                    $request->getMethod(),
+                    $request->getUri(),
+                    $request->getHeaders(),
+                    str_replace($in, $out, (string) $request->getBody())
+                );
+            }
+        }
+
+        $call = new Stancer\Core\Request\Call($params);
+        $config->addCall($call);
+
+        return $this;
     }
 
     // phpcs:enable

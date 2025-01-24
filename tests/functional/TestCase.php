@@ -3,9 +3,11 @@
 namespace Stancer\Tests\functional;
 
 use atoum;
-use closure;
 use Stancer;
 
+/**
+ * @internal
+ */
 class TestCase extends Stancer\Tests\atoum
 {
     protected Stancer\Config $config;
@@ -15,7 +17,7 @@ class TestCase extends Stancer\Tests\atoum
         ?atoum\atoum\annotations\extractor $annotationExtractor = null,
         ?atoum\atoum\asserter\generator $asserterGenerator = null,
         ?atoum\atoum\test\assertion\manager $assertionManager = null,
-        ?closure $reflectionClassFactory = null
+        ?\Closure $reflectionClassFactory = null
     ) {
         parent::__construct($adapter, $annotationExtractor, $asserterGenerator, $assertionManager, $reflectionClassFactory);
 

@@ -11,8 +11,6 @@ class InvalidSearchCreationFilterException extends InvalidSearchFilterException
 {
     /**
      * Return default message for that kind of exception.
-     *
-     * @return string
      */
     public static function getDefaultMessage(): string
     {

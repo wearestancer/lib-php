@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Stancer\Exceptions;
 
-use Stancer\Interfaces\ExceptionInterface;
 use Psr;
+use Stancer\Interfaces\ExceptionInterface;
 
 /**
  * The request could not be completed due to a conflict with the current state of the target resource.

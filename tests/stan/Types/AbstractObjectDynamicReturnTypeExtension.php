@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Stancer\PHPStan\Types;
 
-use Stancer;
 use PhpParser\Node\Expr\MethodCall;
 use PHPStan\Analyser\Scope;
 use PHPStan\Reflection\MethodReflection;
@@ -21,6 +20,7 @@ use PHPStan\Type\NullType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
 use PHPStan\Type\TypeCombinator;
+use Stancer;
 
 class AbstractObjectDynamicReturnTypeExtension implements DynamicMethodReturnTypeExtension
 {

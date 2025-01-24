@@ -7,6 +7,4 @@ namespace Stancer\Http\Verb;
 /**
  * HTTP PUT.
  */
-class Put extends AbstractVerb
-{
-}
+class Put extends AbstractVerb {}

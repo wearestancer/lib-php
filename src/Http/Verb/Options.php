@@ -7,6 +7,4 @@ namespace Stancer\Http\Verb;
 /**
  * HTTP OPTIONS.
  */
-class Options extends AbstractVerb
-{
-}
+class Options extends AbstractVerb {}

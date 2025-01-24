@@ -2,8 +2,8 @@
 
 namespace Stancer\tests\unit;
 
-use Stancer;
 use mock;
+use Stancer;
 
 class Sepa extends Stancer\Tests\atoum
 {
@@ -166,6 +166,8 @@ class Sepa extends Stancer\Tests\atoum
 
     /**
      * @dataProvider ibanDataProvider
+     *
+     * @param mixed $iban
      */
     public function testGetFormattedIban($iban)
     {
@@ -295,7 +297,7 @@ class Sepa extends Stancer\Tests\atoum
             ->assert('Add a valid french random IBAN')
                 ->if($bban = rand())
                 ->and($country = 'FR')
-                ->and($validation = $bban . '1527' . '00') // 15 => F / 27 => R
+                ->and($validation = $bban . '152700') // 15 => F / 27 => R
                 ->and($check = sprintf('%02d', 98 - ($validation % 97)))
                 ->and($iban = $country . $check . $bban)
                 ->and($last = substr($bban, -4))
@@ -496,7 +498,7 @@ class Sepa extends Stancer\Tests\atoum
 
                 ->if($bban = rand())
                 ->and($country = 'FR')
-                ->and($validation = $bban . '1527' . '00') // 15 => F / 27 => R
+                ->and($validation = $bban . '152700') // 15 => F / 27 => R
                 ->and($check = sprintf('%02d', 98 - ($validation % 97)))
                 ->and($iban = $country . $check . $bban)
 

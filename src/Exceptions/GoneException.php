@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Stancer\Exceptions;
 
-use Stancer\Interfaces\ExceptionInterface;
 use Psr;
+use Stancer\Interfaces\ExceptionInterface;
 
 /**
  * Indicates that the resource requested is no longer available and will not be available again.

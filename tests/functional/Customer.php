@@ -6,6 +6,8 @@ use Stancer;
 
 /**
  * @namespace \Tests\functional
+ *
+ * @internal
  */
 class Customer extends TestCase
 {

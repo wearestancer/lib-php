@@ -64,13 +64,13 @@ class AliasTrait extends Stancer\Tests\atoum
                 ->exception(fn () => $this->newTestedInstance->unknownMethod())
                     ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                     ->message
-                        ->isIdenticalTo('Method "Stancer\Stub\Traits\AliasTrait::unknownMethod()" unknown')
+                        ->isIdenticalTo('Method "Stancer\\Stub\\Traits\\AliasTrait::unknownMethod()" unknown')
 
             ->assert('snake_case method')
                 ->exception(fn () => $this->newTestedInstance->unknown_method())
                     ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                     ->message
-                        ->isIdenticalTo('Method "Stancer\Stub\Traits\AliasTrait::unknown_method()" unknown')
+                        ->isIdenticalTo('Method "Stancer\\Stub\\Traits\\AliasTrait::unknown_method()" unknown')
         ;
     }
 
@@ -147,13 +147,13 @@ class AliasTrait extends Stancer\Tests\atoum
                     ->exception(fn () => testedClass::unknownMethod())
                         ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                         ->message
-                            ->isIdenticalTo('Method "Stancer\Stub\Traits\AliasTrait::unknownMethod()" unknown')
+                            ->isIdenticalTo('Method "Stancer\\Stub\\Traits\\AliasTrait::unknownMethod()" unknown')
 
                 ->assert('snake_case method')
                     ->exception(fn () => testedClass::unknown_method())
                         ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                         ->message
-                            ->isIdenticalTo('Method "Stancer\Stub\Traits\AliasTrait::unknown_method()" unknown')
+                            ->isIdenticalTo('Method "Stancer\\Stub\\Traits\\AliasTrait::unknown_method()" unknown')
         ;
     }
 }

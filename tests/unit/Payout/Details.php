@@ -3,7 +3,6 @@
 namespace Stancer\tests\unit\Payout;
 
 use Stancer;
-use mock;
 
 class Details extends Stancer\Tests\atoum
 {

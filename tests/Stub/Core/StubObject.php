@@ -2,7 +2,6 @@
 
 namespace Stancer\Stub\Core;
 
-use DateTimeInterface;
 use Stancer;
 
 class StubObject extends Stancer\Core\AbstractObject
@@ -14,20 +13,20 @@ class StubObject extends Stancer\Core\AbstractObject
 
     protected array $dataModel = [
         'date1' => [
-            'type' => DateTimeInterface::class,
+            'type' => \DateTimeInterface::class,
         ],
         'date2' => [
             'list' => true,
-            'type' => DateTimeInterface::class,
+            'type' => \DateTimeInterface::class,
         ],
         'date3' => [
             'format' => Stancer\Core\Type\Helper::DATE_ONLY,
-            'type' => DateTimeInterface::class,
+            'type' => \DateTimeInterface::class,
         ],
         'date4' => [
             'format' => Stancer\Core\Type\Helper::DATE_ONLY,
             'list' => true,
-            'type' => DateTimeInterface::class,
+            'type' => \DateTimeInterface::class,
         ],
         'enum' => [
             'type' => Stancer\Stub\FakeStatus::class,

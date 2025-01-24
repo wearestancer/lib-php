@@ -2,9 +2,9 @@
 
 namespace Stancer\Http\tests\unit;
 
-use Stancer;
 use mock;
 use Psr;
+use Stancer;
 
 class Request extends Stancer\Tests\atoum
 {
@@ -20,6 +20,9 @@ class Request extends Stancer\Tests\atoum
 
     /**
      * @dataProvider verbAndUrlProvider
+     *
+     * @param mixed $method
+     * @param mixed $uri
      */
     public function test__construct($method, $uri)
     {
@@ -145,6 +148,17 @@ class Request extends Stancer\Tests\atoum
 
     /**
      * @dataProvider urlProvider
+     *
+     * @param mixed $location
+     * @param mixed $scheme
+     * @param mixed $host
+     * @param mixed $port
+     * @param mixed $user
+     * @param mixed $pass
+     * @param mixed $path
+     * @param mixed $query
+     * @param mixed $hash
+     * @param mixed $clean
      */
     public function testGetRequestTarget($location, $scheme, $host, $port, $user, $pass, $path, $query, $hash, $clean)
     {

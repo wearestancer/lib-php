@@ -7,6 +7,8 @@ use Stancer\Dispute as testedClass;
 
 /**
  * @namespace \Tests\functional
+ *
+ * @internal
  */
 class Dispute extends TestCase
 {

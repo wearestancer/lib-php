@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Stancer\Payout\Details;
 
-use Generator;
 use Stancer;
 
 /**
@@ -46,7 +45,6 @@ class Inner extends Stancer\Core\AbstractObject
     }
 
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [
@@ -92,7 +90,8 @@ class Inner extends Stancer\Core\AbstractObject
      * `start` must be an integer, will be used as a pagination cursor, starts at 0.
      *
      * @param array $terms Search terms. May have `created`, `limit` or `start` key.
-     * @return Generator<Stancer\Core\AbstractObject>
+     *
+     * @return \Generator<Stancer\Core\AbstractObject>
      * @throws Stancer\Exceptions\InvalidSearchFilterException When `$terms` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchCreationFilterException When `created` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchCreationFilterException When `created` is a DatePeriod without end.
@@ -102,7 +101,7 @@ class Inner extends Stancer\Core\AbstractObject
      *
      * @phpstan-param SearchFilters $terms
      */
-    public function __invoke(array $terms): Generator
+    public function __invoke(array $terms): \Generator
     {
         $map = [
             'disputes' => Stancer\Dispute::class,
@@ -115,8 +114,6 @@ class Inner extends Stancer\Core\AbstractObject
 
     /**
      * Return resource location.
-     *
-     * @return string
      */
     #[Stancer\Core\Documentation\FormatProperty(
         description: 'Current resource location',

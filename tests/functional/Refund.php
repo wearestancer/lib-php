@@ -6,6 +6,8 @@ use Stancer;
 
 /**
  * @namespace \Tests\functional
+ *
+ * @internal
  */
 class Refund extends TestCase
 {
@@ -13,6 +15,8 @@ class Refund extends TestCase
 
     /**
      * @dataProvider cardCurrencyDataProvider
+     *
+     * @param mixed $currency
      */
     public function testRefund($currency)
     {
@@ -63,8 +67,10 @@ class Refund extends TestCase
 
     /**
      * @dataProvider cardCurrencyDataProvider
+     *
+     * @param mixed $currency
      */
-    public function testRefund_multiple($currency)
+    public function testRefundMultiple($currency)
     {
         $this
             ->given($total = rand(500, 10000))

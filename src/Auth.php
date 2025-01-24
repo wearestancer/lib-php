@@ -42,7 +42,6 @@ use Stancer;
 class Auth extends Stancer\Core\AbstractObject
 {
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [
@@ -77,6 +76,7 @@ class Auth extends Stancer\Core\AbstractObject
      * Update return URL.
      *
      * @param string $url New HTTPS URL.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidUrlException When URL is not an HTTPS URL.
      */

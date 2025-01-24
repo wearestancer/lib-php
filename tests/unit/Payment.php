@@ -2,8 +2,6 @@
 
 namespace Stancer\tests\unit;
 
-use DateInterval;
-use DateTime;
 use mock;
 use Stancer;
 use Stancer\Payment as testedClass;
@@ -259,7 +257,7 @@ class Payment extends Stancer\Tests\atoum
     {
         $this
             ->if($this->newTestedInstance)
-            ->and($date = new DateTime())
+            ->and($date = new \DateTime())
             ->then
                 ->variable($this->testedInstance->getDateBank())
                     ->isNull
@@ -350,7 +348,7 @@ class Payment extends Stancer\Tests\atoum
             ->if($return = 'https://www.example.org?' . uniqid())
             ->and($url = vsprintf('https://%s/%s/', [
                 str_replace('api', 'payment', $config->getHost()),
-                $public
+                $public,
             ]))
 
             ->if($lang = uniqid())
@@ -567,7 +565,6 @@ class Payment extends Stancer\Tests\atoum
                     ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                     ->message
                         ->isIdenticalTo('You are not allowed to modify "responseAuthor".')
-
 
             ->if($this->testedInstance->hydrate(['response_author' => $author]))
             ->then
@@ -839,8 +836,8 @@ class Payment extends Stancer\Tests\atoum
                         ->isIdenticalTo('Created must be in the past.')
 
                 ->exception(function () {
-                    $date = new DateTime();
-                    $date->add(new DateInterval('P1D'));
+                    $date = new \DateTime();
+                    $date->add(new \DateInterval('P1D'));
 
                     testedClass::list(['created' => $date]);
                 })
@@ -1002,6 +999,8 @@ class Payment extends Stancer\Tests\atoum
 
     /**
      * @dataProvider cardCurrencyDataProvider
+     *
+     * @param mixed $currency
      */
     public function testMethodsAllowed($currency)
     {
@@ -1445,7 +1444,7 @@ class Payment extends Stancer\Tests\atoum
                     ->isIdenticalTo('paym_KIVaaHi7G8QAYMQpQOYBrUQE')
 
                 ->dateTime($this->testedInstance->getCreationDate())
-                    ->isEqualTo(new DateTime('@1538564253'))
+                    ->isEqualTo(new \DateTime('@1538564253'))
 
                 ->integer($this->testedInstance->getAmount())
                     ->isIdenticalTo(100)
@@ -1543,7 +1542,7 @@ class Payment extends Stancer\Tests\atoum
                     ->isIdenticalTo('paym_5IptC9R1Wu2wKBR5cjM2so7k')
 
                 ->dateTime($this->testedInstance->getCreationDate())
-                    ->isEqualTo(new DateTime('@1538564504'))
+                    ->isEqualTo(new \DateTime('@1538564504'))
 
                 ->integer($this->testedInstance->getAmount())
                     ->isIdenticalTo(100)
@@ -1659,7 +1658,7 @@ class Payment extends Stancer\Tests\atoum
                     ->isIdenticalTo('paym_RMLytyx2xLkdXkATKSxHOlvC')
 
                 ->dateTime($this->testedInstance->getCreationDate())
-                    ->isEqualTo(new DateTime('@1567094428'))
+                    ->isEqualTo(new \DateTime('@1567094428'))
 
                 ->integer($this->testedInstance->getAmount())
                     ->isIdenticalTo(1337)
@@ -1796,7 +1795,7 @@ class Payment extends Stancer\Tests\atoum
                     ->isIdenticalTo('paym_RMLytyx2xLkdXkATKSxHOlvC')
 
                 ->dateTime($this->testedInstance->getCreationDate())
-                    ->isEqualTo(new DateTime('@1567094428'))
+                    ->isEqualTo(new \DateTime('@1567094428'))
 
                 ->integer($this->testedInstance->getAmount())
                     ->isIdenticalTo(1337)
@@ -1908,7 +1907,7 @@ class Payment extends Stancer\Tests\atoum
                     ->isIdenticalTo('paym_pia9ossoqujuFFbX0HdS3FLi')
 
                 ->dateTime($this->testedInstance->getCreationDate())
-                    ->isEqualTo(new DateTime('@1562085759'))
+                    ->isEqualTo(new \DateTime('@1562085759'))
 
                 ->integer($this->testedInstance->getAmount())
                     ->isIdenticalTo(10000)
@@ -1983,7 +1982,7 @@ class Payment extends Stancer\Tests\atoum
                     ->isIdenticalTo('paym_RMLytyx2xLkdXkATKSxHOlvC')
 
                 ->dateTime($this->testedInstance->getCreationDate())
-                    ->isEqualTo(new DateTime('@1567094428'))
+                    ->isEqualTo(new \DateTime('@1567094428'))
 
                 ->integer($this->testedInstance->getAmount())
                     ->isIdenticalTo(1337)
@@ -2335,6 +2334,8 @@ class Payment extends Stancer\Tests\atoum
 
     /**
      * @dataProvider cardCurrencyDataProvider
+     *
+     * @param mixed $currency
      */
     public function testSetCurrency($currency)
     {

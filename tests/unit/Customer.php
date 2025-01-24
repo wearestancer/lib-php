@@ -2,10 +2,9 @@
 
 namespace Stancer\tests\unit;
 
-use DateTime;
+use mock;
 use Stancer;
 use Stancer\Customer as testedClass;
-use mock;
 
 class Customer extends Stancer\Tests\atoum
 {
@@ -87,7 +86,7 @@ class Customer extends Stancer\Tests\atoum
                     ->isIdenticalTo('cust_nwSpP6LKE828Inhiu1CXyp7l')
 
                 ->dateTime($this->testedInstance->getCreationDate())
-                    ->isEqualTo(new DateTime('@1538565198'))
+                    ->isEqualTo(new \DateTime('@1538565198'))
 
                 ->string($this->testedInstance->getEmail())
                     ->isIdenticalTo('david@coaster.net')

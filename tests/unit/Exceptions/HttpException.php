@@ -3,9 +3,9 @@
 namespace Stancer\tests\unit\Exceptions;
 
 use GuzzleHttp;
-use Stancer;
 use mock;
 use Psr;
+use Stancer;
 
 class HttpException extends Stancer\Tests\atoum
 {
@@ -59,6 +59,9 @@ class HttpException extends Stancer\Tests\atoum
 
     /**
      * @dataProvider statusDataProvider
+     *
+     * @param mixed $status
+     * @param mixed $expected
      */
     public function testCreate_withStatus($status, $expected)
     {
@@ -73,6 +76,9 @@ class HttpException extends Stancer\Tests\atoum
 
     /**
      * @dataProvider statusDataProvider
+     *
+     * @param mixed $status
+     * @param mixed $expected
      */
     public function testGetClassFromStatus($status, $expected)
     {

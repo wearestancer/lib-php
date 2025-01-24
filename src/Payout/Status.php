@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Stancer\Payout;
 
-use Stancer;
-
 /**
  * List of a payout status.
  */

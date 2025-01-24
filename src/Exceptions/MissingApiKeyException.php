@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Stancer\Exceptions;
 
-use Stancer\Interfaces\ExceptionInterface;
 use Psr;
+use Stancer\Interfaces\ExceptionInterface;
 
 /**
  * Exception thrown when API key are missing.
@@ -16,8 +16,6 @@ class MissingApiKeyException extends BadMethodCallException implements Exception
 
     /**
      * Return default message for that kind of exception.
-     *
-     * @return string
      */
     public static function getDefaultMessage(): string
     {

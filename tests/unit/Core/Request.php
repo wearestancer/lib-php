@@ -2,10 +2,9 @@
 
 namespace Stancer\tests\unit\Core;
 
-use Exception;
 use GuzzleHttp;
-use Stancer;
 use mock;
+use Stancer;
 
 class Request extends Stancer\Tests\atoum
 {
@@ -429,7 +428,7 @@ class Request extends Stancer\Tests\atoum
                     ->and($key2 = uniqid())
                     ->and($value2 = uniqid())
                     ->and($query = [$key1 => $value1, $key2 => $value2])
-                    ->and($location = $object->getUri() . '?' . $key1 . '=' . $value1 . '&'. $key2 . '=' . $value2)
+                    ->and($location = $object->getUri() . '?' . $key1 . '=' . $value1 . '&' . $key2 . '=' . $value2)
                     ->and($debugMessage = 'API call : ' . $method . ' ' . $location)
                     ->then
                         ->string($this->testedInstance->request($method, $object, ['query' => $query]))
@@ -569,7 +568,7 @@ class Request extends Stancer\Tests\atoum
                 ->and($key2 = uniqid())
                 ->and($value2 = uniqid())
                 ->and($query = [$key1 => $value1, $key2 => $value2])
-                ->and($location = $object->getUri() . '?' . $key1 . '=' . $value1 . '&'. $key2 . '=' . $value2)
+                ->and($location = $object->getUri() . '?' . $key1 . '=' . $value1 . '&' . $key2 . '=' . $value2)
                 ->and($debugMessage = 'API call : ' . $method . ' ' . $location)
                 ->then
                     ->string($this->testedInstance->request($method, $object, ['query' => $query]))
@@ -731,7 +730,7 @@ class Request extends Stancer\Tests\atoum
 
             ->assert('Every Guzzle exceptions (except the ones below)')
                 ->given($exceptionMessage = uniqid())
-                ->and($response = new Exception($exceptionMessage))
+                ->and($response = new \Exception($exceptionMessage))
                 ->and($mock = new GuzzleHttp\Handler\MockHandler([$response]))
                 ->and($handler = GuzzleHttp\HandlerStack::create($mock))
                 ->and($client = new GuzzleHttp\Client(['handler' => $handler]))

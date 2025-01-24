@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Stancer;
 
-use Override;
 use Stancer;
 
 /**
@@ -55,7 +54,6 @@ class Customer extends Stancer\Core\AbstractObject
     final public const ENDPOINT = 'customers';
 
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [
@@ -96,11 +94,12 @@ class Customer extends Stancer\Core\AbstractObject
      * Send a customer.
      *
      * @uses Request::post()
+     *
      * @return $this
      * @throws Stancer\Exceptions\BadMethodCallException When trying to send a customer without an email
      *    or a phone number.
      */
-    #[Override]
+    #[\Override]
     public function send(): static
     {
         if (!$this->getId() && !$this->getEmail() && !$this->getMobile()) {

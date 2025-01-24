@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Stancer\Payout;
 
-use Override;
-use ReturnTypeWillChange;
 use Stancer;
 
 /**
@@ -50,64 +48,63 @@ use Stancer;
 #[Stancer\Core\Documentation\AddMethod(
     'disputes',
     ['array<mixed> $terms'],
-    '\Generator<Stancer\Dispute>',
+    '\\Generator<Stancer\\Dispute>',
     description: 'List every disputes in the payout.',
 )]
 #[Stancer\Core\Documentation\AddMethod(
     'listDisputes',
     ['array<mixed> $terms'],
-    '\Generator<Stancer\Dispute>',
+    '\\Generator<Stancer\\Dispute>',
     description: 'List every disputes in the payout.',
 )]
 #[Stancer\Core\Documentation\AddMethod(
     'listDisputes',
     ['SearchFilters $terms'],
-    '\Generator<Stancer\Dispute>',
+    '\\Generator<Stancer\\Dispute>',
     description: 'List every disputes in the payout.',
     stan: true,
 )]
 #[Stancer\Core\Documentation\AddMethod(
     'payments',
     ['array<mixed> $terms'],
-    '\Generator<Stancer\Payment>',
+    '\\Generator<Stancer\\Payment>',
     description: 'List every payments in the payout.',
 )]
 #[Stancer\Core\Documentation\AddMethod(
     'listPayments',
     ['array<mixed> $terms'],
-    '\Generator<Stancer\Payment>',
+    '\\Generator<Stancer\\Payment>',
     description: 'List every payments in the payout.',
 )]
 #[Stancer\Core\Documentation\AddMethod(
     'listPayments',
     ['SearchFilters $terms'],
-    '\Generator<Stancer\Payment>',
+    '\\Generator<Stancer\\Payment>',
     description: 'List every payments in the payout.',
     stan: true,
 )]
 #[Stancer\Core\Documentation\AddMethod(
     'refunds',
     ['array<mixed> $terms'],
-    '\Generator<Stancer\Refund>',
+    '\\Generator<Stancer\\Refund>',
     description: 'List every refunds in the payout.',
 )]
 #[Stancer\Core\Documentation\AddMethod(
     'listRefunds',
     ['array<mixed> $terms'],
-    '\Generator<Stancer\Refund>',
+    '\\Generator<Stancer\\Refund>',
     description: 'List every refunds in the payout.',
 )]
 #[Stancer\Core\Documentation\AddMethod(
     'listRefunds',
     ['SearchFilters $terms'],
-    '\Generator<Stancer\Refund>',
+    '\\Generator<Stancer\\Refund>',
     description: 'List every refunds in the payout.',
     stan: true,
 )]
 class Details extends Stancer\Core\AbstractObject
 {
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [
@@ -135,10 +132,10 @@ class Details extends Stancer\Core\AbstractObject
      *
      * @param string $method Method called.
      * @param mixed[] $arguments Arguments used during the call.
-     * @return mixed
+     *
      * @throws Stancer\Exceptions\BadMethodCallException When an unhandled method is called.
      */
-    #[Override]
+    #[\Override]
     public function __call(string $method, array $arguments): mixed
     {
         $name = Stancer\Helper::snakeCaseToCamelCase($method);

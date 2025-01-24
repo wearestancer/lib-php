@@ -4,8 +4,6 @@ declare(strict_types=1);
 
 namespace Stancer;
 
-use DateTimeImmutable;
-use Override;
 use Stancer;
 
 /**
@@ -54,7 +52,7 @@ use Stancer;
  * @property-read ?\Stancer\Refund\Status $status Refund status.
  * @property-read string $uri Entity resource location.
  */
-#[Stancer\Core\Documentation\AddMethod('setPayment', ['Stancer\Payment $payment'], '$this', stan: true)]
+#[Stancer\Core\Documentation\AddMethod('setPayment', ['Stancer\\Payment $payment'], '$this', stan: true)]
 class Refund extends Stancer\Core\AbstractObject
 {
     use Stancer\Traits\AmountTrait;
@@ -64,7 +62,6 @@ class Refund extends Stancer\Core\AbstractObject
     final public const ENDPOINT = 'refunds';
 
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [
@@ -88,12 +85,12 @@ class Refund extends Stancer\Core\AbstractObject
         'dateBank' => [
             'desc' => 'Delivery date of the funds by the bank',
             'restricted' => true,
-            'type' => DateTimeImmutable::class,
+            'type' => \DateTimeImmutable::class,
         ],
         'dateRefund' => [
             'desc' => 'Date when the API sent the refund request to the bank',
             'restricted' => true,
-            'type' => DateTimeImmutable::class,
+            'type' => \DateTimeImmutable::class,
         ],
         'payment' => [
             'desc' => 'Refunded payment identifier',
@@ -116,10 +113,10 @@ class Refund extends Stancer\Core\AbstractObject
      *
      * @return boolean
      */
-    #[Override]
+    #[\Override]
     public function isModified(): bool
     {
-        return !!count($this->modified);
+        return (bool) count($this->modified);
     }
 
     /**
@@ -130,7 +127,7 @@ class Refund extends Stancer\Core\AbstractObject
      * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
-    #[Override]
+    #[\Override]
     public function send(): static
     {
         $payment = $this->getPayment();

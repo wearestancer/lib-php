@@ -13,8 +13,6 @@ class Helper
      * Convert `camelCase` text to `snake_case`.
      *
      * @param string $text Text to convert.
-     *
-     * @return string
      */
     public static function camelCaseToSnakeCase(string $text): string
     {
@@ -35,8 +33,6 @@ class Helper
      * Convert `snake_case` text to `camelCase`.
      *
      * @param string $text Text to convert.
-     *
-     * @return string
      */
     public static function snakeCaseToCamelCase(string $text): string
     {
