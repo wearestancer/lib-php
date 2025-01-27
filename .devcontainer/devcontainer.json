@@ -25,5 +25,9 @@
 			}
 		}
 	},
-	"postCreateCommand": "composer install --dev && git config --global --add safe.directory /workspace"
+	"mounts": [
+		"source=profile,target=/home/vscode,type=volume"
+	],
+	"postCreateCommand": "composer install --dev && git config --global --add safe.directory /workspace",
+	"remoteUser": "vscode"
 }
