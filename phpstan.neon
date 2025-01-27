@@ -31,7 +31,6 @@ parameters:
 
   paths:
     - src
-    - tests/stan/Types
 
   treatPhpDocTypesAsCertain: false
 

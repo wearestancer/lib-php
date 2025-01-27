@@ -26,8 +26,7 @@ workflow:
   before_script:
     - php -v
     - composer --version
-    - if [[ "$COMPOSER_PREFER" == "lowest" ]]; then export COMPOSER_PREFER='--prefer-lowest'; else export COMPOSER_PREFER= ; fi
-    - composer install --no-progress --prefer-stable ${COMPOSER_PREFER}
+    - composer install --no-progress
 
   cache:
     key:
@@ -43,10 +42,7 @@ workflow:
 
   parallel:
     matrix:
-      - COMPOSER_PREFER:
-          - latest
-          - lowest
-        VERSION:
+        - VERSION:
           - '8.1'
           - '8.2'
           - '8.3'

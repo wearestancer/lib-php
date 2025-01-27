@@ -29,7 +29,6 @@
 				"php-cs-fixer.executablePath": "php-cs-fixer",
 				"php-cs-fixer.onsave": true,
 				"php.validate.executablePath": "/usr/local/bin/php"
-
 			}
 		}
 	},
