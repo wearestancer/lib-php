@@ -14,7 +14,12 @@
 				"xdebug.php-debug"
 			],
 			"runArgs": [
-				"-v", "${env:HOME}/.gnupg/:/home/vscode/.gnupg/"
+				"--volume",
+				"${env:HOME}/.gnupg/:/home/vscode/.gnupg/",
+				"--volume",
+				"${env:SSH_AUTH_SOCK}:/tmp/ssh-agent.socket",
+				"--env",
+				"SSH_AUTH_SOCK=/tmp/ssh-agent.socket"
 			],
 			"settings": {
 				"editor.rulers": [
@@ -25,5 +30,9 @@
 			}
 		}
 	},
-	"postCreateCommand": "composer install --dev && git config --global --add safe.directory /workspace"
+	"mounts": [
+		"source=profile,target=/home/vscode,type=volume"
+	],
+	"postCreateCommand": "composer install --dev && git config --global --add safe.directory /workspace",
+	"remoteUser": "vscode"
 }
