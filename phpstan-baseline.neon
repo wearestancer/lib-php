@@ -6,11 +6,6 @@ parameters:
 			path: src/Payment.php
 
 		-
-			message: "#^Parameter \\#1 \\$value of static method Stancer\\\\Payment\\:\\:validateDateRelativeFilter\\(\\) expects DateTimeInterface\\|int, DatePeriod\\<DateTimeInterface, DateTimeInterface\\|null, int\\>\\|DateTimeInterface\\|int\\|string given\\.$#"
-			count: 1
-			path: src/Payment.php
-
-		-
 			message: "#^PHPDoc tag @var with type array\\{account_holder_name\\?\\: string, account_number\\?\\: string, id\\?\\: string, source\\: array\\{id\\?\\: string\\}\\|string\\} is not subtype of type array\\{\\}\\|array\\{id\\: string\\}\\.$#"
 			count: 1
 			path: src/Payment.php
