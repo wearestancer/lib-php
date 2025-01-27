@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-- Keep devcontainer shell env between two devcontainer run
+- Simplify devcontainer shell env
 
 
 ## [2.0.1] - 2024-11-15

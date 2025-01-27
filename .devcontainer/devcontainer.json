@@ -14,7 +14,12 @@
 				"xdebug.php-debug"
 			],
 			"runArgs": [
-				"-v", "${env:HOME}/.gnupg/:/home/vscode/.gnupg/"
+				"--volume",
+				"${env:HOME}/.gnupg/:/home/vscode/.gnupg/",
+				"--volume",
+				"${env:SSH_AUTH_SOCK}:/tmp/ssh-agent.socket",
+				"--env",
+				"SSH_AUTH_SOCK=/tmp/ssh-agent.socket"
 			],
 			"settings": {
 				"editor.rulers": [
