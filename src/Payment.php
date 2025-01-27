@@ -429,8 +429,6 @@ class Payment extends Stancer\Core\AbstractObject
         return $params;
     }
 
-    // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
-
     /**
      * Return the URL for Stancer payment page.
      *
@@ -477,8 +475,6 @@ class Payment extends Stancer\Core\AbstractObject
 
         return vsprintf('https://%s/%s/%s', $data) . $query;
     }
-
-    // phpcs:enable
 
     /**
      * Return the refundable amount.
@@ -708,9 +704,7 @@ class Payment extends Stancer\Core\AbstractObject
         $sepa = $this->getSepa();
 
         if (!is_object($this->getDevice())) {
-            // phpcs:disable Squiz.PHP.DisallowBooleanStatement.Found
             $mandatoryDevice = is_object($auth) && $auth->getReturnUrl();
-            // phpcs:enable
 
             try {
                 $device = new Stancer\Device();

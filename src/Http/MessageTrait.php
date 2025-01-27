@@ -2,9 +2,6 @@
 
 declare(strict_types=1);
 
-// Next line is required, we can not force type in function signature, it triggers a fatal error.
-// phpcs:disable Squiz.Commenting.FunctionComment.ScalarTypeHintMissing
-
 namespace Stancer\Http;
 
 use Psr;

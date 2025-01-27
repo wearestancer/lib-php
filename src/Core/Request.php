@@ -2,11 +2,8 @@
 
 declare(strict_types=1);
 
-// phpcs:disable Generic.NamingConventions.ConstructorName.OldStyle
-
 namespace Stancer\Core;
 
-use Exception;
 use GuzzleHttp;
 use Psr;
 use Stancer;
@@ -125,9 +122,6 @@ class Request
     {
         return $this->patch($object);
     }
-
-    // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
-    // Prevent PHPCS warning due to `thrown new $class`.
 
     /**
      * Make a call to API.
@@ -488,6 +482,4 @@ class Request
 
         return $this;
     }
-
-    // phpcs:enable
 }

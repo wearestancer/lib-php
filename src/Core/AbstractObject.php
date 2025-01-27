@@ -717,11 +717,9 @@ abstract class AbstractObject implements \JsonSerializable
             $action = 'updated';
             $response = $request->patch($this);
         } else {
-            // phpcs:disable Squiz.PHP.DisallowBooleanStatement.Found
             $filter = function ($model): bool {
                 return $model['required'] && is_null($model['value']);
             };
-            // phpcs:enable
             $required = array_filter($this->dataModel, $filter);
 
             if ($required) {

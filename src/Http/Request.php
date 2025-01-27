@@ -2,10 +2,6 @@
 
 declare(strict_types=1);
 
-// Next lines are required, we can not force type in function signature, it triggers a fatal error.
-// phpcs:disable Squiz.Commenting.FunctionComment.InvalidNoReturn
-// phpcs:disable Squiz.Commenting.FunctionComment.ScalarTypeHintMissing
-
 namespace Stancer\Http;
 
 use Psr;
@@ -192,10 +188,6 @@ class Request implements Psr\Http\Message\RequestInterface
      */
     public function withRequestTarget(mixed $requestTarget): static
     {
-        // phpcs:disable PEAR.Functions.FunctionCallSignature.SpaceAfterCloseBracket
-        // phpcs:disable Squiz.WhiteSpace.ObjectOperatorSpacing.Before
-        // phpcs:disable Squiz.WhiteSpace.SemicolonSpacing.Incorrect
-
         /** @phpstan-var string|UriComponents $requestTarget */
         $parse = new Uri($requestTarget);
         $obj = clone $this;

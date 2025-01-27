@@ -27,7 +27,7 @@ workflow:
     - php -v
     - composer --version
     - if [[ "$COMPOSER_PREFER" == "lowest" ]]; then export COMPOSER_PREFER='--prefer-lowest'; else export COMPOSER_PREFER= ; fi
-    - composer update --no-progress --prefer-stable ${COMPOSER_PREFER}
+    - composer install --no-progress --prefer-stable ${COMPOSER_PREFER}
 
   cache:
     key:

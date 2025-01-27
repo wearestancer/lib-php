@@ -14,8 +14,6 @@ use Stancer;
  */
 trait SearchTrait
 {
-    // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
-
     /**
      * List elements.
      *
@@ -141,7 +139,6 @@ trait SearchTrait
 
         $request = new Stancer\Core\Request();
 
-        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
         // @var callable(): Generator<static> $gen
         $gen = function () use ($class, $request, $params, $property, $until): \Generator {
             $more = true;
@@ -188,9 +185,6 @@ trait SearchTrait
         return $gen();
     }
 
-    // phpcs:enable
-    // phpcs:disable Squiz.Functions.MultiLineFunctionDeclaration.NewlineBeforeOpenBrace
-
     /**
      * Validate date relative filter.
      *
@@ -211,7 +205,6 @@ trait SearchTrait
         string $exception,
         bool $allowPeriod = false
     ): int {
-        // phpcs:enable
         $timestamp = $value;
 
         if ($value instanceof \DateTimeInterface) {
