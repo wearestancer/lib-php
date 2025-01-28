@@ -2,8 +2,6 @@
 
 namespace Stancer\Tests\Provider;
 
-use Stancer;
-
 trait Strings
 {
     public function caseStringDataProvider()

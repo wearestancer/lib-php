@@ -1,15 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Core\Documentation;
 
-use Attribute;
-use Stancer;
-
 /**
  * Attribute to add documentation data on a property.
  */
-#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
+#[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE)]
 class AddProperty
 {
     /**
@@ -43,10 +41,9 @@ class AddProperty
         protected ?bool $required = null,
         protected ?bool $restricted = null,
         protected array|false|null $setter = null,
-        protected string|array|null $type = null,
+        protected array|string|null $type = null,
         protected mixed $value = null,
-    ) {
-    }
+    ) {}
 
     /**
      * Return phpdoc data.
@@ -106,8 +103,6 @@ class AddProperty
 
     /**
      * Return property name.
-     *
-     * @return string
      */
     public function getName(): string
     {

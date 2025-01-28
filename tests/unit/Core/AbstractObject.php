@@ -2,10 +2,8 @@
 
 namespace Stancer\tests\unit\Core;
 
-use DateTime;
-use DateTimeZone;
-use Stancer;
 use mock;
+use Stancer;
 
 class AbstractObject extends Stancer\Tests\atoum
 {
@@ -15,7 +13,7 @@ class AbstractObject extends Stancer\Tests\atoum
     public function test__construct()
     {
         $this
-            ->given($client = new mock\GuzzleHttp\Client)
+            ->given($client = new mock\GuzzleHttp\Client())
             ->and($api = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($api->setHttpClient($client))
 
@@ -85,7 +83,7 @@ class AbstractObject extends Stancer\Tests\atoum
                 })
                     ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                     ->message
-                        ->isIdenticalTo('Method "mock\Stancer\Core\AbstractObject::setEndpoint()" unknown')
+                        ->isIdenticalTo('Method "mock\\Stancer\\Core\\AbstractObject::setEndpoint()" unknown')
 
                 ->exception(function () {
                     $this->testedInstance->setId(uniqid());
@@ -105,7 +103,7 @@ class AbstractObject extends Stancer\Tests\atoum
                 ->if($method = uniqid())
                 ->then
                     ->exception(function () use ($method) {
-                        $this->testedInstance->$method();
+                        $this->testedInstance->{$method}();
                     })
                         ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                         ->message
@@ -147,8 +145,8 @@ class AbstractObject extends Stancer\Tests\atoum
         $this
             ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
             ->and($config->setDebug(false))
-            ->and($client = new mock\Stancer\Http\Client)
-            ->and($logger = new mock\Stancer\Core\Logger)
+            ->and($client = new mock\Stancer\Http\Client())
+            ->and($logger = new mock\Stancer\Core\Logger())
             ->and($config->setHttpClient($client))
             ->and($config->setLogger($logger))
 
@@ -192,6 +190,8 @@ class AbstractObject extends Stancer\Tests\atoum
 
     /**
      * @dataProvider timeZoneProvider
+     *
+     * @param mixed $tz
      */
     public function testGetCreationDate($tz)
     {
@@ -206,43 +206,43 @@ class AbstractObject extends Stancer\Tests\atoum
             ->and($this->testedInstance->hydrate($data))
             ->then
                 ->dateTime($this->testedInstance->getCreationDate())
-                    ->isEqualTo(new DateTime('@' . $timestamp))
+                    ->isEqualTo(new \DateTime('@' . $timestamp))
 
                 ->dateTime($this->testedInstance->get_creation_date())
-                    ->isEqualTo(new DateTime('@' . $timestamp))
+                    ->isEqualTo(new \DateTime('@' . $timestamp))
 
                 ->dateTime($this->testedInstance->creationDate)
-                    ->isEqualTo(new DateTime('@' . $timestamp))
+                    ->isEqualTo(new \DateTime('@' . $timestamp))
 
                 ->dateTime($this->testedInstance->creation_date)
-                    ->isEqualTo(new DateTime('@' . $timestamp))
+                    ->isEqualTo(new \DateTime('@' . $timestamp))
 
                 ->dateTime($this->testedInstance->getCreated())
-                    ->isEqualTo(new DateTime('@' . $timestamp))
+                    ->isEqualTo(new \DateTime('@' . $timestamp))
 
                 ->dateTime($this->testedInstance->created)
-                    ->isEqualTo(new DateTime('@' . $timestamp))
+                    ->isEqualTo(new \DateTime('@' . $timestamp))
 
             ->if($config = Stancer\Config::init([]))
             ->and($config->setDefaultTimeZone($tz))
             ->then
                 ->dateTime($this->testedInstance->getCreationDate())
-                    ->hasTimezone(new DateTimeZone($tz))
+                    ->hasTimezone(new \DateTimeZone($tz))
 
                 ->dateTime($this->testedInstance->get_creation_date())
-                    ->hasTimezone(new DateTimeZone($tz))
+                    ->hasTimezone(new \DateTimeZone($tz))
 
                 ->dateTime($this->testedInstance->creationDate)
-                    ->hasTimezone(new DateTimeZone($tz))
+                    ->hasTimezone(new \DateTimeZone($tz))
 
                 ->dateTime($this->testedInstance->creation_date)
-                    ->hasTimezone(new DateTimeZone($tz))
+                    ->hasTimezone(new \DateTimeZone($tz))
 
                 ->dateTime($this->testedInstance->getCreated())
-                    ->hasTimezone(new DateTimeZone($tz))
+                    ->hasTimezone(new \DateTimeZone($tz))
 
                 ->dateTime($this->testedInstance->created)
-                    ->hasTimezone(new DateTimeZone($tz))
+                    ->hasTimezone(new \DateTimeZone($tz))
         ;
     }
 
@@ -346,7 +346,7 @@ class AbstractObject extends Stancer\Tests\atoum
             ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
             ->assert('No request if no id')
-                ->if($client = new mock\GuzzleHttp\Client)
+                ->if($client = new mock\GuzzleHttp\Client())
                 ->and($config->setHttpClient($client))
 
                 ->then
@@ -357,7 +357,7 @@ class AbstractObject extends Stancer\Tests\atoum
                         ->call('request')->never
 
             ->assert('No request if no endpoint')
-                ->if($client = new mock\GuzzleHttp\Client)
+                ->if($client = new mock\GuzzleHttp\Client())
                 ->and($config->setHttpClient($client))
 
                 ->then

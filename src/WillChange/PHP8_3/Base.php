@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\WillChange\PHP8_3;
@@ -10,6 +11,4 @@ use Stancer;
  *
  * @see https://www.php.net/releases/8.3/en.php
  */
-class Base extends Stancer\WillChange\Base
-{
-}
+class Base extends Stancer\WillChange\Base {}

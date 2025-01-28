@@ -2,11 +2,12 @@
 
 namespace Stancer\Tests\functional;
 
-use DateTime;
 use Stancer;
 
 /**
  * @namespace \Tests\functional
+ *
+ * @internal
  */
 class Sepa extends TestCase
 {
@@ -30,7 +31,7 @@ class Sepa extends TestCase
                         ->isIdenticalTo('TESTSEPP')
 
                     ->dateTime($this->testedInstance->getDateMandate())
-                        ->isEqualTo(new DateTime('@1601045728'))
+                        ->isEqualTo(new \DateTime('@1601045728'))
 
                     ->string($this->testedInstance->getLast4())
                         ->isIdenticalTo('0003')
@@ -42,7 +43,7 @@ class Sepa extends TestCase
                         ->isIdenticalTo('John Doe')
 
                     ->dateTime($this->testedInstance->getCreationDate())
-                        ->isEqualTo(new DateTime('@1601045777'))
+                        ->isEqualTo(new \DateTime('@1601045777'))
         ;
     }
 }

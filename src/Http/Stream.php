@@ -1,14 +1,11 @@
 <?php
-declare(strict_types=1);
 
-// Next lines are required, we can not force type in function signature, it triggers a fatal error.
-// phpcs:disable Squiz.Commenting.FunctionComment.InvalidNoReturn
-// phpcs:disable Squiz.Commenting.FunctionComment.ScalarTypeHintMissing
+declare(strict_types=1);
 
 namespace Stancer\Http;
 
-use Stancer;
 use Psr;
+use Stancer;
 
 /**
  * Basic HTTP Stream.
@@ -51,7 +48,6 @@ class Stream implements Psr\Http\Message\StreamInterface
      * string casting operations.
      *
      * @see http://php.net/manual/en/language.oop5.magic.php#object.tostring
-     * @return string
      */
     public function __toString(): string
     {
@@ -62,12 +58,8 @@ class Stream implements Psr\Http\Message\StreamInterface
 
     /**
      * Closes the stream and any underlying resources.
-     *
-     * @return void
      */
-    public function close(): void
-    {
-    }
+    public function close(): void {}
 
     /**
      * Separates any underlying resources from the stream.
@@ -94,8 +86,6 @@ class Stream implements Psr\Http\Message\StreamInterface
 
     /**
      * Returns the remaining contents in a string.
-     *
-     * @return string
      */
     public function getContents(): string
     {
@@ -113,7 +103,9 @@ class Stream implements Psr\Http\Message\StreamInterface
      * stream_get_meta_data() function.
      *
      * @link http://php.net/manual/en/function.stream-get-meta-data.php
+     *
      * @param string|null $key Specific metadata to retrieve.
+     *
      * @return array|null Returns an associative array if no key is
      *   provided. Returns a specific key value if a key is provided and the
      *   value is found, or null if the key is not found.
@@ -175,6 +167,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      * @param integer $length Read up to $length bytes from the object and return
      *   them. Fewer than $length bytes may be returned if underlying stream
      *   call returns fewer bytes.
+     *
      * @return string Returns the data read from the stream, or an empty string
      *   if no bytes are available.
      */
@@ -199,7 +192,6 @@ class Stream implements Psr\Http\Message\StreamInterface
      *
      * @see seek()
      * @link http://www.php.net/manual/en/function.fseek.php
-     * @return void
      */
     public function rewind(): void
     {
@@ -210,13 +202,13 @@ class Stream implements Psr\Http\Message\StreamInterface
      * Seek to a position in the stream.
      *
      * @link http://www.php.net/manual/en/function.fseek.php
+     *
      * @param integer $offset Stream offset.
      * @param integer $whence Specifies how the cursor position will be calculated
      *   based on the seek offset. Valid values are identical to the built-in
      *   PHP $whence values for `fseek()`.  SEEK_SET: Set position equal to
      *   offset bytes SEEK_CUR: Set position to current location plus offset
      *   SEEK_END: Set position to end-of-stream plus offset.
-     * @return void
      */
     public function seek(int $offset, int $whence = SEEK_SET): void
     {
@@ -255,6 +247,7 @@ class Stream implements Psr\Http\Message\StreamInterface
      * Write data to the stream.
      *
      * @param string $string The string that is to be written.
+     *
      * @return integer Returns the number of bytes written to the stream.
      * @throws Stancer\Exceptions\BadMethodCallException For every call.
      */

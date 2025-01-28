@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Exceptions;
 
-use Stancer\Interfaces\ExceptionInterface;
 use Psr;
+use Stancer\Interfaces\ExceptionInterface;
 
 /**
  * A request method is not supported for the requested resource.

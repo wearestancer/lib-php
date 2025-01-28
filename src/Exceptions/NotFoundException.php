@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Exceptions;
 
-use Stancer\Interfaces\ExceptionInterface;
 use Psr;
+use Stancer\Interfaces\ExceptionInterface;
 
 /**
  * The server did not find a current representation for the target resource.
@@ -21,8 +22,6 @@ class NotFoundException extends ClientException implements ExceptionInterface
 
     /**
      * Return default message for that kind of exception.
-     *
-     * @return string
      */
     public static function getDefaultMessage(): string
     {

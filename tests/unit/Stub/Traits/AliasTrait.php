@@ -61,16 +61,16 @@ class AliasTrait extends Stancer\Tests\atoum
     {
         $this
             ->assert('camelCase method')
-                ->exception(fn() => $this->newTestedInstance->unknownMethod())
+                ->exception(fn () => $this->newTestedInstance->unknownMethod())
                     ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                     ->message
-                        ->isIdenticalTo('Method "Stancer\Stub\Traits\AliasTrait::unknownMethod()" unknown')
+                        ->isIdenticalTo('Method "Stancer\\Stub\\Traits\\AliasTrait::unknownMethod()" unknown')
 
             ->assert('snake_case method')
-                ->exception(fn() => $this->newTestedInstance->unknown_method())
+                ->exception(fn () => $this->newTestedInstance->unknown_method())
                     ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                     ->message
-                        ->isIdenticalTo('Method "Stancer\Stub\Traits\AliasTrait::unknown_method()" unknown')
+                        ->isIdenticalTo('Method "Stancer\\Stub\\Traits\\AliasTrait::unknown_method()" unknown')
         ;
     }
 
@@ -144,16 +144,16 @@ class AliasTrait extends Stancer\Tests\atoum
             ->if($this->newTestedInstance)
             ->then
                 ->assert('camelCase method')
-                    ->exception(fn() => testedClass::unknownMethod())
+                    ->exception(fn () => testedClass::unknownMethod())
                         ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                         ->message
-                            ->isIdenticalTo('Method "Stancer\Stub\Traits\AliasTrait::unknownMethod()" unknown')
+                            ->isIdenticalTo('Method "Stancer\\Stub\\Traits\\AliasTrait::unknownMethod()" unknown')
 
                 ->assert('snake_case method')
-                    ->exception(fn() => testedClass::unknown_method())
+                    ->exception(fn () => testedClass::unknown_method())
                         ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                         ->message
-                            ->isIdenticalTo('Method "Stancer\Stub\Traits\AliasTrait::unknown_method()" unknown')
+                            ->isIdenticalTo('Method "Stancer\\Stub\\Traits\\AliasTrait::unknown_method()" unknown')
         ;
     }
 }

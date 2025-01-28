@@ -2,9 +2,9 @@
 
 namespace Stancer\tests\unit\Exceptions;
 
-use Stancer;
 use mock;
 use Psr;
+use Stancer;
 
 class Exception extends Stancer\Tests\atoum
 {
@@ -29,7 +29,7 @@ class Exception extends Stancer\Tests\atoum
             ->assert('Complete params')
                 ->given($message = uniqid())
                 ->and($code = rand(0, 100))
-                ->and($previous = new mock\Exception)
+                ->and($previous = new mock\Exception())
                 ->and($params = compact('message', 'code', 'previous'))
                 ->then
                     ->object($obj = $class::create($params))

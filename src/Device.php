@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer;
@@ -64,7 +65,6 @@ use Stancer;
 class Device extends Stancer\Core\AbstractObject
 {
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [
@@ -150,6 +150,7 @@ class Device extends Stancer\Core\AbstractObject
      * We allow IPv4 and IPv6 addresses.
      *
      * @param string $ip New IP address.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidIpAddressException When $ip is not a correct IP address.
      */

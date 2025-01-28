@@ -35,18 +35,18 @@
         "atoum/stubs": "^2.6",
         "atoum/visibility-extension": "^2.0",
         "fakerphp/faker": "^1.13",
+        "friendsofphp/php-cs-fixer": "^3.68",
         "guzzlehttp/guzzle": "^7.2",
         "jdslv/atoum-report-cobertura": "^1.1",
         "phpstan/extension-installer": "^1.0",
         "phpstan/phpstan": "^1.2",
         "phpstan/phpstan-deprecation-rules": "^1.0",
-        "phpstan/phpstan-strict-rules": "^1.0",
-        "satesh/phpcs-gitlab-report": "^1.0",
-        "squizlabs/php_codesniffer": "^3.3"
+        "phpstan/phpstan-strict-rules": "^1.0"
     },
     "scripts": {
         "create-doc": "php scripts/phpdoc.php",
-        "phpcs": "phpcs --cache",
+        "php-cs-check": "php-cs-fixer check -v --diff",
+        "php-cs-fixer": "php-cs-fixer fix -v",
         "phpstan": "phpstan analyse --no-progress",
         "test": "atoum",
         "test:watch": [

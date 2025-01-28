@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Exceptions;
@@ -12,8 +13,6 @@ class InvalidSearchLimitException extends InvalidArgumentException implements Ex
 {
     /**
      * Return default message for that kind of exception.
-     *
-     * @return string
      */
     public static function getDefaultMessage(): string
     {

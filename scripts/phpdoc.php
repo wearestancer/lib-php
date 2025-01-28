@@ -22,6 +22,7 @@ $defaultModel = [
  * Format a PHPDoc line.
  *
  * @param string $line The line to format.
+ *
  * @return string[]
  */
 function formatDocLine(string $line): array
@@ -32,7 +33,7 @@ function formatDocLine(string $line): array
 
         return [
             ' * ' . $first,
-            ...array_map(fn($l) => ' *   ' . $l, $lines),
+            ...array_map(fn ($l) => ' *   ' . $l, $lines),
         ];
     }
 
@@ -43,6 +44,7 @@ function formatDocLine(string $line): array
  * Format the PHPDoc block.
  *
  * @param string|string[] $lines PHPDoc lines.
+ *
  * @return string[]
  */
 function formatPhpDoc(array $lines): array
@@ -57,9 +59,9 @@ function formatPhpDoc(array $lines): array
  *
  * @param string $action The action done on this property(get, set, etc...).
  * @param array $data An array containing all the data necessary to create the property/method doc.
- * @return array
  *
  * @phpstan-param DataModel $data
+ *
  * @phpstan-return DataModel
  */
 function prepareData(string $action, array $data): array
@@ -85,10 +87,14 @@ function prepareData(string $action, array $data): array
             $isEscaped = strpos($value, '\\') === 0;
 
             if ($val === 'bool') {
-                return ($isNullable ? '?': '') . 'boolean';
+                return ($isNullable ? '?' : '') . 'boolean';
             }
 
             if (in_array($val, ['$this', 'array', 'boolean', 'float', 'integer', 'mixed', 'string'], true)) {
+                return $value;
+            }
+
+            if (str_starts_with($val, 'array<')) {
                 return $value;
             }
 
@@ -101,7 +107,7 @@ function prepareData(string $action, array $data): array
         $tmpType = implode('|', array_map($rewriteTypes, $types));
 
         if ($tmpType === 'string' && $data['allowedValues'] && $action === 'get') {
-            $tmpType = implode('|', array_map(fn($value) => "'$value'", $data['allowedValues']));
+            $tmpType = implode('|', array_map(fn ($value) => "'{$value}'", $data['allowedValues']));
 
             if ($data['list']) {
                 $tmpType = 'array<' . $tmpType . '>';
@@ -144,7 +150,7 @@ $classes = [
         ],
     ],
     Stancer\Core\AbstractObject::class => [
-        'instance' => new class() extends Stancer\Core\AbstractObject implements Documentation {},
+        'instance' => new class extends Stancer\Core\AbstractObject implements Documentation {},
 
         'throws' => [
             [Stancer\Exceptions\BadMethodCallException::class, 'when calling an unknown method'],
@@ -154,7 +160,7 @@ $classes = [
     Stancer\Http\Request::class => [
         'instance' => [
             'GET',
-            'http://127.0.0.1'
+            'http://127.0.0.1',
         ],
     ],
     Stancer\Http\Response::class => [
@@ -222,8 +228,7 @@ foreach ($classes as $className => $classData) {
         $obj = new $className();
     }
 
-    unset($classData['filepath']);
-    unset($classData['instance']);
+    unset($classData['filepath'], $classData['instance']);
 
     // Adding manual exceptions.
 
@@ -286,7 +291,7 @@ foreach ($classes as $className => $classData) {
 
         // Find the method documentation (to create a PHPdoc for the snake_case version of it).
         $docstring = str_replace(['/**', '*/'], '', $method->getDocComment());
-        $lines = array_filter(array_map(fn($line) => trim(substr($line, strpos($line, '*') + 1)), explode("\n", $docstring)));
+        $lines = array_filter(array_map(fn ($line) => trim(substr($line, strpos($line, '*') + 1)), explode("\n", $docstring)));
 
         $tmp = $method->getReturnType();
         $return = '';
@@ -300,6 +305,10 @@ foreach ($classes as $className => $classData) {
 
             if ($return === 'self' && !$method->isStatic()) {
                 $return = '$this';
+            }
+
+            if ($return === 'array') {
+                $return = 'array<mixed>';
             }
 
             if ($return === 'bool') {
@@ -483,7 +492,7 @@ foreach ($classes as $className => $classData) {
 
     // Ok, now we check for methods defined in the object which will have an automatic alias.
 
-    $notDocumentedMethods = array_filter($methods, fn($m) => !$m['alreadyDocumented']);
+    $notDocumentedMethods = array_filter($methods, fn ($m) => !$m['alreadyDocumented']);
 
     if ($notDocumentedMethods) {
         foreach ($notDocumentedMethods as $data) {
@@ -504,6 +513,10 @@ foreach ($classes as $className => $classData) {
                     }
                 }
 
+                if ($type === 'array') {
+                    $type = 'array<mixed>';
+                }
+
                 if ($type === 'bool') {
                     $type = 'boolean';
                 }
@@ -511,7 +524,7 @@ foreach ($classes as $className => $classData) {
                 // Does the parameter has a default value?
                 if ($param->isDefaultValueAvailable()) {
                     $tmp = $param->getDefaultValue();
-                    $coerce = function($val) use ($type) {
+                    $coerce = function ($val) use ($type) {
                         if (is_null($val)) {
                             return 'null';
                         }
@@ -570,9 +583,7 @@ foreach ($classes as $className => $classData) {
         }
 
         if (!array_key_exists($action, $parts)) {
-            $parts[$action] = [
-                '', // the block sep
-            ];
+            $parts[$action] = [];
         }
 
         $parts[$action][$name] = $line;
@@ -580,13 +591,13 @@ foreach ($classes as $className => $classData) {
         ksort($parts[$action]);
     }
 
-    $doc = [];
-
     ksort($parts);
+
+    $doc = [];
 
     // Merging every parts together.
     foreach ($parts as $part) {
-        $doc = array_merge($doc, $part);
+        $doc = array_merge($doc, [''], $part);
     }
 
     // Time for putting it in the file.
@@ -597,7 +608,7 @@ foreach ($classes as $className => $classData) {
 
     foreach (explode("\n", $content) as $line) {
         // At the first PHPdoc we handle, we erase everything to put our documentation.
-        if (preg_match('/^\s\* @(?:phpstan-)?(?:method|property(?:-read)?|throws)/', $line)) {
+        if (preg_match('/^\\s\\* @(?:phpstan-)?(?:method|property(?:-read)?|throws)/', $line)) {
             if (!$parsingTags) {
                 $last = array_pop($lines);
 

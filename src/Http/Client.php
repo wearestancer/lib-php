@@ -1,21 +1,22 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Http;
 
-use CurlHandle;
-use Stancer;
 use Psr;
+use Stancer;
 
 /**
  * Basic HTTP client.
  */
 class Client implements Stancer\Interfaces\HttpClientInterface
 {
-    protected CurlHandle $curl;
+    protected \CurlHandle $curl;
 
     /**
      * @var mixed[]
+     *
      * @phpstan-var array<string, string[]>
      */
     protected array $headers = [];
@@ -46,18 +47,14 @@ class Client implements Stancer\Interfaces\HttpClientInterface
      * Return cURL resource.
      *
      * This is mainly use for testing purpose. Be carefull if you need to use it.
-     *
-     * @return CurlHandle
      */
-    public function getCurlResource(): CurlHandle
+    public function getCurlResource(): \CurlHandle
     {
         return $this->curl;
     }
 
     /**
      * Return the last response.
-     *
-     * @return Stancer\Http\Response|null
      */
     public function getLastResponse(): ?Stancer\Http\Response
     {
@@ -66,8 +63,6 @@ class Client implements Stancer\Interfaces\HttpClientInterface
 
     /**
      * Return the last request.
-     *
-     * @return Stancer\Http\Request|null
      */
     public function getLastRequest(): ?Stancer\Http\Request
     {
@@ -91,11 +86,12 @@ class Client implements Stancer\Interfaces\HttpClientInterface
      *
      * As written in documentation "Return the number of bytes written.".
      *
-     * @param CurlHandle $curl Actual cURL resource (not used but mandatory).
+     * @param \CurlHandle $curl Actual cURL resource (not used but mandatory).
      * @param string $line One header line.
+     *
      * @return integer
      */
-    public function parseHeaderLine(CurlHandle $curl, string $line): int
+    public function parseHeaderLine(\CurlHandle $curl, string $line): int
     {
         if (!trim($line)) {
             return strlen($line);
@@ -129,8 +125,6 @@ class Client implements Stancer\Interfaces\HttpClientInterface
      * @param string $method HTTP method.
      * @param string $uri URI string.
      * @param mixed[] $options Request options to apply.
-     *
-     * @return Psr\Http\Message\ResponseInterface
      *
      * @throws Stancer\Exceptions\HttpException On cURL error.
      * @throws Stancer\Exceptions\TooManyRedirectsException On 310 HTTP error.
@@ -281,7 +275,7 @@ class Client implements Stancer\Interfaces\HttpClientInterface
                 default => $params['message'] ?? $class::getDefaultMessage(),
             };
 
-            $logger->$logMethod($logMessage);
+            $logger->{$logMethod}($logMessage);
 
             throw $class::create($params);
         }

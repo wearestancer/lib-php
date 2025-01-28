@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Core\Request;
 
-use Stancer;
 use Psr;
+use Stancer;
 
 /**
  * Register API call.
@@ -38,7 +39,6 @@ use Psr;
 class Call extends Stancer\Core\AbstractObject
 {
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [

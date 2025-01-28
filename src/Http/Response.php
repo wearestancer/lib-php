@@ -1,8 +1,6 @@
 <?php
-declare(strict_types=1);
 
-// Next line is required, we can not force type in function signature, it triggers a fatal error.
-// phpcs:disable Squiz.Commenting.FunctionComment.ScalarTypeHintMissing
+declare(strict_types=1);
 
 namespace Stancer\Http;
 
@@ -20,7 +18,6 @@ use Stancer;
  *   specified header.
  * @method static with_modified_body($in, $out) Return an instance with obfuscated message body.
  * @method static with_protocol_version(string $version) Return an instance with the specified HTTP protocol version.
- *
  * @method Psr\Http\Message\StreamInterface get_body() Gets the body of the message.
  * @method array<mixed> get_header(string $name) Retrieves a message header value by the given case-insensitive name.
  * @method string get_header_line(string $name) Retrieves a comma-separated string of the values for a single header.
@@ -139,6 +136,7 @@ class Response implements Psr\Http\Message\ResponseInterface
      *
      * @link http://tools.ietf.org/html/rfc7231#section-6
      * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+     *
      * @return string Reason phrase; must return an empty string if none present.
      */
     public function getReasonPhrase(): string
@@ -178,11 +176,11 @@ class Response implements Psr\Http\Message\ResponseInterface
      *
      * @link http://tools.ietf.org/html/rfc7231#section-6
      * @link http://www.iana.org/assignments/http-status-codes/http-status-codes.xhtml
+     *
      * @param integer $code The 3-digit integer result code to set.
      * @param string|null $reasonPhrase The reason phrase to use with the
      *     provided status code; if none is provided, implementations MAY
      *     use the defaults as suggested in the HTTP specification.
-     * @return static
      */
     public function withStatus(int $code, ?string $reasonPhrase = null): static
     {

@@ -2,8 +2,8 @@
 
 namespace Stancer\Http\tests\unit;
 
-use Stancer;
 use Psr;
+use Stancer;
 
 class Response extends Stancer\Tests\atoum
 {
@@ -19,6 +19,9 @@ class Response extends Stancer\Tests\atoum
 
     /**
      * @dataProvider httpStatusDataProvider
+     *
+     * @param mixed $code
+     * @param mixed $status
      */
     public function test__construct($code, $status)
     {
@@ -59,6 +62,9 @@ class Response extends Stancer\Tests\atoum
 
     /**
      * @dataProvider httpStatusDataProvider
+     *
+     * @param mixed $code
+     * @param mixed $message
      */
     public function testGetReasonPhrase($code, $message)
     {

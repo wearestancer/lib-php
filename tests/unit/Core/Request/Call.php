@@ -18,7 +18,7 @@ class Call extends Stancer\Tests\atoum
                         ->isNull
 
             ->assert('Can have an instance')
-                ->given($exception = new Stancer\Exceptions\Exception)
+                ->given($exception = new Stancer\Exceptions\Exception())
 
                 ->if($this->newTestedInstance(['exception' => $exception]))
                 ->then
@@ -30,7 +30,7 @@ class Call extends Stancer\Tests\atoum
                 ->if($this->newTestedInstance)
                 ->then
                     ->exception(function () {
-                        $this->testedInstance->setException(new Stancer\Exceptions\Exception);
+                        $this->testedInstance->setException(new Stancer\Exceptions\Exception());
                     })
                         ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                         ->message
@@ -48,7 +48,7 @@ class Call extends Stancer\Tests\atoum
                         ->isIdenticalTo($this->testedInstance->request)
                         ->isNull
 
-            ->assert('Can have an instance of Stancer\Http\Request')
+            ->assert('Can have an instance of Stancer\\Http\\Request')
                 ->given($request = new Stancer\Http\Request('GET', 'http://127.0.0.1'))
 
                 ->if($this->newTestedInstance(['request' => $request]))
@@ -57,7 +57,7 @@ class Call extends Stancer\Tests\atoum
                         ->isIdenticalTo($this->testedInstance->request)
                         ->isIdenticalTo($request)
 
-            ->assert('Can have an instance of GuzzleHttp\Psr7\Request')
+            ->assert('Can have an instance of GuzzleHttp\\Psr7\\Request')
                 ->given($request = new GuzzleHttp\Psr7\Request('GET', 'http://127.0.0.1'))
 
                 ->if($this->newTestedInstance(['request' => $request]))
@@ -88,7 +88,7 @@ class Call extends Stancer\Tests\atoum
                         ->isIdenticalTo($this->testedInstance->response)
                         ->isNull
 
-            ->assert('Can have an instance of Stancer\Http\Response')
+            ->assert('Can have an instance of Stancer\\Http\\Response')
                 ->given($response = new Stancer\Http\Response(200))
 
                 ->if($this->newTestedInstance(['response' => $response]))
@@ -97,8 +97,8 @@ class Call extends Stancer\Tests\atoum
                         ->isIdenticalTo($this->testedInstance->response)
                         ->isIdenticalTo($response)
 
-            ->assert('Can have an instance of GuzzleHttp\Psr7\Response')
-                ->given($response = new GuzzleHttp\Psr7\Response)
+            ->assert('Can have an instance of GuzzleHttp\\Psr7\\Response')
+                ->given($response = new GuzzleHttp\Psr7\Response())
 
                 ->if($this->newTestedInstance(['response' => $response]))
                 ->then

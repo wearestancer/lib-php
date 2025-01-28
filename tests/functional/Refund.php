@@ -6,6 +6,8 @@ use Stancer;
 
 /**
  * @namespace \Tests\functional
+ *
+ * @internal
  */
 class Refund extends TestCase
 {
@@ -13,20 +15,22 @@ class Refund extends TestCase
 
     /**
      * @dataProvider cardCurrencyDataProvider
+     *
+     * @param mixed $currency
      */
     public function testRefund($currency)
     {
         $this
-            ->given($payment = new Stancer\Payment)
+            ->given($payment = new Stancer\Payment())
             ->and($payment->setAmount($amount = rand(50, 10000)))
             ->and($payment->setDescription(sprintf('Refund test, %.02f %s', $amount / 100, $currency)))
             ->and($payment->setCurrency($currency))
-            ->and($payment->setCard($card = new Stancer\Card))
+            ->and($payment->setCard($card = new Stancer\Card()))
             ->and($card->setNumber($this->getValidCardNumber()))
             ->and($card->setExpirationMonth(rand(1, 12)))
             ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
             ->and($card->setCvc((string) rand(100, 999)))
-            ->and($payment->setCustomer($customer = new Stancer\Customer))
+            ->and($payment->setCustomer($customer = new Stancer\Customer()))
             ->and($customer->setName('John Doe'))
             ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
             ->and($payment->send())
@@ -63,8 +67,10 @@ class Refund extends TestCase
 
     /**
      * @dataProvider cardCurrencyDataProvider
+     *
+     * @param mixed $currency
      */
-    public function testRefund_multiple($currency)
+    public function testRefundMultiple($currency)
     {
         $this
             ->given($total = rand(500, 10000))
@@ -72,16 +78,16 @@ class Refund extends TestCase
             ->and($amount2 = max(50, floor(($total - $amount1) / rand(2, 10))))
             ->and($amount3 = $total - $amount1 - $amount2)
 
-            ->if($payment = new Stancer\Payment)
+            ->if($payment = new Stancer\Payment())
             ->and($payment->setAmount($total))
             ->and($payment->setDescription(sprintf('Refund test, %.02f %s', $total / 100, $currency)))
             ->and($payment->setCurrency($currency))
-            ->and($payment->setCard($card = new Stancer\Card))
+            ->and($payment->setCard($card = new Stancer\Card()))
             ->and($card->setNumber('4000000000000077'))
             ->and($card->setExpirationMonth(rand(1, 12)))
             ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
             ->and($card->setCvc((string) rand(100, 999)))
-            ->and($payment->setCustomer($customer = new Stancer\Customer))
+            ->and($payment->setCustomer($customer = new Stancer\Customer()))
             ->and($customer->setName('John Doe'))
             ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
             ->and($payment->send())

@@ -1,15 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Core\Documentation;
 
-use Attribute;
-use Stancer;
-
 /**
  * Attribute to add documentation data on a property or a method.
  */
-#[Attribute(Attribute::TARGET_METHOD)]
+#[\Attribute(\Attribute::TARGET_METHOD)]
 class FormatProperty
 {
     /**
@@ -41,10 +39,9 @@ class FormatProperty
         protected ?bool $required = null,
         protected ?bool $restricted = null,
         protected array|false|null $setter = null,
-        protected string|array|null $type = null,
+        protected array|string|null $type = null,
         protected mixed $value = null,
-    ) {
-    }
+    ) {}
 
     /**
      * Return phpdoc data.

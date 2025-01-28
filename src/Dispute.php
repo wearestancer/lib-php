@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer;
@@ -49,7 +50,6 @@ class Dispute extends Stancer\Core\AbstractObject
     final public const ENDPOINT = 'disputes';
 
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [

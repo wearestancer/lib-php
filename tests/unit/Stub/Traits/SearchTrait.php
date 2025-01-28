@@ -2,19 +2,16 @@
 
 namespace Stancer\tests\unit\Stub\Traits;
 
-use DateInterval;
-use DatePeriod;
-use DateTime;
+use mock;
 use Stancer;
 use Stancer\Stub\Traits\SearchTrait as testedClass;
-use mock;
 
 class SearchTrait extends Stancer\Tests\atoum
 {
     public function testIssueGitLab2()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($config = $this->mockConfig($client))
 
             ->and($this->calling($client)->request = $this->mockJsonResponses([
@@ -131,7 +128,7 @@ class SearchTrait extends Stancer\Tests\atoum
     public function testList()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($config = $this->mockConfig($client))
             ->and($options = $this->mockRequestOptions($config))
 
@@ -201,8 +198,8 @@ class SearchTrait extends Stancer\Tests\atoum
                             ->isIdenticalTo('Created must be in the past.')
 
                     ->exception(function () {
-                        $date = new DateTime();
-                        $date->add(new DateInterval('P1D'));
+                        $date = new \DateTime();
+                        $date->add(new \DateInterval('P1D'));
 
                         testedClass::list(['created' => $date]);
                     })
@@ -233,8 +230,8 @@ class SearchTrait extends Stancer\Tests\atoum
                             ->isIdenticalTo('Created until must be in the past.')
 
                     ->exception(function () {
-                        $date = new DateTime();
-                        $date->add(new DateInterval('P1D'));
+                        $date = new \DateTime();
+                        $date->add(new \DateInterval('P1D'));
 
                         testedClass::list(['created_until' => $date]);
                     })
@@ -243,11 +240,11 @@ class SearchTrait extends Stancer\Tests\atoum
                             ->isIdenticalTo('Created until must be in the past.')
 
                     ->exception(function () {
-                        $created = new DateTime();
-                        $created->sub(new DateInterval('P1D'));
+                        $created = new \DateTime();
+                        $created->sub(new \DateInterval('P1D'));
 
-                        $until = new DateTime();
-                        $until->sub(new DateInterval('P2D'));
+                        $until = new \DateTime();
+                        $until->sub(new \DateInterval('P2D'));
 
                         testedClass::list(['created' => $created, 'created_until' => $until]);
                     })
@@ -396,7 +393,7 @@ class SearchTrait extends Stancer\Tests\atoum
                                     ->once
 
                 ->assert('Empty response (real case)')
-                    ->given($this->calling($client)->request->throw = new Stancer\Exceptions\NotFoundException)
+                    ->given($this->calling($client)->request->throw = new Stancer\Exceptions\NotFoundException())
 
                     ->if($limit = rand(1, 100))
                     ->and($terms = [
@@ -444,7 +441,7 @@ class SearchTrait extends Stancer\Tests\atoum
         ];
 
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($response = new mock\Stancer\Http\Response(200, json_encode($body)))
             ->and($this->calling($client)->request = $response)
             ->and($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
@@ -464,10 +461,10 @@ class SearchTrait extends Stancer\Tests\atoum
             ->and($location = $this->testedInstance->getUri())
 
             ->assert('Period with an end without until')
-                ->if($start = new DateTime('@' . $created))
-                ->and($interval = new DateInterval('P1D'))
-                ->and($end = new DateTime('@' . $until))
-                ->and($period = new DatePeriod($start, $interval, $end))
+                ->if($start = new \DateTime('@' . $created))
+                ->and($interval = new \DateInterval('P1D'))
+                ->and($end = new \DateTime('@' . $until))
+                ->and($period = new \DatePeriod($start, $interval, $end))
 
                 ->and($location1 = $location . '?' . http_build_query(['created' => $created, 'start' => 0]))
                 ->then
@@ -502,10 +499,10 @@ class SearchTrait extends Stancer\Tests\atoum
                                 ->once
 
             ->assert('Period with an end with until')
-                ->if($start = new DateTime('@' . $created))
-                ->and($interval = new DateInterval('P1D'))
-                ->and($end = new DateTime())
-                ->and($period = new DatePeriod($start, $interval, $end))
+                ->if($start = new \DateTime('@' . $created))
+                ->and($interval = new \DateInterval('P1D'))
+                ->and($end = new \DateTime())
+                ->and($period = new \DatePeriod($start, $interval, $end))
 
                 ->and($location1 = $location . '?' . http_build_query(['created' => $created, 'start' => 0]))
                 ->then
@@ -540,10 +537,10 @@ class SearchTrait extends Stancer\Tests\atoum
                                 ->once
 
             ->assert('Period without an end')
-                ->if($start = new DateTime('@' . $created))
-                ->and($interval = new DateInterval('P1D'))
+                ->if($start = new \DateTime('@' . $created))
+                ->and($interval = new \DateInterval('P1D'))
                 ->and($recurrences = rand(1, 100))
-                ->and($period = new DatePeriod($start, $interval, $recurrences))
+                ->and($period = new \DatePeriod($start, $interval, $recurrences))
 
                 ->then
                     ->exception(function () use ($period) {
@@ -582,7 +579,7 @@ class SearchTrait extends Stancer\Tests\atoum
         ];
 
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($response = new mock\Stancer\Http\Response(200, json_encode($body)))
             ->and($this->calling($client)->request = $response)
             ->and($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))

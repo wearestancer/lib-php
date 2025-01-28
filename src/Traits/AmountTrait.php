@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Traits;
@@ -17,6 +18,7 @@ trait AmountTrait
      * We will not use the floating part.
      *
      * @param float $amount New amount.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidAmountException When the amount is invalid.
      */

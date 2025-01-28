@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Exceptions;
 
-use Stancer\Interfaces\ExceptionInterface;
 use Psr;
+use Stancer\Interfaces\ExceptionInterface;
 
 /**
  * Exception thrown for 300 level errors.

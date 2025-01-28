@@ -2,10 +2,9 @@
 
 namespace Stancer\tests\unit;
 
-use DateTime;
+use mock;
 use Stancer;
 use Stancer\Customer as testedClass;
-use mock;
 
 class Customer extends Stancer\Tests\atoum
 {
@@ -55,8 +54,8 @@ class Customer extends Stancer\Tests\atoum
     public function testSend()
     {
         $this
-            ->given($client = new mock\GuzzleHttp\Client)
-            ->and($response = $this->mockJsonResponse('customers', 'create', new mock\GuzzleHttp\Psr7\Response))
+            ->given($client = new mock\GuzzleHttp\Client())
+            ->and($response = $this->mockJsonResponse('customers', 'create', new mock\GuzzleHttp\Psr7\Response()))
             ->and($this->calling($client)->request = $response)
 
             ->and($config = $this->mockConfig($client))
@@ -87,7 +86,7 @@ class Customer extends Stancer\Tests\atoum
                     ->isIdenticalTo('cust_nwSpP6LKE828Inhiu1CXyp7l')
 
                 ->dateTime($this->testedInstance->getCreationDate())
-                    ->isEqualTo(new DateTime('@1538565198'))
+                    ->isEqualTo(new \DateTime('@1538565198'))
 
                 ->string($this->testedInstance->getEmail())
                     ->isIdenticalTo('david@coaster.net')
@@ -159,7 +158,7 @@ class Customer extends Stancer\Tests\atoum
     public function testSend_forUpdate()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($config = $this->mockConfig($client))
 
             ->then

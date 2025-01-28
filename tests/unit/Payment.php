@@ -2,8 +2,6 @@
 
 namespace Stancer\tests\unit;
 
-use DateInterval;
-use DateTime;
 use mock;
 use Stancer;
 use Stancer\Payment as testedClass;
@@ -35,8 +33,8 @@ class Payment extends Stancer\Tests\atoum
     public function testCharge()
     {
         $this
-            ->if($client = new mock\GuzzleHttp\Client)
-            ->and($response = new mock\GuzzleHttp\Psr7\Response)
+            ->if($client = new mock\GuzzleHttp\Client())
+            ->and($response = new mock\GuzzleHttp\Psr7\Response())
             ->and($this->calling($client)->request = $response)
 
             ->and($this->mockConfig($client))
@@ -58,7 +56,7 @@ class Payment extends Stancer\Tests\atoum
                 ->if($this->calling($response)->getBody = new Stancer\Http\Stream(json_encode($json)))
                 ->and($obj = $this->newTestedInstance)
                 ->then
-                    ->when(function() use ($options, &$obj) {
+                    ->when(function () use ($options, &$obj) {
                         $obj = testedClass::charge($options);
                     })
                         ->error()
@@ -102,7 +100,7 @@ class Payment extends Stancer\Tests\atoum
                 ->if($this->calling($response)->getBody = new Stancer\Http\Stream(json_encode($json)))
                 ->and($obj = $this->newTestedInstance)
                 ->then
-                    ->when(function() use ($options, &$obj) {
+                    ->when(function () use ($options, &$obj) {
                         $obj = testedClass::charge($options);
                     })
                         ->error()
@@ -148,7 +146,7 @@ class Payment extends Stancer\Tests\atoum
                 ->if($this->calling($response)->getBody = new Stancer\Http\Stream(json_encode($json)))
                 ->and($obj = $this->newTestedInstance)
                 ->then
-                    ->when(function() use ($options, &$obj) {
+                    ->when(function () use ($options, &$obj) {
                         $obj = testedClass::charge($options);
                     })
                         ->error()
@@ -259,7 +257,7 @@ class Payment extends Stancer\Tests\atoum
     {
         $this
             ->if($this->newTestedInstance)
-            ->and($date = new DateTime)
+            ->and($date = new \DateTime())
             ->then
                 ->variable($this->testedInstance->getDateBank())
                     ->isNull
@@ -338,7 +336,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($config = Stancer\Config::init([$secret]))
             ->and($config->setDebug(false))
 
-            ->if($client = new mock\Stancer\Http\Client)
+            ->if($client = new mock\Stancer\Http\Client())
             ->and($response = $this->mockJsonResponse('payment', 'create-no-method'))
             ->and($this->calling($client)->request = $response)
 
@@ -350,7 +348,7 @@ class Payment extends Stancer\Tests\atoum
             ->if($return = 'https://www.example.org?' . uniqid())
             ->and($url = vsprintf('https://%s/%s/', [
                 str_replace('api', 'payment', $config->getHost()),
-                $public
+                $public,
             ]))
 
             ->if($lang = uniqid())
@@ -511,7 +509,7 @@ class Payment extends Stancer\Tests\atoum
     public function testGetRefundableAmount()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($this->mockConfig($client))
 
             ->if($response = $this->mockJsonResponse('payment', 'read'))
@@ -567,7 +565,6 @@ class Payment extends Stancer\Tests\atoum
                     ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                     ->message
                         ->isIdenticalTo('You are not allowed to modify "responseAuthor".')
-
 
             ->if($this->testedInstance->hydrate(['response_author' => $author]))
             ->then
@@ -753,7 +750,7 @@ class Payment extends Stancer\Tests\atoum
     public function testIssueTaiga7()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($this->mockConfig($client))
 
             ->if($response = $this->mockJsonResponse('issue', 'taiga-7'))
@@ -772,7 +769,7 @@ class Payment extends Stancer\Tests\atoum
     public function testList()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($response = $this->mockJsonResponse('payment', 'list'))
             ->and($this->calling($client)->request = $response)
             ->and($config = $this->mockConfig($client))
@@ -839,8 +836,8 @@ class Payment extends Stancer\Tests\atoum
                         ->isIdenticalTo('Created must be in the past.')
 
                 ->exception(function () {
-                    $date = new DateTime();
-                    $date->add(new DateInterval('P1D'));
+                    $date = new \DateTime();
+                    $date->add(new \DateInterval('P1D'));
 
                     testedClass::list(['created' => $date]);
                 })
@@ -1002,6 +999,8 @@ class Payment extends Stancer\Tests\atoum
 
     /**
      * @dataProvider cardCurrencyDataProvider
+     *
+     * @param mixed $currency
      */
     public function testMethodsAllowed($currency)
     {
@@ -1084,14 +1083,14 @@ class Payment extends Stancer\Tests\atoum
     public function testPay()
     {
         $this
-            ->given($client = new mock\GuzzleHttp\Client)
-            ->and($response = new mock\GuzzleHttp\Psr7\Response)
+            ->given($client = new mock\GuzzleHttp\Client())
+            ->and($response = new mock\GuzzleHttp\Psr7\Response())
             ->and($this->calling($client)->request = $response)
             ->and($this->mockConfig($client))
 
             ->then
                 ->assert('Pay with card')
-                    ->if($card = new Stancer\Card)
+                    ->if($card = new Stancer\Card())
                     ->and($card->setCvc(substr(uniqid(), 0, 3)))
                     ->and($card->setExpMonth(rand(1, 12)))
                     ->and($card->setExpYear(date('Y') + rand(1, 10)))
@@ -1102,7 +1101,7 @@ class Payment extends Stancer\Tests\atoum
                     ->if($this->mockJsonResponse('payment', 'create-card', $response))
                     ->and($obj = null)
                     ->then
-                        ->when(function() use (&$obj, $card) {
+                        ->when(function () use (&$obj, $card) {
                             $obj = $this->newTestedInstance->pay(rand(50, 9999), 'EUR', $card);
                         })
                             ->error()
@@ -1117,7 +1116,7 @@ class Payment extends Stancer\Tests\atoum
                                 ->once
 
                 ->assert('Pay with SEPA')
-                    ->if($sepa = new Stancer\Sepa)
+                    ->if($sepa = new Stancer\Sepa())
                     ->and($sepa->setBic('DEUTDEFF')) // Thx Wikipedia
                     ->and($sepa->setIban('DE91 1000 0000 0123 4567 89')) // Thx Wikipedia
                     ->and($sepa->setName(uniqid()))
@@ -1125,7 +1124,7 @@ class Payment extends Stancer\Tests\atoum
                     ->if($this->mockJsonResponse('payment', 'create-sepa', $response))
                     ->and($obj = null)
                     ->then
-                        ->when(function() use (&$obj, $sepa) {
+                        ->when(function () use (&$obj, $sepa) {
                             $obj = $this->newTestedInstance->pay(rand(50, 9999), 'EUR', $sepa);
                         })
                             ->error()
@@ -1144,7 +1143,7 @@ class Payment extends Stancer\Tests\atoum
     public function testRefund()
     {
         $this
-            ->given($logger = new mock\Stancer\Core\Logger)
+            ->given($logger = new mock\Stancer\Core\Logger())
 
             ->if($paymentData = $this->getFixtureData('payment', 'read'))
             ->and($paid = $paymentData['amount'])
@@ -1162,7 +1161,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($notEnough = rand(1, 49))
             ->then
                 ->assert('Without refunds we get an empty array')
-                    ->given($client = new mock\Stancer\Http\Client)
+                    ->given($client = new mock\Stancer\Http\Client())
                     ->and($config = $this->mockConfig($client))
                     ->and($config->setLogger($logger))
 
@@ -1173,7 +1172,7 @@ class Payment extends Stancer\Tests\atoum
                             ->isEmpty
 
                 ->assert('We can not refund more than paid')
-                    ->given($client = new mock\Stancer\Http\Client)
+                    ->given($client = new mock\Stancer\Http\Client())
                     ->and($config = $this->mockConfig($client))
                     ->and($config->setLogger($logger))
 
@@ -1188,7 +1187,7 @@ class Payment extends Stancer\Tests\atoum
                                 ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $tooMuch / 100) . ' EUR) more than paid (34.06 EUR).')
 
                 ->assert('Amount must be greater or equal than 50')
-                    ->given($client = new mock\Stancer\Http\Client)
+                    ->given($client = new mock\Stancer\Http\Client())
                     ->and($config = $this->mockConfig($client))
                     ->and($config->setLogger($logger))
 
@@ -1203,7 +1202,7 @@ class Payment extends Stancer\Tests\atoum
                                 ->isIdenticalTo('Amount must be greater than or equal to 50.')
 
                 ->assert('We can put a refund amount')
-                    ->given($client = new mock\Stancer\Http\Client)
+                    ->given($client = new mock\Stancer\Http\Client())
                     ->and($config = $this->mockConfig($client))
                     ->and($config->setLogger($logger))
 
@@ -1239,7 +1238,7 @@ class Payment extends Stancer\Tests\atoum
                                     ->once
 
                 ->assert('We can not refund more than refundable')
-                    ->given($client = new mock\Stancer\Http\Client)
+                    ->given($client = new mock\Stancer\Http\Client())
                     ->and($config = $this->mockConfig($client))
                     ->and($config->setLogger($logger))
 
@@ -1257,7 +1256,7 @@ class Payment extends Stancer\Tests\atoum
                                 ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $paid / 100) . ' EUR) more than paid (34.06 EUR with ' . sprintf('%.02f', $amount / 100) . ' EUR already refunded).')
 
                 ->assert('Without amount we will refund all')
-                    ->given($client = new mock\Stancer\Http\Client)
+                    ->given($client = new mock\Stancer\Http\Client())
                     ->and($config = $this->mockConfig($client))
                     ->and($config->setLogger($logger))
 
@@ -1313,7 +1312,7 @@ class Payment extends Stancer\Tests\atoum
                             ->isIdenticalTo('A payment ID is mandatory. Maybe you forgot to send the payment.')
 
                 ->assert('Should work with methods allowed (internal bug)')
-                    ->given($client = new mock\Stancer\Http\Client)
+                    ->given($client = new mock\Stancer\Http\Client())
                     ->and($config = $this->mockConfig($client))
                     ->and($config->setLogger($logger))
 
@@ -1332,7 +1331,7 @@ class Payment extends Stancer\Tests\atoum
     public function testSend_exceptions()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($this->mockConfig($client))
 
             ->if($response = new mock\Stancer\Http\Response(200))
@@ -1382,13 +1381,13 @@ class Payment extends Stancer\Tests\atoum
     public function testSend_withCard()
     {
         $this
-            ->given($client = new mock\GuzzleHttp\Client)
+            ->given($client = new mock\GuzzleHttp\Client())
             ->and($config = $this->mockConfig($client))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-card'))
             ->and($this->calling($client)->request = $response)
 
-            ->if($card = new Stancer\Card)
+            ->if($card = new Stancer\Card())
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
             ->and($card->setExpMonth(rand(1, 12)))
             ->and($card->setExpYear(date('Y') - rand(1, 10)))
@@ -1396,7 +1395,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($card->setNumber($number = '4111111111111111'))
             ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
 
-            ->if($customer = new Stancer\Customer)
+            ->if($customer = new Stancer\Customer())
             ->and($customer->setName(uniqid()))
             ->and($customer->setEmail(uniqid() . '@example.org'))
             ->and($customer->setMobile(uniqid()))
@@ -1409,7 +1408,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($this->testedInstance->setDescription(uniqid()))
             ->and($this->testedInstance->setOrderId(uniqid()))
 
-            ->if($logger = new mock\Stancer\Core\Logger)
+            ->if($logger = new mock\Stancer\Core\Logger())
             ->and($config->setLogger($logger))
             ->and($logMessage = 'Payment of 1.00 eur with mastercard "4444"')
 
@@ -1445,7 +1444,7 @@ class Payment extends Stancer\Tests\atoum
                     ->isIdenticalTo('paym_KIVaaHi7G8QAYMQpQOYBrUQE')
 
                 ->dateTime($this->testedInstance->getCreationDate())
-                    ->isEqualTo(new DateTime('@1538564253'))
+                    ->isEqualTo(new \DateTime('@1538564253'))
 
                 ->integer($this->testedInstance->getAmount())
                     ->isIdenticalTo(100)
@@ -1498,13 +1497,13 @@ class Payment extends Stancer\Tests\atoum
     public function testSend_withSepa()
     {
         $this
-            ->given($client = new mock\GuzzleHttp\Client)
+            ->given($client = new mock\GuzzleHttp\Client())
             ->and($config = $this->mockConfig($client))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-sepa'))
             ->and($this->calling($client)->request = $response)
 
-            ->if($sepa = new Stancer\Sepa)
+            ->if($sepa = new Stancer\Sepa())
             ->and($sepa->setBic('DEUTDEFF')) // Thx Wikipedia
             ->and($sepa->setIban('DE91 1000 0000 0123 4567 89')) // Thx Wikipedia
             ->and($sepa->setName(uniqid()))
@@ -1516,7 +1515,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($this->testedInstance->setDescription(uniqid()))
             ->and($this->testedInstance->setOrderId(uniqid()))
 
-            ->if($logger = new mock\Stancer\Core\Logger)
+            ->if($logger = new mock\Stancer\Core\Logger())
             ->and($config->setLogger($logger))
             ->and($logMessage = 'Payment of 1.00 eur with IBAN "2606" / BIC "ILADFRPP"')
 
@@ -1543,7 +1542,7 @@ class Payment extends Stancer\Tests\atoum
                     ->isIdenticalTo('paym_5IptC9R1Wu2wKBR5cjM2so7k')
 
                 ->dateTime($this->testedInstance->getCreationDate())
-                    ->isEqualTo(new DateTime('@1538564504'))
+                    ->isEqualTo(new \DateTime('@1538564504'))
 
                 ->integer($this->testedInstance->getAmount())
                     ->isIdenticalTo(100)
@@ -1578,7 +1577,7 @@ class Payment extends Stancer\Tests\atoum
     public function testSend_authenticatedPayment()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($config = $this->mockConfig($client))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-card-auth'))
@@ -1605,7 +1604,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($description = uniqid())
             ->and($url = 'https://www.example.org?' . uniqid())
 
-            ->if($card = new Stancer\Card)
+            ->if($card = new Stancer\Card())
             ->and($card->setCvc((string) rand(100, 999)))
             ->and($card->setExpMonth(rand(1, 12)))
             ->and($card->setExpYear(rand(date('Y'), 3000)))
@@ -1659,7 +1658,7 @@ class Payment extends Stancer\Tests\atoum
                     ->isIdenticalTo('paym_RMLytyx2xLkdXkATKSxHOlvC')
 
                 ->dateTime($this->testedInstance->getCreationDate())
-                    ->isEqualTo(new DateTime('@1567094428'))
+                    ->isEqualTo(new \DateTime('@1567094428'))
 
                 ->integer($this->testedInstance->getAmount())
                     ->isIdenticalTo(1337)
@@ -1723,7 +1722,7 @@ class Payment extends Stancer\Tests\atoum
     public function testSend_fullyCustomAuthenticatedPayment()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($config = $this->mockConfig($client))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-card-auth'))
@@ -1734,14 +1733,14 @@ class Payment extends Stancer\Tests\atoum
             ->and($description = uniqid())
             ->and($url = 'https://www.example.org?' . uniqid())
 
-            ->if($auth = new Stancer\Auth)
+            ->if($auth = new Stancer\Auth())
             ->and($auth->setReturnUrl($url))
 
             ->if($ip = $this->ipDataProvider(true))
             ->and($port = rand(1, 65535))
             ->and($device = new Stancer\Device(['ip' => $ip, 'port' => $port]))
 
-            ->if($card = new Stancer\Card)
+            ->if($card = new Stancer\Card())
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
             ->and($card->setExpMonth(rand(1, 12)))
             ->and($card->setExpYear(rand(date('Y'), 3000)))
@@ -1796,7 +1795,7 @@ class Payment extends Stancer\Tests\atoum
                     ->isIdenticalTo('paym_RMLytyx2xLkdXkATKSxHOlvC')
 
                 ->dateTime($this->testedInstance->getCreationDate())
-                    ->isEqualTo(new DateTime('@1567094428'))
+                    ->isEqualTo(new \DateTime('@1567094428'))
 
                 ->integer($this->testedInstance->getAmount())
                     ->isIdenticalTo(1337)
@@ -1860,13 +1859,13 @@ class Payment extends Stancer\Tests\atoum
     public function testSend_withoutCardOrSepa()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($config = $this->mockConfig($client))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-no-method'))
             ->and($this->calling($client)->request = $response)
 
-            ->if($customer = new Stancer\Customer)
+            ->if($customer = new Stancer\Customer())
             ->and($customer->setName(uniqid()))
             ->and($customer->setEmail(uniqid() . '@example.org'))
             ->and($customer->setMobile(uniqid()))
@@ -1881,7 +1880,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($this->testedInstance->setDescription(uniqid()))
             ->and($this->testedInstance->setOrderId(uniqid()))
 
-            ->if($logger = new mock\Stancer\Core\Logger)
+            ->if($logger = new mock\Stancer\Core\Logger())
             ->and($config->setLogger($logger))
             ->and($logMessage = 'Payment of 100.00 eur without payment method')
 
@@ -1908,7 +1907,7 @@ class Payment extends Stancer\Tests\atoum
                     ->isIdenticalTo('paym_pia9ossoqujuFFbX0HdS3FLi')
 
                 ->dateTime($this->testedInstance->getCreationDate())
-                    ->isEqualTo(new DateTime('@1562085759'))
+                    ->isEqualTo(new \DateTime('@1562085759'))
 
                 ->integer($this->testedInstance->getAmount())
                     ->isIdenticalTo(10000)
@@ -1939,7 +1938,7 @@ class Payment extends Stancer\Tests\atoum
     public function testSend_authenticationAndPaymentPage()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($config = $this->mockConfig($client))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-no-method-auth'))
@@ -1983,7 +1982,7 @@ class Payment extends Stancer\Tests\atoum
                     ->isIdenticalTo('paym_RMLytyx2xLkdXkATKSxHOlvC')
 
                 ->dateTime($this->testedInstance->getCreationDate())
-                    ->isEqualTo(new DateTime('@1567094428'))
+                    ->isEqualTo(new \DateTime('@1567094428'))
 
                 ->integer($this->testedInstance->getAmount())
                     ->isIdenticalTo(1337)
@@ -2023,13 +2022,13 @@ class Payment extends Stancer\Tests\atoum
     public function testSend_status()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($config = $this->mockConfig($client))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-no-method'))
             ->and($this->calling($client)->request = $response)
 
-            ->if($customer = new Stancer\Customer)
+            ->if($customer = new Stancer\Customer())
             ->and($customer->setName(uniqid()))
             ->and($customer->setEmail(uniqid() . '@example.org'))
             ->and($customer->setMobile(uniqid()))
@@ -2037,7 +2036,7 @@ class Payment extends Stancer\Tests\atoum
             ->if($amount = rand(100, 999999))
             ->and($currency = $this->cardCurrencyDataProvider(true))
 
-            ->if($card = new Stancer\Card)
+            ->if($card = new Stancer\Card())
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
             ->and($card->setExpMonth(rand(1, 12)))
             ->and($card->setExpYear(rand(date('Y'), 3000)))
@@ -2071,7 +2070,7 @@ class Payment extends Stancer\Tests\atoum
     public function testSend_device()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($config = $this->mockConfig($client))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-card'))
@@ -2083,7 +2082,7 @@ class Payment extends Stancer\Tests\atoum
 
             ->if($this->function->getenv = false)
 
-            ->if($card = new Stancer\Card)
+            ->if($card = new Stancer\Card())
             ->and($card->setCvc(substr(uniqid(), 0, 3)))
             ->and($card->setExpMonth(rand(1, 12)))
             ->and($card->setExpYear(rand(date('Y'), 3000)))
@@ -2091,7 +2090,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($card->setNumber('4111111111111111'))
             ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
 
-            ->if($customer = new Stancer\Customer)
+            ->if($customer = new Stancer\Customer())
             ->and($customer->setName(uniqid()))
             ->and($customer->setEmail(uniqid() . '@example.org'))
             ->and($customer->setMobile(uniqid()))
@@ -2239,7 +2238,7 @@ class Payment extends Stancer\Tests\atoum
     {
         $this
             ->assert('With an Auth object')
-                ->if($auth = new Stancer\Auth)
+                ->if($auth = new Stancer\Auth())
                 ->and($this->newTestedInstance)
                 ->then
                     ->variable($this->testedInstance->getAuth())
@@ -2313,7 +2312,7 @@ class Payment extends Stancer\Tests\atoum
     public function testSetCard()
     {
         $this
-            ->if($card = new Stancer\Card)
+            ->if($card = new Stancer\Card())
             ->and($this->newTestedInstance)
             ->then
                 ->variable($this->testedInstance->getCard())
@@ -2335,6 +2334,8 @@ class Payment extends Stancer\Tests\atoum
 
     /**
      * @dataProvider cardCurrencyDataProvider
+     *
+     * @param mixed $currency
      */
     public function testSetCurrency($currency)
     {
@@ -2455,7 +2456,7 @@ class Payment extends Stancer\Tests\atoum
     public function testSetSepa()
     {
         $this
-            ->if($sepa = new Stancer\Sepa)
+            ->if($sepa = new Stancer\Sepa())
             ->and($this->newTestedInstance)
             ->then
                 ->variable($this->testedInstance->getSepa())
@@ -2630,7 +2631,7 @@ class Payment extends Stancer\Tests\atoum
             ->assert('Will still not accept anything')
                 ->if($this->newTestedInstance)
                 ->then
-                    ->exception(function() {
+                    ->exception(function () {
                         $this->testedInstance->setStatus(uniqid());
                     })
                         ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)

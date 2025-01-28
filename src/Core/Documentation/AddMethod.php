@@ -1,14 +1,13 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Core\Documentation;
 
-use Attribute;
-
 /**
  * Attribute to add documentation data on a method.
  */
-#[Attribute(Attribute::TARGET_CLASS | Attribute::IS_REPEATABLE)]
+#[\Attribute(\Attribute::TARGET_CLASS | \Attribute::IS_REPEATABLE)]
 class AddMethod
 {
     /**
@@ -26,8 +25,7 @@ class AddMethod
         protected string $return,
         protected ?string $description = null,
         protected bool $stan = false,
-    ) {
-    }
+    ) {}
 
     /**
      * Return phpdoc data.

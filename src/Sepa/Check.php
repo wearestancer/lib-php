@@ -1,10 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Sepa;
 
-use Override;
-use ReturnTypeWillChange;
 use Stancer;
 
 /**
@@ -53,7 +52,6 @@ class Check extends Stancer\Core\AbstractObject
     final public const ENDPOINT = 'sepa/check';
 
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [
@@ -86,8 +84,6 @@ class Check extends Stancer\Core\AbstractObject
 
     /**
      * Return Sepa object attached to this check.
-     *
-     * @return Stancer\Sepa|null
      */
     public function getSepa(): ?Stancer\Sepa
     {
@@ -106,9 +102,10 @@ class Check extends Stancer\Core\AbstractObject
      * Return a array representation of the current object for a conversion as JSON.
      *
      * @uses self::toArray()
-     * @return string|integer|boolean|null|array<string, mixed>
+     *
+     * @return array<string, mixed>|boolean|integer|string|null
      */
-    #[Override]
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         $sepa = $this->getSepa();
@@ -132,7 +129,7 @@ class Check extends Stancer\Core\AbstractObject
      * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
-    #[Override]
+    #[\Override]
     public function send(): static
     {
         $this->modified[] = 'sepa'; // Mandatory, force `parent::send()` to work.

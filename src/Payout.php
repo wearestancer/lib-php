@@ -1,10 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer;
 
-use DateTimeImmutable;
-use Override;
 use Stancer;
 
 /**
@@ -65,7 +64,6 @@ class Payout extends Stancer\Core\AbstractObject
     final public const ENDPOINT = 'payouts';
 
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [
@@ -85,20 +83,20 @@ class Payout extends Stancer\Core\AbstractObject
             'desc' => 'The date you will receive the credit transfer',
             'format' => Stancer\Core\Type\Helper::DATE_ONLY,
             'restricted' => true,
-            'type' => DateTimeImmutable::class,
+            'type' => \DateTimeImmutable::class,
         ],
         'datePaym' => [
             'desc' => 'The date the payment transactions were made',
             'format' => Stancer\Core\Type\Helper::DATE_ONLY,
             'nullable' => false,
             'restricted' => true,
-            'type' => DateTimeImmutable::class,
+            'type' => \DateTimeImmutable::class,
         ],
         'datePayment' => [
             'desc' => 'The date the payment transactions were made',
             'nullable' => false,
             'restricted' => true,
-            'type' => DateTimeImmutable::class,
+            'type' => \DateTimeImmutable::class,
         ],
         'details' => [
             'desc' => 'Payout details',
@@ -129,10 +127,8 @@ class Payout extends Stancer\Core\AbstractObject
      * Return the date the payment transactions were made.
      *
      * Alias for `datePaym`.
-     *
-     * @return DateTimeImmutable
      */
-    public function getDatePayment(): DateTimeImmutable
+    public function getDatePayment(): \DateTimeImmutable
     {
         return $this->datePaym;
     }
@@ -143,11 +139,12 @@ class Payout extends Stancer\Core\AbstractObject
      * Overrided to handle details.
      *
      * @param array<string, mixed> $data Data for hydration.
+     *
      * @return $this
      *
      * @phpstan-param PayoutResponse $data
      */
-    #[Override]
+    #[\Override]
     public function hydrate(array $data): static
     {
         $data['details'] = [];

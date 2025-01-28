@@ -2,10 +2,9 @@
 
 namespace Stancer\tests\unit\Core;
 
-use Exception;
 use GuzzleHttp;
-use Stancer;
 use mock;
+use Stancer;
 
 class Request extends Stancer\Tests\atoum
 {
@@ -17,7 +16,7 @@ class Request extends Stancer\Tests\atoum
     {
         $this
             ->assert('With card')
-                ->given($client = new mock\Stancer\Http\Client)
+                ->given($client = new mock\Stancer\Http\Client())
                 ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
@@ -59,7 +58,7 @@ class Request extends Stancer\Tests\atoum
                         ->isNotIdenticalTo($response) // Returns clone
 
             ->assert('With SEPA')
-                ->given($client = new mock\Stancer\Http\Client)
+                ->given($client = new mock\Stancer\Http\Client())
                 ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
@@ -101,7 +100,7 @@ class Request extends Stancer\Tests\atoum
                         ->isNotIdenticalTo($response) // Returns clone
 
             ->assert('With card but without number')
-                ->given($client = new mock\Stancer\Http\Client)
+                ->given($client = new mock\Stancer\Http\Client())
                 ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
@@ -147,7 +146,7 @@ class Request extends Stancer\Tests\atoum
                         ->isNotIdenticalTo($response) // Returns clone
 
             ->assert('With SEPA but without IBAN')
-                ->given($client = new mock\Stancer\Http\Client)
+                ->given($client = new mock\Stancer\Http\Client())
                 ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
@@ -193,7 +192,7 @@ class Request extends Stancer\Tests\atoum
                         ->isNotIdenticalTo($response) // Returns clone
 
             ->assert('Without debug mode')
-                ->given($client = new mock\Stancer\Http\Client)
+                ->given($client = new mock\Stancer\Http\Client())
                 ->and($config = $this->mockConfig($client))
 
                 ->if($number = $this->cardNumberDataProvider(true))
@@ -217,7 +216,7 @@ class Request extends Stancer\Tests\atoum
     {
         $this
             ->assert('With card')
-                ->given($client = new mock\GuzzleHttp\Client)
+                ->given($client = new mock\GuzzleHttp\Client())
                 ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
@@ -227,7 +226,7 @@ class Request extends Stancer\Tests\atoum
                 ->and($obfuscated = str_pad($card->getLast4(), strlen($number), 'x', STR_PAD_LEFT))
 
                 ->if($request = new GuzzleHttp\Psr7\Request((string) $this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
-                ->and($response = new mock\GuzzleHttp\Psr7\Response)
+                ->and($response = new mock\GuzzleHttp\Psr7\Response())
                 ->then
                     ->object($this->invoke($this->newTestedInstance)->addCallWithOtherClient($request, $response, $payment))
                         ->isTestedInstance
@@ -254,7 +253,7 @@ class Request extends Stancer\Tests\atoum
                         ->isIdenticalTo($response)
 
             ->assert('With SEPA')
-                ->given($client = new mock\GuzzleHttp\Client)
+                ->given($client = new mock\GuzzleHttp\Client())
                 ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
@@ -264,7 +263,7 @@ class Request extends Stancer\Tests\atoum
                 ->and($obfuscated = str_pad($sepa->getLast4(), strlen($sepa->getIban()), 'x', STR_PAD_LEFT))
 
                 ->if($request = new GuzzleHttp\Psr7\Request((string) $this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
-                ->and($response = new mock\GuzzleHttp\Psr7\Response)
+                ->and($response = new mock\GuzzleHttp\Psr7\Response())
                 ->then
                     ->object($this->invoke($this->newTestedInstance)->addCallWithOtherClient($request, $response, $payment))
                         ->isTestedInstance
@@ -291,7 +290,7 @@ class Request extends Stancer\Tests\atoum
                         ->isIdenticalTo($response)
 
             ->assert('With card but without number')
-                ->given($client = new mock\GuzzleHttp\Client)
+                ->given($client = new mock\GuzzleHttp\Client())
                 ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
@@ -300,7 +299,7 @@ class Request extends Stancer\Tests\atoum
                 ->and($payment = new Stancer\Payment(['card' => $card]))
 
                 ->if($request = new GuzzleHttp\Psr7\Request((string) $this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
-                ->and($response = new mock\GuzzleHttp\Psr7\Response)
+                ->and($response = new mock\GuzzleHttp\Psr7\Response())
                 ->then
                     ->when(function () use ($request, $response, $payment) {
                         $this
@@ -332,7 +331,7 @@ class Request extends Stancer\Tests\atoum
                         ->isIdenticalTo($response)
 
             ->assert('With SEPA but without IBAN')
-                ->given($client = new mock\GuzzleHttp\Client)
+                ->given($client = new mock\GuzzleHttp\Client())
                 ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
@@ -341,7 +340,7 @@ class Request extends Stancer\Tests\atoum
                 ->and($payment = new Stancer\Payment(['sepa' => $sepa]))
 
                 ->if($request = new GuzzleHttp\Psr7\Request((string) $this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
-                ->and($response = new mock\GuzzleHttp\Psr7\Response)
+                ->and($response = new mock\GuzzleHttp\Psr7\Response())
                 ->then
                     ->when(function () use ($request, $response, $payment) {
                         $this
@@ -373,7 +372,7 @@ class Request extends Stancer\Tests\atoum
                         ->isIdenticalTo($response)
 
             ->assert('Without debug mode')
-                ->given($client = new mock\GuzzleHttp\Client)
+                ->given($client = new mock\GuzzleHttp\Client())
                 ->and($config = $this->mockConfig($client))
 
                 ->if($number = $this->cardNumberDataProvider(true))
@@ -381,7 +380,7 @@ class Request extends Stancer\Tests\atoum
                 ->and($payment = new Stancer\Payment(['card' => $card]))
 
                 ->if($request = new GuzzleHttp\Psr7\Request((string) $this->httpVerbProvider(true), uniqid(), [], $payment->toJson()))
-                ->and($response = new mock\GuzzleHttp\Psr7\Response)
+                ->and($response = new mock\GuzzleHttp\Psr7\Response())
                 ->then
                     ->object($this->invoke($this->newTestedInstance)->addCallWithOtherClient($request, $response, $payment))
                         ->isTestedInstance
@@ -394,7 +393,7 @@ class Request extends Stancer\Tests\atoum
     public function testRequest_workingWithDefaultClient()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($config = $this->mockConfig($client))
 
             ->if($response = new mock\Stancer\Http\Response(200))
@@ -403,10 +402,10 @@ class Request extends Stancer\Tests\atoum
             ->and($this->calling($client)->request = $response)
 
             ->if($this->newTestedInstance)
-            ->and($method = new Stancer\Http\Verb\Get)
-            ->and($object = new mock\Stancer\Core\AbstractObject)
+            ->and($method = new Stancer\Http\Verb\Get())
+            ->and($object = new mock\Stancer\Core\AbstractObject())
 
-            ->if($logger = new mock\Stancer\Core\Logger)
+            ->if($logger = new mock\Stancer\Core\Logger())
             ->and($config->setLogger($logger))
             ->then
                 ->assert('No query params')
@@ -429,7 +428,7 @@ class Request extends Stancer\Tests\atoum
                     ->and($key2 = uniqid())
                     ->and($value2 = uniqid())
                     ->and($query = [$key1 => $value1, $key2 => $value2])
-                    ->and($location = $object->getUri() . '?' . $key1 . '=' . $value1 . '&'. $key2 . '=' . $value2)
+                    ->and($location = $object->getUri() . '?' . $key1 . '=' . $value1 . '&' . $key2 . '=' . $value2)
                     ->and($debugMessage = 'API call : ' . $method . ' ' . $location)
                     ->then
                         ->string($this->testedInstance->request($method, $object, ['query' => $query]))
@@ -457,13 +456,13 @@ class Request extends Stancer\Tests\atoum
                 ->and($this->function->curl_getinfo = 401)
                 ->and($this->function->curl_errno = rand(100, 200))
 
-                ->if($client = new Stancer\Http\Client)
+                ->if($client = new Stancer\Http\Client())
                 ->and($config->setHttpClient($client))
 
-                ->if($object = new mock\Stancer\Core\AbstractObject)
-                ->and($method = new Stancer\Http\Verb\Post)
+                ->if($object = new mock\Stancer\Core\AbstractObject())
+                ->and($method = new Stancer\Http\Verb\Post())
 
-                ->if($logger = new mock\Stancer\Core\Logger)
+                ->if($logger = new mock\Stancer\Core\Logger())
                 ->and($config->setLogger($logger))
                 ->and($debugMessage = vsprintf('API call : %s %s', [
                     (string) $method,
@@ -493,10 +492,10 @@ class Request extends Stancer\Tests\atoum
             ->assert('Unsupported method')
                 ->if($this->newTestedInstance)
                 ->and($this->function->curl_exec = uniqid())
-                ->and($object = new mock\Stancer\Core\AbstractObject)
-                ->and($method = new mock\Stancer\Http\Verb\AbstractVerb)
+                ->and($object = new mock\Stancer\Core\AbstractObject())
+                ->and($method = new mock\Stancer\Http\Verb\AbstractVerb())
 
-                ->if($logger = new mock\Stancer\Core\Logger)
+                ->if($logger = new mock\Stancer\Core\Logger())
                 ->and($config->setLogger($logger))
                 ->and($errorMessage = sprintf('HTTP verb "%s" unsupported', (string) $method))
                 ->then
@@ -521,18 +520,18 @@ class Request extends Stancer\Tests\atoum
     {
         $this
             ->assert('Use test of client')
-                ->given($client = new mock\GuzzleHttp\Client)
+                ->given($client = new mock\GuzzleHttp\Client())
                 ->and($config = $this->mockConfig($client))
-                ->and($response = new mock\GuzzleHttp\Psr7\Response)
+                ->and($response = new mock\GuzzleHttp\Psr7\Response())
                 ->and($body = uniqid())
                 ->and($this->calling($response)->getBody = new Stancer\Http\Stream($body))
                 ->and($this->calling($client)->request = $response)
 
                 ->if($this->newTestedInstance)
-                ->and($method = new Stancer\Http\Verb\Get)
-                ->and($object = new mock\Stancer\Core\AbstractObject)
+                ->and($method = new Stancer\Http\Verb\Get())
+                ->and($object = new mock\Stancer\Core\AbstractObject())
 
-                ->if($logger = new mock\Stancer\Core\Logger)
+                ->if($logger = new mock\Stancer\Core\Logger())
                 ->and($config->setLogger($logger))
                 ->and($debugMessage = 'API call : ' . $method . ' ' . $object->getUri())
                 ->then
@@ -550,18 +549,18 @@ class Request extends Stancer\Tests\atoum
                         ->call('notice')->never
 
             ->assert('With query parameters')
-                ->given($client = new mock\GuzzleHttp\Client)
+                ->given($client = new mock\GuzzleHttp\Client())
                 ->and($config = $this->mockConfig($client))
-                ->and($response = new mock\GuzzleHttp\Psr7\Response)
+                ->and($response = new mock\GuzzleHttp\Psr7\Response())
                 ->and($body = uniqid())
                 ->and($this->calling($response)->getBody = new Stancer\Http\Stream($body))
                 ->and($this->calling($client)->request = $response)
 
                 ->if($this->newTestedInstance)
-                ->and($method = new Stancer\Http\Verb\Get)
-                ->and($object = new mock\Stancer\Core\AbstractObject)
+                ->and($method = new Stancer\Http\Verb\Get())
+                ->and($object = new mock\Stancer\Core\AbstractObject())
 
-                ->if($logger = new mock\Stancer\Core\Logger)
+                ->if($logger = new mock\Stancer\Core\Logger())
                 ->and($config->setLogger($logger))
 
                 ->if($key1 = uniqid())
@@ -569,7 +568,7 @@ class Request extends Stancer\Tests\atoum
                 ->and($key2 = uniqid())
                 ->and($value2 = uniqid())
                 ->and($query = [$key1 => $value1, $key2 => $value2])
-                ->and($location = $object->getUri() . '?' . $key1 . '=' . $value1 . '&'. $key2 . '=' . $value2)
+                ->and($location = $object->getUri() . '?' . $key1 . '=' . $value1 . '&' . $key2 . '=' . $value2)
                 ->and($debugMessage = 'API call : ' . $method . ' ' . $location)
                 ->then
                     ->string($this->testedInstance->request($method, $object, ['query' => $query]))
@@ -592,10 +591,10 @@ class Request extends Stancer\Tests\atoum
                 ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
                 ->and($config->setHttpClient($client))
 
-                ->if($object = new mock\Stancer\Core\AbstractObject)
-                ->and($method = new Stancer\Http\Verb\Post)
+                ->if($object = new mock\Stancer\Core\AbstractObject())
+                ->and($method = new Stancer\Http\Verb\Post())
 
-                ->if($logger = new mock\Stancer\Core\Logger)
+                ->if($logger = new mock\Stancer\Core\Logger())
                 ->and($config->setLogger($logger))
                 ->and($debugMessage = vsprintf('API call : %s %s', [
                     (string) $method,
@@ -636,8 +635,8 @@ class Request extends Stancer\Tests\atoum
 
                 ->if($this->newTestedInstance)
 
-                ->if($object = new mock\Stancer\Core\AbstractObject)
-                ->and($method = new Stancer\Http\Verb\Post)
+                ->if($object = new mock\Stancer\Core\AbstractObject())
+                ->and($method = new Stancer\Http\Verb\Post())
                 ->then
                     ->exception(function () use ($method, $object) {
                         $this->testedInstance->request($method, $object);
@@ -664,8 +663,8 @@ class Request extends Stancer\Tests\atoum
 
                 ->if($this->newTestedInstance)
 
-                ->if($object = new mock\Stancer\Core\AbstractObject)
-                ->and($method = new Stancer\Http\Verb\Post)
+                ->if($object = new mock\Stancer\Core\AbstractObject())
+                ->and($method = new Stancer\Http\Verb\Post())
                 ->then
                     ->exception(function () use ($method, $object) {
                         $this->testedInstance->request($method, $object);
@@ -693,8 +692,8 @@ class Request extends Stancer\Tests\atoum
 
                 ->if($this->newTestedInstance)
 
-                ->if($object = new mock\Stancer\Core\AbstractObject)
-                ->and($method = new Stancer\Http\Verb\Post)
+                ->if($object = new mock\Stancer\Core\AbstractObject())
+                ->and($method = new Stancer\Http\Verb\Post())
                 ->then
                     ->exception(function () use ($method, $object) {
                         $this->testedInstance->request($method, $object);
@@ -719,8 +718,8 @@ class Request extends Stancer\Tests\atoum
 
                 ->if($this->newTestedInstance)
 
-                ->if($object = new mock\Stancer\Core\AbstractObject)
-                ->and($method = new Stancer\Http\Verb\Post)
+                ->if($object = new mock\Stancer\Core\AbstractObject())
+                ->and($method = new Stancer\Http\Verb\Post())
                 ->then
                     ->exception(function () use ($method, $object) {
                         $this->testedInstance->request($method, $object);
@@ -731,16 +730,16 @@ class Request extends Stancer\Tests\atoum
 
             ->assert('Every Guzzle exceptions (except the ones below)')
                 ->given($exceptionMessage = uniqid())
-                ->and($response = new Exception($exceptionMessage))
+                ->and($response = new \Exception($exceptionMessage))
                 ->and($mock = new GuzzleHttp\Handler\MockHandler([$response]))
                 ->and($handler = GuzzleHttp\HandlerStack::create($mock))
                 ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
                 ->and($config->setHttpClient($client))
 
-                ->if($object = new mock\Stancer\Core\AbstractObject)
-                ->and($method = new Stancer\Http\Verb\Get)
+                ->if($object = new mock\Stancer\Core\AbstractObject())
+                ->and($method = new Stancer\Http\Verb\Get())
 
-                ->if($logger = new mock\Stancer\Core\Logger)
+                ->if($logger = new mock\Stancer\Core\Logger())
                 ->and($config->setLogger($logger))
                 ->and($debugMessage = vsprintf('API call : %s %s', [
                     (string) $method,
@@ -850,10 +849,10 @@ class Request extends Stancer\Tests\atoum
                     ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
                     ->and($config->setHttpClient($client))
 
-                    ->if($object = new mock\Stancer\Core\AbstractObject)
-                    ->and($method = new Stancer\Http\Verb\Get)
+                    ->if($object = new mock\Stancer\Core\AbstractObject())
+                    ->and($method = new Stancer\Http\Verb\Get())
 
-                    ->if($logger = new mock\Stancer\Core\Logger)
+                    ->if($logger = new mock\Stancer\Core\Logger())
                     ->and($config->setLogger($logger))
                     ->and($debugMessage = vsprintf('API call : %s %s', [
                         (string) $method,
@@ -905,16 +904,16 @@ class Request extends Stancer\Tests\atoum
         // testing a mock is not a good test but here we only want to test we call an other method
 
         $this
-            ->given($request = new mock\Stancer\Core\Request)
+            ->given($request = new mock\Stancer\Core\Request())
             ->and($this->calling($request)->request = true)
 
             ->if($object = new mock\Stancer\Core\AbstractObject(uniqid()))
 
-            ->and($delete = new Stancer\Http\Verb\Delete)
-            ->and($get = new Stancer\Http\Verb\Get)
-            ->and($post = new Stancer\Http\Verb\Post)
-            ->and($put = new Stancer\Http\Verb\Put)
-            ->and($patch = new Stancer\Http\Verb\Patch)
+            ->and($delete = new Stancer\Http\Verb\Delete())
+            ->and($get = new Stancer\Http\Verb\Get())
+            ->and($post = new Stancer\Http\Verb\Post())
+            ->and($put = new Stancer\Http\Verb\Put())
+            ->and($patch = new Stancer\Http\Verb\Patch())
 
             ->then
                 ->assert('DELETE')

@@ -1,11 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Exceptions;
 
 use Psr;
 use Stancer;
-use Throwable;
 
 /**
  * Base exception class for all Stancer exceptions.
@@ -22,9 +22,9 @@ class Exception extends \Exception implements Stancer\Interfaces\ExceptionInterf
      *
      * @param string|null $message The Exception message to throw.
      * @param integer $code The Exception code.
-     * @param Throwable|null $previous The previous exception used for the exception chaining.
+     * @param \Throwable|null $previous The previous exception used for the exception chaining.
      */
-    public function __construct(string $message = null, int $code = 0, Throwable $previous = null)
+    public function __construct(?string $message = null, int $code = 0, ?\Throwable $previous = null)
     {
         parent::__construct($message ?? static::getDefaultMessage(), $code, $previous);
     }
@@ -33,7 +33,6 @@ class Exception extends \Exception implements Stancer\Interfaces\ExceptionInterf
      * Create an instance from an array.
      *
      * @param array $params Parameters, keys must correspond to exception properties.
-     * @return static
      *
      * @phpstan-param CreateExceptionParameters $params
      */
@@ -60,8 +59,6 @@ class Exception extends \Exception implements Stancer\Interfaces\ExceptionInterf
 
     /**
      * Return default message for that kind of exception.
-     *
-     * @return string
      */
     public static function getDefaultMessage(): string
     {
@@ -70,8 +67,6 @@ class Exception extends \Exception implements Stancer\Interfaces\ExceptionInterf
 
     /**
      * Return default log level for that kind of exception.
-     *
-     * @return string
      */
     public static function getLogLevel(): string
     {

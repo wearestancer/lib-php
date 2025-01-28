@@ -11,6 +11,9 @@ class Helper extends Stancer\Tests\atoum
 
     /**
      * @dataProvider caseStringDataProvider
+     *
+     * @param mixed $camel
+     * @param mixed $snake
      */
     public function testCamelCaseToSnakeCase($camel, $snake)
     {
@@ -19,6 +22,9 @@ class Helper extends Stancer\Tests\atoum
 
     /**
      * @dataProvider caseStringDataProvider
+     *
+     * @param mixed $camel
+     * @param mixed $snake
      */
     public function testSnakeCaseToCamelCase($camel, $snake)
     {

@@ -2,8 +2,8 @@
 
 namespace Stancer\tests\unit\Exceptions;
 
-use Stancer;
 use Psr;
+use Stancer;
 
 class InvalidMandateException extends Stancer\Tests\atoum
 {

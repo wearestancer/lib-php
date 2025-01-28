@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Traits;
@@ -13,8 +14,6 @@ use Stancer;
  */
 trait SearchTrait
 {
-    // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
-
     /**
      * List elements.
      *
@@ -28,7 +27,8 @@ trait SearchTrait
      * `start` must be an integer, will be used as a pagination cursor, starts at 0.
      *
      * @param array $terms Search terms. May have `created`, `limit` or `start` key.
-     * @return Generator<static>
+     *
+     * @return \Generator<static>
      * @throws Stancer\Exceptions\InvalidSearchFilterException When `$terms` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchCreationFilterException When `created` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchCreationFilterException When `created` is a DatePeriod without end.
@@ -38,9 +38,10 @@ trait SearchTrait
      *
      * @phpstan-param SearchFilters $terms
      */
-    public static function list(array $terms): Generator
+    public static function list(array $terms): \Generator
     {
         $element = new static(); // Mandatory for requests.
+
         /** @phpstan-var 'disputes'|'payments'|'refunds' $property */
         $property = strtolower($element->getEntityName() . 's');
 
@@ -53,7 +54,8 @@ trait SearchTrait
      * @param string $class Base class.
      * @param 'disputes'|'payments'|'refunds' $property Searched property.
      * @param array $terms Search terms.
-     * @return Generator<static>
+     *
+     * @return \Generator<static>
      * @throws Stancer\Exceptions\InvalidSearchFilterException When `$terms` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchCreationFilterException When `created` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchCreationFilterException When `created` is a DatePeriod without end.
@@ -64,7 +66,7 @@ trait SearchTrait
      * @phpstan-param class-string<Stancer\Core\AbstractObject> $class Base class.
      * @phpstan-param SearchFilters $terms
      */
-    protected function search(string $class, string $property, array $terms): Generator
+    protected function search(string $class, string $property, array $terms): \Generator
     {
         $allowed = array_flip(['created', 'created_until', 'limit', 'start']);
         $others = [];
@@ -87,7 +89,7 @@ trait SearchTrait
         if (array_key_exists('created', $terms)) {
             $exception = Stancer\Exceptions\InvalidSearchCreationFilterException::class;
 
-            if (!($terms['created'] instanceof DatePeriod)) {
+            if (!($terms['created'] instanceof \DatePeriod)) {
                 $created = $terms['created'];
             } else {
                 $created = $terms['created']->getStartDate();
@@ -137,9 +139,8 @@ trait SearchTrait
 
         $request = new Stancer\Core\Request();
 
-        // phpcs:ignore Squiz.PHP.CommentedOutCode.Found
         // @var callable(): Generator<static> $gen
-        $gen = function () use ($class, $request, $params, $property, $until): Generator {
+        $gen = function () use ($class, $request, $params, $property, $until): \Generator {
             $more = true;
 
             do {
@@ -162,6 +163,7 @@ trait SearchTrait
                             foreach ($results[$property] as $data) {
                                 if ($until && $data['created'] > $until) {
                                     $more = false;
+
                                     break;
                                 }
 
@@ -183,9 +185,6 @@ trait SearchTrait
         return $gen();
     }
 
-    // phpcs:enable
-    // phpcs:disable Squiz.Functions.MultiLineFunctionDeclaration.NewlineBeforeOpenBrace
-
     /**
      * Validate date relative filter.
      *
@@ -195,7 +194,6 @@ trait SearchTrait
      * @param boolean $allowPeriod Allow DatePeriod object.
      *
      * @return integer Ready to use timestamp.
-     *
      * @throws Stancer\Exceptions\InvalidSearchFilterException When `created` is invalid.
      *
      * @phpstan-param DateTimeInterface|integer $value Parameter value.
@@ -206,12 +204,10 @@ trait SearchTrait
         string $name,
         string $exception,
         bool $allowPeriod = false
-    ): int
-    {
-        // phpcs:enable
+    ): int {
         $timestamp = $value;
 
-        if ($value instanceof DateTimeInterface) {
+        if ($value instanceof \DateTimeInterface) {
             $timestamp = $value->getTimestamp();
         }
 

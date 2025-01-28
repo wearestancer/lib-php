@@ -74,6 +74,8 @@ class Dispute extends Stancer\Tests\atoum
 
     /**
      * @dataProvider cardCurrencyDataProvider
+     *
+     * @param mixed $currency
      */
     public function testGetCurrency($currency)
     {
@@ -212,7 +214,7 @@ class Dispute extends Stancer\Tests\atoum
     public function testGetPayment()
     {
         $this
-            ->if($payment = new Stancer\Payment)
+            ->if($payment = new Stancer\Payment())
             ->then
                 ->assert('camelCase method')
                     ->variable($this->newTestedInstance->getPayment())
