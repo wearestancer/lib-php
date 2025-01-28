@@ -31,7 +31,7 @@
 				],
 				"intelephense.environment.phpVersion": "8.1.0",
 				"php-cs-fixer.config": ".php-cs-fixer.php",
-				"php-cs-fixer.executablePath": "php-cs-fixer",
+				"php-cs-fixer.executablePath": "${containerWorkspaceFolder}/vendor/bin/php-cs-fixer",
 				"php-cs-fixer.onsave": true,
 				"php.validate.executablePath": "/usr/local/bin/php"
 			}
