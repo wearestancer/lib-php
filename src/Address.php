@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Stancer;
 
-use Stancer\Core\AbstractObject;
 use Stancer;
+use Stancer\Core\AbstractObject;
 
 /**
  * Representation of an address.
@@ -77,7 +77,6 @@ class Address extends AbstractObject
     final public const ENDPOINT = 'addresses';
 
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [
@@ -151,7 +150,6 @@ class Address extends AbstractObject
      * Add metadata to our array of metadata.
      *
      * @param array<string,mixed> $newMetadata Data to add to our array.
-     * @return static
      *
      * @throws Stancer\Exceptions\InvalidJsonException Throw exception if the json we got isn't an array.
      */
@@ -163,6 +161,7 @@ class Address extends AbstractObject
             ...$previousMetadata,
             ...$newMetadata,
         ];
+
         return $this->setMetadata($currentMetadata);
     }
 
@@ -170,7 +169,6 @@ class Address extends AbstractObject
      * Get decoded json metadata.
      *
      * @return array<mixed> decoded json metadata.
-     *
      * @throws Stancer\Exceptions\InvalidJsonException When the json is invalid.
      */
     public function getMetadata(): array
@@ -192,7 +190,6 @@ class Address extends AbstractObject
      * Override send to block patching Address.
      *
      * @return $this
-     *
      * @throws Stancer\Exceptions\BadMethodCallException Trying to patch an address result in error.
      */
     #[\Override]
@@ -201,6 +198,7 @@ class Address extends AbstractObject
         if ($this->getId()) {
             throw new Stancer\Exceptions\BadMethodCallException('Addresses cannot be patched.');
         }
+
         return parent::send();
     }
 
@@ -208,16 +206,16 @@ class Address extends AbstractObject
      * Set metadata.
      *
      * @param array<string,mixed>|string $newMetadata Data to set to our metadata field.
-     * @return static
      *
      * @throws Stancer\Exceptions\InvalidJsonException When the json is invalid.
      */
     public function setMetadata(array|string $newMetadata): static
     {
         $currentMetadata = json_encode($newMetadata);
-        if (JSON_ERROR_NONE !== json_last_error()) {
+        if (json_last_error() !== JSON_ERROR_NONE) {
             throw new Stancer\Exceptions\InvalidJsonException('Invalid Json, cannot be parsed.');
         }
+
         return parent::setMetadata($currentMetadata);
     }
 }

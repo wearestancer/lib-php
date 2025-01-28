@@ -2336,7 +2336,7 @@ class StubObject extends Stancer\Tests\atoum
     public function testSend_withOnlyID()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($config = $this->mockConfig($client))
             ->and($cardResponse = $this->mockJsonResponse('card', 'create'))
             ->and($this->calling($client)->request = $cardResponse)
@@ -2355,10 +2355,10 @@ class StubObject extends Stancer\Tests\atoum
             ->and($optionCard = $options)
             ->and($location = $this->newTestedInstance->getUri())
 
-            ->if($body =[
+            ->if($body = [
                 'string1' => $string1,
                 'integer1' => $integer1,
-                'object4' => 'card_m8H4p4n1Oyf1PbaHGBBPfU4a' //from fixtures
+                'object4' => 'card_m8H4p4n1Oyf1PbaHGBBPfU4a', // from fixtures
             ])
             ->and($options['body'] = json_encode($body))
 
@@ -2400,11 +2400,10 @@ class StubObject extends Stancer\Tests\atoum
                             ->withArguments('POST', $locationCard, $optionCard)
                                 ->once
 
-
             ->if($this->newTestedInstance->setString1($string1))
             ->and($this->testedInstance->setInteger1($integer1))
 
-            ->if($completeCard = new Stancer\Card('card_m8H4p4n1Oyf1PbaHGBBPfU4a')) //from fixtures
+            ->if($completeCard = new Stancer\Card('card_m8H4p4n1Oyf1PbaHGBBPfU4a')) // from fixtures
             ->and($this->testedInstance->setObject4($completeCard))
 
             ->then

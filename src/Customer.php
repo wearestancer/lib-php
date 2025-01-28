@@ -110,7 +110,6 @@ class Customer extends Stancer\Core\AbstractObject
             'onlyID' => true,
             'type' => Stancer\Address::class,
         ],
-
     ];
 
     /**

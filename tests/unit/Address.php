@@ -2,9 +2,8 @@
 
 namespace Stancer\tests\unit;
 
-use DateTime;
-use Stancer;
 use mock;
+use Stancer;
 
 class Address extends Stancer\Tests\atoum
 {
@@ -23,7 +22,7 @@ class Address extends Stancer\Tests\atoum
             ->and($city = $this->getRandomString(1, 50))
             ->and($cityTooLong = $this->getRandomString(51, 99))
 
-            ->assert('city too long')
+            ->assert('City too long')
                 ->exception(function () use ($cityTooLong) {
                     $this->testedInstance->setcity($cityTooLong);
                 })
@@ -31,13 +30,13 @@ class Address extends Stancer\Tests\atoum
                 ->message
                     ->isIdenticalTo('A valid city must be between 1 and 50 characters.')
 
-            ->assert('city can be set')
+            ->assert('City can be set')
                 ->object($this->testedInstance->set_city($city))
                     ->isTestedInstance
                 ->object($this->testedInstance->setCity($city))
                     ->isTestedInstance
 
-            ->assert('city can be get')
+            ->assert('City can be get')
                 ->string($this->testedInstance->get_city())
                     ->isIdenticalTo($city)
                 ->string($this->testedInstance->getCity())
@@ -64,8 +63,8 @@ class Address extends Stancer\Tests\atoum
 
             ->assert('Country too long')
                 ->exception(function () use ($countryTooLong) {
-                        $this->testedInstance->setcountry($countryTooLong);
-                    })
+                    $this->testedInstance->setcountry($countryTooLong);
+                })
                     ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                     ->message
                         ->isIdenticalTo('A valid country must have 2 characters.')
@@ -84,10 +83,10 @@ class Address extends Stancer\Tests\atoum
         ;
     }
 
-    public function test_get()
+    public function testGet()
     {
         $this
-        ->given($client = new mock\Stancer\Http\Client)
+        ->given($client = new mock\Stancer\Http\Client())
         ->and($this->mockConfig($client))
         ->and($response = $this->mockJsonResponse('address', 'read'))
         ->and($this->calling($client)->request = $response)
@@ -114,7 +113,7 @@ class Address extends Stancer\Tests\atoum
                 ->isIdenticalTo('IDF')
 
             ->dateTime($this->testedInstance->getCreated())
-                ->isEqualTo(new DateTime('@1722435409'))
+                ->isEqualTo(new \DateTime('@1722435409'))
 
             ->boolean($this->testedInstance->getDeleted())
                 ->isFalse()
@@ -169,8 +168,7 @@ class Address extends Stancer\Tests\atoum
             ->assert('line1 can be get')
                 ->string($this->testedInstance->getLine1())
                     ->isIdenticalTo($line1)
-
-            ;
+        ;
     }
 
     public function testLineTwo()
@@ -200,7 +198,7 @@ class Address extends Stancer\Tests\atoum
             ->assert('line2 can be get')
                 ->string($this->testedInstance->getLine2())
                     ->isIdenticalTo($line2)
-            ;
+        ;
     }
 
     public function testLineThree()
@@ -223,7 +221,6 @@ class Address extends Stancer\Tests\atoum
                 ->variable($this->testedInstance->getLine3())
                     ->isNull()
 
-
             ->assert('line3 can be set')
                 ->object($this->testedInstance->setLine3($line3))
                     ->isTestedInstance
@@ -231,7 +228,7 @@ class Address extends Stancer\Tests\atoum
             ->assert('line3 can be get')
                 ->string($this->testedInstance->getLine3())
                     ->isIdenticalTo($line3)
-            ;
+        ;
     }
 
     public function testMetadata()
@@ -257,12 +254,12 @@ class Address extends Stancer\Tests\atoum
             ->assert('we don\'t accept flat json')
                 ->if($this->testedInstance->setMetadata($this->getRandomString(25)))
 
-                ->exception(fn() => $this->testedInstance->getMetadata())
+                ->exception(fn () => $this->testedInstance->getMetadata())
                     ->isInstanceOf(Stancer\Exceptions\InvalidJsonException::class)
                         ->message
                             ->isIdenticalTo('Invalid Json, couldn\'t be parsed as an array.')
 
-                ->exception(fn() => $this->testedInstance->addMetadata($addMetadata))
+                ->exception(fn () => $this->testedInstance->addMetadata($addMetadata))
                     ->isInstanceOf(Stancer\Exceptions\InvalidJsonException::class)
                         ->message
                             ->isIdenticalTo('Invalid Json, couldn\'t be parsed as an array.')
@@ -273,7 +270,7 @@ class Address extends Stancer\Tests\atoum
                     ->isTestedInstance
                 ->array($this->testedInstance->getMetadata())
                     ->isEqualTo([
-                        ...$addMetadata
+                        ...$addMetadata,
                     ])
 
             ->given($this->newTestedInstance)
@@ -290,26 +287,26 @@ class Address extends Stancer\Tests\atoum
                     ->isEqualTo($finalMetadata)
         ;
     }
-    public function test_metadata_invalid_json()
-    {
 
+    public function testMetadataInvalidJson()
+    {
         $this
             ->given($this->newTestedInstance)
-            ->if($this->function->json_last_error = 2 )
-            ->and($metadata = $this->getRandomString((10)))
+            ->if($this->function->json_last_error = 2)
+            ->and($metadata = $this->getRandomString(10))
 
             ->assert('check that errors are thrown when bad json')
-                ->exception( fn() => $this->testedInstance->setMetadata($metadata))
+                ->exception(fn () => $this->testedInstance->setMetadata($metadata))
                     ->isInstanceOf(Stancer\Exceptions\InvalidJsonException::class)
                         ->message
                             ->isIdenticalTo('Invalid Json, cannot be parsed.')
         ;
     }
 
-    public function test_send()
+    public function testSend()
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
+            ->given($client = new mock\Stancer\Http\Client())
             ->and($config = $this->mockConfig($client))
             ->and($response = $this->mockJsonResponse('address', 'create'))
             ->and($this->calling($client)->request = $response)
@@ -352,7 +349,7 @@ class Address extends Stancer\Tests\atoum
                 ->string($this->testedInstance->getId())
                     ->isIdenticalTo('addr_m8H4p4n1Oyf1PbaHGBBPfU4a')
 
-                ->exception(fn() => $this->testedInstance->send())
+                ->exception(fn () => $this->testedInstance->send())
                     ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                         ->message
                             ->isIdenticalTo('Addresses cannot be patched.')
@@ -388,7 +385,6 @@ class Address extends Stancer\Tests\atoum
                 ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                 ->message
                     ->isIdenticalTo('A valid state must be between 1 and 3 characters.')
-
 
             ->assert('State null by default')
                 ->variable($this->testedInstance->getLine3())

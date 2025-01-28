@@ -747,7 +747,11 @@ abstract class AbstractObject implements \JsonSerializable
             $onlyID = array_filter($this->dataModel, $sendBeforeFilter);
 
             if ($onlyID) {
-                array_map(fn ($object) => $object['value']->send(), $onlyID);
+                array_map(function ($object) {
+                    if (isset($object['value']) && gettype($object['value']) === 'object' && is_a($object['value'], self::class)) {
+                        return $object['value']->send();
+                    }
+                }, $onlyID);
             }
 
             $response = $request->post($this);
@@ -819,153 +823,6 @@ abstract class AbstractObject implements \JsonSerializable
     public function toString(): string
     {
         return $this->toJson();
-    }
-
-    /**
-     * Add a value stored list in data model.
-     *
-     * @uses self::dataModelGetter() To get actual values.
-     * @uses self::dataModelSetter() To set new values.
-     *
-     * @param string $property Property to set.
-     * @param mixed $value Value to set.
-     *
-     * @return $this
-     * @throws Stancer\Exceptions\InvalidArgumentException When asking an unknown property.
-     * @throws Stancer\Exceptions\InvalidArgumentException If used on properties not declared as list.
-     */
-    protected function dataModelAdder(string $property, mixed $value): static
-    {
-        $model = $this->getModel($property);
-
-        if (!$model) {
-            throw new Stancer\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
-        }
-
-        if (!$model['list']) {
-            $message = sprintf('"%s" is not a list, you can not add elements in it.', $property);
-
-            throw new Stancer\Exceptions\InvalidArgumentException($message);
-        }
-
-        $values = $this->dataModelGetter($property);
-
-        if (is_array($values)) {
-            $values[] = $value;
-        } else {
-            $values = [$value];
-        }
-
-        return $this->dataModelSetter($property, $values);
-    }
-
-    /**
-     * Get a value stored in data model.
-     *
-     * This was initially in `self::__call()` method, I removed it for simplicity.
-     *
-     * @param string $property Property to get.
-     * @param boolean $autoPopulate Auto populate the property.
-     *
-     * @throws Stancer\Exceptions\InvalidArgumentException When asking an unknown property.
-     */
-    protected function dataModelGetter(string $property, bool $autoPopulate = true): mixed
-    {
-        $model = $this->getModel($property);
-
-        if (!$model) {
-            throw new Stancer\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
-        }
-
-        $value = $model['value'];
-
-        if (is_null($value) && $autoPopulate && $this->isNotModified()) {
-            $model = $this->populate()->getModel($property);
-            $value = $model['value'];
-        }
-
-        if (is_null($value) && $model['list']) {
-            return [];
-        }
-
-        if (!is_null($value) && is_a($model['type'], DateTimeInterface::class, true)) {
-            $tz = Stancer\Config::getGlobal()->getDefaultTimeZone();
-
-            if ($tz) {
-                if ($model['list']) {
-                    foreach ($value as &$val) {
-                        $val = $val->setTimezone($tz);
-                    }
-                } else {
-                    $value = $value->setTimezone($tz);
-                }
-            }
-        }
-
-        return $value;
-    }
-
-    /**
-     * Set a value in data model.
-     *
-     * This was initially in `self::__call()` method, I removed it for simplicity.
-     *
-     * @uses self::validateDataModel() To check value's integrity.
-     *
-     * @param string $property Property to set.
-     * @param mixed $value Value to set.
-     *
-     * @return $this
-     * @throws Stancer\Exceptions\BadMethodCallException When setting a restricted property.
-     * @throws Stancer\Exceptions\InvalidArgumentException When asking an unknown property.
-     * @throws Stancer\Exceptions\InvalidArgumentException When the value do not match expected pattern.
-     */
-    protected function dataModelSetter(string $property, mixed $value): static
-    {
-        $model = $this->getModel($property);
-
-        if (!$model) {
-            throw new Stancer\Exceptions\InvalidArgumentException(sprintf('Unknown property "%s"', $property));
-        }
-
-        if ($model['restricted']) {
-            $message = sprintf('You are not allowed to modify "%s".', $property);
-
-            if ($property === 'created') {
-                $message = 'You are not allowed to modify the creation date.';
-            }
-
-            throw new Stancer\Exceptions\BadMethodCallException($message);
-        }
-
-        $type = gettype($value);
-        $coerce = function ($v) {
-            return $v;
-        };
-        $coercedValues = [];
-
-        if (is_callable($model['coerce'])) {
-            $coerce = $model['coerce'];
-        }
-
-        if ($model['list']) {
-            if (!is_array($value)) {
-                $message = sprintf('Type mismatch, given "%s" expected "array".', $type);
-
-                throw new Stancer\Exceptions\InvalidArgumentException($message);
-            }
-
-            foreach ($value as $val) {
-                $coercedValues[] = $this->validateDataModel($property, $coerce($val));
-            }
-        } else {
-            $coercedValues = $this->validateDataModel($property, $coerce($value));
-        }
-
-        $this->dataModel[$property]['value'] = $coercedValues;
-        $this->modified[] = Stancer\Helper::camelCaseToSnakeCase($property);
-
-        return $this;
     }
 
     /**

@@ -68,7 +68,7 @@ class Customer extends Stancer\Tests\atoum
 
             ->given($this->newTestedInstance)
             ->assert('ID address')
-                ->if($address = new Stancer\Address('addr_'.$this->getRandomString(24)))
+                ->if($address = new Stancer\Address('addr_' . $this->getRandomString(24)))
 
                 ->variable($this->testedInstance->getBillingAddress())
                     ->isNull
@@ -371,7 +371,7 @@ class Customer extends Stancer\Tests\atoum
 
             ->given($this->newTestedInstance)
             ->assert('ID address')
-                ->if($address = new Stancer\Address('addr_'.$this->getRandomString(24)))
+                ->if($address = new Stancer\Address('addr_' . $this->getRandomString(24)))
 
                 ->variable($this->testedInstance->getShippingAddress())
                     ->isNull
