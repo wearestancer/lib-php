@@ -105,6 +105,10 @@ class StubObject extends Stancer\Core\AbstractObject
             'exportable' => false,
             'type' => self::class,
         ],
+        'object4' => [
+            'onlyID' => true,
+            'type' => Stancer\Card::class,
+        ],
         'restricted1' => [
             'restricted' => true,
             'type' => 'string',

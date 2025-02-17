@@ -41,6 +41,46 @@ class Customer extends Stancer\Tests\atoum
         ;
     }
 
+    public function testBillingAddress()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+            ->assert('Full new address')
+                ->if($address = new Stancer\Address())
+                ->and($address->setCity($this->getRandomString(1, 50)))
+                ->and($address->setCountry($this->getRandomString(2)))
+                ->and($address->setLine1($this->getRandomString(1, 50)))
+                ->and($address->setLine2($this->getRandomString(1, 50)))
+                ->and($address->setLine3($this->getRandomString(1, 50)))
+                ->and($address->setMetadata([$this->getRandomString(1, 50)]))
+                ->and($address->setState($this->getRandomString(1, 3)))
+                ->and($address->setzipCode($this->getRandomString(1, 16)))
+
+                ->variable($this->newTestedInstance->getBillingAddress())
+                    ->isNull
+
+                ->object($this->testedInstance->setBillingAddress($address))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getBillingAddress())
+                    ->isIdenticalTo($address)
+
+            ->given($this->newTestedInstance)
+            ->assert('ID address')
+                ->if($address = new Stancer\Address('addr_' . $this->getRandomString(24)))
+
+                ->variable($this->testedInstance->getBillingAddress())
+                    ->isNull
+
+                ->object($this->testedInstance->setBillingAddress($address))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getBillingAddress())
+                    ->isIdenticalTo($address)
+        ;
+    }
+
     public function testGetEndpoint()
     {
         $this
@@ -301,6 +341,46 @@ class Customer extends Stancer\Tests\atoum
 
                 ->boolean($this->testedInstance->isModified())
                     ->isFalse
+        ;
+    }
+
+    public function testShippingAddress()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+            ->assert('Full new address')
+                ->if($address = new Stancer\Address())
+                ->and($address->setCity($this->getRandomString(1, 50)))
+                ->and($address->setCountry($this->getRandomString(2)))
+                ->and($address->setLine1($this->getRandomString(1, 50)))
+                ->and($address->setLine2($this->getRandomString(1, 50)))
+                ->and($address->setLine3($this->getRandomString(1, 50)))
+                ->and($address->setMetadata([$this->getRandomString(1, 50)]))
+                ->and($address->setState($this->getRandomString(1, 3)))
+                ->and($address->setzipCode($this->getRandomString(1, 16)))
+
+                ->variable($this->newTestedInstance->getShippingAddress())
+                    ->isNull
+
+                ->object($this->testedInstance->setShippingAddress($address))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getShippingAddress())
+                    ->isIdenticalTo($address)
+
+            ->given($this->newTestedInstance)
+            ->assert('ID address')
+                ->if($address = new Stancer\Address('addr_' . $this->getRandomString(24)))
+
+                ->variable($this->testedInstance->getShippingAddress())
+                    ->isNull
+
+                ->object($this->testedInstance->setShippingAddress($address))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getShippingAddress())
+                    ->isIdenticalTo($address)
         ;
     }
 }

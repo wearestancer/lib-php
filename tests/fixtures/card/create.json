@@ -1,0 +1,17 @@
+{
+  "brand": "visa",
+  "country": "US",
+  "created": 1722435409,
+  "customer": null,
+  "deleted": false,
+  "exp_month": 12,
+  "exp_year": 2089,
+  "external_id": null,
+  "funding": "debit",
+  "id": "card_m8H4p4n1Oyf1PbaHGBBPfU4a",
+  "last4": "1111",
+  "name": null,
+  "nature": "personal",
+  "network": "visa",
+  "zip_code": null
+}

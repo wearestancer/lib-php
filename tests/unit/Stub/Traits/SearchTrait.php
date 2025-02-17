@@ -416,7 +416,7 @@ class SearchTrait extends Stancer\Tests\atoum
 
     public function testList_with_date_period()
     {
-        $created = time() - rand(10, 1000000);
+        $created = time() - rand(10000, 1000000);
         $until = 0;
         $tmp = $created;
         $items = [];

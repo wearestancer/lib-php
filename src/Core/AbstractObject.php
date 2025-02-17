@@ -102,6 +102,7 @@ abstract class AbstractObject implements \JsonSerializable
             'exportable' => null,
             'format' => null,
             'list' => false,
+            'onlyID' => false,
             'restricted' => false,
             'required' => false,
             'size' => [
@@ -717,10 +718,10 @@ abstract class AbstractObject implements \JsonSerializable
             $action = 'updated';
             $response = $request->patch($this);
         } else {
-            $filter = function ($model): bool {
+            $requiredFilter = function ($model): bool {
                 return $model['required'] && is_null($model['value']);
             };
-            $required = array_filter($this->dataModel, $filter);
+            $required = array_filter($this->dataModel, $requiredFilter);
 
             if ($required) {
                 $keys = array_keys($required);
@@ -729,6 +730,28 @@ abstract class AbstractObject implements \JsonSerializable
                 $message = sprintf('You need to provide a value for : %s', $properties);
 
                 throw new Stancer\Exceptions\InvalidArgumentException($message);
+            }
+
+            $sendBeforeFilter = function ($model): bool {
+                if (!$model['onlyID'] || is_null($model['value'])) {
+                    return false;
+                }
+
+                if (!is_a($model['value'], self::class) || $model['value']->isNotModified()) {
+                    return false;
+                }
+
+                return true;
+            };
+
+            $onlyID = array_filter($this->dataModel, $sendBeforeFilter);
+
+            if ($onlyID) {
+                array_map(function ($object) {
+                    if (isset($object['value']) && gettype($object['value']) === 'object' && is_a($object['value'], self::class)) {
+                        return $object['value']->send();
+                    }
+                }, $onlyID);
             }
 
             $response = $request->post($this);
@@ -741,7 +764,6 @@ abstract class AbstractObject implements \JsonSerializable
 
         if ($body) {
             $this->cleanModified = true;
-
             $this->hydrate($body);
         }
 
