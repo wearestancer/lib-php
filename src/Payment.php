@@ -342,19 +342,12 @@ class Payment extends Stancer\Core\AbstractObject implements PaymentInterface
      */
     public function capture(): static
     {
-        $config = Stancer\Config::getGlobal();
-        if ($config->version < 2) {
-            $this->setStatus(Stancer\Payment\Status::CAPTURE);
-            $this->send();
-
-            return $this;
-        }
         if ($this->getId() === null || $this->getStatus() === null || !$this->getStatus()->isCapturable()) {
             $message = 'The payment must be authorized to be captured.';
 
             throw new Stancer\Exceptions\BadRequestException($message);
         }
-        $capture = new Stancer\Payment\SearchObject($this->getId(), 'capture', 'payments');
+        $capture = new Stancer\Payment\SearchObject($this->getId(), 'capture', $this->getEndpoint());
         $request = new Stancer\Core\Request();
         // We post the serialized object, jsonSerialize if notModified return the ID, that's what we want!
         $response = $request->post($capture);

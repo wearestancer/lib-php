@@ -30,6 +30,46 @@ class Payment extends Stancer\Tests\atoum
         return $datas;
     }
 
+    public function versionDataProvider()
+    {
+        return [[1], [2]];
+    }
+
+    public function versionAuthReturnUrlProvider(): array
+    {
+        return [
+            [
+                1,
+                fn ($url) => [
+                    'return_url' => $url,
+                    'status' => Stancer\Auth\Status::REQUEST,
+                ],
+            ],
+            [
+                2,
+                fn ($url) => [
+                    'return_url' => $url,
+                ],
+            ],
+        ];
+    }
+
+    public function versionAuthStatusProvider(): array
+    {
+        return [
+            [
+                1,
+                [
+                    'status' => Stancer\Auth\Status::REQUEST,
+                ],
+            ],
+            [
+                2,
+                true,
+            ],
+        ];
+    }
+
     public function testBillingAddress()
     {
         $this
@@ -70,49 +110,19 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
-    public function versionAuthReturnUrlProvider(): array
-    {
-        return [
-            [
-                1,
-                fn ($url) => [
-                    'return_url' => $url,
-                    'status' => Stancer\Auth\Status::REQUEST,
-                ],
-            ],
-            [
-                2,
-                fn ($url) => [
-                    'return_url' => $url,
-                ],
-            ],
-        ];
-    }
-
-    public function versionAuthStatusProvider(): array
-    {
-        return [
-            [
-                1,
-                [
-                    'status' => Stancer\Auth\Status::REQUEST,
-                ],
-            ],
-            [
-                2,
-                true,
-            ],
-        ];
-    }
-
-    public function testCharge()
+    /**
+     * @DataProvider versionDataProvider
+     *
+     * @param integer $version
+     */
+    public function testCharge(int $version)
     {
         $this
             ->if($client = new mock\GuzzleHttp\Client())
             ->and($response = new mock\GuzzleHttp\Psr7\Response())
             ->and($this->calling($client)->request = $response)
 
-            ->and($this->mockConfig($client))
+            ->and($this->mockConfig($client, $version))
 
             ->assert('Test with a card token')
                 ->given($options = [
@@ -390,38 +400,40 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
-    public function testGetEndpoint()
+    /**
+     * @dataProvider versionDataProvider
+     *
+     * @param int $version
+     */
+    public function testGetEndpoint($version)
     {
         $this
+            ->given($endpoint = [1 => 'checkout', 2 => 'payments'])
             ->assert('Default as v1')
-            ->given(Stancer\Config::init([])->setVersion(1))
+            ->given(Stancer\Config::init([])->setVersion($version))
                 ->given($this->newTestedInstance)
                 ->then
                     ->string($this->testedInstance->getEndpoint())
-                        ->isIdenticalTo('checkout')
+                        ->isIdenticalTo($endpoint[$version])
 
                     ->string($this->testedInstance->endpoint)
-                        ->isIdenticalTo('checkout')
-
-            ->assert('New value for v2')
-                ->given(Stancer\Config::init([])->setVersion(2))
-                ->if($this->newTestedInstance)
-                ->then
-                    ->string($this->testedInstance->getEndpoint())
-                        ->isIdenticalTo('payments')
-
-                    ->string($this->testedInstance->endpoint)
-                        ->isIdenticalTo('payments')
+                        ->isIdenticalTo($endpoint[$version])
         ;
     }
 
-    public function testGetPaymentPageUrl()
+    /**
+     * @dataProvider versionDataProvider
+     *
+     * @param int $version
+     */
+    public function testGetPaymentPageUrl($version)
     {
         $this
             ->given($secret = 'stest_' . bin2hex(random_bytes(12)))
             ->and($public = 'ptest_' . bin2hex(random_bytes(12)))
             ->and($config = Stancer\Config::init([$secret]))
             ->and($config->setDebug(false))
+            ->and($config->setVersion($version))
 
             ->if($client = new mock\Stancer\Http\Client())
             ->and($response = $this->mockJsonResponse('payment', 'create-no-method'))
@@ -593,11 +605,16 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
-    public function testGetRefundableAmount()
+    /**
+     * @dataProvider versionDataProvider
+     *
+     * @param int $version
+     */
+    public function testGetRefundableAmount($version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
-            ->and($this->mockConfig($client))
+            ->and($this->mockConfig($client, $version))
 
             ->if($response = $this->mockJsonResponse('payment', 'read'))
             ->and($this->calling($client)->request = $response)
@@ -853,13 +870,18 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
-    public function testList()
+    /**
+     * @dataProvider versionDataProvider
+     *
+     * @param int $version
+     */
+    public function testList($version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
             ->and($response = $this->mockJsonResponse('payment', 'list'))
             ->and($this->calling($client)->request = $response)
-            ->and($config = $this->mockConfig($client))
+            ->and($config = $this->mockConfig($client, $version))
             ->and($options = $this->mockRequestOptions($config))
 
             ->assert('Invalid limit')
@@ -1167,13 +1189,18 @@ class Payment extends Stancer\Tests\atoum
         }
     }
 
-    public function testPay()
+    /**
+     * @dataProvider versionDataProvider
+     *
+     * @param int $version
+     */
+    public function testPay($version)
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client())
             ->and($response = new mock\GuzzleHttp\Psr7\Response())
             ->and($this->calling($client)->request = $response)
-            ->and($this->mockConfig($client))
+            ->and($this->mockConfig($client, $version))
 
             ->then
                 ->assert('Pay with card')
@@ -1227,12 +1254,16 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
-    public function testPost_capture()
+    /**
+     * @dataProvider versionDataProvider
+     */
+    public function testPost_capture(int $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client, 2))
+            ->and($config = $this->mockConfig($client, $version))
             ->given($this->newTestedInstance->setAmount(100))
+            ->and($this->testedInstance->setCurrency('EUR'))
 
                 ->assert('Does not allow capture new payment')
                     ->exception(function () {
@@ -1264,6 +1295,8 @@ class Payment extends Stancer\Tests\atoum
             ->given($authorizeresponse = $this->mockJsonResponse('payment', 'authorized'))
             ->and($this->calling($client)->request = $authorizeresponse)
             ->and($this->newTestedInstance->setAmount(300))
+            ->and($this->testedInstance->setCurrency('EUR'))
+
                 ->assert('Capture an authorize payment')
                     ->object($this->testedInstance->send())
                         ->isTestedInstance
@@ -1281,7 +1314,6 @@ class Payment extends Stancer\Tests\atoum
                             'id' => 'paym_SKMLflt8NBATuiUzgvTYqsw5',
                         ]),
                     ]))
-                    ->dump($options)
                     ->object($this->testedInstance->capture())
                             ->isTestedInstance
                     ->mock($client)
@@ -1294,45 +1326,13 @@ class Payment extends Stancer\Tests\atoum
                         ->isEqualTo(Stancer\Payment\Status::TO_CAPTURE)
                     ->boolean($this->testedInstance->getCapture())
                             ->isTrue()
-            ->given($authorizeresponse = $this->mockJsonResponse('payment', 'authorized'))
-            ->and($config = $this->mockConfig($client, 1))
-            ->and($this->calling($client)->request = $authorizeresponse)
-            ->and($this->newTestedInstance->setAmount(300))
-            ->and($this->testedInstance->setCurrency('eur'))
-                ->assert('Capture an authorize payment')
-                    ->object($this->testedInstance->send())
-                        ->isTestedInstance
-                    ->object($this->testedInstance->getStatus())
-                        ->isEqualTo(Stancer\Payment\Status::AUTHORIZED)
-                    ->boolean($this->testedInstance->getCapture())
-                        ->isFalse()
-
-                ->then
-                    ->given($captureResponse = $this->mockJsonResponse('payment', 'captured'))
-                    ->and($this->calling($client)->request = $captureResponse)
-                    ->and($location = $this->testedInstance->uri)
-                    ->and($options = $this->mockRequestOptions($config, [
-                        'body' => json_encode([
-                            'status' => Stancer\Payment\Status::CAPTURE->value,
-                        ]),
-                    ]))
-                    ->dump($options)
-                    ->object($this->testedInstance->capture())
-                            ->isTestedInstance
-                    ->mock($client)
-                        ->call('request')
-                            ->withArguments('PATCH', $location, $options)
-                                ->once
-
-                    ->object($this->testedInstance->getStatus())
-                        ->isInstanceOf(Stancer\Payment\Status::class)
-                        ->isEqualTo(Stancer\Payment\Status::TO_CAPTURE)
-                    ->boolean($this->testedInstance->getCapture())
-                            ->isTrue()
         ;
     }
 
-    public function testRefund()
+    /**
+     * @dataProvider versionDataProvider
+     */
+    public function testRefund(int $version)
     {
         $this
             ->given($logger = new mock\Stancer\Core\Logger())
@@ -1354,7 +1354,7 @@ class Payment extends Stancer\Tests\atoum
             ->then
                 ->assert('Without refunds we get an empty array')
                     ->given($client = new mock\Stancer\Http\Client())
-                    ->and($config = $this->mockConfig($client))
+                    ->and($config = $this->mockConfig($client, $version))
                     ->and($config->setLogger($logger))
 
                     ->if($this->calling($client)->request = $this->mockResponse(json_encode($paymentData)))
@@ -1364,10 +1364,6 @@ class Payment extends Stancer\Tests\atoum
                             ->isEmpty
 
                 ->assert('We can not refund more than paid')
-                    ->given($client = new mock\Stancer\Http\Client())
-                    ->and($config = $this->mockConfig($client))
-                    ->and($config->setLogger($logger))
-
                     ->if($this->calling($client)->request = $this->mockResponse(json_encode($paymentData)))
                     ->and($this->newTestedInstance($id))
                     ->then
@@ -1379,9 +1375,6 @@ class Payment extends Stancer\Tests\atoum
                                 ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $tooMuch / 100) . ' EUR) more than paid (34.06 EUR).')
 
                 ->assert('Amount must be greater or equal than 50')
-                    ->given($client = new mock\Stancer\Http\Client())
-                    ->and($config = $this->mockConfig($client))
-                    ->and($config->setLogger($logger))
 
                     ->if($this->calling($client)->request = $this->mockResponse(json_encode($paymentData)))
                     ->and($this->newTestedInstance($id))
@@ -1394,9 +1387,6 @@ class Payment extends Stancer\Tests\atoum
                                 ->isIdenticalTo('Amount must be greater than or equal to 50.')
 
                 ->assert('We can put a refund amount')
-                    ->given($client = new mock\Stancer\Http\Client())
-                    ->and($config = $this->mockConfig($client))
-                    ->and($config->setLogger($logger))
 
                     ->if($response = $this->mockResponse(json_encode($paymentData)))
                     ->and($this->calling($client)->request = $response)
@@ -1430,9 +1420,6 @@ class Payment extends Stancer\Tests\atoum
                                     ->once
 
                 ->assert('We can not refund more than refundable')
-                    ->given($client = new mock\Stancer\Http\Client())
-                    ->and($config = $this->mockConfig($client))
-                    ->and($config->setLogger($logger))
 
                     ->if($response = $this->mockResponse(json_encode($paymentData)))
                     ->and($this->calling($client)->request = $response)
@@ -1448,9 +1435,6 @@ class Payment extends Stancer\Tests\atoum
                                 ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $paid / 100) . ' EUR) more than paid (34.06 EUR with ' . sprintf('%.02f', $amount / 100) . ' EUR already refunded).')
 
                 ->assert('Without amount we will refund all')
-                    ->given($client = new mock\Stancer\Http\Client())
-                    ->and($config = $this->mockConfig($client))
-                    ->and($config->setLogger($logger))
 
                     ->if($response = $this->mockResponse(json_encode($paymentData)))
                     ->and($this->calling($client)->request = $response)
@@ -1504,9 +1488,6 @@ class Payment extends Stancer\Tests\atoum
                             ->isIdenticalTo('A payment ID is mandatory. Maybe you forgot to send the payment.')
 
                 ->assert('Should work with methods allowed (internal bug)')
-                    ->given($client = new mock\Stancer\Http\Client())
-                    ->and($config = $this->mockConfig($client))
-                    ->and($config->setLogger($logger))
 
                     ->if($response = $this->mockJsonResponses([['payment', 'read-methods-allowed'], ['refund', 'read']]))
                     ->and($this->calling($client)->request = $response)
@@ -1520,11 +1501,14 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
-    public function testSend_exceptions()
+    /**
+     * @dataProvider versionDataProvider
+     */
+    public function testSend_exceptions(int $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
-            ->and($this->mockConfig($client))
+            ->and($this->mockConfig($client, $version))
 
             ->if($response = new mock\Stancer\Http\Response(200))
             ->and($this->calling($client)->request = $response)
@@ -1535,13 +1519,6 @@ class Payment extends Stancer\Tests\atoum
                     $this->testedInstance->send();
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
-
-            ->if($this->newTestedInstance->setAmount(rand(100, 999999)))
-            ->then
-                ->exception(function () {
-                    $this->testedInstance->send();
-                })
-                    ->isInstanceOf(Stancer\Exceptions\InvalidCurrencyException::class)
 
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setAmount(rand(100, 999999)))
@@ -1570,11 +1547,33 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
-    public function testSend_withCard()
+    /**
+     * Specific exceptions for API V1.
+     */
+    public function testSend_exceptions_V1()
+    {
+        $this
+            ->given($client = new mock\Stancer\Http\Client())
+            ->and($this->mockConfig($client))
+            ->if($this->newTestedInstance->setAmount(rand(100, 999999)))
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->send();
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidCurrencyException::class)
+        ;
+    }
+
+    /**
+     * @dataProvider versionDataProvider
+     *
+     * @param mixed $version
+     */
+    public function testSend_withCard($version)
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client())
-            ->and($config = $this->mockConfig($client))
+            ->and($config = $this->mockConfig($client, $version))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-card'))
             ->and($this->calling($client)->request = $response)
@@ -1686,11 +1685,14 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
-    public function testSend_withSepa()
+    /**
+     * @dataProvider versionDataProvider
+     */
+    public function testSend_withSepa(int $version)
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client())
-            ->and($config = $this->mockConfig($client))
+            ->and($config = $this->mockConfig($client, $version))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-sepa'))
             ->and($this->calling($client)->request = $response)
@@ -1929,7 +1931,7 @@ class Payment extends Stancer\Tests\atoum
             ->if($response = $this->mockJsonResponse('payment', 'create-card-auth'))
             ->and($this->calling($client)->request = $response)
 
-            ->if($amount = rand(10, 99999))
+            ->if($amount = rand(50, 99999))
             ->and($currency = $this->cardCurrencyDataProvider(true))
             ->and($description = uniqid())
             ->and($url = 'https://www.example.org?' . uniqid())
@@ -2054,7 +2056,10 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
-    public function testSend_withoutCardOrSepa()
+    /**
+     * @dataProvider versionDataProvider
+     */
+    public function testSend_withoutCardOrSepa(int $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
@@ -2221,11 +2226,16 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
-    public function testSend_status()
+    /**
+     * @dataProvider versionDataProvider
+     *
+     * @param mixed $version
+     */
+    public function testSend_status($version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client))
+            ->and($config = $this->mockConfig($client, $version))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-no-method'))
             ->and($this->calling($client)->request = $response)
@@ -2452,12 +2462,12 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tags tag
+     * @dataProvider versionDataProvider
      */
-    public function testSetAuth()
+    public function testSetAuth(int $version)
     {
         $this
-            ->given(Stancer\Config::init([])->setVersion(1))
+            ->given(Stancer\Config::init([])->setVersion($version))
             ->assert('With an Auth object')
                 ->if($auth = new Stancer\Auth())
                 ->and($this->newTestedInstance)
