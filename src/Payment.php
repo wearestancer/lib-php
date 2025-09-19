@@ -203,6 +203,12 @@ class Payment extends Stancer\Core\AbstractObject implements PaymentInterface
             'type' => self::BOOLEAN,
         ],
         'card' => [
+            'changed' => [
+                [
+                    'sinceVersion' => 2,
+                    'onlyID' => true,
+                ],
+            ],
             'desc' => 'Card object',
             'type' => Stancer\Card::class,
         ],
@@ -221,6 +227,12 @@ class Payment extends Stancer\Core\AbstractObject implements PaymentInterface
             'type' => Stancer\Currency::class,
         ],
         'customer' => [
+            'changed' => [
+                [
+                    'sinceVersion' => 2,
+                    'onlyID' => true,
+                ],
+            ],
             'desc' => 'Customer object',
             'type' => Stancer\Customer::class,
         ],
@@ -784,11 +796,6 @@ class Payment extends Stancer\Core\AbstractObject implements PaymentInterface
         $card = $this->getCard();
         $sepa = $this->getSepa();
 
-        // We only send the status in V1.
-        if ($auth !== null) {
-            $authStatus = $config->version === 1 ? true : false;
-            $auth->setExportablestatus($authStatus);
-        }
         if (!is_object($this->getDevice())) {
             $mandatoryDevice = is_object($auth) && $auth->getReturnUrl();
 

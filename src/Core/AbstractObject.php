@@ -342,7 +342,7 @@ abstract class AbstractObject implements \JsonSerializable
     public function getEntityName(): string
     {
         $parts = explode('\\', get_class($this));
-        $last = end($parts);
+        $last = Stancer\Helper::snakeCaseToCamelCase(end($parts));
 
         return $last ?: '';
     }
@@ -771,6 +771,27 @@ abstract class AbstractObject implements \JsonSerializable
 
         $request = new Request();
         $action = 'created';
+        $sendBeforeFilter = function ($model): bool {
+            if (!$model['onlyID'] || is_null($model['value'])) {
+                return false;
+            }
+
+            if (!is_a($model['value'], self::class) || $model['value']->isNotModified()) {
+                return false;
+            }
+
+            return true;
+        };
+
+        $onlyID = array_filter($this->dataModel, $sendBeforeFilter);
+
+        if ($onlyID) {
+            array_map(function ($object) {
+                if (isset($object['value']) && gettype($object['value']) === 'object' && is_a($object['value'], self::class)) {
+                    return $object['value']->send();
+                }
+            }, $onlyID);
+        }
 
         if ($this->getId()) {
             $action = 'updated';
@@ -788,28 +809,6 @@ abstract class AbstractObject implements \JsonSerializable
                 $message = sprintf('You need to provide a value for : %s', $properties);
 
                 throw new Stancer\Exceptions\InvalidArgumentException($message);
-            }
-
-            $sendBeforeFilter = function ($model): bool {
-                if (!$model['onlyID'] || is_null($model['value'])) {
-                    return false;
-                }
-
-                if (!is_a($model['value'], self::class) || $model['value']->isNotModified()) {
-                    return false;
-                }
-
-                return true;
-            };
-
-            $onlyID = array_filter($this->dataModel, $sendBeforeFilter);
-
-            if ($onlyID) {
-                array_map(function ($object) {
-                    if (isset($object['value']) && gettype($object['value']) === 'object' && is_a($object['value'], self::class)) {
-                        return $object['value']->send();
-                    }
-                }, $onlyID);
             }
 
             $response = $request->post($this);

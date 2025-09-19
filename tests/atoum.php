@@ -24,10 +24,7 @@ class atoum extends base\test
 
     public function beforeTestMethod($method)
     {
-        $version = 1;
-        if (getenv('API_VERSION')) {
-            $version = getenv('API_VERSION');
-        }
+        $version = getenv('API_VERSION') ?: 1;
         if ($method !== 'testGetGlobal_SetGlobal') {
             Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))])
                 ->setVersion($version)
@@ -209,5 +206,13 @@ class atoum extends base\test
             ],
             'timeout' => $config->getTimeout(),
         ], $more);
+    }
+
+    public function versionDataProvider()
+    {
+        return [
+            [1],
+            [2],
+        ];
     }
 }

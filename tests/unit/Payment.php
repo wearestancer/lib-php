@@ -11,6 +11,8 @@ class Payment extends Stancer\Tests\atoum
     use Stancer\Tests\Provider\Currencies;
     use Stancer\Tests\Provider\Network;
 
+    //region mixed tests
+
     public function responseMessageDataProvider()
     {
         $datas = [
@@ -30,11 +32,6 @@ class Payment extends Stancer\Tests\atoum
         return $datas;
     }
 
-    public function versionDataProvider()
-    {
-        return [[1], [2]];
-    }
-
     public function versionAuthReturnUrlProvider(): array
     {
         return [
@@ -47,9 +44,7 @@ class Payment extends Stancer\Tests\atoum
             ],
             [
                 2,
-                fn ($url) => [
-                    'return_url' => $url,
-                ],
+                fn ($_) => true,
             ],
         ];
     }
@@ -851,11 +846,14 @@ class Payment extends Stancer\Tests\atoum
         }
     }
 
-    public function testIssueTaiga7()
+    /**
+     * @dataProvider versionDataProvider
+     */
+    public function testIssueTaiga7(int $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
-            ->and($this->mockConfig($client))
+            ->and($this->mockConfig($client, $version))
 
             ->if($response = $this->mockJsonResponse('issue', 'taiga-7'))
             ->and($this->calling($client)->request = $response)
@@ -872,10 +870,8 @@ class Payment extends Stancer\Tests\atoum
 
     /**
      * @dataProvider versionDataProvider
-     *
-     * @param int $version
      */
-    public function testList($version)
+    public function testList(int $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
@@ -1215,9 +1211,9 @@ class Payment extends Stancer\Tests\atoum
                     ->if($this->mockJsonResponse('payment', 'create-card', $response))
                     ->and($obj = null)
                     ->then
-                        ->when(function () use (&$obj, $card) {
-                            $obj = $this->newTestedInstance->pay(rand(50, 9999), 'EUR', $card);
-                        })
+                    ->when(function () use (&$obj, $card) {
+                        $obj = $this->newTestedInstance->pay(rand(50, 9999), 'EUR', $card);
+                    })
                             ->error()
                                 ->withType(E_USER_DEPRECATED)
                                 ->exists()
@@ -1227,7 +1223,7 @@ class Payment extends Stancer\Tests\atoum
 
                         ->mock($client)
                             ->call('request')
-                                ->once
+                                ->atLeastOnce
 
                 ->assert('Pay with SEPA')
                     ->if($sepa = new Stancer\Sepa())
@@ -1548,144 +1544,6 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * Specific exceptions for API V1.
-     */
-    public function testSend_exceptions_V1()
-    {
-        $this
-            ->given($client = new mock\Stancer\Http\Client())
-            ->and($this->mockConfig($client))
-            ->if($this->newTestedInstance->setAmount(rand(100, 999999)))
-            ->then
-                ->exception(function () {
-                    $this->testedInstance->send();
-                })
-                    ->isInstanceOf(Stancer\Exceptions\InvalidCurrencyException::class)
-        ;
-    }
-
-    /**
-     * @dataProvider versionDataProvider
-     *
-     * @param mixed $version
-     */
-    public function testSend_withCard($version)
-    {
-        $this
-            ->given($client = new mock\GuzzleHttp\Client())
-            ->and($config = $this->mockConfig($client, $version))
-
-            ->if($response = $this->mockJsonResponse('payment', 'create-card'))
-            ->and($this->calling($client)->request = $response)
-
-            ->if($card = new Stancer\Card())
-            ->and($card->setCvc(substr(uniqid(), 0, 3)))
-            ->and($card->setExpMonth(rand(1, 12)))
-            ->and($card->setExpYear(date('Y') - rand(1, 10)))
-            ->and($card->setName(uniqid()))
-            ->and($card->setNumber($number = '4111111111111111'))
-            ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
-
-            ->if($customer = new Stancer\Customer())
-            ->and($customer->setName(uniqid()))
-            ->and($customer->setEmail(uniqid() . '@example.org'))
-            ->and($customer->setMobile(uniqid()))
-
-            ->if($this->newTestedInstance)
-            ->and($this->testedInstance->setAmount(rand(100, 999999)))
-            ->and($this->testedInstance->setCard($card))
-            ->and($this->testedInstance->setCurrency('EUR'))
-            ->and($this->testedInstance->setCustomer($customer))
-            ->and($this->testedInstance->setDescription(uniqid()))
-            ->and($this->testedInstance->setOrderId(uniqid()))
-
-            ->if($logger = new mock\Stancer\Core\Logger())
-            ->and($config->setLogger($logger))
-            ->and($logMessage = 'Payment of 1.00 eur with mastercard "4444"')
-
-            ->and($location = $this->testedInstance->getUri())
-            ->then
-                ->exception(function () {
-                    $this->testedInstance->send();
-                })
-                    ->isInstanceOf(Stancer\Exceptions\InvalidExpirationException::class)
-                    ->message
-                        ->isIdenticalTo('Card expiration is invalid.')
-
-            ->if($card->setExpYear(date('Y') + rand(1, 10)))
-            ->and($options = $this->mockRequestOptions($config, [
-                'body' => json_encode($this->testedInstance),
-            ]))
-            ->then
-                ->variable($this->testedInstance->getId())
-                    ->isNull
-                ->object($this->testedInstance->send())
-                    ->isTestedInstance
-
-                ->mock($client)
-                    ->call('request')
-                        ->withArguments('POST', $location, $options)
-                            ->once
-
-                ->mock($logger)
-                    ->call('info')->withArguments($logMessage)->once
-
-                // Payment object
-                ->string($this->testedInstance->getId())
-                    ->isIdenticalTo('paym_KIVaaHi7G8QAYMQpQOYBrUQE')
-
-                ->dateTime($this->testedInstance->getCreationDate())
-                    ->isEqualTo(new \DateTime('@1538564253'))
-
-                ->integer($this->testedInstance->getAmount())
-                    ->isIdenticalTo(100)
-
-                ->object($this->testedInstance->getCard())
-                    ->isIdenticalTo($card)
-
-                ->enum($this->testedInstance->getCurrency())
-                    ->isIdenticalTo(Stancer\Currency::EUR)
-
-                ->object($this->testedInstance->getCustomer())
-                    ->isIdenticalTo($customer)
-
-                ->string($this->testedInstance->getDescription())
-                    ->isIdenticalTo('le test restfull v1')
-
-                ->variable($this->testedInstance->getOrderId())
-                    ->isNull
-
-                // Card object
-                ->string($card->getBrand())
-                    ->isIdenticalTo('mastercard')
-
-                ->string($card->getCountry())
-                    ->isIdenticalTo('US')
-
-                ->integer($card->getExpMonth())
-                    ->isIdenticalTo(2)
-
-                ->integer($card->getExpYear())
-                    ->isIdenticalTo(2020)
-
-                ->string($card->getId())
-                    ->isIdenticalTo('card_xognFbZs935LMKJYeHyCAYUd')
-
-                ->string($card->getLast4())
-                    ->isIdenticalTo('4444')
-
-                ->variable($card->getName())
-                    ->isNull
-
-                ->string($card->getNumber())
-                    ->isIdenticalTo($number) // Number is unchanged in send process
-
-                ->variable($card->getZipCode())
-                    ->isNull
-        ;
-    }
-
-    /**
      * @dataProvider versionDataProvider
      */
     public function testSend_withSepa(int $version)
@@ -1804,11 +1662,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($description = uniqid())
             ->and($url = 'https://www.example.org?' . uniqid())
 
-            ->if($card = new Stancer\Card())
-            ->and($card->setCvc((string) rand(100, 999)))
-            ->and($card->setExpMonth(rand(1, 12)))
-            ->and($card->setExpYear(rand(date('Y'), 3000)))
-            ->and($card->setNumber($number = '5555555555554444'))
+            ->if($card = new Stancer\Card('card_' . $this->getRandomString(24)))
 
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setAmount($amount))
@@ -1820,12 +1674,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($json = json_encode([
                 'amount' => $amount,
                 'auth' => $auth($url),
-                'card' => [
-                    'cvc' => $card->getCvc(),
-                    'exp_month' => $card->getExpMonth(),
-                    'exp_year' => $card->getExpYear(),
-                    'number' => $card->getNumber(),
-                ],
+                'card' => $card->getId(),
                 'currency' => strtolower($currency),
                 'description' => $description,
                 'device' => [
@@ -1887,9 +1736,6 @@ class Payment extends Stancer\Tests\atoum
 
                 ->string($card->getLast4())
                     ->isIdenticalTo('4444')
-
-                ->string($card->getNumber())
-                    ->isIdenticalTo($number) // Number is unchanged in send process
 
                 // Auth object
                 ->object($auth = $this->testedInstance->getAuth())
@@ -1943,11 +1789,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($port = rand(1, 65535))
             ->and($device = new Stancer\Device(['ip' => $ip, 'port' => $port]))
 
-            ->if($card = new Stancer\Card())
-            ->and($card->setCvc(substr(uniqid(), 0, 3)))
-            ->and($card->setExpMonth(rand(1, 12)))
-            ->and($card->setExpYear(rand(date('Y'), 3000)))
-            ->and($card->setNumber($number = '5555555555554444'))
+            ->if($card = new Stancer\Card('card_' . $this->getRandomString(24)))
 
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setAmount($amount))
@@ -1959,13 +1801,8 @@ class Payment extends Stancer\Tests\atoum
 
             ->and($json = json_encode([
                 'amount' => $amount,
-                'auth' => $authjson($url),
-                'card' => [
-                    'cvc' => $card->getCvc(),
-                    'exp_month' => $card->getExpMonth(),
-                    'exp_year' => $card->getExpYear(),
-                    'number' => $card->getNumber(),
-                ],
+                'auth' => $version === 1 ? $auth : true,
+                'card' => $card->getId(),
                 'currency' => strtolower($currency),
                 'description' => $description,
                 'device' => [
@@ -2028,9 +1865,6 @@ class Payment extends Stancer\Tests\atoum
                 ->string($card->getLast4())
                     ->isIdenticalTo('4444')
 
-                ->string($card->getNumber())
-                    ->isIdenticalTo($number) // Number is unchanged in send process
-
                 // Auth object
                 ->object($this->testedInstance->getAuth())
                     ->isIdenticalTo($auth)
@@ -2053,88 +1887,6 @@ class Payment extends Stancer\Tests\atoum
 
                 ->string($device->getHttpAccept())
                     ->isIdenticalTo('text/html')
-        ;
-    }
-
-    /**
-     * @dataProvider versionDataProvider
-     */
-    public function testSend_withoutCardOrSepa(int $version)
-    {
-        $this
-            ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client))
-
-            ->if($response = $this->mockJsonResponse('payment', 'create-no-method'))
-            ->and($this->calling($client)->request = $response)
-
-            ->if($customer = new Stancer\Customer())
-            ->and($customer->setName(uniqid()))
-            ->and($customer->setEmail(uniqid() . '@example.org'))
-            ->and($customer->setMobile(uniqid()))
-
-            ->if($amount = rand(100, 999999))
-            ->and($currency = $this->cardCurrencyDataProvider(true))
-
-            ->if($this->newTestedInstance)
-            ->and($this->testedInstance->setAmount($amount))
-            ->and($this->testedInstance->setCurrency($currency))
-            ->and($this->testedInstance->setCustomer($customer))
-            ->and($this->testedInstance->setDescription(uniqid()))
-            ->and($this->testedInstance->setOrderId(uniqid()))
-
-            ->if($logger = new mock\Stancer\Core\Logger())
-            ->and($config->setLogger($logger))
-            ->and($logMessage = 'Payment of 100.00 eur without payment method')
-
-            ->and($options = $this->mockRequestOptions($config, [
-                'body' => json_encode($this->testedInstance),
-            ]))
-            ->and($location = $this->testedInstance->getUri())
-            ->then
-                ->variable($this->testedInstance->getId())
-                    ->isNull
-                ->object($this->testedInstance->send())
-                    ->isTestedInstance
-
-                ->mock($client)
-                    ->call('request')
-                        ->withArguments('POST', $location, $options)
-                            ->once
-
-                ->mock($logger)
-                    ->call('info')->withArguments($logMessage)->once
-
-                // Payment object
-                ->string($this->testedInstance->getId())
-                    ->isIdenticalTo('paym_pia9ossoqujuFFbX0HdS3FLi')
-
-                ->dateTime($this->testedInstance->getCreationDate())
-                    ->isEqualTo(new \DateTime('@1562085759'))
-
-                ->integer($this->testedInstance->getAmount())
-                    ->isIdenticalTo(10000)
-
-                ->enum($this->testedInstance->getCurrency())
-                    ->isIdenticalTo(Stancer\Currency::EUR)
-
-                ->object($this->testedInstance->getCustomer())
-                    ->isIdenticalTo($customer)
-
-                ->string($this->testedInstance->getDescription())
-                    ->isIdenticalTo('Test payment without any card or sepa account')
-
-                ->variable($this->testedInstance->getOrderId())
-                    ->isNull
-
-                ->variable($this->testedInstance->getCard())
-                    ->isNull
-
-                ->variable($this->testedInstance->getSepa())
-                    ->isNull
-
-                ->variable($this->testedInstance->getMethod())
-                    ->isNull
         ;
     }
 
@@ -2278,118 +2030,6 @@ class Payment extends Stancer\Tests\atoum
                             ->once
                 ->variable($this->testedInstance->getAuth()->getId())
                     ->isNull
-        ;
-    }
-
-    /**
-     * @dataProvider versionAuthReturnUrlProvider
-     *
-     * @param mixed $version
-     * @param mixed $authjson
-     */
-    public function testSend_device($version, $authjson)
-    {
-        $this
-            ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client, $version))
-
-            ->if($response = $this->mockJsonResponse('payment', 'create-card'))
-            ->and($this->calling($client)->request = $response)
-
-            ->if($port = rand(1, 65535))
-            ->and($addr = $this->ipDataProvider(true))
-            ->and($url = 'https://www.example.org?' . uniqid())
-
-            ->if($this->function->getenv = false)
-
-            ->if($card = new Stancer\Card())
-            ->and($card->setCvc(substr(uniqid(), 0, 3)))
-            ->and($card->setExpMonth(rand(1, 12)))
-            ->and($card->setExpYear(rand(date('Y'), 3000)))
-            ->and($card->setName(uniqid()))
-            ->and($card->setNumber('4111111111111111'))
-            ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
-
-            ->if($customer = new Stancer\Customer())
-            ->and($customer->setName(uniqid()))
-            ->and($customer->setEmail(uniqid() . '@example.org'))
-            ->and($customer->setMobile(uniqid()))
-
-            ->if($this->newTestedInstance)
-            ->and($this->testedInstance->setAmount(rand(100, 999999)))
-            ->and($this->testedInstance->setAuth($url))
-            ->and($this->testedInstance->setCard($card))
-            ->and($this->testedInstance->setCurrency('EUR'))
-            ->and($this->testedInstance->setCustomer($customer))
-            ->and($this->testedInstance->setDescription(uniqid()))
-
-            ->and($json = json_encode(
-                array_merge(
-                    $this->testedInstance->toArray(),
-                    [
-                        'device' => [
-                            'ip' => $addr,
-                            'port' => $port,
-                        ],
-                        'auth' => $authjson($url),
-                    ]
-                )
-            ))
-
-            ->and($options = $this->mockRequestOptions($config, [
-                'body' => $json,
-            ]))
-            ->and($location = $this->testedInstance->getUri())
-            ->then
-                ->assert('Must have an IP address in env')
-                    ->exception(function () {
-                        $this->testedInstance->send();
-                    })
-                        ->isInstanceOf(Stancer\Exceptions\InvalidIpAddressException::class)
-
-                ->assert('Must have an port in env')
-                    ->if($this->function->getenv = function ($varname) use ($addr) {
-                        $name = strtolower($varname);
-
-                        if ($name === 'remote_addr') {
-                            return $addr;
-                        }
-
-                        return null;
-                    })
-                    ->then
-                        ->exception(function () {
-                            $this->testedInstance->send();
-                        })
-                            ->isInstanceOf(Stancer\Exceptions\InvalidPortException::class)
-
-                ->assert('Should add a device')
-                    ->if($this->function->getenv = function ($varname) use ($addr, $port) {
-                        $name = strtolower($varname);
-
-                        if ($name === 'remote_addr') {
-                            return $addr;
-                        }
-
-                        if ($name === 'remote_port') {
-                            return $port;
-                        }
-
-                        return null;
-                    })
-                    ->then
-                        ->variable($this->testedInstance->getId())
-                            ->isNull
-                        ->object($this->testedInstance->send())
-                            ->isTestedInstance
-
-                        ->string($this->testedInstance->getId())
-                            ->isIdenticalTo('paym_KIVaaHi7G8QAYMQpQOYBrUQE')
-
-                        ->mock($client)
-                            ->call('request')
-                                ->withArguments('POST', $location, $options)
-                                    ->once
         ;
     }
 
@@ -2957,4 +2597,718 @@ class Payment extends Stancer\Tests\atoum
             $uniqueId .= chr(rand(65, 90));
         }
     }
+    //endregion
+
+    //region API V1 tests
+
+    public function testSend_withoutCardOrSepaV1()
+    {
+        $this
+            ->given($client = new mock\Stancer\Http\Client())
+            ->and($config = $this->mockConfig($client, 1))
+
+            ->if($response = $this->mockJsonResponse('payment', 'create-no-method'))
+            ->and($this->calling($client)->request = $response)
+
+            ->if($customer = new Stancer\Customer())
+            ->and($customer->setName(uniqid()))
+            ->and($customer->setEmail(uniqid() . '@example.org'))
+            ->and($customer->setMobile(uniqid()))
+
+            ->if($amount = rand(100, 999999))
+            ->and($currency = $this->cardCurrencyDataProvider(true))
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount($amount))
+            ->and($this->testedInstance->setCurrency($currency))
+            ->and($this->testedInstance->setCustomer($customer))
+            ->and($this->testedInstance->setDescription(uniqid()))
+            ->and($this->testedInstance->setOrderId(uniqid()))
+
+            ->if($logger = new mock\Stancer\Core\Logger())
+            ->and($config->setLogger($logger))
+            ->and($logMessage = 'Payment of 100.00 eur without payment method')
+
+            ->and($options = $this->mockRequestOptions($config, [
+                'body' => json_encode($this->testedInstance),
+            ]))
+            ->and($location = $this->testedInstance->getUri())
+
+            ->then
+                ->variable($this->testedInstance->getId())
+                    ->isNull
+                ->object($this->testedInstance->send())
+                    ->isTestedInstance
+
+                ->mock($client)
+                    ->call('request')
+                        ->withArguments('POST', $location, $options)
+                            ->once
+
+                ->mock($logger)
+                    ->call('info')->withArguments($logMessage)->once
+
+                // Payment object
+                ->string($this->testedInstance->getId())
+                    ->isIdenticalTo('paym_pia9ossoqujuFFbX0HdS3FLi')
+
+                ->dateTime($this->testedInstance->getCreationDate())
+                    ->isEqualTo(new \DateTime('@1562085759'))
+
+                ->integer($this->testedInstance->getAmount())
+                    ->isIdenticalTo(10000)
+
+                ->enum($this->testedInstance->getCurrency())
+                    ->isIdenticalTo(Stancer\Currency::EUR)
+
+                ->object($this->testedInstance->getCustomer())
+                    ->isIdenticalTo($customer)
+
+                ->string($this->testedInstance->getDescription())
+                    ->isIdenticalTo('Test payment without any card or sepa account')
+
+                ->variable($this->testedInstance->getOrderId())
+                    ->isNull
+
+                ->variable($this->testedInstance->getCard())
+                    ->isNull
+
+                ->variable($this->testedInstance->getSepa())
+                    ->isNull
+
+                ->variable($this->testedInstance->getMethod())
+                    ->isNull
+        ;
+    }
+
+    public function testSend_deviceV1()
+    {
+        $this
+            ->given($client = new mock\Stancer\Http\Client())
+            ->and($config = $this->mockConfig($client, 1))
+
+            ->if($response = $this->mockJsonResponse('payment', 'create-card'))
+            ->and($this->calling($client)->request = $response)
+
+            ->if($port = rand(1, 65535))
+            ->and($addr = $this->ipDataProvider(true))
+            ->and($url = 'https://www.example.org?' . uniqid())
+
+            ->if($this->function->getenv = false)
+
+            ->if($card = new Stancer\Card())
+            ->and($card->setCvc(substr(uniqid(), 0, 3)))
+            ->and($card->setExpMonth(rand(1, 12)))
+            ->and($card->setExpYear(rand(date('Y'), 3000)))
+            ->and($card->setName(uniqid()))
+            ->and($card->setNumber('4111111111111111'))
+            ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
+
+            ->if($customer = new Stancer\Customer())
+            ->and($customer->setName(uniqid()))
+            ->and($customer->setEmail(uniqid() . '@example.org'))
+            ->and($customer->setMobile(uniqid()))
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount(rand(100, 999999)))
+            ->and($this->testedInstance->setAuth($url))
+            ->and($this->testedInstance->setCard($card))
+            ->and($this->testedInstance->setCurrency('EUR'))
+            ->and($this->testedInstance->setCustomer($customer))
+            ->and($this->testedInstance->setDescription(uniqid()))
+
+            ->and($json = json_encode(
+                array_merge(
+                    $this->testedInstance->toArray(),
+                    [
+                        'device' => [
+                            'ip' => $addr,
+                            'port' => $port,
+                        ],
+                        'auth' => [
+                            'return_url' => $url,
+                            'status' => Stancer\Auth\Status::REQUEST,
+                        ],
+                    ]
+                )
+            ))
+
+            ->and($options = $this->mockRequestOptions($config, [
+                'body' => $json,
+            ]))
+            ->and($location = $this->testedInstance->getUri())
+            ->then
+                ->assert('Must have an IP address in env')
+                    ->exception(function () {
+                        $this->testedInstance->send();
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\InvalidIpAddressException::class)
+
+                ->assert('Must have an port in env')
+                    ->if($this->function->getenv = function ($varname) use ($addr) {
+                        $name = strtolower($varname);
+
+                        if ($name === 'remote_addr') {
+                            return $addr;
+                        }
+
+                        return null;
+                    })
+                    ->then
+                        ->exception(function () {
+                            $this->testedInstance->send();
+                        })
+                            ->isInstanceOf(Stancer\Exceptions\InvalidPortException::class)
+
+                ->assert('Should add a device')
+                    ->if($this->function->getenv = function ($varname) use ($addr, $port) {
+                        $name = strtolower($varname);
+
+                        if ($name === 'remote_addr') {
+                            return $addr;
+                        }
+
+                        if ($name === 'remote_port') {
+                            return $port;
+                        }
+
+                        return null;
+                    })
+                    ->then
+                        ->variable($this->testedInstance->getId())
+                            ->isNull
+                        ->object($this->testedInstance->send())
+                            ->isTestedInstance
+
+                        ->string($this->testedInstance->getId())
+                            ->isIdenticalTo('paym_KIVaaHi7G8QAYMQpQOYBrUQE')
+
+                        ->mock($client)
+                            ->call('request')
+                                ->withArguments('POST', $location, $options)
+                                    ->once
+        ;
+    }
+
+    /**
+     * Specific exceptions for API V1.
+     */
+    public function testSend_exceptions_V1()
+    {
+        $this
+            ->given($client = new mock\Stancer\Http\Client())
+            ->and($this->mockConfig($client, 1))
+            ->if($this->newTestedInstance->setAmount(rand(100, 999999)))
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->send();
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidCurrencyException::class)
+        ;
+    }
+
+    public function testSend_withCardV1()
+    {
+        $this
+            ->given($client = new mock\GuzzleHttp\Client())
+            ->and($config = $this->mockConfig($client, 1))
+
+            ->if($response = $this->mockJsonResponse('payment', 'create-card'))
+            ->and($this->calling($client)->request = $response)
+
+            ->if($card = new Stancer\Card())
+            ->and($card->setCvc(substr(uniqid(), 0, 3)))
+            ->and($card->setExpMonth(rand(1, 12)))
+            ->and($card->setExpYear(date('Y') - rand(1, 10)))
+            ->and($card->setName(uniqid()))
+            ->and($card->setNumber($number = '4111111111111111'))
+            ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
+
+            ->if($customer = new Stancer\Customer())
+            ->and($customer->setName(uniqid()))
+            ->and($customer->setEmail(uniqid() . '@example.org'))
+            ->and($customer->setMobile(uniqid()))
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount(rand(100, 999999)))
+            ->and($this->testedInstance->setCard($card))
+            ->and($this->testedInstance->setCurrency('EUR'))
+            ->and($this->testedInstance->setCustomer($customer))
+            ->and($this->testedInstance->setDescription(uniqid()))
+            ->and($this->testedInstance->setOrderId(uniqid()))
+
+            ->if($logger = new mock\Stancer\Core\Logger())
+            ->and($config->setLogger($logger))
+            ->and($logMessage = 'Payment of 1.00 eur with mastercard "4444"')
+
+            ->and($location = $this->testedInstance->getUri())
+            ->then
+                ->exception(function () {
+                    $this->testedInstance->send();
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidExpirationException::class)
+                    ->message
+                        ->isIdenticalTo('Card expiration is invalid.')
+
+            ->if($card->setExpYear(date('Y') + rand(1, 10)))
+            ->and($options = $this->mockRequestOptions($config, [
+                'body' => json_encode($this->testedInstance),
+            ]))
+            ->then
+                ->variable($this->testedInstance->getId())
+                    ->isNull
+                ->object($this->testedInstance->send())
+                    ->isTestedInstance
+
+                ->mock($client)
+                    ->call('request')
+                        ->withArguments('POST', $location, $options)
+                            ->once
+
+                ->mock($logger)
+                    ->call('info')->withArguments($logMessage)->once
+
+                // Payment object
+                ->string($this->testedInstance->getId())
+                    ->isIdenticalTo('paym_KIVaaHi7G8QAYMQpQOYBrUQE')
+
+                ->dateTime($this->testedInstance->getCreationDate())
+                    ->isEqualTo(new \DateTime('@1538564253'))
+
+                ->integer($this->testedInstance->getAmount())
+                    ->isIdenticalTo(100)
+
+                ->object($this->testedInstance->getCard())
+                    ->isIdenticalTo($card)
+
+                ->enum($this->testedInstance->getCurrency())
+                    ->isIdenticalTo(Stancer\Currency::EUR)
+
+                ->object($this->testedInstance->getCustomer())
+                    ->isIdenticalTo($customer)
+
+                ->string($this->testedInstance->getDescription())
+                    ->isIdenticalTo('le test restfull v1')
+
+                ->variable($this->testedInstance->getOrderId())
+                    ->isNull
+
+                // Card object
+                ->string($card->getBrand())
+                    ->isIdenticalTo('mastercard')
+
+                ->string($card->getCountry())
+                    ->isIdenticalTo('US')
+
+                ->integer($card->getExpMonth())
+                    ->isIdenticalTo(2)
+
+                ->integer($card->getExpYear())
+                    ->isIdenticalTo(2020)
+
+                ->string($card->getId())
+                    ->isIdenticalTo('card_xognFbZs935LMKJYeHyCAYUd')
+
+                ->string($card->getLast4())
+                    ->isIdenticalTo('4444')
+
+                ->variable($card->getName())
+                    ->isNull
+
+                ->string($card->getNumber())
+                    ->isIdenticalTo($number) // Number is unchanged in send process
+
+                ->variable($card->getZipCode())
+                    ->isNull
+        ;
+    }
+    //endregion
+
+    //region API V2 tests
+
+    public function testSend_withCardV2()
+    {
+        $this
+            ->given($client = new mock\GuzzleHttp\Client())
+            ->and($config = $this->mockConfig($client, 2))
+
+            ->if($response = $this->mockJsonResponse('payment', 'create-card'))
+            ->if($cardResponse = $this->mockJsonResponse('payment', 'cardStub'))
+            ->if($customerResponse = $this->mockJsonResponse('payment', 'customerStub'))
+            ->and($this->calling($client)->request[1] = $cardResponse)
+            ->and($this->calling($client)->request[2] = $customerResponse)
+            ->and($this->calling($client)->request[3] = $response)
+
+            ->if($card = new Stancer\Card())
+            ->and($card->setCvc(substr(uniqid(), 0, 3)))
+            ->and($card->setExpMonth(rand(1, 12)))
+            ->and($card->setExpYear(date('Y') - rand(1, 10)))
+            ->and($card->setName(uniqid()))
+            ->and($card->setNumber($number = '4111111111111111'))
+            ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
+
+            ->if($customer = new Stancer\Customer())
+            ->and($customer->setName(uniqid()))
+            ->and($customer->setEmail(uniqid() . '@example.org'))
+            ->and($customer->setMobile(uniqid()))
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount(rand(100, 999999)))
+            ->and($this->testedInstance->setCard($card))
+            ->and($this->testedInstance->setCurrency('EUR'))
+            ->and($this->testedInstance->setCustomer($customer))
+            ->and($this->testedInstance->setDescription(uniqid()))
+            ->and($this->testedInstance->setOrderId(uniqid()))
+
+            ->if($logger = new mock\Stancer\Core\Logger())
+            ->and($config->setLogger($logger))
+            ->and($logMessage = 'Payment of 1.00 eur with mastercard "4444"')
+
+            ->and($location = $this->testedInstance->getUri())
+            ->and($cardLocation = $this->testedInstance->getCard()->getUri())
+            ->and($customerLocation = $this->testedInstance->getCustomer()->getUri())
+            ->then
+        ->exception(function () {
+            $this->testedInstance->send();
+        })
+            ->isInstanceOf(Stancer\Exceptions\InvalidExpirationException::class)
+            ->message
+                ->isIdenticalTo('Card expiration is invalid.')
+
+            ->if($card->setExpYear(date('Y') + rand(1, 10)))
+
+            ->and(
+                $cardOptions = $this->mockRequestOptions(
+                    $config,
+                    [
+                        'body' => json_encode(
+                            $this->testedInstance->getCard()
+                        ),
+                    ]
+                )
+            )
+            ->and($customerOptions = $this->mockRequestOptions(
+                $config,
+                [
+                    'body' => json_encode(
+                        $this->testedInstance->getCustomer()->jsonSerialize()
+                    ),
+                ],
+            ))
+        ->given($bodyWithCardandCustomer = $this->testedInstance->jsonSerialize())
+            ->then
+
+        ->variable($this->testedInstance->getId())
+            ->isNull
+
+        ->object($this->testedInstance->send())
+            ->isTestedInstance
+
+        ->mock($client)
+            ->call('request')
+                ->withArguments('POST', $cardLocation, $cardOptions)
+                    ->once
+
+        ->mock($client)
+            ->call('request')
+                ->withArguments('POST', $customerLocation, $customerOptions)
+                    ->once
+
+        ->and($options = $this->mockRequestOptions(
+            $config,
+            [
+                'body' => json_encode(
+                    array_merge(
+                        $bodyWithCardandCustomer,
+                        [
+                            'card' => $this->testedInstance->getCard()->getId(),
+                            'customer' => $this->testedInstance->getCustomer()->getId(),
+                        ]
+                    ),
+                ),
+            ],
+        ))
+        ->mock($client)
+            ->call('request')
+                ->withArguments('POST', $location, $options)
+                    ->once
+
+        ->mock($logger)
+            ->call('info')->withArguments($logMessage)->once
+
+        // Payment object
+        ->string($this->testedInstance->getId())
+            ->isIdenticalTo('paym_KIVaaHi7G8QAYMQpQOYBrUQE')
+
+        ->dateTime($this->testedInstance->getCreationDate())
+            ->isEqualTo(new \DateTime('@1538564253'))
+
+        ->integer($this->testedInstance->getAmount())
+            ->isIdenticalTo(100)
+
+        ->object($this->testedInstance->getCard())
+            ->isIdenticalTo($card)
+
+        ->enum($this->testedInstance->getCurrency())
+            ->isIdenticalTo(Stancer\Currency::EUR)
+
+        ->object($this->testedInstance->getCustomer())
+            ->isIdenticalTo($customer)
+        ->string($this->testedInstance->getUri())
+            ->isIdenticalTo($location . $this->testedInstance->getId())
+
+        ->string($this->testedInstance->getDescription())
+            ->isIdenticalTo('le test restfull v1')
+
+        ->variable($this->testedInstance->getOrderId())
+            ->isNull
+
+        // Card object
+        ->string($card->getBrand())
+            ->isIdenticalTo('mastercard')
+
+        ->string($card->getCountry())
+            ->isIdenticalTo('US')
+
+        ->integer($card->getExpMonth())
+            ->isIdenticalTo(2)
+
+        ->integer($card->getExpYear())
+            ->isIdenticalTo(2020)
+
+        ->string($card->getId())
+            ->isIdenticalTo('card_xognFbZs935LMKJYeHyCAYUd')
+
+        ->string($card->getLast4())
+            ->isIdenticalTo('4444')
+
+        ->variable($card->getName())
+            ->isNull
+
+        ->string($card->getNumber())
+            ->isIdenticalTo($number) // Number is unchanged in send process
+
+        ->variable($card->getZipCode())
+            ->isNull
+        ;
+    }
+
+    public function testSend_withoutCardOrSepaV2()
+    {
+        $this
+            ->given($client = new mock\Stancer\Http\Client())
+            ->and($config = $this->mockConfig($client, 2))
+
+            ->if($response = $this->mockJsonResponse('payment', 'create-no-method'))
+            ->if($customerResponse = $this->mockJsonResponse('payment', 'customerStub'))
+            ->and($this->calling($client)->request[1] = $customerResponse)
+            ->and($this->calling($client)->request[2] = $response)
+
+            ->if($customer = new Stancer\Customer())
+            ->and($customer->setName(uniqid()))
+            ->and($customer->setEmail(uniqid() . '@example.org'))
+            ->and($customer->setMobile(uniqid()))
+
+            ->if($amount = rand(100, 999999))
+            ->and($currency = $this->cardCurrencyDataProvider(true))
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount($amount))
+            ->and($this->testedInstance->setCurrency($currency))
+            ->and($this->testedInstance->setCustomer($customer))
+            ->and($this->testedInstance->setDescription(uniqid()))
+            ->and($this->testedInstance->setOrderId(uniqid()))
+
+            ->if($logger = new mock\Stancer\Core\Logger())
+            ->and($config->setLogger($logger))
+            ->and($logMessage = 'Payment of 100.00 eur without payment method')
+
+            ->and($customerOptions = $this->mockRequestOptions($config, [
+                'body' => json_encode($this->testedInstance->getCustomer()),
+            ]))
+            ->and($objectArray = $this->testedInstance->toArray())
+
+            ->and($location = $this->testedInstance->getUri())
+            ->and($customerLocation = $this->testedInstance->getCustomer()->getUri())
+
+            ->then
+                ->variable($this->testedInstance->getId())
+                    ->isNull
+                ->object($this->testedInstance->send())
+                    ->isTestedInstance
+               ->mock($client)
+                    ->call('request')
+                        ->withArguments('POST', $customerLocation, $customerOptions)
+                            ->once
+                ->and($options = $this->mockRequestOptions($config, [
+                    'body' => json_encode(
+                        array_merge(
+                            $objectArray,
+                            ['customer' => $this->testedInstance->getCustomer()->getId()]
+                        )
+                    )]))
+
+                ->mock($client)
+                    ->call('request')
+                        ->withArguments('POST', $location, $options)
+                            ->once
+
+                ->mock($logger)
+                    ->call('info')->withArguments($logMessage)->once
+
+                // Payment object
+                ->string($this->testedInstance->getId())
+                    ->isIdenticalTo('paym_pia9ossoqujuFFbX0HdS3FLi')
+
+                ->dateTime($this->testedInstance->getCreationDate())
+                    ->isEqualTo(new \DateTime('@1562085759'))
+
+                ->integer($this->testedInstance->getAmount())
+                    ->isIdenticalTo(10000)
+
+                ->enum($this->testedInstance->getCurrency())
+                    ->isIdenticalTo(Stancer\Currency::EUR)
+
+                ->object($this->testedInstance->getCustomer())
+                    ->isIdenticalTo($customer)
+
+                ->string($this->testedInstance->getDescription())
+                    ->isIdenticalTo('Test payment without any card or sepa account')
+
+                ->variable($this->testedInstance->getOrderId())
+                    ->isNull
+
+                ->variable($this->testedInstance->getCard())
+                    ->isNull
+
+                ->variable($this->testedInstance->getSepa())
+                    ->isNull
+
+                ->variable($this->testedInstance->getMethod())
+                    ->isNull
+        ;
+    }
+
+    public function testSend_deviceV2()
+    {
+        $this
+            ->given($client = new mock\Stancer\Http\Client())
+            ->and($config = $this->mockConfig($client, 2))
+
+            ->if($response = $this->mockJsonResponse('payment', 'create-card'))
+            ->if($cardResponse = $this->mockJsonResponse('payment', 'cardStub'))
+            ->if($customerResponse = $this->mockJsonResponse('payment', 'customerStub'))
+            ->and($this->calling($client)->request[1] = $cardResponse)
+            ->and($this->calling($client)->request[2] = $customerResponse)
+            ->and($this->calling($client)->request[3] = $response)
+
+            ->if($port = rand(1, 65535))
+            ->and($addr = $this->ipDataProvider(true))
+            ->and($url = 'https://www.example.org?' . uniqid())
+
+            ->if($this->function->getenv = false)
+
+            ->if($card = new Stancer\Card())
+            ->and($card->setCvc(substr(uniqid(), 0, 3)))
+            ->and($card->setExpMonth(rand(1, 12)))
+            ->and($card->setExpYear(rand(date('Y'), 3000)))
+            ->and($card->setName(uniqid()))
+            ->and($card->setNumber('4111111111111111'))
+            ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
+
+            ->if($customer = new Stancer\Customer())
+            ->and($customer->setName(uniqid()))
+            ->and($customer->setEmail(uniqid() . '@example.org'))
+            ->and($customer->setMobile(uniqid()))
+
+            ->if($this->newTestedInstance)
+            ->and($this->testedInstance->setAmount(rand(100, 999999)))
+            ->and($this->testedInstance->setAuth($url))
+            ->and($this->testedInstance->setCard($card))
+            ->and($this->testedInstance->setCurrency('EUR'))
+            ->and($this->testedInstance->setCustomer($customer))
+            ->and($this->testedInstance->setDescription(uniqid()))
+
+            ->and(
+                $array
+                = array_merge(
+                    $this->testedInstance->toArray(),
+                    [
+                        'device' => [
+                            'ip' => $addr,
+                            'port' => $port,
+                        ],
+                        'auth' => true,
+                    ]
+                )
+            )
+
+            ->and($options = $this->mockRequestOptions($config, [
+                'body' => json_encode($array),
+            ]))
+            ->and($location = $this->testedInstance->getUri())
+            ->then
+                ->assert('Must have an IP address in env')
+                    ->exception(function () {
+                        $this->testedInstance->send();
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\InvalidIpAddressException::class)
+
+                ->assert('Must have an port in env')
+                    ->if($this->function->getenv = function ($varname) use ($addr) {
+                        $name = strtolower($varname);
+
+                        if ($name === 'remote_addr') {
+                            return $addr;
+                        }
+
+                        return null;
+                    })
+                    ->then
+                        ->exception(function () {
+                            $this->testedInstance->send();
+                        })
+                            ->isInstanceOf(Stancer\Exceptions\InvalidPortException::class)
+
+                ->assert('Should add a device')
+                    ->if($this->function->getenv = function ($varname) use ($addr, $port) {
+                        $name = strtolower($varname);
+
+                        if ($name === 'remote_addr') {
+                            return $addr;
+                        }
+
+                        if ($name === 'remote_port') {
+                            return $port;
+                        }
+
+                        return null;
+                    })
+                    ->then
+                        ->variable($this->testedInstance->getId())
+                            ->isNull
+                        ->object($this->testedInstance->send())
+                            ->isTestedInstance
+                        ->and($options = $this->mockRequestOptions($config, [
+                            'body' => json_encode(
+                                array_merge(
+                                    $array,
+                                    [
+                                        'card' => $this->testedInstance->getCard()->getId(),
+                                        'customer' => $this->testedInstance->getCustomer()->getId(),
+                                    ],
+                                ),
+                            ),
+                        ]))
+
+                        ->string($this->testedInstance->getId())
+                            ->isIdenticalTo('paym_KIVaaHi7G8QAYMQpQOYBrUQE')
+
+                        ->mock($client)
+                            ->call('request')
+                                ->withArguments('POST', $location, $options)
+                                    ->once
+        ;
+    }
+    //endregion
 }

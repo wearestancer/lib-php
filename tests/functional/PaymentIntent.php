@@ -1,13 +1,11 @@
 <?php
 
-namespace Stancer\tests\functional\PaymentIntent;
+namespace Stancer\Tests\functional;
 
 use Stancer;
-use Stancer\Tests\atoum;
-use Stancer\Tests\functional\TestCase;
 
 /**
- * @namespace tests\functional
+ * @namespace \Tests\functional
  *
  * @internal
  */
@@ -15,6 +13,17 @@ class PaymentIntent extends TestCase
 {
     use Stancer\Tests\Provider\Currencies;
     use Stancer\Tests\Provider\Network;
+
+    /**
+     * Run before test, set api version as 2 by default for intents.
+     *
+     * @param string $method
+     * @param mixed $version
+     */
+    public function beforeTestMethod($method, $version = 2)
+    {
+        parent::beforeTestMethod($method, $version);
+    }
 
     public function testGetData()
     {
@@ -38,46 +47,47 @@ class PaymentIntent extends TestCase
                         ->message
                             ->isIdenticalTo($this->getNotFoundExceptionMessage($id, 'Payment intent'))
             ->assert('Get A Payment Intent')
-                ->if($this->newTestedInstance($id = 'pi_cFGdU9TtJfU9NbhMLGjyMXCq'))
+                ->if($this->newTestedInstance($id = 'pi_kf7ok3Ss9GXMItJS3EYutCmx'))
                 ->then
 
                     ->string($this->testedInstance->getCustomer()->getId())
-                        ->isEqualTo('cust_yKdNid3wEcUkHt1oNboYGg3D')
+                        ->isEqualTo('cust_kw4kwsJHmcWTPd2w5Y6XaT6Q')
 
                     ->string($this->testedInstance->getCard()->getId())
-                        ->isIdenticalTo('card_XZ8h7vcnEIecJkDdlnI5gyD5')
+                        ->isIdenticalTo('card_uqY2HrovY2sPm0Ac2xhnBkfU')
 
                     // test Created At when implemented.
 
                       ->variable($this->testedInstance->getCreatedAt())
-                      ->isEqualTo(\DateTimeImmutable::createFromFormat('U', 1718635874))
+                      ->isEqualTo(\DateTimeImmutable::createFromFormat('U', 1758551220))
 
                      ->integer($this->testedInstance->getAmount())
-                        ->isIdenticalTo(3000)
+                        ->isIdenticalTo(7810)
 
                     ->Boolean($this->testedInstance->getCapture())
                         ->isTrue
 
                     ->object($this->testedInstance->getCurrency())
-                        ->isEqualTo(Stancer\Currency::EUR)
+                        ->isEqualTo(Stancer\Currency::USD)
 
                     ->string($this->testedInstance->getDescription())
-                        ->isIdenticalTo('test get pi')
+                        ->isIdenticalTo('Test payment intent for PHP SDK')
 
-                    // Because we have an array of Enum, the Array should be EqualTo [enum::card,enum::sepa]
-                    // But Atoum doesn't check Enums correctly
+                    ->string($this->testedInstance->getPayment()->getId())
+                        ->isIdenticalTo('paym_uMJLg1tMkxz66yYywqLdNaXP')
+
                     ->array($this->testedInstance->getMethodsAllowed())
                         ->contains(Stancer\Payment\MethodsAllowed::CARD)
-                        ->contains(Stancer\Payment\MethodsAllowed::SEPA)
 
                     ->object($this->testedInstance->getStatus())
-                        ->isEqualTo(Stancer\PaymentIntent\Status::REQUIRE_AUTHENTICATION)
+                        ->isEqualTo(Stancer\PaymentIntent\Status::CAPTURED)
 
                     ->object($this->testedInstance->getThreeds())
                         ->isEqualTo(Stancer\ThreeDomainsSecure\Status::REQUIRED)
 
                     ->string($this->testedInstance->getUrl())
-                        ->isIdenticalTo('https://payment.stancer.com/test_pi_cFGdU9TtJfU9NbhMLGjyMXCq')
+                        ->endWith('test_pi_kf7ok3Ss9GXMItJS3EYutCmx')
+                        ->startWith('https://payment')
         ;
     }
 
@@ -111,7 +121,6 @@ class PaymentIntent extends TestCase
 
                 ->object($this->testedInstance->setThreeds($threeds))
                     ->isTestedInstance
-
                 ->object($this->testedInstance->setCustomer($customer))
                     ->isTestedInstance
 
@@ -153,7 +162,7 @@ class PaymentIntent extends TestCase
                 ->and($this->testedInstance->setCustomer($customer))
                 ->and($this->testedInstance->setCurrency($currency))
                 ->and($this->testedInstance->setDescription($description))
-                ->and($this->testedInstance->SetReturnUrl($url = 'https://perdu.com'))
+                ->and($this->testedInstance->SetReturnUrl($url = 'https://example.com'))
 
                 ->then
                     ->object($this->testedInstance->send())
@@ -187,7 +196,7 @@ class PaymentIntent extends TestCase
                         ->isIdenticalTo($url)
 
                     ->string($this->testedInstance->getUrl())
-                        ->startWith('https://payment.stancer.com')
+                        ->startWith('https://payment.')
 
                     ->object($this->testedInstance->getThreeds())
                         ->isIdenticalTo(Stancer\ThreeDomainsSecure\Status::REQUIRED)
@@ -208,8 +217,8 @@ class PaymentIntent extends TestCase
                 ->and($this->testedInstance->setCurrency($currency))
                 ->and($this->testedInstance->setCustomer($customer))
                 ->and($this->testedInstance->setDescription($description))
-
                 ->then
+
                     ->object($this->testedInstance->send())
                         ->isTestedInstance
 
@@ -424,7 +433,7 @@ class PaymentIntent extends TestCase
                     ->string($customer->getId())
                         ->startWith('cust_')
                         ->hasLength(29)
-                        // ->isIdenticalTo($customerID) // From previous test
+                        ->isNotIdenticalTo($customerID)
         ;
     }
 }

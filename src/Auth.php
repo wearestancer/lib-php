@@ -90,13 +90,6 @@ class Auth extends Stancer\Core\AbstractObject
         if ($version === 1) {
             return parent::jsonSerialize();
         }
-        $struct = parent::jsonSerialize();
-        if (!is_array($struct)) {
-            return $struct;
-        }
-        if (array_key_exists('return_url', $struct) || array_key_exists('device', $struct)) {
-            return $struct;
-        }
 
         return true;
     }
@@ -116,18 +109,5 @@ class Auth extends Stancer\Core\AbstractObject
         }
 
         return parent::setReturnUrl($url);
-    }
-
-    /**
-     * Set Exportable property of auth data.
-     * Depending of api version auth is or isn't exportable.
-     *
-     * @param boolean $exportable Boolean that set the Exportation value.
-     */
-    public function setExportablestatus(bool $exportable = false): self
-    {
-        $this->dataModel['status']['exportable'] = $exportable;
-
-        return $this;
     }
 }
