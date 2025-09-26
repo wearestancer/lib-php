@@ -24,7 +24,7 @@ class TestCase extends Stancer\Tests\atoum
         $this->config = Stancer\Config::setGlobal(new Stancer\Config([]));
     }
 
-    public function beforeTestMethod($testMethod)
+    public function beforeTestMethod($testMethod, ?int $version = null)
     {
         $env = [
             'API_HOST' => '',
@@ -40,7 +40,7 @@ class TestCase extends Stancer\Tests\atoum
             }
         }
         // We had a check to run test only if we can contact the server.
-        $this->config->setKeys($env['API_KEY'])->setHost($env['API_HOST'])->setVersion($env['API_VERSION']);
+        $this->config->setKeys($env['API_KEY'])->setHost($env['API_HOST'])->setVersion($version ?? $env['API_VERSION']);
         $client = $this->config->getHttpClient();
         $verb = 'get';
         $options['headers']['Authorization'] = $this->config->getBasicAuthHeader();
@@ -84,7 +84,7 @@ class TestCase extends Stancer\Tests\atoum
         return $ressource_name . ' `' . $id . '` not found';
     }
 
-    public function getValidCardNumber()
+    public function getValidCardNumber(): string
     {
         $cards = [
             '4242424242424242',

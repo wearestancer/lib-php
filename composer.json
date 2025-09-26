@@ -49,6 +49,7 @@
         "php-cs-fixer": "php-cs-fixer fix -v",
         "phpstan": "phpstan analyse --no-progress",
         "test": "atoum",
+        "testversions": "atoum",
         "test:watch": [
             "Composer\\Config::disableProcessTimeout",
             "atoum --debug --loop"

@@ -131,7 +131,6 @@ class Payment extends TestCase
             'getMobile',
             'getName',
         ];
-        // TODO for now list doesn't have a order_id properly implemented the variables cannot be properly compared
         foreach ($gen as $idx => $object) {
             $this
             ->given($orderedList = Stancer\Config::getGlobal()->getVersion() === 1 ? $this->paymentList : array_reverse($this->paymentList))

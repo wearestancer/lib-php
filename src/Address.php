@@ -11,21 +11,21 @@ use Stancer\Core\AbstractObject;
  * Representation of an address.
  *
  * @method static add_metadata(array<mixed> $new_metadata) Add metadata to our array of metadata.
- * @method ?string getCity() Get the name of the city.
+ * @method ?string getCity() Get city name.
  * @method ?string getCountry() Get ISO 3166-1 alpha-3 country code.
  * @method ?\DateTimeImmutable getCreated() Get creation date.
- * @method ?boolean getDeleted() Get if the address is deleted or not.
+ * @method ?boolean getDeleted() Get is the address deleted?.
  * @method ?string getLine1() Get the street number and name, line 1.
  * @method ?string getLine2() Get the street number and name, line 2.
  * @method ?string getLine3() Get the street number and name, line 3.
  * @method ?string getState() Get ISO 3166-2 state or province.
  * @method ?string getZipCode() Get the zip code.
- * @method ?string get_city() Get the name of the city.
+ * @method ?string get_city() Get city name.
  * @method ?string get_country() Get ISO 3166-1 alpha-3 country code.
  * @method ?\DateTimeImmutable get_created() Get creation date.
  * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
- * @method ?boolean get_deleted() Get if the address is deleted or not.
+ * @method ?boolean get_deleted() Get is the address deleted?.
  * @method string get_endpoint() Get API endpoint.
  * @method string get_entity_name() Get entity name.
  * @method ?string get_id() Get object ID.
@@ -36,17 +36,17 @@ use Stancer\Core\AbstractObject;
  * @method ?string get_state() Get ISO 3166-2 state or province.
  * @method string get_uri() Get entity resource location.
  * @method ?string get_zip_code() Get the zip code.
- * @method $this setCity(string $city) Set the name of the city.
+ * @method $this setCity(string $city) Set city name.
  * @method $this setCountry(string $country) Set ISO 3166-1 alpha-3 country code.
- * @method $this setDeleted(boolean $deleted) Set if the address is deleted or not.
+ * @method $this setDeleted(boolean $deleted) Set is the address deleted?.
  * @method $this setLine1(string $line1) Set the street number and name, line 1.
  * @method $this setLine2(string $line2) Set the street number and name, line 2.
  * @method $this setLine3(string $line3) Set the street number and name, line 3.
  * @method $this setState(string $state) Set ISO 3166-2 state or province.
  * @method $this setZipCode(string $zipCode) Set the zip code.
- * @method $this set_city(string $city) Set the name of the city.
+ * @method $this set_city(string $city) Set city name.
  * @method $this set_country(string $country) Set ISO 3166-1 alpha-3 country code.
- * @method $this set_deleted(boolean $deleted) Set if the address is deleted or not.
+ * @method $this set_deleted(boolean $deleted) Set is the address deleted?.
  * @method $this set_line1(string $line1) Set the street number and name, line 1.
  * @method $this set_line2(string $line2) Set the street number and name, line 2.
  * @method $this set_line3(string $line3) Set the street number and name, line 3.
@@ -54,9 +54,9 @@ use Stancer\Core\AbstractObject;
  * @method $this set_state(string $state) Set ISO 3166-2 state or province.
  * @method $this set_zip_code(string $zip_code) Set the zip code.
  *
- * @property ?string $city The name of the city.
+ * @property ?string $city City name.
  * @property ?string $country ISO 3166-1 alpha-3 country code.
- * @property ?boolean $deleted If the address is deleted or not.
+ * @property ?boolean $deleted Is the address deleted?.
  * @property ?string $line1 The street number and name, line 1.
  * @property ?string $line2 The street number and name, line 2.
  * @property ?string $line3 The street number and name, line 3.
@@ -85,7 +85,7 @@ class Address extends AbstractObject
      */
     protected array $dataModel = [
         'city' => [
-            'desc' => 'The name of the city',
+            'desc' => 'City name',
             'type' => self::STRING,
             'size' => [
                 'min' => 1,
@@ -100,7 +100,7 @@ class Address extends AbstractObject
             ],
         ],
         'deleted' => [
-            'desc' => 'If the address is deleted or not',
+            'desc' => 'Is the address deleted?',
             'type' => self::BOOLEAN,
         ],
         'line1' => [

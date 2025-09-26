@@ -9,5 +9,5 @@ namespace Stancer\Exceptions;
  */
 class BadApiVersionException extends Exception
 {
-    public string $defaultMessage = "You're Api version doesn't permit you to do that";
+    public string $defaultMessage = "Your Api version doesn't permit you to do that";
 }

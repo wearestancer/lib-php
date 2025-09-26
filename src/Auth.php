@@ -23,7 +23,7 @@ use Stancer;
  * @method ?string get_return_url() Get the return URL at end of the authentification session.
  * @method \Stancer\Auth\Status get_status() Get the authentification status.
  * @method string get_uri() Get entity resource location.
- * @method $this set_exportablestatus(boolean $exportable = false) Set Exportable property of auth data.
+ * @method $this set_exportable_status(boolean $exportable = false) Set Exportable property of auth data.
  * @method $this set_return_url(string $return_url) Set the return URL at end of the authentification session.
  *
  * @property ?string $returnUrl The return URL at end of the authentification session.

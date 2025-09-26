@@ -16,9 +16,6 @@ trait CapturableTrait
      */
     public function isCapturable(): bool
     {
-        return match ($this) {
-            static::AUTHORIZED => true,
-            default => false,
-        };
+        return $this === static::AUTHORIZED;
     }
 }

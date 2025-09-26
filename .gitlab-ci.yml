@@ -47,9 +47,13 @@ workflow:
           - '8.2'
           - '8.3'
           - '8.4'
+          - '8.5b'
+        - API_VERSION:
+          - '1'
+          - '2'
 
   rules:
-    - if: '"$VERSION" == "8.4"'
+    - if: '"$VERSION" == "8.5b"'
       allow_failure: true
     - when: on_success
 

@@ -44,4 +44,47 @@ class Dispute extends TestCase
                             ->isNotNull
         ;
     }
+
+    public function testGetDispute()
+    {
+        $this
+            ->given(Stancer\Config::getGlobal()->setVersion(1))
+            ->given($this->newTestedInstance('dspt_a4dIMSi7PBBoGiu2BocagB2f'))
+            ->then
+
+            ->string($this->testedInstance->getPayment()->getId())
+                ->isIdenticalTo('paym_0yG3rJ6rBT6u9Kc5HUyRAzsP')
+
+            ->string($this->testedInstance->getResponse())
+                ->isIdenticalTo('AC04')
+
+            ->integer($this->testedInstance->getAmount())
+                ->isIdenticalTo(300)
+
+            ->given(Stancer\Config::getGlobal()->setVersion(2))
+            ->given($this->newTestedInstance('dspt_a4dIMSi7PBBoGiu2BocagB2f'))
+            ->then
+
+            ->string($this->testedInstance->getCurrency())
+                ->isIdenticalTo(Stancer\Currency::EUR->value)
+
+            ->string($this->testedInstance->getPayment()->getId())
+                ->isIdenticalTo('paym_0yG3rJ6rBT6u9Kc5HUyRAzsP')
+
+            ->string($this->testedInstance->getResponse())
+                ->isIdenticalTo('AC04')
+
+            ->integer($this->testedInstance->getAmount())
+                ->isIdenticalTo(300)
+                /*
+                * TODO add those var to datamodel
+                * ->string($this->testedInstance->getDateBank())
+                * ->isIdenticalTo('2025-09-22')
+                * ->string($this->testedInstance->getType())
+                * ->isIdenticalTo('chargeback')
+                * ->string($this->testedInstance->getStatus)
+                * ->isIdenticalTo('open')
+                */
+        ;
+    }
 }

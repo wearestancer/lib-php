@@ -13,6 +13,28 @@ class Refund extends TestCase
 {
     use Stancer\Tests\Provider\Currencies;
 
+    public function getRefund()
+    {
+        $this
+            ->given($this->newTestedInstance = new Stancer\Refund('refd_QiTXRnDpB2rqPptqAyaw5ot5'))
+            ->then
+                ->string($this->testedInstance->getAmount())
+                    ->isIdenticalTo('7810')
+
+                ->DateTime($this->testedInstance->getCreated())
+                    ->isEqualTo(new \DateTime(@1758551503))
+
+                ->string($this->testedInstance->getCurrency())
+                    ->isEqualTo(Stancer\Currency::USD)
+
+                ->string($this->testedInstance->getPayment()->getId())
+                    ->isIdenticalTo('paym_DZWll9QVmckvrPrJTkgi16z7')
+
+                ->string($this->testedInstance->getPaymentIntent()->getId())
+                    ->isIdenticalTo('pi_nSD4oFiGPYSGj4rT3fjWjX2v')
+        ;
+    }
+
     /**
      * @dataProvider cardCurrencyDataProvider
      *
@@ -73,7 +95,7 @@ class Refund extends TestCase
     public function testRefundMultiple($currency)
     {
         $this
-            ->given($total = rand(500, 100))
+            ->given($total = rand(500, 150))
             ->and($amount1 = floor($total / 3))
             ->and($amount2 = max(50, floor(($total - $amount1) / rand(2, 10))))
             ->and($amount3 = $total - $amount1 - $amount2)

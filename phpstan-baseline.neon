@@ -13,12 +13,12 @@ parameters:
 		-
 			message: "#^Call to function method_exists\\(\\) with class\\-string\\<static\\(Stancer\\\\PaymentIntent\\)\\> and 'filterListParams' will always evaluate to true\\.$#"
 			count: 1
-			path: src/PaymentIntents.php
+			path: src/PaymentIntent.php
 
 		-
 			message: "#^Parameter \\#3 \\$terms of method Stancer\\\\PaymentIntent\\:\\:search\\(\\) expects array\\{created\\?\\: DatePeriod\\<DateTimeInterface, DateTimeInterface\\|null, int\\>\\|DateTimeInterface\\|int, created_until\\?\\: DateTimeInterface\\|int, limit\\?\\: int, start\\?\\: int\\}, array\\<int\\|string, mixed\\> given\\.$#"
 			count: 1
-			path: src/PaymentIntents.php
+			path: src/PaymentIntent.php
 
 		-
 			message: "#^Parameter \\#1 \\$data \\(array\\{amount\\: int, created\\: int, currency\\: string, date_bank\\?\\: int, date_paym\\: int, fees\\?\\: int, id\\: string, live_mode\\: bool, \\.\\.\\.\\}\\) of method Stancer\\\\Payout\\:\\:hydrate\\(\\) should be contravariant with parameter \\$data \\(array\\<string, mixed\\>\\) of method Stancer\\\\Core\\\\AbstractObject\\:\\:hydrate\\(\\)$#"

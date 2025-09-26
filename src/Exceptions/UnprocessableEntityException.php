@@ -14,7 +14,7 @@ use Stancer\Interfaces\ExceptionInterface;
  */
 class UnprocessableEntityException extends ClientException implements ExceptionInterface
 {
-    protected static string $defaultMessage = 'Request parameters had bad type';
+    protected static string $defaultMessage = 'Unable to Process the sent entity, check syntax and required parameters';
 
     protected static string $logLevel = Psr\Log\LogLevel::ERROR;
 
