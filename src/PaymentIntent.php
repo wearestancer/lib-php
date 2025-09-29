@@ -128,6 +128,11 @@ class PaymentIntent extends Stancer\Core\AbstractObject implements PaymentInterf
             'required' => true,
             'type' => self::INTEGER,
         ],
+        'billing_address' => [
+            'desc' => 'Billing address',
+            'onlyId' => true,
+            'type' => Stancer\Address::class,
+        ],
         'capture' => [
             'desc' => 'Capture immediately the payment',
             'type' => self::BOOLEAN,
@@ -204,6 +209,11 @@ class PaymentIntent extends Stancer\Core\AbstractObject implements PaymentInterf
             ],
             'desc' => 'SEPA object',
             'type' => Stancer\Sepa::class,
+        ],
+        'shipping_address' => [
+            'desc' => 'Shipping Address',
+            'onlyId' => true,
+            'type' => Stancer\Address::class,
         ],
         'status' => [
             'desc' => 'Status of the intent',
