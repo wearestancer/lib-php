@@ -34,7 +34,7 @@ class Dispute extends TestCase
         $this
             ->if($this->newTestedInstance) // Needed to use "isInstanceOfTestedClass" asserter
             ->then
-                ->generator(testedClass::list(['created' => time()]))
+                ->generator(testedClass::list(['created' => (time() - 2600000)])) //aproximately one month of results
                     ->yields
                         ->object
                             ->isInstanceOfTestedClass

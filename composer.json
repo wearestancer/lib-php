@@ -31,7 +31,7 @@
         "psr/log": "^3.0"
     },
     "require-dev": {
-        "atoum/atoum": "^4.2",
+        "atoum/atoum": "^4.4",
         "atoum/stubs": "^2.6",
         "atoum/visibility-extension": "^2.0",
         "fakerphp/faker": "^1.13",
@@ -49,7 +49,6 @@
         "php-cs-fixer": "php-cs-fixer fix -v",
         "phpstan": "phpstan analyse --no-progress",
         "test": "atoum",
-        "testversions": "atoum",
         "test:watch": [
             "Composer\\Config::disableProcessTimeout",
             "atoum --debug --loop"

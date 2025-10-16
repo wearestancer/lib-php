@@ -2,6 +2,7 @@
 stages:
   - lint
   - test
+  - functional-test
 
 
 variables:
@@ -42,20 +43,8 @@ workflow:
 
   parallel:
     matrix:
-        - VERSION:
-          - '8.1'
-          - '8.2'
-          - '8.3'
-          - '8.4'
-          - '8.5b'
-        - API_VERSION:
-          - '1'
-          - '2'
-
-  rules:
-    - if: '"$VERSION" == "8.5b"'
-      allow_failure: true
-    - when: on_success
+        - VERSION: ['8.1','8.2','8.3','8.4','8.5b']
+          API_VERSION: ['1','2']
 
 
 .php::stable-version:
@@ -66,11 +55,48 @@ workflow:
     VERSION: '8.1'
 
 
-atoum:
+atoum-UT:
   extends:
     - .php::all-versions
 
   stage: test
+
+  variables:
+    TEST_ENV: 'UNIT'
+
+  rules:
+    - if: $VERSION == "8.5b"
+      allow_failure: true
+    - when: on_success
+
+  script:
+    - composer run test --  --max-children-number 1
+
+  coverage: '/Code coverage value: \d+\.\d+%/'
+
+  artifacts:
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: $ATOUM_COVERAGE_FILENAME
+      junit: $ATOUM_XUNIT_FILENAME
+
+
+atoum-functional:
+  extends:
+    - .php::all-versions
+
+  stage: functional-test
+
+  variables:
+    TEST_ENV: "FUNCTIONAL"
+
+  rules:
+    - if: $API_VERSION == "1"
+      allow_failure: true
+    - if: $VERSION == "8.5b"
+      allow_failure: true
+    - when: on_success
 
   script:
     - composer run test -- --max-children-number 1

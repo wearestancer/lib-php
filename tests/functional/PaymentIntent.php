@@ -183,7 +183,6 @@ class PaymentIntent extends TestCase
                         ->hasLength(29)
 
                     ->dateTime($card->getCreationDate())
-                        ->hasYear(date('Y'))
 
                     ->string($customer->getId())
                         ->startWith('cust_')

@@ -83,11 +83,16 @@ class Address extends Stancer\Tests\atoum
         ;
     }
 
-    public function testGet()
+    /**
+     * @DataProvider versionDataProvider
+     *
+     * @param integer $version
+     */
+    public function testGet(int $version)
     {
         $this
         ->given($client = new mock\Stancer\Http\Client())
-        ->and($this->mockConfig($client))
+        ->and($this->mockConfig($client, $version))
         ->and($response = $this->mockJsonResponse('address', 'read'))
         ->and($this->calling($client)->request = $response)
 
@@ -303,11 +308,14 @@ class Address extends Stancer\Tests\atoum
         ;
     }
 
-    public function testSend()
+    /**
+     * @DataProvider versionDataProvider
+     */
+    public function testSend(int $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client))
+            ->and($config = $this->mockConfig($client, $version))
             ->and($response = $this->mockJsonResponse('address', 'create'))
             ->and($this->calling($client)->request = $response)
 

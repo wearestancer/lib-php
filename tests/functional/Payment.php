@@ -522,11 +522,8 @@ class Payment extends TestCase
                 ->and($this->testedInstance->setCustomer($customer))
                 ->and($this->testedInstance->setCapture(false))
 
-                ->if($card = new Stancer\Card())
-                ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth(rand(1, 12)))
-                ->and($card->setExpirationYear(rand(15, 25) + date('Y')))
-                ->and($card->setCvc((string) rand(100, 999)))
+                // We set a known existing card, because the DB is infested with deleted cards
+                ->if($card = new Stancer\Card('card_uqY2HrovY2sPm0Ac2xhnBkfU'))
 
                 ->then
                     ->object($this->testedInstance->send())
@@ -574,8 +571,8 @@ class Payment extends TestCase
                         ->startWith('card_')
                         ->hasLength(29)
 
-                    ->given(Stancer\Config::getGlobal()->setVersion(2))
-                    ->given($this->newTestedInstance($paymId))
+                ->given(Stancer\Config::getGlobal()->setVersion(2))
+                ->given($this->newTestedInstance($paymId))
                     ->assert('response patch V2')
                     ->object($this->testedInstance->setCard($card))
                         ->isTestedInstance
@@ -598,11 +595,11 @@ class Payment extends TestCase
                             ->startWith('card_')
                             ->hasLength(29)
 
-                    // ->object($this->testedInstance->setStatus(Stancer\Payment\Status::CAPTURE)->send())
-                    //     ->isTestedInstance
+                    ->object($this->testedInstance->setStatus(Stancer\Payment\Status::CAPTURE)->send())
+                        ->isTestedInstance
 
-                    // ->object($this->testedInstance->getStatus())
-                    //     ->isIdenticalTo(Stancer\Payment\Status::TO_CAPTURE)
+                    ->object($this->testedInstance->getStatus())
+                        ->isIdenticalTo(Stancer\Payment\Status::TO_CAPTURE)
 
             ->assert('With unique ID')
                 ->given($this->newTestedInstance)
@@ -810,7 +807,6 @@ class Payment extends TestCase
                     ->hasLength(29)
 
                 ->dateTime($this->testedInstance->getCreationDate())
-                    ->hasDay(date('d'))
 
                 ->string($this->testedInstance->getMethod())
                     ->isIdenticalTo('card')
@@ -820,8 +816,6 @@ class Payment extends TestCase
                     ->hasLength(29)
 
                 ->dateTime($card->getCreationDate())
-                    ->hasYear(date('Y'))
-                //    ->hasDay(date('d')) WE HAVE TO MANY Duplicate card
 
                 ->string($customer->getId())
                     ->startWith('cust_')

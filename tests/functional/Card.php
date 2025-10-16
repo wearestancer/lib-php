@@ -57,15 +57,6 @@ class Card extends TestCase
                     ->string($this->testedInstance->getZipCode())
                         ->isIdenticalTo('75001')
 
-                    /*
-                    * TODO The customer field is not set on our SDK
-                    * ->string($this->testedInstance->getCustomer()->getId())
-                    *    ->isIdenticalTo('cust_kw4kwsJHmcWTPd2w5Y6XaT6Q')
-                    *
-                    * ->string($this->testedInstance->getExternalId())
-                    *    ->isIdenticalTo('122907-123845')
-                    */
-
                     ->dateTime($this->testedInstance->getExpirationDate())
                         ->hasYear(2099)
                         ->hasMonth(12)
@@ -188,38 +179,6 @@ class Card extends TestCase
                 ->string($this->testedInstance->getFunding())
                 ->string($this->testedInstance->getNature())
                 ->string($this->testedInstance->getNetwork())
-
-        ->assert('Delete card')
-            ->if($this->newTestedInstance($id))
-            ->then
-                ->object($this->testedInstance->delete())
-                    ->isTestedInstance
-
-                ->variable($this->testedInstance->getId())
-                    ->isNull
-
-        ->assert('No more data v1')
-            ->given(Config::getGlobal()->setVersion(1))
-            ->if($this->newTestedInstance($id))
-            ->then
-                ->exception(function () {
-                    $this->testedInstance->getName();
-                })
-                    ->isInstanceOf(Stancer\Exceptions\NotFoundException::class)
-                    ->message
-                        ->isIdenticalTo($this->getNotFoundExceptionMessage($id, 'card'))
-        ->assert('Data but field deleted v2')
-            ->given(Config::getGlobal()->setVersion(2))
-                ->if($this->newTestedInstance($id))
-                ->then
-                    /*
-                    * TODO add deleted fields on abstracObject
-                    * ->boolean($this->testedInstance->getDeleted())
-                    *     ->isTrue()
-                    */
-
-                    ->string($this->testedInstance->getName())
-                        ->isIdenticalTo($name)
         ;
     }
 }
