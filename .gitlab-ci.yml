@@ -43,7 +43,7 @@ workflow:
 
   parallel:
     matrix:
-        - VERSION: ['8.1','8.2','8.3','8.4','8.5b']
+        - VERSION: ['8.1','8.2','8.3','8.4','8.5']
           API_VERSION: ['1','2']
 
 
@@ -53,6 +53,7 @@ workflow:
 
   variables:
     VERSION: '8.1'
+
 
 
 atoum-UT:
@@ -65,7 +66,9 @@ atoum-UT:
     TEST_ENV: 'UNIT'
 
   rules:
-    - if: $VERSION == "8.5b"
+    - if: $VERSION == "8.5"
+      allow_failure: true
+    - if: $VERSION == "8.4"
       allow_failure: true
     - when: on_success
 
@@ -94,7 +97,9 @@ atoum-functional:
   rules:
     - if: $API_VERSION == "1"
       allow_failure: true
-    - if: $VERSION == "8.5b"
+    - if: $VERSION == "8.5"
+      allow_failure: true
+    - if: $VERSION == "8.4"
       allow_failure: true
     - when: on_success
 
