@@ -16,6 +16,7 @@ use Stancer\Stub\Payment;
  * @method static array<mixed> filter_list_params(array<mixed> $terms) Filter for list method.
  * @method ?\Stancer\ThreeDomainsSecure\Status get3DS() Get ask for an authenticated payment.
  * @method ?integer getAmount() Get intent amount.
+ * @method ?\Stancer\Address getBilling_address() Get billing address.
  * @method ?boolean getCapture() Get capture immediately the payment.
  * @method ?\DateTimeImmutable getCreated() Get creation date.
  * @method ?\Stancer\Currency getCurrency() Get processed currency.
@@ -26,12 +27,14 @@ use Stancer\Stub\Payment;
  * @method ?\Stancer\Payment getPayment() Get finalized payment.
  * @method ?string getReturnUrl() Get URL to redirect back your customer after processing the payment.
  * @method ?\Stancer\Sepa getSepa() Get SEPA object.
+ * @method ?\Stancer\Address getShipping_address() Get shipping Address.
  * @method ?\Stancer\PaymentIntent\Status getStatus() Get status of the intent.
  * @method ?\Stancer\ThreeDomainsSecure\Status getThreeDS() Get ask for an authenticated payment.
  * @method ?\Stancer\ThreeDomainsSecure\Status getThreeds() Get ask for an authenticated payment.
  * @method ?string getUrl() Get payment page URL.
  * @method ?\Stancer\ThreeDomainsSecure\Status get_3ds() Get ask for an authenticated payment.
  * @method ?integer get_amount() Get intent amount.
+ * @method ?\Stancer\Address get_billing_address() Get billing address.
  * @method ?boolean get_capture() Get capture immediately the payment.
  * @method ?\Stancer\Card get_card() Get card object.
  * @method ?\DateTimeImmutable get_created() Get creation date.
@@ -49,20 +52,24 @@ use Stancer\Stub\Payment;
  * @method ?\Stancer\Payment get_payment() Get finalized payment.
  * @method ?string get_return_url() Get URL to redirect back your customer after processing the payment.
  * @method ?\Stancer\Sepa get_sepa() Get SEPA object.
+ * @method ?\Stancer\Address get_shipping_address() Get shipping Address.
  * @method ?\Stancer\PaymentIntent\Status get_status() Get status of the intent.
  * @method ?\Stancer\ThreeDomainsSecure\Status get_three_ds() Get ask for an authenticated payment.
  * @method ?\Stancer\ThreeDomainsSecure\Status get_threeds() Get ask for an authenticated payment.
  * @method string get_uri() Return resource location.
  * @method ?string get_url() Get payment page URL.
- * @method \Generator list_payments(mixed $terms) List payment associated to the payment intent.
+ * @method \Generator list_payments(array<mixed> $terms) List payment associated to the payment intent.
  * @method $this set3DS(\Stancer\ThreeDomainsSecure\Status $3DS) Set ask for an authenticated payment.
+ * @method $this setBilling_address(\Stancer\Address $billing_address) Set billing address.
  * @method $this setCapture(boolean $capture) Set capture immediately the payment.
  * @method $this setDescription(string $description) Set intent description.
  * @method $this setOrderId(string $orderId) Set order identifier.
+ * @method $this setShipping_address(\Stancer\Address $shipping_address) Set shipping Address.
  * @method $this setThreeDS(\Stancer\ThreeDomainsSecure\Status $threeDS) Set ask for an authenticated payment.
  * @method $this setThreeds(\Stancer\ThreeDomainsSecure\Status $threeds) Set ask for an authenticated payment.
  * @method $this set_3ds(\Stancer\ThreeDomainsSecure\Status $3ds) Set ask for an authenticated payment.
  * @method $this set_amount(integer $amount) Set intent amount.
+ * @method $this set_billing_address(\Stancer\Address $billing_address) Set billing address.
  * @method $this set_capture(boolean $capture) Set capture immediately the payment.
  * @method $this set_card(\Stancer\Card $card) Set card object.
  * @method $this set_currency(\Stancer\Currency $currency) Set processed currency.
@@ -74,12 +81,14 @@ use Stancer\Stub\Payment;
  * @method $this set_order_id(string $order_id) Set order identifier.
  * @method $this set_return_url(string $return_url) Set URL to redirect back your customer after processing the payment.
  * @method $this set_sepa(\Stancer\Sepa $sepa) Set SEPA object.
+ * @method $this set_shipping_address(\Stancer\Address $shipping_address) Set shipping Address.
  * @method $this set_three_ds(\Stancer\ThreeDomainsSecure\Status $three_ds) Set ask for an authenticated payment.
  * @method $this set_threeds(\Stancer\ThreeDomainsSecure\Status $threeds) Set ask for an authenticated payment.
  *
  * @property ?\Stancer\ThreeDomainsSecure\Status $3DS Ask for an authenticated payment.
  * @property ?\Stancer\ThreeDomainsSecure\Status $3ds Ask for an authenticated payment.
  * @property ?integer $amount Intent amount.
+ * @property ?\Stancer\Address $billing_address Billing address.
  * @property ?boolean $capture Capture immediately the payment.
  * @property ?\Stancer\Card $card Card object.
  * @property ?\Stancer\Currency $currency Processed currency.
@@ -93,6 +102,7 @@ use Stancer\Stub\Payment;
  * @property ?string $returnUrl URL to redirect back your customer after processing the payment.
  * @property ?string $return_url URL to redirect back your customer after processing the payment.
  * @property ?\Stancer\Sepa $sepa SEPA object.
+ * @property ?\Stancer\Address $shipping_address Shipping Address.
  * @property ?\Stancer\ThreeDomainsSecure\Status $threeDS Ask for an authenticated payment.
  * @property ?\Stancer\ThreeDomainsSecure\Status $three_ds Ask for an authenticated payment.
  * @property ?\Stancer\ThreeDomainsSecure\Status $threeds Ask for an authenticated payment.

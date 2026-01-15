@@ -142,6 +142,9 @@ function prepareData(string $action, array $data): array
     return $data;
 }
 
+Stancer\Config::init(['ptest' => 'ptest_placeholderForTesting1', 'stest' => 'stest_placeholderForTesting2']);
+Stancer\Config::getGlobal()->setVersion(2);
+
 // Initialize specific classes.
 $classes = [
     Stancer\Config::class => [

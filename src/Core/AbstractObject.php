@@ -66,12 +66,16 @@ abstract class AbstractObject implements \JsonSerializable
 
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     final public const BOOLEAN = 'boolean';
+
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     final public const FLOAT = 'float';
+
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     final public const INTEGER = 'integer';
+
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     final public const MIXED = 'mixed';
+
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     final public const STRING = 'string';
 
@@ -110,6 +114,7 @@ abstract class AbstractObject implements \JsonSerializable
     public function __construct($id = null)
     {
         $version = Stancer\Config::getGlobal()->getVersion();
+
         if (static::API_VERSION > $version) {
             throw new Stancer\Exceptions\BadApiVersionException();
         }
