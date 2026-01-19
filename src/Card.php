@@ -120,7 +120,7 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
             'required' => true,
             'changed' => [
                 [
-                    'sinceVersion' => 2,
+                    'sinceVersion' => Stancer\Enum\ApiVersion::VERSION_2,
                     'required' => false,
                 ],
             ],

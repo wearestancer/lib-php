@@ -102,7 +102,7 @@ class Customer extends TestCase
                 ->and($this->testedInstance->setEmail($email))
                 ->and($this->testedInstance->setMobile($mobile))
         ;
-        if ($this->config->version == 1) {
+        if ($this->config->version === Stancer\Enum\ApiVersion::VERSION_1) {
             $this
                 ->then
                 ->exception(function () {
@@ -148,7 +148,7 @@ class Customer extends TestCase
             ->and($this->testedInstance->setExternalId($externalId))
             ->then
         ;
-        if ($this->config->version == 1) {
+        if ($this->config->version === Stancer\Enum\ApiVersion::VERSION_1) {
             $this->exception(function () {
                 $this->testedInstance->send();
             })

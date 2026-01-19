@@ -20,7 +20,7 @@ class Auth extends Stancer\Tests\atoum
             ->enum($this->newTestedInstance->getStatus())
                 ->isIdenticalTo(Stancer\Auth\Status::REQUEST)
         ;
-        if (\Stancer\Config::getGlobal()->version == 1) {
+        if (\Stancer\Config::getGlobal()->version === Stancer\Enum\ApiVersion::VERSION_1) {
             $this
             ->currentlyTestedClass
             ->array($this->testedInstance->jsonSerialize())

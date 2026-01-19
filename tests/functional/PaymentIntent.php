@@ -18,9 +18,8 @@ class PaymentIntent extends TestCase
      * Run before test, set api version as 2 by default for intents.
      *
      * @param string $method
-     * @param mixed $version
      */
-    public function beforeTestMethod($method, $version = 2)
+    public function beforeTestMethod($method, ?Stancer\Enum\ApiVersion $version = Stancer\Enum\ApiVersion::VERSION_2)
     {
         parent::beforeTestMethod($method, $version);
     }

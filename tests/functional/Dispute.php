@@ -48,7 +48,7 @@ class Dispute extends TestCase
     public function testGetDispute()
     {
         $this
-            ->given(Stancer\Config::getGlobal()->setVersion(1))
+            ->given(Stancer\Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
             ->given($this->newTestedInstance('dspt_a4dIMSi7PBBoGiu2BocagB2f'))
             ->then
 
@@ -61,7 +61,7 @@ class Dispute extends TestCase
             ->integer($this->testedInstance->getAmount())
                 ->isIdenticalTo(300)
 
-            ->given(Stancer\Config::getGlobal()->setVersion(2))
+            ->given(Stancer\Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
             ->given($this->newTestedInstance('dspt_a4dIMSi7PBBoGiu2BocagB2f'))
             ->then
 

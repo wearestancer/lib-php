@@ -93,10 +93,8 @@ class Customer extends Stancer\Tests\atoum
 
     /**
      * @DataProvider versionDataProvider
-     *
-     * @param integer $version
      */
-    public function testSend(int $version)
+    public function testSend(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client())
@@ -202,10 +200,8 @@ class Customer extends Stancer\Tests\atoum
 
     /**
      * @DataProvider versionDataProvider
-     *
-     * @param integer $version
      */
-    public function testSend_forUpdate(int $version)
+    public function testSend_forUpdate(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())

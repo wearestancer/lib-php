@@ -36,11 +36,19 @@ parameters:
   treatPhpDocTypesAsCertain: false
 
   typeAliases:
+    ChangeModel: '''
+    array{
+      sinceVersion: Stancer\Enum\ApiVersion,
+      required?: bool,
+      onlyId?: bool,
+    }
+    '''
+
     DataModel: '''
       array{
         allowedValues?: string[] | class-string,
         coerce?: string,
-        changed?: array<int,array<string,mixed>>,
+        changed?: ChangeModel[],
         exception?: class-string,
         exportable?: bool,
         format?: string,

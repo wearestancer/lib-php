@@ -36,14 +36,14 @@ class Payment extends Stancer\Tests\atoum
     {
         return [
             [
-                1,
+                Stancer\Enum\ApiVersion::VERSION_1,
                 fn ($url) => [
                     'return_url' => $url,
                     'status' => Stancer\Auth\Status::REQUEST,
                 ],
             ],
             [
-                2,
+                Stancer\Enum\ApiVersion::VERSION_2,
                 fn ($_) => true,
             ],
         ];
@@ -53,13 +53,13 @@ class Payment extends Stancer\Tests\atoum
     {
         return [
             [
-                1,
+                Stancer\Enum\ApiVersion::VERSION_1,
                 [
                     'status' => Stancer\Auth\Status::REQUEST,
                 ],
             ],
             [
-                2,
+                Stancer\Enum\ApiVersion::VERSION_2,
                 true,
             ],
         ];
@@ -107,10 +107,8 @@ class Payment extends Stancer\Tests\atoum
 
     /**
      * @DataProvider versionDataProvider
-     *
-     * @param integer $version
      */
-    public function testCharge(int $version)
+    public function testCharge(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->if($client = new mock\GuzzleHttp\Client())
@@ -397,10 +395,8 @@ class Payment extends Stancer\Tests\atoum
 
     /**
      * @dataProvider versionDataProvider
-     *
-     * @param int $version
      */
-    public function testGetEndpoint($version)
+    public function testGetEndpoint(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($endpoint = [1 => 'checkout', 2 => 'payments'])
@@ -409,19 +405,17 @@ class Payment extends Stancer\Tests\atoum
                 ->given($this->newTestedInstance)
                 ->then
                     ->string($this->testedInstance->getEndpoint())
-                        ->isIdenticalTo($endpoint[$version])
+                        ->isIdenticalTo($endpoint[$version->value])
 
                     ->string($this->testedInstance->endpoint)
-                        ->isIdenticalTo($endpoint[$version])
+                        ->isIdenticalTo($endpoint[$version->value])
         ;
     }
 
     /**
      * @dataProvider versionDataProvider
-     *
-     * @param int $version
      */
-    public function testGetPaymentPageUrl($version)
+    public function testGetPaymentPageUrl(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($secret = 'stest_' . bin2hex(random_bytes(12)))
@@ -602,10 +596,8 @@ class Payment extends Stancer\Tests\atoum
 
     /**
      * @dataProvider versionDataProvider
-     *
-     * @param int $version
      */
-    public function testGetRefundableAmount($version)
+    public function testGetRefundableAmount(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
@@ -849,7 +841,7 @@ class Payment extends Stancer\Tests\atoum
     /**
      * @dataProvider versionDataProvider
      */
-    public function testIssueTaiga7(int $version)
+    public function testIssueTaiga7(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
@@ -871,7 +863,7 @@ class Payment extends Stancer\Tests\atoum
     /**
      * @dataProvider versionDataProvider
      */
-    public function testList(int $version)
+    public function testList(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
@@ -1187,10 +1179,8 @@ class Payment extends Stancer\Tests\atoum
 
     /**
      * @dataProvider versionDataProvider
-     *
-     * @param int $version
      */
-    public function testPay($version)
+    public function testPay(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client())
@@ -1253,7 +1243,7 @@ class Payment extends Stancer\Tests\atoum
     /**
      * @dataProvider versionDataProvider
      */
-    public function testPost_capture(int $version)
+    public function testPost_capture(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
@@ -1328,7 +1318,7 @@ class Payment extends Stancer\Tests\atoum
     /**
      * @dataProvider versionDataProvider
      */
-    public function testRefund(int $version)
+    public function testRefund(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($logger = new mock\Stancer\Core\Logger())
@@ -1500,7 +1490,7 @@ class Payment extends Stancer\Tests\atoum
     /**
      * @dataProvider versionDataProvider
      */
-    public function testSend_exceptions(int $version)
+    public function testSend_exceptions(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
@@ -1546,7 +1536,7 @@ class Payment extends Stancer\Tests\atoum
     /**
      * @dataProvider versionDataProvider
      */
-    public function testSend_withSepa(int $version)
+    public function testSend_withSepa(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client())
@@ -1628,11 +1618,8 @@ class Payment extends Stancer\Tests\atoum
 
     /**
      * @dataProvider versionAuthReturnUrlProvider
-     *
-     * @param mixed $version
-     * @param mixed $auth
      */
-    public function testSend_authenticatedPayment($version, $auth)
+    public function testSend_authenticatedPayment(Stancer\Enum\ApiVersion $version, callable $auth)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
@@ -1801,7 +1788,7 @@ class Payment extends Stancer\Tests\atoum
 
             ->and($json = json_encode([
                 'amount' => $amount,
-                'auth' => $version === 1 ? $auth : true,
+                'auth' => $version === Stancer\Enum\ApiVersion::VERSION_1 ? $auth : true,
                 'card' => $card->getId(),
                 'currency' => strtolower($currency),
                 'description' => $description,
@@ -1893,10 +1880,9 @@ class Payment extends Stancer\Tests\atoum
     /**
      * @dataProvider versionAuthStatusProvider
      *
-     * @param mixed $version
      * @param mixed $authjson
      */
-    public function testSend_authenticationAndPaymentPage($version, $authjson)
+    public function testSend_authenticationAndPaymentPage(Stancer\Enum\ApiVersion $version, $authjson)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
@@ -2104,7 +2090,7 @@ class Payment extends Stancer\Tests\atoum
     /**
      * @dataProvider versionDataProvider
      */
-    public function testSetAuth(int $version)
+    public function testSetAuth(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given(Stancer\Config::init([])->setVersion($version))
@@ -2605,7 +2591,7 @@ class Payment extends Stancer\Tests\atoum
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client, 1))
+            ->and($config = $this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_1))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-no-method'))
             ->and($this->calling($client)->request = $response)
@@ -2685,7 +2671,7 @@ class Payment extends Stancer\Tests\atoum
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client, 1))
+            ->and($config = $this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_1))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-card'))
             ->and($this->calling($client)->request = $response)
@@ -2797,7 +2783,7 @@ class Payment extends Stancer\Tests\atoum
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
-            ->and($this->mockConfig($client, 1))
+            ->and($this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_1))
             ->if($this->newTestedInstance->setAmount(rand(100, 999999)))
             ->then
                 ->exception(function () {
@@ -2811,7 +2797,7 @@ class Payment extends Stancer\Tests\atoum
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client())
-            ->and($config = $this->mockConfig($client, 1))
+            ->and($config = $this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_1))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-card'))
             ->and($this->calling($client)->request = $response)
@@ -2930,7 +2916,7 @@ class Payment extends Stancer\Tests\atoum
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client())
-            ->and($config = $this->mockConfig($client, 2))
+            ->and($config = $this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_2))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-card'))
             ->if($cardResponse = $this->mockJsonResponse('payment', 'cardStub'))
@@ -3097,7 +3083,7 @@ class Payment extends Stancer\Tests\atoum
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client, 2))
+            ->and($config = $this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_2))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-no-method'))
             ->if($customerResponse = $this->mockJsonResponse('payment', 'customerStub'))
@@ -3193,7 +3179,7 @@ class Payment extends Stancer\Tests\atoum
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client, 2))
+            ->and($config = $this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_2))
 
             ->if($response = $this->mockJsonResponse('payment', 'create-card'))
             ->if($cardResponse = $this->mockJsonResponse('payment', 'cardStub'))

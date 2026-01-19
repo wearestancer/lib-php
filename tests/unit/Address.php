@@ -85,10 +85,8 @@ class Address extends Stancer\Tests\atoum
 
     /**
      * @DataProvider versionDataProvider
-     *
-     * @param integer $version
      */
-    public function testGet(int $version)
+    public function testGet(Stancer\Enum\ApiVersion $version)
     {
         $this
         ->given($client = new mock\Stancer\Http\Client())
@@ -311,7 +309,7 @@ class Address extends Stancer\Tests\atoum
     /**
      * @DataProvider versionDataProvider
      */
-    public function testSend(int $version)
+    public function testSend(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())

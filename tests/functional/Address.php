@@ -28,7 +28,7 @@ class Address extends TestCase
                 ->variable($this->testedInstance->getId())
                     ->isNull
         ;
-        if ($this->config->version == 1) {
+        if ($this->config->version === Stancer\Enum\ApiVersion::VERSION_1) {
             $this->exception(function () use ($id) {
                 $this->newTestedInstance($id)->getCountry();
             })
@@ -97,10 +97,8 @@ class Address extends TestCase
 
     /**
      * @DataProvider versionDataProvider
-     *
-     * @param integer $version
      */
-    public function testSend(int $version)
+    public function testSend(Stancer\Enum\ApiVersion $version)
     {
         $this->config->version = $version;
         $this
@@ -154,10 +152,8 @@ class Address extends TestCase
 
     /**
      * @DataProvider versionDataProvider
-     *
-     * @param integer $version
      */
-    public function testUpdate(int $version)
+    public function testUpdate(Stancer\Enum\ApiVersion $version)
     {
         $this->config->version = $version;
         $this

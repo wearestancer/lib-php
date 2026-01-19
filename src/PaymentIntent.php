@@ -127,7 +127,7 @@ class PaymentIntent extends Stancer\Core\AbstractObject implements PaymentInterf
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     final public const ENDPOINT = 'payment_intents';
 
-    final public const API_VERSION = 2;
+    final public const API_VERSION = Stancer\Enum\ApiVersion::VERSION_2;
 
     /**
      * @phpstan-var array<string, DataModel>
@@ -150,7 +150,7 @@ class PaymentIntent extends Stancer\Core\AbstractObject implements PaymentInterf
         'card' => [
             'changed' => [
                 [
-                    'sinceVersion' => 2,
+                    'sinceVersion' => Stancer\Enum\ApiVersion::VERSION_2,
                     'onlyID' => true,
                 ],
             ],
@@ -165,7 +165,7 @@ class PaymentIntent extends Stancer\Core\AbstractObject implements PaymentInterf
         'customer' => [
             'changed' => [
                 [
-                    'sinceVersion' => 2,
+                    'sinceVersion' => Stancer\Enum\ApiVersion::VERSION_2,
                     'onlyID' => true,
                 ],
             ],
@@ -213,7 +213,7 @@ class PaymentIntent extends Stancer\Core\AbstractObject implements PaymentInterf
         'sepa' => [
             'changed' => [
                 [
-                    'sinceVersion' => 2,
+                    'sinceVersion' => Stancer\Enum\ApiVersion::VERSION_2,
                     'onlyID' => true,
                 ],
             ],

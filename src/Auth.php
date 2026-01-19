@@ -86,7 +86,7 @@ class Auth extends Stancer\Core\AbstractObject
     public function jsonSerialize(): mixed
     {
         $version = Stancer\Config::getGlobal()->getVersion();
-        if ($version === 1) {
+        if ($version === Stancer\Enum\ApiVersion::VERSION_1) {
             return parent::jsonSerialize();
         }
 

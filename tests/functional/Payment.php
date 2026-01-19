@@ -19,7 +19,7 @@ class Payment extends TestCase
     protected ?string $order = null;
     protected array $paymentList = [];
 
-    public function beforeTestMethod($testMethod, ?int $version = null)
+    public function beforeTestMethod($testMethod, ?Stancer\Enum\ApiVersion $version = null)
     {
         if ($testMethod === 'testList' && !$this->order) {
             $this->order = uniqid();
@@ -133,7 +133,7 @@ class Payment extends TestCase
         ];
         foreach ($gen as $idx => $object) {
             $this
-            ->given($orderedList = Stancer\Config::getGlobal()->getVersion() === 1 ? $this->paymentList : array_reverse($this->paymentList))
+            ->given($orderedList = Stancer\Config::getGlobal()->getVersion() === Stancer\Enum\ApiVersion::VERSION_1 ? $this->paymentList : array_reverse($this->paymentList))
             ->object($object)
                     ->isInstanceOfTestedClass
                 ->string($object->getCard()->getLast4())
@@ -222,7 +222,7 @@ class Payment extends TestCase
     public function testSendWithAuth($currency)
     {
         $this
-            ->given(Config::getGlobal()->setVersion(1))
+            ->given(Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
             ->assert('Auth V1')
                 ->given($amount = rand(50, 100))
                 ->and($description = vsprintf('Automatic auth test, %.02f %s', [
@@ -351,7 +351,7 @@ class Payment extends TestCase
                         ->isIdenticalTo(Stancer\Auth\Status::REQUESTED)
 
             ->assert('Auth V2')
-                ->given(Config::getGlobal()->setVersion(2))
+                ->given(Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
                 ->given($amount = rand(50, 100))
                 ->and($description = vsprintf('Automatic auth test, %.02f %s', [
                     $amount / 100,
@@ -546,7 +546,7 @@ class Payment extends TestCase
                         ->isNull
 
                 ->given($paymId = $this->testedInstance->getId())
-                ->given(Stancer\Config::getGlobal()->setVersion(1))
+                ->given(Stancer\Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
                 ->given($this->newTestedInstance($paymId))
                     ->assert('response patch V1')
                     ->object($this->testedInstance->setCard($card))
@@ -571,7 +571,7 @@ class Payment extends TestCase
                         ->startWith('card_')
                         ->hasLength(29)
 
-                ->given(Stancer\Config::getGlobal()->setVersion(2))
+                ->given(Stancer\Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
                 ->given($this->newTestedInstance($paymId))
                     ->assert('response patch V2')
                     ->object($this->testedInstance->setCard($card))
@@ -671,7 +671,7 @@ class Payment extends TestCase
                         ->message
                             ->isIdenticalTo('Payment already exists, duplicate unique_id (' . $id . ')')
 
-            ->if(Stancer\Config::getGlobal()->setVersion(1))
+            ->if(Stancer\Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
             ->assert('Allow duplicate customer')
                 ->given($this->newTestedInstance)
                 ->and($amount = rand(50, 100))
@@ -719,7 +719,7 @@ class Payment extends TestCase
                         ->hasLength(29)
                         ->isIdenticalTo($customerID) // From previous test
 
-            ->if(Stancer\Config::getGlobal()->setVersion(2))
+            ->if(Stancer\Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
             ->assert('Allow duplicate customer')
                 ->given($this->newTestedInstance)
                 ->and($amount = rand(50, 100))

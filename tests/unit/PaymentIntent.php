@@ -20,7 +20,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     public function beforeTestMethod($method)
     {
         parent::beforeTestMethod($method);
-        Stancer\Config::getGlobal()->setVersion(2);
+        Stancer\Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2);
     }
 
     public function testAmount()
@@ -274,7 +274,7 @@ class PaymentIntent extends Stancer\Tests\atoum
             ->given($secret = 'stest_' . bin2hex(random_bytes(12)))
             ->and($config = Stancer\Config::init([$secret]))
             ->and($config->setDebug(false))
-            ->and($config->setVersion(2))
+            ->and($config->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
 
             ->if($client = new mock\Stancer\Http\Client())
             ->and($response = $this->mockJsonResponse('payment_intents', 'intent'))
@@ -410,7 +410,7 @@ class PaymentIntent extends Stancer\Tests\atoum
             ->given($client = new mock\Stancer\Http\Client())
             ->and($response = $this->mockJsonResponse('payment_intents', 'list'))
             ->and($this->calling($client)->request = $response)
-            ->and($config = $this->mockConfig($client, 2))
+            ->and($config = $this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_2))
             ->and($options = $this->mockRequestOptions($config))
 
             ->assert('Invalid limit')
@@ -661,7 +661,7 @@ class PaymentIntent extends Stancer\Tests\atoum
             ->given($client = new mock\Stancer\Http\Client())
             ->and($response = $this->mockJsonResponse('payment_intents', 'list-two-pi'))
             ->and($this->calling($client)->request = $response)
-            ->and($config = $this->mockConfig($client, 2))
+            ->and($config = $this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_2))
             ->and($options = $this->mockRequestOptions($config))
 
             ->assert('make request with only two pi')
@@ -711,7 +711,7 @@ class PaymentIntent extends Stancer\Tests\atoum
             ->given($client = new mock\Stancer\Http\Client())
             ->and($response = $this->mockJsonResponse('payment', 'list'))
             ->and($this->calling($client)->request = $response)
-            ->and($config = $this->mockConfig($client, 2))
+            ->and($config = $this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_2))
             ->and($options = $this->mockRequestOptions($config))
 
             ->assert('Invalid limit')
@@ -902,7 +902,7 @@ class PaymentIntent extends Stancer\Tests\atoum
                 ->given($client = new mock\Stancer\Http\Client())
                 ->and($response = $this->mockJsonResponse('payment', 'list'))
                 ->and($this->calling($client)->request = $response)
-                ->and($config = $this->mockConfig($client, 2))
+                ->and($config = $this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_2))
                 ->and($options = $this->mockRequestOptions($config))
 
                 ->if($limit = rand(1, 100))
@@ -1352,7 +1352,7 @@ class PaymentIntent extends Stancer\Tests\atoum
 
         ->assert('Does not allow Capture non authorized payment')
             ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client, 2))
+            ->and($config = $this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_2))
             ->if($response = $this->mockJsonResponse('payment_intents', 'intent'))
             ->and($this->calling($client)->request = $response)
 
@@ -1372,7 +1372,7 @@ class PaymentIntent extends Stancer\Tests\atoum
         ->assert('Capture an authorize payment')
             ->given($client = new mock\Stancer\Http\Client())
             ->and($this->testedInstance->setDescription('adding a field to send non-empty object'))
-            ->and($config = $this->mockConfig($client, 2))
+            ->and($config = $this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_2))
             ->if($response = $this->mockJsonResponse('payment_intents', 'authorized-pi'))
             ->and($this->calling($client)->request = $response)
 
@@ -1448,7 +1448,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client, 2))
+            ->and($config = $this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_2))
             ->assert('Flat send')
                 ->given($card = new Stancer\Card())
                 ->and($cardNumber = $this->cardNumberDataProvider(true))
@@ -1503,7 +1503,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client, 2))
+            ->and($config = $this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_2))
             ->assert('with card object')
                 ->given($this->newTestedInstance)
                 ->given($card = new Stancer\Card())
@@ -1555,7 +1555,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client, 2))
+            ->and($config = $this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_2))
             ->assert('send with customer object')
                 ->given($this->newTestedInstance)
                 ->given($customer = new Stancer\Customer())
@@ -1606,7 +1606,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client, 2))
+            ->and($config = $this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_2))
             ->assert('flatening Sepa')
                 ->given($this->newTestedInstance)
                 ->given($sepa = new Stancer\Sepa())
@@ -1655,7 +1655,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client, 2))
+            ->and($config = $this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_2))
             ->and($response = $this->mockJsonResponse('payment_intents', 'create-no-method'))
 
             ->given($this->newTestedInstance->setCustomer(new Stancer\Customer('cust_dFM2igoh05T3CYpJ2TUJtZGh')))
@@ -1710,7 +1710,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     {
         $this
         ->given($client = new mock\Stancer\Http\Client())
-        ->and($config = $this->mockConfig($client, 2))
+        ->and($config = $this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_2))
 
         ->given($this->newTestedInstance->setCustomer(new Stancer\Customer('cust_dFM2igoh05T3CYpJ2TUJtZGh')))
         ->and($this->testedInstance->setAmount('300'))
@@ -1816,7 +1816,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     {
         $this
         ->given($client = new mock\Stancer\Http\Client())
-        ->and($config = $this->mockConfig($client, 2))
+        ->and($config = $this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_2))
 
         ->given($this->newTestedInstance->setCustomer(new Stancer\Customer('cust_dFM2igoh05T3CYpJ2TUJtZGh')))
         ->and($this->testedInstance->setAmount('300'))

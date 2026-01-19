@@ -29,7 +29,7 @@ use Stancer;
  * @method string get_secret_key() Get secret API key.
  * @method integer get_timeout() Get API timeout.
  * @method string get_uri() Get API URI.
- * @method integer get_version() Get API version.
+ * @method \Stancer\Enum\ApiVersion get_version() Get API version.
  * @method boolean is_live_mode() Indicate if API is in live mode.
  * @method boolean is_not_live_mode() Indicate if API is not in live mode.
  * @method boolean is_not_test_mode() Indicate if API is not in test mode.
@@ -47,7 +47,7 @@ use Stancer;
  * @method $this set_mode(string $mode) Set API mode (test or live).
  * @method $this set_port(integer $port) Set API port.
  * @method $this set_timeout(integer $timeout) Set API timeout.
- * @method $this set_version(integer $version) Set API version.
+ * @method $this set_version(\Stancer\Enum\ApiVersion $version) Set API version.
  *
  * @property boolean $debug Debug mode.
  * @property ?\DateTimeZone $defaultTimeZone Default time zone.
@@ -59,7 +59,7 @@ use Stancer;
  * @property string $mode API mode (test or live).
  * @property ?integer $port API port.
  * @property integer $timeout API timeout.
- * @property integer $version API version.
+ * @property \Stancer\Enum\ApiVersion $version API version.
  *
  * @property-read string $basicAuthHeader HTTP "basic" authentication header's value.
  * @property-read string $basic_auth_header HTTP "basic" authentication header's value.
@@ -127,7 +127,7 @@ class Config
 
     protected ?\DateTimeZone $timezone = null;
 
-    protected int $version = 1;
+    protected Stancer\Enum\ApiVersion $version = Stancer\Enum\ApiVersion::VERSION_1;
 
     /**
      * Create an API configuration.
@@ -481,7 +481,7 @@ class Config
             'https',
             $this->getHost(),
             $this->getPort(),
-            $this->getVersion(),
+            $this->getVersion()->value,
         ];
 
         return vsprintf($pattern, $params);
@@ -490,12 +490,10 @@ class Config
     /**
      * Return API version.
      *
-     * Default : 1
-     *
-     * @return integer
+     * Default : Stancer\Enum\ApiVersion::Version_1
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'API version', nullable: false, type: 'integer')]
-    public function getVersion(): int
+    #[Stancer\Core\Documentation\FormatProperty(description: 'API version', nullable: false, type: '\\Stancer\\Enum\\ApiVersion')]
+    public function getVersion(): Stancer\Enum\ApiVersion
     {
         return $this->version;
     }
@@ -793,11 +791,11 @@ class Config
     /**
      * Update API version.
      *
-     * @param integer $version New version.
+     * @param Stancer\Enum\ApiVersion $version New version.
      *
      * @return $this
      */
-    public function setVersion(int $version): self
+    public function setVersion(Stancer\Enum\ApiVersion $version): self
     {
         $this->version = $version;
 

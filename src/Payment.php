@@ -205,7 +205,7 @@ class Payment extends Stancer\Core\AbstractObject implements PaymentInterface
         'card' => [
             'changed' => [
                 [
-                    'sinceVersion' => 2,
+                    'sinceVersion' => Stancer\Enum\ApiVersion::VERSION_2,
                     'onlyID' => true,
                 ],
             ],
@@ -218,7 +218,7 @@ class Payment extends Stancer\Core\AbstractObject implements PaymentInterface
         'currency' => [
             'changed' => [
                 [
-                    'sinceVersion' => 2,
+                    'sinceVersion' => Stancer\Enum\ApiVersion::VERSION_2,
                     'required' => false,
                 ],
             ],
@@ -229,7 +229,7 @@ class Payment extends Stancer\Core\AbstractObject implements PaymentInterface
         'customer' => [
             'changed' => [
                 [
-                    'sinceVersion' => 2,
+                    'sinceVersion' => Stancer\Enum\ApiVersion::VERSION_2,
                     'onlyID' => true,
                 ],
             ],
@@ -513,7 +513,7 @@ class Payment extends Stancer\Core\AbstractObject implements PaymentInterface
     {
         $config = Stancer\Config::getGlobal();
 
-        if ($config->version === 1) {
+        if ($config->version === Stancer\Enum\ApiVersion::VERSION_1) {
             return 'checkout';
         }
 
@@ -784,7 +784,7 @@ class Payment extends Stancer\Core\AbstractObject implements PaymentInterface
             throw new Stancer\Exceptions\InvalidAmountException();
         }
 
-        if (!$currency && $config->version === 1) {
+        if (!$currency && $config->version === Stancer\Enum\ApiVersion::VERSION_1) {
             throw new Stancer\Exceptions\InvalidCurrencyException();
         }
 

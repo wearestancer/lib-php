@@ -83,7 +83,7 @@ abstract class AbstractObject implements \JsonSerializable
     public const ENDPOINT = '';
 
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    public const API_VERSION = 1;
+    public const API_VERSION = Stancer\Enum\ApiVersion::VERSION_1;
 
     /**
      * @phpstan-var array<string, mixed>|string
@@ -114,8 +114,7 @@ abstract class AbstractObject implements \JsonSerializable
     public function __construct($id = null)
     {
         $version = Stancer\Config::getGlobal()->getVersion();
-
-        if (static::API_VERSION > $version) {
+        if (static::API_VERSION > $version->value) {
             throw new Stancer\Exceptions\BadApiVersionException();
         }
         $defaultModel = [
@@ -1210,7 +1209,7 @@ abstract class AbstractObject implements \JsonSerializable
      * Change the data Attribute dynamically depending on the API version
      * For now we only change the required field on Card.
      *
-     * @param integer $version The version of our API.
+     * @param Stancer\Enum\ApiVersion $version The version of our API.
      * @param array $data The parameter we want to change.
      *
      * @phpstan-param  DataModel $data
@@ -1219,13 +1218,13 @@ abstract class AbstractObject implements \JsonSerializable
      *
      * @phpstan-return DataModel
      */
-    private function modifyDataVersion(int $version, array $data): array
+    private function modifyDataVersion(Stancer\Enum\ApiVersion $version, array $data): array
     {
         if (!array_key_exists('changed', $data)) {
             return $data;
         }
         foreach ($data['changed'] as $change) {
-            if ($change['sinceVersion'] <= $version) {
+            if ($change['sinceVersion']->value <= $version->value) {
                 unset($change['sinceVersion']);
 
                 /** @var DataModel $data */

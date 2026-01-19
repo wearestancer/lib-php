@@ -22,7 +22,7 @@ class Payout extends Stancer\Tests\atoum
      *
      * @param integer $version
      */
-    public function testGetAmount(int $version)
+    public function testGetAmount(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->if($value = rand(50, 99999))
@@ -51,10 +51,8 @@ class Payout extends Stancer\Tests\atoum
 
     /**
      * @DataProvider versionDataProvider
-     *
-     * @param integer $version
      */
-    public function testGetCurrency(int $version)
+    public function testGetCurrency(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->if($value = uniqid())
@@ -83,10 +81,8 @@ class Payout extends Stancer\Tests\atoum
 
     /**
      * @DataProvider versionDataProvider
-     *
-     * @param integer $version
      */
-    public function testGetDateBank(int $version)
+    public function testGetDateBank(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->if($value = uniqid())
@@ -117,10 +113,8 @@ class Payout extends Stancer\Tests\atoum
 
     /**
      * @DataProvider versionDataProvider
-     *
-     * @param integer $version
      */
-    public function testGetDatePaym(int $version)
+    public function testGetDatePaym(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->if($value = uniqid())
@@ -159,10 +153,8 @@ class Payout extends Stancer\Tests\atoum
 
     /**
      * @DataProvider versionDataProvider
-     *
-     * @param integer $version
      */
-    public function testDisputesDetails(int $version)
+    public function testDisputesDetails(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
@@ -394,10 +386,8 @@ class Payout extends Stancer\Tests\atoum
 
     /**
      * @DataProvider versionDataProvider
-     *
-     * @param integer $version
      */
-    public function testGetDetails(int $version)
+    public function testGetDetails(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->if($value = uniqid())
@@ -467,7 +457,7 @@ class Payout extends Stancer\Tests\atoum
      *
      * @param integer $version
      */
-    public function testGetFees(int $version)
+    public function testGetFees(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->if($value = rand(0, 100))
@@ -499,7 +489,7 @@ class Payout extends Stancer\Tests\atoum
      *
      * @param integer $version
      */
-    public function testGetStatementDescription(int $version)
+    public function testGetStatementDescription(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->if($value = uniqid())
@@ -528,10 +518,8 @@ class Payout extends Stancer\Tests\atoum
 
     /**
      * @DataProvider versionDataProvider
-     *
-     * @param integer $version
      */
-    public function testGetStatus(int $version)
+    public function testGetStatus(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->if($value = uniqid())
@@ -560,10 +548,8 @@ class Payout extends Stancer\Tests\atoum
 
     /**
      * @DataProvider versionDataProvider
-     *
-     * @param integer $version
      */
-    public function testList(int $version)
+    public function testList(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
@@ -599,10 +585,8 @@ class Payout extends Stancer\Tests\atoum
 
     /**
      * @DataProvider versionDataProvider
-     *
-     * @param integer $version
      */
-    public function testPaymentsDetails(int $version)
+    public function testPaymentsDetails(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
@@ -838,10 +822,8 @@ class Payout extends Stancer\Tests\atoum
 
     /**
      * @DataProvider versionDataProvider
-     *
-     * @param integer $version
      */
-    public function testRefundsDetails(int $version)
+    public function testRefundsDetails(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())

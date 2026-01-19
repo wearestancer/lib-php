@@ -24,7 +24,12 @@ class atoum extends base\test
 
     public function beforeTestMethod($method)
     {
-        $version = getenv('API_VERSION') ?: 1;
+        $env = getenv('API_VERSION');
+        if ($env && $tmp = Stancer\Enum\ApiVersion::from($env)) {
+            $version = $tmp;
+        } else {
+            $version = Stancer\Enum\ApiVersion::VERSION_1;
+        }
         if ($method !== 'testGetGlobal_SetGlobal') {
             Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))])
                 ->setVersion($version)
@@ -150,9 +155,9 @@ class atoum extends base\test
 
     /**
      * @param mock\Psr\Http\Client\ClientInterface|Psr\Http\Client\ClientInterface $client
-     * @param mixed $version
+     * @param \Stancer\Enum\ApiVersion $version
      */
-    public function mockConfig($client, $version = 1): Stancer\Config
+    public function mockConfig($client, Stancer\Enum\ApiVersion $version = Stancer\Enum\ApiVersion::VERSION_1): Stancer\Config
     {
         $config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]);
         $config->setHttpClient($client);
@@ -211,8 +216,8 @@ class atoum extends base\test
     public function versionDataProvider()
     {
         return [
-            [1],
-            [2],
+            [Stancer\Enum\ApiVersion::VERSION_1],
+            [Stancer\Enum\ApiVersion::VERSION_2],
         ];
     }
 }

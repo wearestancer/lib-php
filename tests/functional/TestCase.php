@@ -24,7 +24,7 @@ class TestCase extends Stancer\Tests\atoum
         $this->config = Stancer\Config::setGlobal(new Stancer\Config([]));
     }
 
-    public function beforeTestMethod($testMethod, ?int $version = null)
+    public function beforeTestMethod($testMethod, ?Stancer\Enum\ApiVersion $version = null)
     {
         $env = [
             'API_HOST' => '',
@@ -39,15 +39,24 @@ class TestCase extends Stancer\Tests\atoum
                 $this->skip('Missing env ' . $key);
             }
         }
+        $envVersion = Stancer\Enum\ApiVersion::from($env['API_VERSION']);
+        if (!$envVersion) {
+            $this->skip('Api version incorrect');
+        }
+
         // We had a check to run test only if we can contact the server.
-        $this->config->setKeys($env['API_KEY'])->setHost($env['API_HOST'])->setVersion($version ?? $env['API_VERSION']);
+        $this->config
+            ->setKeys($env['API_KEY'])
+            ->setHost($env['API_HOST'])
+            ->setVersion($version ?? $envVersion)
+        ;
         $client = $this->config->getHttpClient();
         $verb = 'get';
         $options['headers']['Authorization'] = $this->config->getBasicAuthHeader();
         $options['headers']['Content-Type'] = 'application/json';
         $options['headers']['User-Agent'] = $this->config->getDefaultUserAgent();
         $version = $this->config->getVersion();
-        $location = 'https://' . $this->config->getHost() . '/v' . $version . '/cards/?start=1';
+        $location = 'https://' . $this->config->getHost() . '/v' . $version->value . '/cards/?start=1';
 
         try {
             $client->request($verb, $location, $options);
@@ -77,7 +86,7 @@ class TestCase extends Stancer\Tests\atoum
 
     public function getNotFoundExceptionMessage($id, $ressource_name): string
     {
-        if ($this->config->version == 1) {
+        if ($this->config->version === Stancer\Enum\ApiVersion::VERSION_1) {
             return 'No such ' . strtolower($ressource_name) . ' ' . $id;
         }
 

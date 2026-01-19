@@ -14,7 +14,7 @@ class Card extends TestCase
 {
     public function personalTypo(): string
     {
-        if ($this->config->version == 1) {
+        if ($this->config->version === Stancer\Enum\ApiVersion::VERSION_1) {
             return 'personnal';
         }
 
@@ -98,7 +98,7 @@ class Card extends TestCase
                 ->and($this->testedInstance->setNumber($number))
                 ->then
         ;
-        if ($this->config->version == 1) {
+        if ($this->config->version === Stancer\Enum\ApiVersion::VERSION_1) {
             $this->exception(function () {
                 $this->testedInstance->send();
             })
@@ -118,7 +118,7 @@ class Card extends TestCase
 
         $this
         ->assert('Updatev1')
-            ->given(Config::getGlobal()->setVersion(1))
+            ->given(Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
             ->if($this->newTestedInstance($id))
             ->then
                 ->variable($this->testedInstance->getName())
@@ -131,7 +131,7 @@ class Card extends TestCase
                     ->isIdenticalTo($name)
 
         ->assert('Updatev2')
-            ->given(Config::getGlobal()->setVersion(2))
+            ->given(Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
             ->if($this->newTestedInstance($id))
             ->then
                 ->integer($this->testedInstance->getExpYear())
