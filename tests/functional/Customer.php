@@ -63,11 +63,7 @@ class Customer extends TestCase
 
                     ->string($this->testedInstance->getExternalId())
                         ->isIdenticalTo('6d378a8b-0849-4ab6-96a7-c107bd613852')
-                    /*
-                    * TODO The country field is not set on our SDK
-                    * ->string($this->testedInstance->getCountry())
-                    *     ->isIdenticalTo('FR')
-                    */
+
                     ->dateTime($this->testedInstance->getCreationDate())
                         ->isEqualTo(new \DateTime('@1758550945'))
         ;

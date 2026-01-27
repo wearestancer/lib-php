@@ -2,13 +2,13 @@
 
 declare(strict_types=1);
 
-namespace Stancer\Payment;
+namespace Stancer\Core;
 
-use Stancer\Core\AbstractObject;
 use Stancer\Traits\SearchTrait;
 
 /**
  * An Object with a custom url, to search Data in a ressource.
+ *
  * E.g: A list of payments in a payment intent.
  *
  * @method ?\DateTimeImmutable getCreated() Get creation date.
@@ -28,8 +28,8 @@ use Stancer\Traits\SearchTrait;
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
- * @property-read array<mixed> $jsonSerialize Alias for `Stancer\Payment\SearchObject::jsonSerialize()`.
- * @property-read array<mixed> $json_serialize Alias for `Stancer\Payment\SearchObject::jsonSerialize()`.
+ * @property-read array<mixed> $jsonSerialize Alias for `Stancer\Core\SearchObject::jsonSerialize()`.
+ * @property-read array<mixed> $json_serialize Alias for `Stancer\Core\SearchObject::jsonSerialize()`.
  */
 class SearchObject extends AbstractObject
 {

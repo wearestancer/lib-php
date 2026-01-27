@@ -2954,15 +2954,14 @@ class Payment extends Stancer\Tests\atoum
             ->and($cardLocation = $this->testedInstance->getCard()->getUri())
             ->and($customerLocation = $this->testedInstance->getCustomer()->getUri())
             ->then
-        ->exception(function () {
-            $this->testedInstance->send();
-        })
-            ->isInstanceOf(Stancer\Exceptions\InvalidExpirationException::class)
-            ->message
-                ->isIdenticalTo('Card expiration is invalid.')
+                ->exception(function () {
+                    $this->testedInstance->send();
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidExpirationException::class)
+                        ->message
+                            ->isIdenticalTo('Card expiration is invalid.')
 
             ->if($card->setExpYear(date('Y') + rand(1, 10)))
-
             ->and(
                 $cardOptions = $this->mockRequestOptions(
                     $config,
@@ -2981,101 +2980,104 @@ class Payment extends Stancer\Tests\atoum
                     ),
                 ],
             ))
-        ->given($bodyWithCardandCustomer = $this->testedInstance->jsonSerialize())
+            ->given($bodyWithCardandCustomer = $this->testedInstance->jsonSerialize())
             ->then
+                ->assert('we call the API')
+                    ->variable($this->testedInstance->getId())
+                        ->isNull
 
-        ->variable($this->testedInstance->getId())
-            ->isNull
+                    ->object($this->testedInstance->send())
+                        ->isTestedInstance
 
-        ->object($this->testedInstance->send())
-            ->isTestedInstance
+                    ->mock($client)
+                        ->call('request')
+                        ->withArguments('POST', $cardLocation, $cardOptions)
+                                ->once
 
-        ->mock($client)
-            ->call('request')
-                ->withArguments('POST', $cardLocation, $cardOptions)
-                    ->once
+                    ->mock($client)
+                        ->call('request')
+                        ->withArguments('POST', $customerLocation, $customerOptions)
+                            ->once
 
-        ->mock($client)
-            ->call('request')
-                ->withArguments('POST', $customerLocation, $customerOptions)
-                    ->once
-
-        ->and($options = $this->mockRequestOptions(
-            $config,
-            [
-                'body' => json_encode(
-                    array_merge(
-                        $bodyWithCardandCustomer,
+                    ->and($options = $this->mockRequestOptions(
+                        $config,
                         [
-                            'card' => $this->testedInstance->getCard()->getId(),
-                            'customer' => $this->testedInstance->getCustomer()->getId(),
-                        ]
-                    ),
-                ),
-            ],
-        ))
-        ->mock($client)
-            ->call('request')
-                ->withArguments('POST', $location, $options)
-                    ->once
+                            'body' => json_encode(
+                                array_merge(
+                                    $bodyWithCardandCustomer,
+                                    [
+                                        'card' => $this->testedInstance->getCard()->getId(),
+                                        'customer' => $this->testedInstance->getCustomer()->getId(),
+                                    ]
+                                ),
+                            ),
+                        ],
+                    ))
+                    ->mock($client)
+                        ->call('request')
+                        ->withArguments('POST', $location, $options)
+                            ->once
 
-        ->mock($logger)
-            ->call('info')->withArguments($logMessage)->once
+                    ->mock($logger)
+                        ->call('info')->withArguments($logMessage)->once
 
-        // Payment object
-        ->string($this->testedInstance->getId())
-            ->isIdenticalTo('paym_KIVaaHi7G8QAYMQpQOYBrUQE')
+                ->assert('we receive the correct payment')
+                    // Payment object
+                    ->string($this->testedInstance->getId())
+                        ->isIdenticalTo('paym_KIVaaHi7G8QAYMQpQOYBrUQE')
 
-        ->dateTime($this->testedInstance->getCreationDate())
-            ->isEqualTo(new \DateTime('@1538564253'))
+                    ->dateTime($this->testedInstance->getCreationDate())
+                        ->isEqualTo(new \DateTime('@1538564253'))
 
-        ->integer($this->testedInstance->getAmount())
-            ->isIdenticalTo(100)
+                    ->integer($this->testedInstance->getAmount())
+                        ->isIdenticalTo(100)
 
-        ->object($this->testedInstance->getCard())
-            ->isIdenticalTo($card)
+                    ->object($this->testedInstance->getCard())
+                        ->isIdenticalTo($card)
 
-        ->enum($this->testedInstance->getCurrency())
-            ->isIdenticalTo(Stancer\Currency::EUR)
+                    ->enum($this->testedInstance->getCurrency())
+                        ->isIdenticalTo(Stancer\Currency::EUR)
 
-        ->object($this->testedInstance->getCustomer())
-            ->isIdenticalTo($customer)
-        ->string($this->testedInstance->getUri())
-            ->isIdenticalTo($location . $this->testedInstance->getId())
+                    ->object($this->testedInstance->getCustomer())
+                        ->isIdenticalTo($customer)
+                    ->string($this->testedInstance->getUri())
+                        ->isIdenticalTo($location . $this->testedInstance->getId())
 
-        ->string($this->testedInstance->getDescription())
-            ->isIdenticalTo('le test restfull v1')
+                    ->string($this->testedInstance->getDescription())
+                        ->isIdenticalTo('le test restfull v1')
 
-        ->variable($this->testedInstance->getOrderId())
-            ->isNull
+                    ->variable($this->testedInstance->getOrderId())
+                        ->isNull
 
-        // Card object
-        ->string($card->getBrand())
-            ->isIdenticalTo('mastercard')
+                ->assert('we receive the correct card')
 
-        ->string($card->getCountry())
-            ->isIdenticalTo('US')
+                    // Card object
+                    ->string($card->getBrand())
+                        ->isIdenticalTo('mastercard')
 
-        ->integer($card->getExpMonth())
-            ->isIdenticalTo(2)
+                    ->string($card->getCountry())
+                        ->isIdenticalTo('US')
 
-        ->integer($card->getExpYear())
-            ->isIdenticalTo(2020)
+                    ->integer($card->getExpMonth())
+                        ->isIdenticalTo(2)
 
-        ->string($card->getId())
-            ->isIdenticalTo('card_xognFbZs935LMKJYeHyCAYUd')
+                    ->integer($card->getExpYear())
+                        ->isIdenticalTo(2020)
 
-        ->string($card->getLast4())
-            ->isIdenticalTo('4444')
+                    ->string($card->getId())
+                        ->isIdenticalTo('card_xognFbZs935LMKJYeHyCAYUd')
 
-        ->variable($card->getName())
-            ->isNull
+                    ->string($card->getLast4())
+                        ->isIdenticalTo('4444')
 
-        ->string($card->getNumber())
-            ->isIdenticalTo($number) // Number is unchanged in send process
+                    ->variable($card->getName())
+                        ->isNull
 
-        ->variable($card->getZipCode())
-            ->isNull
+                    ->string($card->getNumber())
+                        ->isIdenticalTo($number) // Number is unchanged in send process
+
+                    ->variable($card->getZipCode())
+                        ->isNull
         ;
     }
 
@@ -3118,60 +3120,64 @@ class Payment extends Stancer\Tests\atoum
             ->and($customerLocation = $this->testedInstance->getCustomer()->getUri())
 
             ->then
-                ->variable($this->testedInstance->getId())
-                    ->isNull
-                ->object($this->testedInstance->send())
-                    ->isTestedInstance
-               ->mock($client)
-                    ->call('request')
-                        ->withArguments('POST', $customerLocation, $customerOptions)
-                            ->once
-                ->and($options = $this->mockRequestOptions($config, [
-                    'body' => json_encode(
-                        array_merge(
-                            $objectArray,
-                            ['customer' => $this->testedInstance->getCustomer()->getId()]
-                        )
-                    )]))
+                ->assert('we send the payment')
+                    ->variable($this->testedInstance->getId())
+                        ->isNull
 
-                ->mock($client)
-                    ->call('request')
-                        ->withArguments('POST', $location, $options)
-                            ->once
+                    ->object($this->testedInstance->send())
+                        ->isTestedInstance
 
-                ->mock($logger)
-                    ->call('info')->withArguments($logMessage)->once
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('POST', $customerLocation, $customerOptions)
+                                ->once
 
-                // Payment object
-                ->string($this->testedInstance->getId())
-                    ->isIdenticalTo('paym_pia9ossoqujuFFbX0HdS3FLi')
+                    ->and($options = $this->mockRequestOptions($config, [
+                        'body' => json_encode(
+                            array_merge(
+                                $objectArray,
+                                ['customer' => $this->testedInstance->getCustomer()->getId()]
+                            )
+                        )]))
 
-                ->dateTime($this->testedInstance->getCreationDate())
-                    ->isEqualTo(new \DateTime('@1562085759'))
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('POST', $location, $options)
+                                ->once
 
-                ->integer($this->testedInstance->getAmount())
-                    ->isIdenticalTo(10000)
+                    ->mock($logger)
+                        ->call('info')->withArguments($logMessage)->once
 
-                ->enum($this->testedInstance->getCurrency())
-                    ->isIdenticalTo(Stancer\Currency::EUR)
+                ->assert('we receive the payment')
+                    ->string($this->testedInstance->getId())
+                        ->isIdenticalTo('paym_pia9ossoqujuFFbX0HdS3FLi')
 
-                ->object($this->testedInstance->getCustomer())
-                    ->isIdenticalTo($customer)
+                    ->dateTime($this->testedInstance->getCreationDate())
+                        ->isEqualTo(new \DateTime('@1562085759'))
 
-                ->string($this->testedInstance->getDescription())
-                    ->isIdenticalTo('Test payment without any card or sepa account')
+                    ->integer($this->testedInstance->getAmount())
+                        ->isIdenticalTo(10000)
 
-                ->variable($this->testedInstance->getOrderId())
-                    ->isNull
+                    ->enum($this->testedInstance->getCurrency())
+                        ->isIdenticalTo(Stancer\Currency::EUR)
 
-                ->variable($this->testedInstance->getCard())
-                    ->isNull
+                    ->object($this->testedInstance->getCustomer())
+                        ->isIdenticalTo($customer)
 
-                ->variable($this->testedInstance->getSepa())
-                    ->isNull
+                    ->string($this->testedInstance->getDescription())
+                        ->isIdenticalTo('Test payment without any card or sepa account')
 
-                ->variable($this->testedInstance->getMethod())
-                    ->isNull
+                    ->variable($this->testedInstance->getOrderId())
+                        ->isNull
+
+                    ->variable($this->testedInstance->getCard())
+                        ->isNull
+
+                    ->variable($this->testedInstance->getSepa())
+                        ->isNull
+
+                    ->variable($this->testedInstance->getMethod())
+                        ->isNull
         ;
     }
 

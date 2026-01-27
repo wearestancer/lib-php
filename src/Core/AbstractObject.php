@@ -56,14 +56,11 @@ use Stancer;
     restricted: true,
     type: \DateTimeImmutable::class,
 )]
-#[Stancer\Core\Documentation\PropertyAlias(
-    'createdAt',
-    'created'
-)]
 abstract class AbstractObject implements \JsonSerializable
 {
     use Stancer\Traits\AliasTrait;
 
+    //region properties
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     final public const BOOLEAN = 'boolean';
 
@@ -103,6 +100,9 @@ abstract class AbstractObject implements \JsonSerializable
     protected array $modified = [];
 
     protected bool $cleanModified = false;
+
+    //endregion
+    //region public function
 
     /**
      * Create or get an API object.
@@ -886,6 +886,8 @@ abstract class AbstractObject implements \JsonSerializable
         return $this->toJson();
     }
 
+    //region protected method
+
     /**
      * Add a value stored list in data model.
      *
@@ -1202,8 +1204,8 @@ abstract class AbstractObject implements \JsonSerializable
 
         return $value;
     }
-
-    // REGION Private method
+    //endregion
+    //region Private method
 
     /**
      * Change the data Attribute dynamically depending on the API version
@@ -1234,4 +1236,5 @@ abstract class AbstractObject implements \JsonSerializable
 
         return $data;
     }
+    //endregion
 }

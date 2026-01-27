@@ -1396,7 +1396,7 @@ class Config extends Stancer\Tests\atoum
                     ->enum($this->testedInstance->version)
                         ->isIdenticalTo(Stancer\Enum\ApiVersion::from($randomVersion))
 
-                    ->assert('Invalid API Version')
+                ->assert('Invalid API Version')
                     ->given($wrongVersionNumber = rand(3, PHP_INT_MAX))
                     ->enum($this->newTestedInstance([])->version)
                         ->isIdenticalTo($defaultVersion)

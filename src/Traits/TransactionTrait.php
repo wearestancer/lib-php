@@ -43,7 +43,7 @@ trait TransactionTrait
 
             throw new Stancer\Exceptions\BadRequestException($message);
         }
-        $capture = new Stancer\Payment\SearchObject($this->getId(), 'capture', $this->getEndpoint());
+        $capture = new Stancer\Core\SearchObject($this->getId(), 'capture', $this->getEndpoint());
         $request = new Stancer\Core\Request();
         // We post the serialized object, jsonSerialize if notModified return the ID, that's what we want!
         $response = $request->post($capture);

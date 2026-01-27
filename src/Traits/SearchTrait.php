@@ -8,7 +8,7 @@ use DatePeriod;
 use DateTimeInterface;
 use Generator;
 use Stancer;
-use Stancer\Payment\SearchObject;
+use Stancer\Core\SearchObject;
 
 /**
  * Simple trait to simplify object search from the API.
@@ -173,7 +173,7 @@ trait SearchTrait
             if ($this->id === null) {
                 throw new Stancer\Exceptions\InvalidSearchFilterException();
             }
-            $object = new SearchObject($this->id, $innerSearch);
+            $object = new SearchObject($this->id, $innerSearch, $this::ENDPOINT);
         }
         $until = null;
         $allowed = [

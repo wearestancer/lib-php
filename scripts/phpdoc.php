@@ -171,7 +171,7 @@ $classes = [
             200,
         ],
     ],
-    Stancer\Payment\SearchObject::class => [
+    Stancer\Core\SearchObject::class => [
         'instance' => [
             'paym_123456789123456',
             'payment',

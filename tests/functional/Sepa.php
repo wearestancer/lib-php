@@ -44,12 +44,6 @@ class Sepa extends TestCase
 
                     ->dateTime($this->testedInstance->getCreationDate())
                         ->isEqualTo(new \DateTime('@1758551637'))
-
-                    /*
-                     * TODO THe customer field is not set in our SDK for now
-                     * ->string($this->testedInstance->getCustomer()->getId())
-                     *      ->isIdenticalTo('cust_kw4kwsJHmcWTPd2w5Y6XaT6Q')
-                     */
         ;
     }
 }

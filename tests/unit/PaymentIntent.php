@@ -519,13 +519,19 @@ class PaymentIntent extends Stancer\Tests\atoum
                     ->isInstanceOf(Stancer\Exceptions\InvalidSearchCardFilterException::class)
                     ->message
                         ->isIdenticalTo('A valid Card reference must have 29 characters.')
+                ->exception(function () {
+                    testedClass::list(['card' => new Stancer\Card('')]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchCardFilterException::class)
+                    ->message
+                        ->isIdenticalTo('A valid Card reference must have 29 characters.')
 
                 ->exception(function () {
                     testedClass::list(['card' => rand(0, PHP_INT_MAX)]);
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidSearchCardFilterException::class)
                     ->message
-                        ->isIdenticalTo('Card must be a string.')
+                        ->isIdenticalTo('Card must be a card object or a string.')
 
             ->assert('Invalid sepa filter')
                 ->exception(function () {

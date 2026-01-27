@@ -22,18 +22,18 @@ class Auth extends Stancer\Tests\atoum
         ;
         if (\Stancer\Config::getGlobal()->version === Stancer\Enum\ApiVersion::VERSION_1) {
             $this
-            ->currentlyTestedClass
-            ->array($this->testedInstance->jsonSerialize())
-                ->hasSize(1)
-                ->hasKey('status')
-                ->string['status']
-                    ->isIdenticalTo('request')
+                ->currentlyTestedClass
+                ->array($this->testedInstance->jsonSerialize())
+                    ->hasSize(1)
+                    ->hasKey('status')
+                    ->string['status']
+                        ->isIdenticalTo('request')
             ;
         } else {
             $this
-            ->currentlyTestedClass
-            ->boolean($this->testedInstance->jsonSerialize())
-                ->isTrue
+                ->currentlyTestedClass
+                ->boolean($this->testedInstance->jsonSerialize())
+                    ->isTrue
             ;
         }
     }
