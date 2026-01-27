@@ -1257,7 +1257,7 @@ class Payment extends Stancer\Tests\atoum
                     })
                     ->isInstanceOf(Stancer\Exceptions\BadRequestException::class)
                         ->message
-                            ->isEqualTo('The payment must be authorized to be captured.')
+                            ->isEqualTo('The Payment must be authorized to be captured.')
 
             ->given($response = $this->mockJsonResponse('payment', 'refused'))
             ->and($this->calling($client)->request = $response)
@@ -1276,7 +1276,7 @@ class Payment extends Stancer\Tests\atoum
 
                     ->isInstanceOf(Stancer\Exceptions\BadRequestException::class)
                         ->message
-                            ->isIdenticalTo('The payment must be authorized to be captured.')
+                            ->isIdenticalTo('The Payment must be authorized to be captured.')
 
             ->given($authorizeresponse = $this->mockJsonResponse('payment', 'authorized'))
             ->and($this->calling($client)->request = $authorizeresponse)
@@ -2242,8 +2242,8 @@ class Payment extends Stancer\Tests\atoum
                     })
                         ->isInstanceOf(Stancer\Exceptions\InvalidCurrencyException::class)
                         ->message
-                            ->contains('"' . $fakeCurrency . '" is not a valid currency')
-                            ->contains('please use one of the following :')
+                            ->contains('"' . $fakeCurrency . '" is not a valid currency,')
+                            ->contains(' please use one of the following: ')
                             ->contains($lower)
 
                     ->boolean($this->testedInstance->isModified())

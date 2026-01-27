@@ -39,9 +39,9 @@ class Address extends TestCase
         } else {
             $this
                 ->given($this->newTestedInstance($id))
-                ->then
-                ->boolean($this->testedInstance->getDeleted())
-                ->isTrue
+                    ->then
+                        ->boolean($this->testedInstance->getDeleted())
+                            ->isTrue
             ;
         }
     }
@@ -62,7 +62,6 @@ class Address extends TestCase
             ->assert('Get test address')
                 ->if($this->newTestedInstance('addr_0CMU6czWYmRtqqLEi6emsJ1B'))
                 ->then
-
                     ->string($this->testedInstance->getCity())
                         ->isIdenticalTo('Paris')
 
@@ -86,12 +85,6 @@ class Address extends TestCase
 
                     ->string($this->testedInstance->getZipCode())
                         ->isIdenticalTo('75001')
-
-                    /*
-                    * TODO The country field is not set on our SDK
-                    * ->string($this->testedInstance->getCountry())
-                    *     ->isIdenticalTo('FR')
-                    */
         ;
     }
 
@@ -139,14 +132,14 @@ class Address extends TestCase
                 ->and($this->testedInstance->setCity($city))
                 ->and($this->testedInstance->setState($state))
                 ->and($this->testedInstance->setCountry($country))
-            ->then
-                ->object($this->testedInstance->send())
-                    ->isInstanceOf(Stancer\Address::class)
-                ->string($this->testedInstance->id)
-                    ->isNotEmpty
-                    ->isNotEqualTo($id)
-                ->string($this->testedInstance->city)
-                    ->isEqualTo($city)
+                ->then
+                    ->object($this->testedInstance->send())
+                        ->isInstanceOf(Stancer\Address::class)
+                    ->string($this->testedInstance->id)
+                        ->isNotEmpty
+                        ->isNotEqualTo($id)
+                    ->string($this->testedInstance->city)
+                        ->isEqualTo($city)
         ;
     }
 

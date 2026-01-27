@@ -45,10 +45,13 @@ class Dispute extends TestCase
         ;
     }
 
-    public function testGetDispute()
+    /**
+     * @dataProvider versionDataProvider
+     */
+    public function testGetDispute(Stancer\Enum\ApiVersion $version)
     {
         $this
-            ->given(Stancer\Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
+            ->given(Stancer\Config::getGlobal()->setVersion($version))
             ->given($this->newTestedInstance('dspt_a4dIMSi7PBBoGiu2BocagB2f'))
             ->then
 
@@ -60,31 +63,6 @@ class Dispute extends TestCase
 
             ->integer($this->testedInstance->getAmount())
                 ->isIdenticalTo(300)
-
-            ->given(Stancer\Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
-            ->given($this->newTestedInstance('dspt_a4dIMSi7PBBoGiu2BocagB2f'))
-            ->then
-
-            ->string($this->testedInstance->getCurrency())
-                ->isIdenticalTo(Stancer\Currency::EUR->value)
-
-            ->string($this->testedInstance->getPayment()->getId())
-                ->isIdenticalTo('paym_0yG3rJ6rBT6u9Kc5HUyRAzsP')
-
-            ->string($this->testedInstance->getResponse())
-                ->isIdenticalTo('AC04')
-
-            ->integer($this->testedInstance->getAmount())
-                ->isIdenticalTo(300)
-                /*
-                * TODO add those var to datamodel
-                * ->string($this->testedInstance->getDateBank())
-                * ->isIdenticalTo('2025-09-22')
-                * ->string($this->testedInstance->getType())
-                * ->isIdenticalTo('chargeback')
-                * ->string($this->testedInstance->getStatus)
-                * ->isIdenticalTo('open')
-                */
         ;
     }
 }

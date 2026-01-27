@@ -96,8 +96,8 @@ class Card extends TestCase
                 ->and($this->testedInstance->setExpMonth($month))
                 ->and($this->testedInstance->setExpYear($year))
                 ->and($this->testedInstance->setNumber($number))
-                ->then
         ;
+
         if ($this->config->version === Stancer\Enum\ApiVersion::VERSION_1) {
             $this->exception(function () {
                 $this->testedInstance->send();
@@ -117,68 +117,68 @@ class Card extends TestCase
         }
 
         $this
-        ->assert('Updatev1')
-            ->given(Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
-            ->if($this->newTestedInstance($id))
-            ->then
-                ->variable($this->testedInstance->getName())
-                    ->isNull
+            ->assert('Updatev1')
+                ->given(Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->variable($this->testedInstance->getName())
+                        ->isNull
 
-                ->object($this->testedInstance->setName($name)->send())
-                    ->isTestedInstance
+                    ->object($this->testedInstance->setName($name)->send())
+                        ->isTestedInstance
 
-                ->string($this->newTestedInstance($id)->getName())
-                    ->isIdenticalTo($name)
+                    ->string($this->newTestedInstance($id)->getName())
+                        ->isIdenticalTo($name)
 
-        ->assert('Updatev2')
-            ->given(Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
-            ->if($this->newTestedInstance($id))
-            ->then
-                ->integer($this->testedInstance->getExpYear())
-                    ->isIdenticalto($year)
+            ->assert('Updatev2')
+                ->given(Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->integer($this->testedInstance->getExpYear())
+                        ->isIdenticalto($year)
 
-                ->integer($this->testedInstance->getExpMonth())
-                    ->isIdenticalto($month)
+                    ->integer($this->testedInstance->getExpMonth())
+                        ->isIdenticalto($month)
 
-                ->object($this->testedInstance->setExpYear(++$year)->send())
-                    ->isTestedInstance
+                    ->object($this->testedInstance->setExpYear(++$year)->send())
+                        ->isTestedInstance
 
-                ->integer($this->newTestedInstance($id)->getExpYear())
-                    ->isIdenticalTo($year)
+                    ->integer($this->newTestedInstance($id)->getExpYear())
+                        ->isIdenticalTo($year)
 
-        ->assert('Read data / Name')
-            ->if($this->newTestedInstance($id))
-            ->then
-                ->string($this->testedInstance->getName())
-                    ->isIdenticalTo($name)
+            ->assert('Read data / Name')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->string($this->testedInstance->getName())
+                        ->isIdenticalTo($name)
 
-        ->assert('Read data / Expiration month')
-            ->if($this->newTestedInstance($id))
-            ->then
-                ->integer($this->testedInstance->getExpMonth())
-                    ->isIdenticalTo($month)
+            ->assert('Read data / Expiration month')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->integer($this->testedInstance->getExpMonth())
+                        ->isIdenticalTo($month)
 
-        ->assert('Read data / Expiration year')
-            ->if($this->newTestedInstance($id))
-            ->then
-                ->integer($this->testedInstance->getExpYear())
-                    ->isIdenticalTo($year)
+            ->assert('Read data / Expiration year')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->integer($this->testedInstance->getExpYear())
+                        ->isIdenticalTo($year)
 
-        ->assert('Read data / Other field')
-            ->if($this->newTestedInstance($id))
-            ->then
-                // Could not be return by the API
-                ->variable($this->testedInstance->getCvc())
-                    ->isNull
+            ->assert('Read data / Other field')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    // Could not be return by the API
+                    ->variable($this->testedInstance->getCvc())
+                        ->isNull
 
-                // Could not be return by the API
-                ->variable($this->testedInstance->getNumber())
-                    ->isNull
+                    // Could not be return by the API
+                    ->variable($this->testedInstance->getNumber())
+                        ->isNull
 
-                // We could not validate the value
-                ->string($this->testedInstance->getFunding())
-                ->string($this->testedInstance->getNature())
-                ->string($this->testedInstance->getNetwork())
+                    // We could not validate the value
+                    ->string($this->testedInstance->getFunding())
+                    ->string($this->testedInstance->getNature())
+                    ->string($this->testedInstance->getNetwork())
         ;
     }
 }

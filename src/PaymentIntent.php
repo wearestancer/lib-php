@@ -6,7 +6,6 @@ namespace Stancer;
 
 use Generator;
 use Stancer;
-use Stancer\Interfaces\PaymentInterface;
 use Stancer\Stub\Payment;
 
 /**
@@ -18,13 +17,16 @@ use Stancer\Stub\Payment;
  * @method ?integer getAmount() Get intent amount.
  * @method ?\Stancer\Address getBilling_address() Get billing address.
  * @method ?boolean getCapture() Get capture immediately the payment.
+ * @method ?\Stancer\Card getCard() Get card object.
  * @method ?\DateTimeImmutable getCreated() Get creation date.
  * @method ?\Stancer\Currency getCurrency() Get processed currency.
+ * @method ?\Stancer\Customer getCustomer() Get customer object.
  * @method ?string getDescription() Get intent description.
  * @method ?mixed getMetadata() Get arbitrary metadata.
  * @method Stancer\Payment\MethodsAllowed[] getMethodsAllowed() Get list of payment methods allowed for this intent.
  * @method ?string getOrderId() Get order identifier.
  * @method ?\Stancer\Payment getPayment() Get finalized payment.
+ * @method ?string getPaymentPageUrl() Get payment page URL.
  * @method ?string getReturnUrl() Get URL to redirect back your customer after processing the payment.
  * @method ?\Stancer\Sepa getSepa() Get SEPA object.
  * @method ?\Stancer\Address getShipping_address() Get shipping Address.
@@ -50,20 +52,24 @@ use Stancer\Stub\Payment;
  * @method Stancer\Payment\MethodsAllowed[] get_methods_allowed() Get list of payment methods allowed for this intent.
  * @method ?string get_order_id() Get order identifier.
  * @method ?\Stancer\Payment get_payment() Get finalized payment.
+ * @method ?string get_payment_page_url() Get payment page URL.
  * @method ?string get_return_url() Get URL to redirect back your customer after processing the payment.
  * @method ?\Stancer\Sepa get_sepa() Get SEPA object.
  * @method ?\Stancer\Address get_shipping_address() Get shipping Address.
  * @method ?\Stancer\PaymentIntent\Status get_status() Get status of the intent.
  * @method ?\Stancer\ThreeDomainsSecure\Status get_three_ds() Get ask for an authenticated payment.
  * @method ?\Stancer\ThreeDomainsSecure\Status get_threeds() Get ask for an authenticated payment.
- * @method string get_uri() Return resource location.
+ * @method string get_uri() Get entity resource location.
  * @method ?string get_url() Get payment page URL.
  * @method \Generator list_payments(array<mixed> $terms) List payment associated to the payment intent.
  * @method $this set3DS(\Stancer\ThreeDomainsSecure\Status $3DS) Set ask for an authenticated payment.
  * @method $this setBilling_address(\Stancer\Address $billing_address) Set billing address.
  * @method $this setCapture(boolean $capture) Set capture immediately the payment.
+ * @method $this setCard(\Stancer\Card $card) Set card object.
+ * @method $this setCustomer(\Stancer\Customer $customer) Set customer object.
  * @method $this setDescription(string $description) Set intent description.
  * @method $this setOrderId(string $orderId) Set order identifier.
+ * @method $this setSepa(\Stancer\Sepa $sepa) Set SEPA object.
  * @method $this setShipping_address(\Stancer\Address $shipping_address) Set shipping Address.
  * @method $this setThreeDS(\Stancer\ThreeDomainsSecure\Status $threeDS) Set ask for an authenticated payment.
  * @method $this setThreeds(\Stancer\ThreeDomainsSecure\Status $threeds) Set ask for an authenticated payment.
@@ -115,14 +121,19 @@ use Stancer\Stub\Payment;
  * @property-read string $endpoint API endpoint.
  * @property-read ?string $id Object ID.
  * @property-read ?\Stancer\Payment $payment Finalized payment.
+ * @property-read ?string $paymentPageUrl Payment page URL.
+ * @property-read ?string $payment_page_url Payment page URL.
  * @property-read ?\Stancer\PaymentIntent\Status $status Status of the intent.
+ * @property-read string $uri Entity resource location.
  * @property-read ?string $url Payment page URL.
  */
 #[Stancer\Core\Documentation\PropertyAlias('3DS', 'threeds')]
 #[Stancer\Core\Documentation\PropertyAlias('threeDS', 'threeds')]
-class PaymentIntent extends Stancer\Core\AbstractObject implements PaymentInterface
+#[Stancer\Core\Documentation\PropertyAlias('paymentPageUrl', 'url')]
+class PaymentIntent extends Stancer\Core\AbstractObject
 {
     use Stancer\Traits\SearchTrait;
+    use Stancer\Traits\TransactionTrait;
 
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     final public const ENDPOINT = 'payment_intents';
@@ -282,64 +293,15 @@ class PaymentIntent extends Stancer\Core\AbstractObject implements PaymentInterf
             case 'created':
                 return parent::getCreatedAt();
 
+            case 'geturl':
+            case 'get_url':
+            case 'getpaymentpageurl':
+            case 'get_payment_page_url':
+                return parent::__call('geturl', $arguments);
+
             default:
                 return parent::__call($method, $arguments);
         }
-    }
-
-    /**
-     * Add an allowed method.
-     *
-     * @param Stancer\Payment\MethodsAllowed|string $method New method.
-     *
-     * @return $this
-     * @throws Stancer\Exceptions\InvalidArgumentException When currency is not EUR and trying to set "sepa" method.
-     */
-    public function addMethodsAllowed(Stancer\Payment\MethodsAllowed|string $method): static
-    {
-        $currency = $this->getCurrency();
-
-        if ($currency && $method && $method === 'sepa' && $currency !== Stancer\Currency::EUR) {
-            $message = sprintf('You can not use "%s" method with "%s" currency.', $method, $currency->value);
-
-            throw new Stancer\Exceptions\InvalidArgumentException($message);
-        }
-
-        // @phpstan-ignore-next-line The method is not defined in parent object so it will trigger __call ...
-        return parent::addMethodsAllowed($method);
-        // ... and that's that we want
-    }
-
-    /**
-     * Capture a Payment Intent.
-     *
-     * @throws Stancer\Exceptions\BadRequestException If the payment isn't Capturable.
-     */
-    public function capture(): static
-    {
-        if ($this->getId() === null || $this->getStatus() === null || !$this->getStatus()->isCapturable()) {
-            throw new Stancer\Exceptions\BadRequestException('The payment intent must be authorized to be captured.');
-        }
-        $capture = new Stancer\Payment\SearchObject($this->getId(), 'capture');
-        $request = new Stancer\Core\Request();
-        // We post the serialized object, jsonSerialize if notModified return the ID, that's what we want!
-        $response = $request->post($capture);
-
-        // Maybe make this a protected function "hydrateFromResponse(string $response) :static.
-        /** @phpstan-var array<string, mixed> $body */
-        $body = json_decode($response, true);
-
-        if ($body) {
-            $this->cleanModified = true;
-            $this->hydrate($body);
-        }
-
-        $this->modified = [];
-
-        $message = sprintf('%s "%s" %s', $this->getEntityName(), $this->id, 'capture');
-        Stancer\Config::getGlobal()->getLogger()->info($message);
-
-        return $this;
     }
 
     /**
@@ -411,32 +373,6 @@ class PaymentIntent extends Stancer\Core\AbstractObject implements PaymentInterf
     }
 
     /**
-     * Return a card from an ID.
-     */
-    public function getCard(): ?Stancer\Card
-    {
-        $card = parent::getCard();
-        if ($card === null) {
-            return null;
-        }
-
-        return $card;
-    }
-
-    /**
-     * Return a customer from an ID.
-     */
-    public function getCustomer(): ?Stancer\Customer
-    {
-        $customer = parent::getCustomer();
-        if ($customer === null) {
-            return null;
-        }
-
-        return $customer;
-    }
-
-    /**
      * Return the entity name
      * This could lead to bugs as, for all other entities, their names are the Class name.
      */
@@ -444,15 +380,6 @@ class PaymentIntent extends Stancer\Core\AbstractObject implements PaymentInterf
     public function getEntityName(): string
     {
         return 'payment_intent';
-    }
-
-    /**
-     * Return resource location.
-     */
-    #[\Override]
-    public function getUri(): string
-    {
-        return parent::getUri();
     }
 
     /**
@@ -482,76 +409,6 @@ class PaymentIntent extends Stancer\Core\AbstractObject implements PaymentInterf
         }
 
         return parent::setAmount($amount);
-    }
-
-    /**
-     * Set A card, by id or by object.
-     *
-     * @param Stancer\Card|string $card A card Object or it's ID.
-     *
-     * @return $this
-     */
-    public function setCard(Stancer\Card|string $card): static
-    {
-        if (is_string($card)) {
-            $card = new Stancer\Card($card);
-        }
-
-        return parent::setCard($card);
-    }
-
-    /**
-     * Set the currency.
-     *
-     * @param Stancer\Currency|string $currency The currency.
-     *
-     * @return $this
-     * @throws Stancer\Exceptions\InvalidCurrencyException When currency is EUR and "sepa" is already allowed.
-     * @throws Stancer\Exceptions\InvalidCurrencyException When the currency is invalid.
-     */
-    public function setCurrency(Stancer\Currency|string $currency): static
-    {
-        try {
-            if (is_string($currency)) {
-                $new = Stancer\Currency::from(strtolower($currency));
-            } else {
-                $new = $currency;
-            }
-        } catch (\ValueError $exception) {
-            $params = [
-                $currency,
-                implode(', ', array_map(fn (Stancer\Currency $case): string => $case->value, Stancer\Currency::cases())),
-            ];
-            $message = vsprintf('"%s" is not a valid currency, please use one of the following: %s', $params);
-
-            throw new Stancer\Exceptions\InvalidCurrencyException($message, previous: $exception);
-        }
-
-        $methods = $this->getMethodsAllowed();
-
-        if (in_array(Stancer\Payment\MethodsAllowed::SEPA, $methods, true) && $new !== Stancer\Currency::EUR) {
-            $message = sprintf('You can not use "%s" currency with "%s" method.', $new->value, 'sepa');
-
-            throw new Stancer\Exceptions\InvalidCurrencyException($message);
-        }
-
-        return parent::setCurrency($new);
-    }
-
-    /**
-     * Set a customer by id or by object.
-     *
-     * @param Stancer\Customer|string $customer A customer object or it's ID.
-     *
-     * @return $this
-     */
-    public function setCustomer(Stancer\Customer|string $customer): static
-    {
-        if (is_string($customer)) {
-            $customer = new Stancer\Customer($customer);
-        }
-
-        return parent::setCustomer($customer);
     }
 
     /**
@@ -624,38 +481,5 @@ class PaymentIntent extends Stancer\Core\AbstractObject implements PaymentInterf
         }
 
         return parent::setMethodsAllowed($new);
-    }
-
-    /**
-     * Update return URL.
-     *
-     * @param string $url New HTTPS URL.
-     *
-     * @return $this
-     * @throws Stancer\Exceptions\InvalidUrlException When URL is not an HTTPS URL.
-     */
-    public function setReturnUrl(string $url): self
-    {
-        if (strpos($url, 'https://') !== 0) {
-            throw new Stancer\Exceptions\InvalidUrlException('You must provide an HTTPS URL.');
-        }
-
-        return parent::setReturnUrl($url);
-    }
-
-    /**
-     * Set a Sepa by id or by object.
-     *
-     * @param Stancer\Sepa|string $sepa A sepa object or it's ID.
-     *
-     * @return $this
-     */
-    public function setSepa(Stancer\Sepa|string $sepa): static
-    {
-        if (is_string($sepa)) {
-            $sepa = new Stancer\Sepa($sepa);
-        }
-
-        return parent::setSepa($sepa);
     }
 }

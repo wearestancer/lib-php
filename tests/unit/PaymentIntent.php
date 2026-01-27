@@ -1348,7 +1348,7 @@ class PaymentIntent extends Stancer\Tests\atoum
             })
                 ->isInstanceOf(Stancer\Exceptions\BadRequestException::class)
                 ->message
-                    ->isIdenticalTo('The payment intent must be authorized to be captured.')
+                    ->isIdenticalTo('The payment_intent must be authorized to be captured.')
 
         ->assert('Does not allow Capture non authorized payment')
             ->given($client = new mock\Stancer\Http\Client())
@@ -1367,7 +1367,7 @@ class PaymentIntent extends Stancer\Tests\atoum
             })
             ->isInstanceOf(Stancer\Exceptions\BadRequestException::class)
             ->message
-                ->isIdenticalTo('The payment intent must be authorized to be captured.')
+                ->isIdenticalTo('The payment_intent must be authorized to be captured.')
 
         ->assert('Capture an authorize payment')
             ->given($client = new mock\Stancer\Http\Client())
@@ -2101,6 +2101,8 @@ class PaymentIntent extends Stancer\Tests\atoum
                     ->then
                         ->string($this->testedInstance->getUrl())
                             ->isIdenticalTo($url)
+                        ->string($this->testedInstance->getPaymentPageUrl())
+                            ->isIdenticalTo($url)
 
                 ->assert('Aliases')
                     ->variable($this->newTestedInstance->get_url())->isNull
@@ -2110,6 +2112,14 @@ class PaymentIntent extends Stancer\Tests\atoum
                     ->variable($this->newTestedInstance->url)->isNull
                     ->variable($this->testedInstance->hydrate(['url' => $url]))
                     ->string($this->testedInstance->url)->isIdenticalTo($url)
+
+                    ->variable($this->newTestedInstance->get_payment_page_url())->isNull
+                    ->variable($this->testedInstance->hydrate(['url' => $url]))
+                    ->string($this->testedInstance->get_payment_page_url())->isIdenticalTo($url)
+
+                    ->variable($this->newTestedInstance->getPaymentPageUrl())->isNull
+                    ->variable($this->testedInstance->hydrate(['url' => $url]))
+                    ->string($this->testedInstance->getPaymentPageUrl())->isIdenticalTo($url)
         ;
     }
 }
