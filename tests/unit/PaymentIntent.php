@@ -271,7 +271,8 @@ class PaymentIntent extends Stancer\Tests\atoum
                         ->message
                             ->isIdenticalTo('You are not allowed to modify the creation date.')
 
-            ->given($secret = 'stest_' . bin2hex(random_bytes(12)))
+            ->given($secret = 'stest_' . $this->getRandomString(24))
+
             ->and($config = Stancer\Config::init([$secret]))
             ->and($config->setDebug(false))
             ->and($config->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
@@ -534,6 +535,13 @@ class PaymentIntent extends Stancer\Tests\atoum
                         ->isIdenticalTo('Card must be a card object or a string.')
 
             ->assert('Invalid sepa filter')
+                ->exception(function () {
+                    testedClass::list(['sepa' => new Stancer\Sepa('')]);
+                })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchSepaFilterException::class)
+                    ->message
+                        ->isIdenticalTo('A valid SEPA reference must have 29 characters.')
+
                 ->exception(function () {
                     testedClass::list(['sepa' => '']);
                 })

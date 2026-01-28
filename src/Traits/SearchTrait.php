@@ -171,7 +171,9 @@ trait SearchTrait
         $object = $this;
         if ($innerSearch !== null) {
             if ($this->id === null) {
-                throw new Stancer\Exceptions\InvalidSearchFilterException();
+                throw new Stancer\Exceptions\InvalidSearchFilterException(
+                    'You cannot search linked item before sending the object.'
+                );
             }
             $object = new SearchObject($this->id, $innerSearch, $this::ENDPOINT);
         }

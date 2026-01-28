@@ -1892,6 +1892,103 @@ class StubObject extends Stancer\Tests\atoum
                                         ->isIdenticalTo($date2->format('Y-m-d'))
                                 ;
                             })
+                ->assert('Serializable serialize')
+                    ->given($this->newTestedInstance)
+                    ->and($this->testedInstance->setSerializable([new Stancer\Stub\JsonSerialize('test')]))
+                    ->then
+                        ->array($serial = $this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('serializable')
+                        ->array($data = $serial['serializable'])
+                            ->hasSize(1)
+                            ->string($data[0])
+                                ->isIdenticalTo('test')
+
+                ->assert('Stringable stringify')
+                    ->given($this->newTestedInstance)
+                    ->and($this->testedInstance->setStringable([new Stancer\Stub\Stringable('test')]))
+                    ->then
+                        ->array($serial = $this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('stringable')
+                        ->array($data = $serial['stringable'])
+                            ->hasSize(1)
+                            ->string($data[0])
+                                ->isIdenticalTo('test')
+        ;
+    }
+
+    public function test_ModifyDataVersion()
+    {
+        $this
+            ->given($config = Stancer\Config::getGlobal())
+            ->given($stringData = $this->getRandomString(1, 20))
+            ->given($intData = $this->getRandomInteger(1, 100))
+
+            ->and($config->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
+            ->assert('In V1 it\'s a string')
+                ->object($this->newTestedInstance(['modifiedDataType' => $stringData]))
+                    ->isInstanceOf(Stancer\Stub\Core\StubObject::class)
+                ->string($this->testedInstance->getModifiedDataType())
+                    ->isIdenticalTo($stringData)
+
+                    ->assert('In V1 it\'s not an integer')
+                ->exception(function () use ($intData) {
+                    $this->newTestedInstance(['modifiedDataType' => $intData]);
+                })
+
+            ->given($config->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
+            ->assert('In V2 it\'s a integer')
+                ->object($this->newTestedInstance(['modifiedDataType' => $intData]))
+                    ->isInstanceOf(Stancer\Stub\Core\StubObject::class)
+                ->integer($this->testedInstance->getModifiedDataType())
+                    ->isIdenticalTo($intData)
+
+            ->assert('In V2 it\'s not a string')
+                ->exception(function () use ($stringData) {
+                    $this->newTestedInstance(['modifiedDataType' => $stringData]);
+                })
+
+            ->given(
+                $data = [
+                    'changed' => [
+                        [
+                            'sinceVersion' => Stancer\Enum\ApiVersion::VERSION_2,
+                            'desc' => 'Description for version 2',
+                        ],
+                    ],
+                    'desc' => 'Description for version 1',
+                ]
+            )
+            ->assert('test the method directly (unmodified)')
+
+                ->array(
+                    $modifyData = $this
+                        ->invoke($this->newTestedInstance)
+                        ->modifyDataVersion(
+                            Stancer\Enum\ApiVersion::VERSION_1,
+                            $data
+                        )
+                )
+                    ->hasSize(2)
+                    ->hasKey('desc')
+
+                    ->string($modifyData['desc'])
+                        ->isIdenticalTo('Description for version 1')
+            ->assert('test the method directly (modified)')
+                ->array(
+                    $modifyData = $this
+                        ->invoke($this->newTestedInstance)
+                        ->modifyDataVersion(
+                            Stancer\Enum\ApiVersion::VERSION_2,
+                            $data
+                        )
+                )
+                    ->hasSize(2)
+                    ->hasKey('desc')
+
+                    ->string($modifyData['desc'])
+                        ->isIdenticalTo('Description for version 2')
         ;
     }
 

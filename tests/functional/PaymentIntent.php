@@ -57,10 +57,10 @@ class PaymentIntent extends TestCase
 
                     // test Created At when implemented.
 
-                      ->variable($this->testedInstance->getCreatedAt())
-                      ->isEqualTo(\DateTimeImmutable::createFromFormat('U', 1758551220))
+                    ->variable($this->testedInstance->getCreatedAt())
+                        ->isEqualTo(\DateTimeImmutable::createFromFormat('U', 1758551220))
 
-                     ->integer($this->testedInstance->getAmount())
+                    ->integer($this->testedInstance->getAmount())
                         ->isIdenticalTo(7810)
 
                     ->Boolean($this->testedInstance->getCapture())
@@ -127,6 +127,8 @@ class PaymentIntent extends TestCase
                     ->isTestedInstance
 
                 ->string($this->testedInstance->getId())
+                    ->startWith('pi_')
+                    ->hasLength(27)
         ;
     }
 
@@ -161,7 +163,7 @@ class PaymentIntent extends TestCase
                 ->and($this->testedInstance->setCustomer($customer))
                 ->and($this->testedInstance->setCurrency($currency))
                 ->and($this->testedInstance->setDescription($description))
-                ->and($this->testedInstance->SetReturnUrl($url = 'https://example.com'))
+                ->and($this->testedInstance->setReturnUrl($url = 'https://example.com'))
 
                 ->then
                     ->object($this->testedInstance->send())
@@ -225,7 +227,7 @@ class PaymentIntent extends TestCase
                         ->hasLength(27)
 
                     ->dateTime($this->testedInstance->getCreationDate())
-                         ->hasDay(date('d'))
+                        ->hasDay(date('d'))
 
                     ->string($customer->getId())
                         ->startWith('cust_')
@@ -260,7 +262,7 @@ class PaymentIntent extends TestCase
                         ->hasLength(27)
 
                     ->dateTime($this->testedInstance->getCreationDate())
-                         ->hasDay(date('d'))
+                        ->hasDay(date('d'))
 
                     ->object($this->testedInstance->getStatus())
                         ->isEqualTo(Stancer\PaymentIntent\Status::REQUIRE_PAYMENT_METHOD)

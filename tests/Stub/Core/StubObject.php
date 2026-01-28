@@ -132,6 +132,23 @@ class StubObject extends Stancer\Core\AbstractObject
             'list' => true,
             'type' => self::class,
         ],
+        'serializable' => [
+            'list' => true,
+            'type' => \JsonSerializable::class,
+        ],
+        'stringable' => [
+            'list' => true,
+            'type' => \Stringable::class,
+        ],
+        'modifiedDataType' => [
+            'changed' => [
+                [
+                    'sinceVersion' => Stancer\Enum\ApiVersion::VERSION_2,
+                    'type' => self::INTEGER,
+                ],
+            ],
+            'type' => self::STRING,
+        ],
     ];
 
     // Test only methods

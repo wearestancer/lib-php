@@ -114,8 +114,8 @@ abstract class AbstractObject implements \JsonSerializable
     public function __construct($id = null)
     {
         $version = Stancer\Config::getGlobal()->getVersion();
-        if (static::API_VERSION > $version->value) {
-            throw new Stancer\Exceptions\BadApiVersionException();
+        if (static::API_VERSION->value > $version->value) {
+            throw new Stancer\Exceptions\BadApiVersionException($this::class . ' is compatible with API V' . static::API_VERSION->value . ' and up.');
         }
         $defaultModel = [
             'allowedValues' => null,
@@ -1036,6 +1036,36 @@ abstract class AbstractObject implements \JsonSerializable
     }
 
     /**
+     * Change the data Attribute dynamically depending on the API version
+     * For now we only change the required field on Card.
+     *
+     * @param Stancer\Enum\ApiVersion $version The version of our API.
+     * @param array $data The parameter we want to change.
+     *
+     * @phpstan-param  DataModel $data
+     *
+     * @return array $data The Parameter changed depending on API version.
+     *
+     * @phpstan-return DataModel
+     */
+    protected function modifyDataVersion(Stancer\Enum\ApiVersion $version, array $data): array
+    {
+        if (!array_key_exists('changed', $data)) {
+            return $data;
+        }
+        foreach ($data['changed'] as $change) {
+            if ($change['sinceVersion']->value <= $version->value) {
+                unset($change['sinceVersion']);
+
+                /** @var DataModel $data */
+                $data = array_merge($data, $change);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
      * Validate a value in a defined model.
      *
      * We do not handle array here, this method only check one value.
@@ -1203,38 +1233,6 @@ abstract class AbstractObject implements \JsonSerializable
         }
 
         return $value;
-    }
-    //endregion
-    //region Private method
-
-    /**
-     * Change the data Attribute dynamically depending on the API version
-     * For now we only change the required field on Card.
-     *
-     * @param Stancer\Enum\ApiVersion $version The version of our API.
-     * @param array $data The parameter we want to change.
-     *
-     * @phpstan-param  DataModel $data
-     *
-     * @return array $data The Parameter changed depending on API version.
-     *
-     * @phpstan-return DataModel
-     */
-    private function modifyDataVersion(Stancer\Enum\ApiVersion $version, array $data): array
-    {
-        if (!array_key_exists('changed', $data)) {
-            return $data;
-        }
-        foreach ($data['changed'] as $change) {
-            if ($change['sinceVersion']->value <= $version->value) {
-                unset($change['sinceVersion']);
-
-                /** @var DataModel $data */
-                $data = array_merge($data, $change);
-            }
-        }
-
-        return $data;
     }
     //endregion
 }
