@@ -69,8 +69,8 @@ class atoum extends base\test
             $max = date('Y');
         }
 
-        $year = random_int($min, $max);
-        $month = random_int(1, 12);
+        $year = rand($min, $max);
+        $month = rand(1, 12);
 
         $dMax = 31;
 
@@ -80,14 +80,14 @@ class atoum extends base\test
             $dMax = 30;
         }
 
-        $day = random_int(1, $dMax);
+        $day = rand(1, $dMax);
 
         return sprintf('%04d-%02d-%02d', $year, $month, $day);
     }
 
     public function getRandomInteger(int $min, int $max): int
     {
-        return random_int($min, $max);
+        return rand($min, $max);
     }
 
     public function getRandomNumber(): string
@@ -125,7 +125,7 @@ class atoum extends base\test
             $max = $min;
         }
 
-        $len = random_int($min, $max);
+        $len = rand($min, $max);
 
         if (!$len) {
             return '';

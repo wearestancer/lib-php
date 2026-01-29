@@ -2385,7 +2385,7 @@ class StubObject extends Stancer\Tests\atoum
                         ->isFalse
 
             ->assert('No error if returned body is null (saw with PATCH implementation)')
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
                 ->and($client = new mock\Stancer\Http\Client())
                 ->and($config->setHttpClient($client))
                 ->and($config->setDebug(false))
@@ -2439,8 +2439,8 @@ class StubObject extends Stancer\Tests\atoum
             ->and($this->calling($client)->request = $cardResponse)
 
             ->given($string1 = $this->getRandomString(10, 20))
-            ->and($integer1 = random_int(10, 20))
-            ->and($year = (date('Y') + random_int(1, 50)))
+            ->and($integer1 = rand(10, 20))
+            ->and($year = (date('Y') + rand(1, 50)))
 
             ->if($options = [])
             ->and($options['headers'] = [
@@ -2460,8 +2460,8 @@ class StubObject extends Stancer\Tests\atoum
             ->and($options['body'] = json_encode($body))
 
             ->if($card = new Stancer\Card())
-            ->and($card->setCvc((string) random_int(100, 999)))
-            ->and($card->setExpMonth(random_int(1, 12)))
+            ->and($card->setCvc((string) rand(100, 999)))
+            ->and($card->setExpMonth(rand(1, 12)))
             ->and($card->setExpYear($year))
             ->and($card->setNumber($this->cardNumberDataProvider(true)))
             ->and($optionCard['body'] = json_encode($card))

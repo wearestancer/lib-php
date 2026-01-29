@@ -69,13 +69,13 @@ class Card extends TestCase
     public function testCrud()
     {
         $this
-            ->given($cvc = random_int(100, 999))
+            ->given($cvc = rand(100, 999))
             ->and($name = $this->getRandomString(10))
             ->and($number = $this->getValidCardNumber())
             ->and($last4 = substr($number, -4))
 
-            ->and($month = random_int(1, 12))
-            ->and($year = (int) date('Y') + random_int(20, 30))
+            ->and($month = rand(1, 12))
+            ->and($year = (int) date('Y') + rand(20, 30))
 
             ->assert('Create card')
                 ->if($this->newTestedInstance)

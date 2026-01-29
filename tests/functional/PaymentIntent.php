@@ -92,7 +92,7 @@ class PaymentIntent extends TestCase
 
     public function testSend()
     {
-        $amount = $this->getRandomInteger(50, 100);
+        $amount = rand(50, 100);
         $desc = $this->getRandomString(3, 64);
         $methods_allowed = [Stancer\Payment\MethodsAllowed::CARD];
         $capture = false;
