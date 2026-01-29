@@ -1517,10 +1517,10 @@ class PaymentIntent extends Stancer\Tests\atoum
                     ->given($card = new Stancer\Card())
                     ->and($cardNumber = $this->cardNumberDataProvider(true))
                     ->and($card->setNumber($cardNumber))
-                    ->and($card->setCvc((string) rand(100, 999)))
+                    ->and($card->setCvc($this->getRandomCvc()))
                     ->and($card->setName($this->getRandomString(5, 25)))
-                    ->and($card->setExpMonth(rand(1, 12)))
-                    ->and($card->setExpYear(date('Y') + rand(5, 10)))
+                    ->and($card->setExpMonth($this->getRandomMonth()))
+                    ->and($card->setExpYear($this->getRandomExpYear()))
                     ->and($cardId = 'card_' . $this->getRandomString(24))
 
                     ->given($cardLocation = $card->getUri())
@@ -1585,10 +1585,10 @@ class PaymentIntent extends Stancer\Tests\atoum
 
             ->given($cardNumber = $this->cardNumberDataProvider(true))
             ->and($card->setNumber($cardNumber))
-            ->and($card->setCvc((string) rand(100, 999)))
+            ->and($card->setCvc($this->getRandomCvc()))
             ->and($card->setName($this->getRandomString(5, 25)))
-            ->and($card->setExpMonth(rand(1, 12)))
-            ->and($card->setExpYear(date('Y') + rand(5, 10)))
+            ->and($card->setExpMonth($this->getRandomMonth()))
+            ->and($card->setExpYear($this->getRandomExpYear()))
             ->and($cardId = 'card_' . $this->getRandomString(24))
 
             ->given($location = $this->testedInstance->getUri())

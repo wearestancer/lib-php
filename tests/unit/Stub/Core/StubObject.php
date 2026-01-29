@@ -1923,7 +1923,7 @@ class StubObject extends Stancer\Tests\atoum
         $this
             ->given($config = Stancer\Config::getGlobal())
             ->given($stringData = $this->getRandomString(1, 20))
-            ->given($intData = $this->getRandomInteger(1, 100))
+            ->given($intData = rand(1, 100))
 
             ->and($config->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
             ->assert('In V1 it\'s a string')
@@ -2440,7 +2440,7 @@ class StubObject extends Stancer\Tests\atoum
 
             ->given($string1 = $this->getRandomString(10, 20))
             ->and($integer1 = rand(10, 20))
-            ->and($year = (date('Y') + rand(1, 50)))
+            ->and($year = $this->getRandomExpYear())
 
             ->if($options = [])
             ->and($options['headers'] = [
@@ -2460,8 +2460,8 @@ class StubObject extends Stancer\Tests\atoum
             ->and($options['body'] = json_encode($body))
 
             ->if($card = new Stancer\Card())
-            ->and($card->setCvc((string) rand(100, 999)))
-            ->and($card->setExpMonth(rand(1, 12)))
+            ->and($card->setCvc($this->getRandomCvc()))
+            ->and($card->setExpMonth($this->getRandomMonth()))
             ->and($card->setExpYear($year))
             ->and($card->setNumber($this->cardNumberDataProvider(true)))
             ->and($optionCard['body'] = json_encode($card))

@@ -23,9 +23,9 @@ class Dispute extends TestCase
         $payment->setCurrency($currency);
         $payment->setCard($card = new Stancer\Card());
         $card->setNumber($this->getDisputedCardNumber());
-        $card->setExpirationMonth(rand(1, 12));
-        $card->setExpirationYear(date('Y') + rand(1, 5));
-        $card->setCvc((string) rand(100, 999));
+        $card->setExpirationMonth($this->getRandomMonth());
+        $card->setExpirationYear($this->getRandomExpYear());
+        $card->setCvc($this->getRandomCvc());
         $payment->setCustomer($customer = new Stancer\Customer());
         $customer->setName('John Doe');
         $customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com');

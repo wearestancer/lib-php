@@ -1191,9 +1191,9 @@ class Payment extends Stancer\Tests\atoum
             ->then
                 ->assert('Pay with card')
                     ->if($card = new Stancer\Card())
-                    ->and($card->setCvc(substr(uniqid(), 0, 3)))
-                    ->and($card->setExpMonth(rand(1, 12)))
-                    ->and($card->setExpYear(date('Y') + rand(1, 10)))
+                    ->and($card->setCvc($this->getRandomCvc()))
+                    ->and($card->setExpMonth($this->getRandomMonth()))
+                    ->and($card->setExpYear($this->getRandomExpYear()))
                     ->and($card->setName(uniqid()))
                     ->and($card->setNumber('4111111111111111'))
                     ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
@@ -1987,9 +1987,9 @@ class Payment extends Stancer\Tests\atoum
             ->and($currency = $this->cardCurrencyDataProvider(true))
 
             ->if($card = new Stancer\Card())
-            ->and($card->setCvc(substr(uniqid(), 0, 3)))
-            ->and($card->setExpMonth(rand(1, 12)))
-            ->and($card->setExpYear(rand(date('Y'), 3000)))
+            ->and($card->setCvc($this->getRandomCvc()))
+            ->and($card->setExpMonth($this->getRandomMonth()))
+            ->and($card->setExpYear($this->getRandomExpYear()))
             ->and($card->setNumber('4111111111111111'))
 
             ->if($this->newTestedInstance)
@@ -2683,9 +2683,9 @@ class Payment extends Stancer\Tests\atoum
             ->if($this->function->getenv = false)
 
             ->if($card = new Stancer\Card())
-            ->and($card->setCvc(substr(uniqid(), 0, 3)))
-            ->and($card->setExpMonth(rand(1, 12)))
-            ->and($card->setExpYear(rand(date('Y'), 3000)))
+            ->and($card->setCvc($this->getRandomCvc()))
+            ->and($card->setExpMonth($this->getRandomMonth()))
+            ->and($card->setExpYear($this->getRandomExpYear()))
             ->and($card->setName(uniqid()))
             ->and($card->setNumber('4111111111111111'))
             ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
@@ -2803,8 +2803,8 @@ class Payment extends Stancer\Tests\atoum
             ->and($this->calling($client)->request = $response)
 
             ->if($card = new Stancer\Card())
-            ->and($card->setCvc(substr(uniqid(), 0, 3)))
-            ->and($card->setExpMonth(rand(1, 12)))
+            ->and($card->setCvc($this->getRandomCvc()))
+            ->and($card->setExpMonth($this->getRandomMonth()))
             ->and($card->setExpYear(date('Y') - rand(1, 10)))
             ->and($card->setName(uniqid()))
             ->and($card->setNumber($number = '4111111111111111'))
@@ -2836,7 +2836,7 @@ class Payment extends Stancer\Tests\atoum
                     ->message
                         ->isIdenticalTo('Card expiration is invalid.')
 
-            ->if($card->setExpYear(date('Y') + rand(1, 10)))
+            ->if($card->setExpYear($this->getRandomExpYear()))
             ->and($options = $this->mockRequestOptions($config, [
                 'body' => json_encode($this->testedInstance),
             ]))
@@ -2926,8 +2926,8 @@ class Payment extends Stancer\Tests\atoum
             ->and($this->calling($client)->request[3] = $response)
 
             ->if($card = new Stancer\Card())
-            ->and($card->setCvc(substr(uniqid(), 0, 3)))
-            ->and($card->setExpMonth(rand(1, 12)))
+            ->and($card->setCvc($this->getRandomCvc()))
+            ->and($card->setExpMonth($this->getRandomMonth()))
             ->and($card->setExpYear(date('Y') - rand(1, 10)))
             ->and($card->setName(uniqid()))
             ->and($card->setNumber($number = '4111111111111111'))
@@ -2961,7 +2961,7 @@ class Payment extends Stancer\Tests\atoum
                         ->message
                             ->isIdenticalTo('Card expiration is invalid.')
 
-            ->if($card->setExpYear(date('Y') + rand(1, 10)))
+            ->if($card->setExpYear($this->getRandomExpYear()))
             ->and(
                 $cardOptions = $this->mockRequestOptions(
                     $config,
@@ -3201,9 +3201,9 @@ class Payment extends Stancer\Tests\atoum
             ->if($this->function->getenv = false)
 
             ->if($card = new Stancer\Card())
-            ->and($card->setCvc(substr(uniqid(), 0, 3)))
-            ->and($card->setExpMonth(rand(1, 12)))
-            ->and($card->setExpYear(rand(date('Y'), 3000)))
+            ->and($card->setCvc($this->getRandomCvc()))
+            ->and($card->setExpMonth($this->getRandomMonth()))
+            ->and($card->setExpYear($this->getRandomExpYear()))
             ->and($card->setName(uniqid()))
             ->and($card->setNumber('4111111111111111'))
             ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))

@@ -145,9 +145,9 @@ class PaymentIntent extends TestCase
 
                 ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth(rand(1, 12)))
-                ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
-                ->and($card->setCvc((string) rand(100, 999)))
+                ->and($card->setExpirationMonth($this->getRandomMonth()))
+                ->and($card->setExpirationYear($this->getRandomExpYear()))
+                ->and($card->setCvc($this->getRandomCvc()))
 
                 ->if($customer = new Stancer\Customer())
                 ->and($customer->setName('John Doe'))
@@ -290,9 +290,9 @@ class PaymentIntent extends TestCase
 
                 ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth(rand(1, 12)))
-                ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
-                ->and($card->setCvc((string) rand(100, 999)))
+                ->and($card->setExpirationMonth($this->getRandomMonth()))
+                ->and($card->setExpirationYear($this->getRandomExpYear()))
+                ->and($card->setCvc($this->getRandomCvc()))
 
                 ->then
                     ->object($this->testedInstance->send())
@@ -342,9 +342,9 @@ class PaymentIntent extends TestCase
 
                 ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth(rand(1, 12)))
-                ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
-                ->and($card->setCvc((string) rand(100, 999)))
+                ->and($card->setExpirationMonth($this->getRandomMonth()))
+                ->and($card->setExpirationYear($this->getRandomExpYear()))
+                ->and($card->setCvc($this->getRandomCvc()))
 
                 ->if($customer = new Stancer\Customer())
                 ->and($customer->setName($name))

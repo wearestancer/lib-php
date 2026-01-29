@@ -106,9 +106,9 @@ class Payment extends TestCase
                 ->and($this->testedInstance->setCard($card = new Stancer\Card()))
                 ->and($this->testedInstance->setOrderId($this->order))
                 ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth(rand(1, 12)))
-                ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
-                ->and($card->setCvc((string) rand(100, 999)))
+                ->and($card->setExpirationMonth($this->getRandomMonth()))
+                ->and($card->setExpirationYear($this->getRandomExpYear()))
+                ->and($card->setCvc($this->getRandomCvc()))
                 ->and($this->testedInstance->setCustomer($customer = new Stancer\Customer()))
                 ->and($customer->setName('John Doe'))
                 ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
@@ -189,13 +189,13 @@ class Payment extends TestCase
                 ->object($card->setNumber($this->getValidCardNumber()))
                     ->isInstanceOf(Stancer\Card::class)
 
-                ->object($card->setExpirationMonth(rand(1, 12)))
+                ->object($card->setExpirationMonth($this->getRandomMonth()))
                     ->isInstanceOf(Stancer\Card::class)
 
-                ->object($card->setExpirationYear(date('Y') + rand(1, 5)))
+                ->object($card->setExpirationYear($this->getRandomExpYear()))
                     ->isInstanceOf(Stancer\Card::class)
 
-                ->object($card->setCvc((string) rand(100, 999)))
+                ->object($card->setCvc($this->getRandomCvc()))
                     ->isInstanceOf(Stancer\Card::class)
 
                 ->object($this->testedInstance->setCustomer($customer = new Stancer\Customer()))
@@ -232,9 +232,9 @@ class Payment extends TestCase
 
                 ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth(rand(1, 12)))
-                ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
-                ->and($card->setCvc((string) rand(100, 999)))
+                ->and($card->setExpirationMonth($this->getRandomMonth()))
+                ->and($card->setExpirationYear($this->getRandomExpYear()))
+                ->and($card->setCvc($this->getRandomCvc()))
 
                 ->if($customer = new Stancer\Customer())
                 ->and($customer->setName('John Doe'))
@@ -360,9 +360,9 @@ class Payment extends TestCase
 
                 ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth(rand(1, 12)))
-                ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
-                ->and($card->setCvc((string) rand(100, 999)))
+                ->and($card->setExpirationMonth($this->getRandomMonth()))
+                ->and($card->setExpirationYear($this->getRandomExpYear()))
+                ->and($card->setCvc($this->getRandomCvc()))
 
                 ->if($customer = new Stancer\Customer())
                 ->and($customer->setName('John Doe'))
@@ -613,9 +613,9 @@ class Payment extends TestCase
 
                 ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth(rand(1, 12)))
-                ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
-                ->and($card->setCvc((string) rand(100, 999)))
+                ->and($card->setExpirationMonth($this->getRandomMonth()))
+                ->and($card->setExpirationYear($this->getRandomExpYear()))
+                ->and($card->setCvc($this->getRandomCvc()))
 
                 ->if($customer = new Stancer\Customer())
                 ->and($customer->setName($name))
@@ -679,9 +679,9 @@ class Payment extends TestCase
 
                 ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth(rand(1, 12)))
-                ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
-                ->and($card->setCvc((string) rand(100, 999)))
+                ->and($card->setExpirationMonth($this->getRandomMonth()))
+                ->and($card->setExpirationYear($this->getRandomExpYear()))
+                ->and($card->setCvc($this->getRandomCvc()))
 
                 ->if($customer = new Stancer\Customer())
                 ->and($customer->setName($name)) // From previous test
@@ -727,9 +727,9 @@ class Payment extends TestCase
 
                 ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth(rand(1, 12)))
-                ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
-                ->and($card->setCvc((string) rand(100, 999)))
+                ->and($card->setExpirationMonth($this->getRandomMonth()))
+                ->and($card->setExpirationYear($this->getRandomExpYear()))
+                ->and($card->setCvc($this->getRandomCvc()))
 
                 ->if($customer = new Stancer\Customer())
                 ->and($customer->setName($name)) // From previous test
@@ -783,9 +783,9 @@ class Payment extends TestCase
 
             ->if($card = new Stancer\Card())
             ->and($card->setNumber($this->getValidCardNumber()))
-            ->and($card->setExpirationMonth(rand(1, 12)))
-            ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
-            ->and($card->setCvc((string) rand(100, 999)))
+            ->and($card->setExpirationMonth($this->getRandomMonth()))
+            ->and($card->setExpirationYear($this->getRandomExpYear()))
+            ->and($card->setCvc($this->getRandomCvc()))
 
             ->if($customer = new Stancer\Customer())
             ->and($customer->setName('John Doe'))

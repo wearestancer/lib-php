@@ -75,26 +75,40 @@ class atoum extends base\test
         return rand(50, $max);
     }
 
+    public function getRandomCvc(): string
+    {
+        return substr(uniqid(), 0, 3);
+    }
+
     public function getRandomDate(int $min, ?int $max = null): string
     {
-        if (!$max) {
-            $max = date('Y');
-        }
+        $year = $this->getRandomYear($min, $max);
+        $month = $this->getRandomMonth();
+        $day = $this->getRandomDay($month);
 
-        $year = rand($min, $max);
-        $month = rand(1, 12);
+        return sprintf('%04d-%02d-%02d', $year, $month, $day);
+    }
 
+    public function getRandomDay(int $month): int
+    {
         $dMax = 31;
-
         if ($month == 2) {
             $dMax = 27;
         } elseif (in_array($month, [4, 6, 9, 11])) {
             $dMax = 30;
         }
 
-        $day = rand(1, $dMax);
+        return rand(1, $dMax);
+    }
 
-        return sprintf('%04d-%02d-%02d', $year, $month, $day);
+    public function getRandomExpYear()
+    {
+        return $this->getRandomYear(date('Y') + 1, date('Y') + 30);
+    }
+
+    public function getRandomMonth(): int
+    {
+        return rand(1, 12);
     }
 
     public function getRandomNumber(): string
@@ -148,6 +162,15 @@ class atoum extends base\test
         }
 
         return $randomString;
+    }
+
+    public function getRandomYear(int $min, ?int $max = null): int
+    {
+        if (!$max) {
+            $max = date('Y');
+        }
+
+        return rand($min, $max);
     }
 
     public function getUuid(): string
