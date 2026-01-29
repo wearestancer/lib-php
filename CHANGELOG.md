@@ -12,6 +12,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Adress Integration (CMS-260)
 - Simplify devcontainer shell env
 
+### Changed
+- better test randomization (CMS-466)
+
 
 ## [2.0.1] - 2024-11-15
 
