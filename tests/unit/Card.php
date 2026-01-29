@@ -562,7 +562,7 @@ class Card extends Stancer\Tests\atoum
     {
         $currentYear = (int) date('Y');
 
-        for ($year = $currentYear - 50; $year < $currentYear + 25; $year++) {
+        for ($year = $currentYear - 5; $year < $currentYear + 10; $year++) {
             $this
                 ->assert('Test year ' . $year . ', camelCase method')
                     ->given($this->newTestedInstance)

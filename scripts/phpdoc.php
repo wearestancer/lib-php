@@ -14,7 +14,7 @@ $defaultModel = [
     'nullable' => true,
     'required' => false,
     'restricted' => false,
-    'type' => 'string',
+    'type' => 'mixed',
     'value' => null,
 ];
 
@@ -142,6 +142,9 @@ function prepareData(string $action, array $data): array
     return $data;
 }
 
+// We need a config to build certain objects (notably paymentintent who cannot be built on api V1).
+Stancer\Config::init([])->setVersion(Stancer\Enum\ApiVersion::VERSION_2);
+
 // Initialize specific classes.
 $classes = [
     Stancer\Config::class => [
@@ -166,6 +169,12 @@ $classes = [
     Stancer\Http\Response::class => [
         'instance' => [
             200,
+        ],
+    ],
+    Stancer\Core\SearchObject::class => [
+        'instance' => [
+            'paym_123456789123456',
+            'payment',
         ],
     ],
 ];
@@ -363,6 +372,10 @@ foreach ($classes as $className => $classData) {
 
         if ($instance instanceof Stancer\Core\Documentation\AddProperty) {
             $classData[$instance->getName()] = $instance->getData();
+        }
+
+        if ($instance instanceof Stancer\Core\Documentation\PropertyAlias) {
+            $classData[$instance->getName()] = $model[$instance->getAliasedName()];
         }
     }
 

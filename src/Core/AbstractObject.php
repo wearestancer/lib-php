@@ -11,6 +11,7 @@ use Stancer;
  *
  * @method ?\DateTimeImmutable getCreated() Get creation date.
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_endpoint() Get API endpoint.
  * @method string get_entity_name() Get entity name.
@@ -24,6 +25,8 @@ use Stancer;
  * @method string to_string() Return a string representation (as a JSON) of the current object.
  *
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $endpoint API endpoint.
@@ -57,17 +60,27 @@ abstract class AbstractObject implements \JsonSerializable
 {
     use Stancer\Traits\AliasTrait;
 
+    //region properties
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     final public const BOOLEAN = 'boolean';
+
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     final public const FLOAT = 'float';
+
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     final public const INTEGER = 'integer';
+
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
+    final public const MIXED = 'mixed';
+
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     final public const STRING = 'string';
 
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     public const ENDPOINT = '';
+
+    #[Stancer\WillChange\PHP8_3\TypedClassConstants]
+    public const API_VERSION = Stancer\Enum\ApiVersion::VERSION_1;
 
     /**
      * @phpstan-var array<string, mixed>|string
@@ -88,13 +101,22 @@ abstract class AbstractObject implements \JsonSerializable
 
     protected bool $cleanModified = false;
 
+    //endregion
+    //region public function
+
     /**
      * Create or get an API object.
      *
      * @param array<string, mixed>|string|null $id Object id or data for hydration.
+     *
+     * @throws Stancer\Exceptions\BadApiVersionException Raised if the route doesn't exist in this version.
      */
     public function __construct($id = null)
     {
+        $version = Stancer\Config::getGlobal()->getVersion();
+        if (static::API_VERSION->value > $version->value) {
+            throw new Stancer\Exceptions\BadApiVersionException($this::class . ' is compatible with API V' . static::API_VERSION->value . ' and up.');
+        }
         $defaultModel = [
             'allowedValues' => null,
             'coerce' => null,
@@ -110,6 +132,7 @@ abstract class AbstractObject implements \JsonSerializable
                 'min' => null,
                 'max' => null,
             ],
+            'type' => self::MIXED,
             'value' => null,
         ];
 
@@ -125,6 +148,8 @@ abstract class AbstractObject implements \JsonSerializable
 
         /** @var DataModel $data */
         foreach ($this->dataModel as &$data) {
+            $data = $this->modifyDataVersion($version, $data);
+
             $size = array_merge($defaultModel['size'], $data['size'] ?? []);
             $data = array_merge($defaultModel, $data, ['size' => $size]);
 
@@ -283,9 +308,27 @@ abstract class AbstractObject implements \JsonSerializable
     }
 
     /**
+     * Return creation date.
+     */
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Creation date',
+        restricted: true,
+        type: \DateTimeImmutable::class,
+    )]
+    public function getCreatedAt(): ?\DateTimeImmutable
+    {
+        return $this->created;
+    }
+
+    /**
      * Return API endpoint.
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'API endpoint', nullable: false, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'API endpoint',
+        nullable: false,
+        restricted: true,
+        type: self::STRING,
+    )]
     public function getEndpoint(): string
     {
         return static::ENDPOINT;
@@ -294,11 +337,16 @@ abstract class AbstractObject implements \JsonSerializable
     /**
      * Return entity name.
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Entity name', nullable: false, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Entity name',
+        nullable: false,
+        restricted: true,
+        type: self::STRING,
+    )]
     public function getEntityName(): string
     {
         $parts = explode('\\', get_class($this));
-        $last = end($parts);
+        $last = Stancer\Helper::snakeCaseToCamelCase(end($parts));
 
         return $last ?: '';
     }
@@ -306,7 +354,7 @@ abstract class AbstractObject implements \JsonSerializable
     /**
      * Return object ID.
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Object ID', restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(description: 'Object ID', restricted: true, type: self::STRING)]
     public function getId(): ?string
     {
         return $this->id;
@@ -345,6 +393,7 @@ abstract class AbstractObject implements \JsonSerializable
         description: 'Entity resource location',
         nullable: false,
         restricted: true,
+        type: self::STRING,
     )]
     public function getUri(): string
     {
@@ -352,16 +401,18 @@ abstract class AbstractObject implements \JsonSerializable
             Stancer\Config::getGlobal()->getUri(),
             $this->getEndpoint(),
         ];
+        $endslash = '/';
 
         if ($this->getId()) {
             $tmp[] = $this->getId();
+            $endslash = '';
         }
 
         $trim = function ($value): string {
             return trim($value, '/');
         };
 
-        return implode('/', array_map($trim, $tmp));
+        return implode('/', array_map($trim, $tmp)) . $endslash;
     }
 
     /**
@@ -375,6 +426,11 @@ abstract class AbstractObject implements \JsonSerializable
     {
         foreach ($data as $key => $value) {
             $property = Stancer\Helper::snakeCaseToCamelCase($key);
+
+            // Property created & createdAt are the same field with different name in the API.
+            if ($property === 'createdAt') {
+                $property = 'created';
+            }
 
             if ($property === 'id') {
                 if (is_string($value) || is_null($value)) {
@@ -606,10 +662,12 @@ abstract class AbstractObject implements \JsonSerializable
                     $value = $value->value;
                 } elseif (in_array($prop, $this->modified, true) || ($value instanceof self && $value->isModified())) {
                     $supp = false;
+                }
 
-                    if ($value instanceof \JsonSerializable) {
-                        $value = $value->jsonSerialize();
-                    }
+                if ($value instanceof \JsonSerializable) {
+                    $value = $value->jsonSerialize();
+                } elseif ($value instanceof \Stringable) {
+                    $value = (string) $value;
                 }
             }
 
@@ -617,10 +675,14 @@ abstract class AbstractObject implements \JsonSerializable
                 $keepIt = false;
 
                 foreach ($value as &$val) {
-                    if (gettype($val) === 'object') {
+                    if (is_object($val)) {
                         if ($val instanceof self) {
                             $keepIt |= $val->isModified();
                             $val = $val->jsonSerialize();
+                        } elseif ($val instanceof \JsonSerializable) {
+                            $val = $val->jsonSerialize();
+                        } elseif ($val instanceof \Stringable) {
+                            $val = (string) $val;
                         }
                     }
 
@@ -713,6 +775,27 @@ abstract class AbstractObject implements \JsonSerializable
 
         $request = new Request();
         $action = 'created';
+        $sendBeforeFilter = function ($model): bool {
+            if (!$model['onlyID'] || is_null($model['value'])) {
+                return false;
+            }
+
+            if (!is_a($model['value'], self::class) || $model['value']->isNotModified()) {
+                return false;
+            }
+
+            return true;
+        };
+
+        $onlyID = array_filter($this->dataModel, $sendBeforeFilter);
+
+        if ($onlyID) {
+            array_map(function ($object) {
+                if (isset($object['value']) && gettype($object['value']) === 'object' && is_a($object['value'], self::class)) {
+                    return $object['value']->send();
+                }
+            }, $onlyID);
+        }
 
         if ($this->getId()) {
             $action = 'updated';
@@ -730,28 +813,6 @@ abstract class AbstractObject implements \JsonSerializable
                 $message = sprintf('You need to provide a value for : %s', $properties);
 
                 throw new Stancer\Exceptions\InvalidArgumentException($message);
-            }
-
-            $sendBeforeFilter = function ($model): bool {
-                if (!$model['onlyID'] || is_null($model['value'])) {
-                    return false;
-                }
-
-                if (!is_a($model['value'], self::class) || $model['value']->isNotModified()) {
-                    return false;
-                }
-
-                return true;
-            };
-
-            $onlyID = array_filter($this->dataModel, $sendBeforeFilter);
-
-            if ($onlyID) {
-                array_map(function ($object) {
-                    if (isset($object['value']) && gettype($object['value']) === 'object' && is_a($object['value'], self::class)) {
-                        return $object['value']->send();
-                    }
-                }, $onlyID);
             }
 
             $response = $request->post($this);
@@ -824,6 +885,8 @@ abstract class AbstractObject implements \JsonSerializable
     {
         return $this->toJson();
     }
+
+    //region protected method
 
     /**
      * Add a value stored list in data model.
@@ -973,6 +1036,36 @@ abstract class AbstractObject implements \JsonSerializable
     }
 
     /**
+     * Change the data Attribute dynamically depending on the API version
+     * For now we only change the required field on Card.
+     *
+     * @param Stancer\Enum\ApiVersion $version The version of our API.
+     * @param array $data The parameter we want to change.
+     *
+     * @phpstan-param  DataModel $data
+     *
+     * @return array $data The Parameter changed depending on API version.
+     *
+     * @phpstan-return DataModel
+     */
+    protected function modifyDataVersion(Stancer\Enum\ApiVersion $version, array $data): array
+    {
+        if (!array_key_exists('changed', $data)) {
+            return $data;
+        }
+        foreach ($data['changed'] as $change) {
+            if ($change['sinceVersion']->value <= $version->value) {
+                unset($change['sinceVersion']);
+
+                /** @var DataModel $data */
+                $data = array_merge($data, $change);
+            }
+        }
+
+        return $data;
+    }
+
+    /**
      * Validate a value in a defined model.
      *
      * We do not handle array here, this method only check one value.
@@ -1012,21 +1105,23 @@ abstract class AbstractObject implements \JsonSerializable
         $type = gettype($value);
         $length = $value;
 
-        $mismatchType = $type !== $model['type'];
+        if ($model['type'] !== self::MIXED) {
+            $mismatchType = $type !== $model['type'];
 
-        if (is_object($value)) {
-            $mismatchType = !($value instanceof $model['type']);
-        }
+            if (is_object($value)) {
+                $mismatchType = !($value instanceof $model['type']);
+            }
 
-        if ($mismatchType) {
-            $params = [
-                $type,
-                $model['type'],
-            ];
+            if ($mismatchType) {
+                $params = [
+                    $type,
+                    $model['type'],
+                ];
 
-            $message = vsprintf('Type mismatch, given "%s" expected "%s".', $params);
+                $message = vsprintf('Type mismatch, given "%s" expected "%s".', $params);
 
-            throw new $exceptionClass($message);
+                throw new $exceptionClass($message);
+            }
         }
 
         if ($model['allowedValues']) {
@@ -1139,4 +1234,5 @@ abstract class AbstractObject implements \JsonSerializable
 
         return $value;
     }
+    //endregion
 }

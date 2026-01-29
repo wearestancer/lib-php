@@ -18,6 +18,7 @@ use Stancer;
  * @method ?\Stancer\Address getShippingAddress() Get customer's shipping address.
  * @method ?\Stancer\Address get_billing_address() Get customer's billing address.
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method ?string get_email() Get customer's email.
  * @method string get_endpoint() Get API endpoint.
@@ -52,6 +53,8 @@ use Stancer;
  * @property ?\Stancer\Address $shipping_address Customer's shipping address.
  *
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $endpoint API endpoint.

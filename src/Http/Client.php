@@ -126,6 +126,9 @@ class Client implements Stancer\Interfaces\HttpClientInterface
      * @param string $uri URI string.
      * @param mixed[] $options Request options to apply.
      *
+     * @phpstan-param array{body?: string, headers?: array<string, string|string[]>, timeout?: int} $options
+     *   Request options to apply.
+     *
      * @throws Stancer\Exceptions\HttpException On cURL error.
      * @throws Stancer\Exceptions\TooManyRedirectsException On 310 HTTP error.
      * @throws Stancer\Exceptions\RedirectionException On over 300 level HTTP error.
@@ -135,9 +138,6 @@ class Client implements Stancer\Interfaces\HttpClientInterface
      * @throws Stancer\Exceptions\ConflictException On 409 HTTP error.
      * @throws Stancer\Exceptions\ClientException On over 400 level HTTP error.
      * @throws Stancer\Exceptions\ServerException On over 500 level HTTP error.
-     *
-     * @phpstan-param array{body?: string, headers?: array<string, string|string[]>, timeout?: int} $options
-     *   Request options to apply.
      */
     public function request(string $method, string $uri, array $options = []): Psr\Http\Message\ResponseInterface
     {
@@ -235,32 +235,40 @@ class Client implements Stancer\Interfaces\HttpClientInterface
             if ($body->getSize()) {
                 $json = json_decode((string) $body, true);
 
+                if (is_array($json) && array_key_exists('detail', $json) && is_array($json['detail'])) {
+                    $params['detail'] = current($json['detail']);
+                }
                 if (
                     json_last_error() === JSON_ERROR_NONE
                     && is_array($json)
                     && array_key_exists('error', $json)
-                    && is_array($json['error'])
-                    && array_key_exists('message', $json['error'])
-                    && $json['error']['message']
                 ) {
-                    $params['message'] = $json['error']['message'];
+                    if (
+                        is_array($json['error'])
+                        && array_key_exists('message', $json['error'])
+                        && $json['error']['message']
+                    ) {
+                        $params['message'] = $json['error']['message'];
 
-                    if (is_array($json['error']['message'])) {
-                        $params['message'] = current($json['error']['message']);
-                        $id = '';
+                        if (is_array($json['error']['message'])) {
+                            $params['message'] = current($json['error']['message']);
+                            $id = '';
 
-                        if (array_key_exists('id', $json['error']['message'])) {
-                            $id = $json['error']['message']['id'];
-                            $params['message'] = $json['error']['message']['id'];
-                        }
+                            if (array_key_exists('id', $json['error']['message'])) {
+                                $id = $json['error']['message']['id'];
+                                $params['message'] = $json['error']['message']['id'];
+                            }
 
-                        if (array_key_exists('error', $json['error']['message'])) {
-                            $params['message'] = $json['error']['message']['error'];
+                            if (array_key_exists('error', $json['error']['message'])) {
+                                $params['message'] = $json['error']['message']['error'];
 
-                            if ($id) {
-                                $params['message'] .= ' (' . $id . ')';
+                                if ($id) {
+                                    $params['message'] .= ' (' . $id . ')';
+                                }
                             }
                         }
+                    } elseif (is_string($json['error'])) {
+                        $params['message'] = $json['error'];
                     }
                 }
             }

@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+- API V2 integration (CMS-108)
+- Payment intent integration (CMS-138)
+- Adress Integration (CMS-260)
 - Simplify devcontainer shell env
 
 

@@ -12,6 +12,8 @@ trait Strings
 
         $data[] = ['camelCase', 'camel_case'];
         $data[] = ['snakeCase', 'snake_case'];
+        $data[] = ['get3DS', 'get_3ds'];
+        $data[] = ['getLast4', 'get_last4'];
 
         $gen = function () {
             $str = '';

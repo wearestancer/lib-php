@@ -24,8 +24,16 @@ class atoum extends base\test
 
     public function beforeTestMethod($method)
     {
+        $env = getenv('API_VERSION');
+        if ($env && $tmp = Stancer\Enum\ApiVersion::from($env)) {
+            $version = $tmp;
+        } else {
+            $version = Stancer\Enum\ApiVersion::VERSION_1;
+        }
         if ($method !== 'testGetGlobal_SetGlobal') {
-            Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]);
+            Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))])
+                ->setVersion($version)
+            ;
         }
     }
 
@@ -77,17 +85,31 @@ class atoum extends base\test
         return sprintf('%04d-%02d-%02d', $year, $month, $day);
     }
 
+    public function getRandomInteger(int $min, int $max): int
+    {
+        return random_int($min, $max);
+    }
+
     public function getRandomNumber(): string
     {
         // Simulate a french mobile phone number
         $first = rand(0, 1) + 6;
-        $loop = 4;
+        $loop = 3;
 
         $number = '+33' . $first;
 
         if ($first === 7) {
             $number .= str_pad(rand(30, 99), 2, '0');
-            $loop--;
+        }
+        if ($first === 6) {
+            $nine_list = ['5', '8', '9'];
+            $first_number_duo = [
+                str_pad((string) rand(0, 20), 2, '0'),
+                (string) rand(40, 80),
+                '3' . (string) rand(0, 8),
+                '9' . $nine_list[rand(0, 2)],
+            ];
+            $number .= $first_number_duo[rand(0, 3)];
         }
 
         for ($idx = 0; $idx < $loop; $idx++) {
@@ -133,12 +155,14 @@ class atoum extends base\test
 
     /**
      * @param mock\Psr\Http\Client\ClientInterface|Psr\Http\Client\ClientInterface $client
+     * @param \Stancer\Enum\ApiVersion $version
      */
-    public function mockConfig($client): Stancer\Config
+    public function mockConfig($client, Stancer\Enum\ApiVersion $version = Stancer\Enum\ApiVersion::VERSION_1): Stancer\Config
     {
         $config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]);
         $config->setHttpClient($client);
         $config->setDebug(false);
+        $config->setVersion($version);
 
         return $config;
     }
@@ -187,5 +211,13 @@ class atoum extends base\test
             ],
             'timeout' => $config->getTimeout(),
         ], $more);
+    }
+
+    public function versionDataProvider()
+    {
+        return [
+            [Stancer\Enum\ApiVersion::VERSION_1],
+            [Stancer\Enum\ApiVersion::VERSION_2],
+        ];
     }
 }

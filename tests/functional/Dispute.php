@@ -34,7 +34,7 @@ class Dispute extends TestCase
         $this
             ->if($this->newTestedInstance) // Needed to use "isInstanceOfTestedClass" asserter
             ->then
-                ->generator(testedClass::list(['created' => time()]))
+                ->generator(testedClass::list(['created' => (time() - 2600000)])) //aproximately one month of results
                     ->yields
                         ->object
                             ->isInstanceOfTestedClass
@@ -42,6 +42,27 @@ class Dispute extends TestCase
                     ->yields
                         ->variable
                             ->isNotNull
+        ;
+    }
+
+    /**
+     * @dataProvider versionDataProvider
+     */
+    public function testGetDispute(Stancer\Enum\ApiVersion $version)
+    {
+        $this
+            ->given(Stancer\Config::getGlobal()->setVersion($version))
+            ->given($this->newTestedInstance('dspt_a4dIMSi7PBBoGiu2BocagB2f'))
+            ->then
+
+            ->string($this->testedInstance->getPayment()->getId())
+                ->isIdenticalTo('paym_0yG3rJ6rBT6u9Kc5HUyRAzsP')
+
+            ->string($this->testedInstance->getResponse())
+                ->isIdenticalTo('AC04')
+
+            ->integer($this->testedInstance->getAmount())
+                ->isIdenticalTo(300)
         ;
     }
 }

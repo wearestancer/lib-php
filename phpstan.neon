@@ -10,6 +10,7 @@ parameters:
     - '/^Short ternary operator is not allowed/'
     - '/^Binary operation "%" between string and 97 results in an error./'
     - '/^Call to vsprintf contains [0-9]\-?[0-9]? placeholders, [0-9\-?] values given./'
+    - '/^.* Unexpected token "\$(3DS|3ds)\)?", expected variable/'
 
     - message: '/Unsafe usage of new static/'
       paths:
@@ -35,10 +36,19 @@ parameters:
   treatPhpDocTypesAsCertain: false
 
   typeAliases:
+    ChangeModel: '''
+    array{
+      sinceVersion: Stancer\Enum\ApiVersion,
+      required?: bool,
+      onlyId?: bool,
+    }
+    '''
+
     DataModel: '''
       array{
         allowedValues?: string[] | class-string,
         coerce?: string,
+        changed?: ChangeModel[],
         exception?: class-string,
         exportable?: bool,
         format?: string,
@@ -162,6 +172,14 @@ parameters:
         created_until?: DateTimeInterface|int,
         limit?: int,
         start?: int,
+      }
+    '''
+    SearchFiltered: '''
+      array{
+        created?: DateTimeInterface|DatePeriod<DateTimeInterface, ?DateTimeInterface, int>|int,
+        created_until?: DateTimeInterface|int,
+        limit?: int,
+        start: int,
       }
     '''
 

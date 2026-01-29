@@ -17,6 +17,7 @@ use Stancer;
  * @method ?float getScoreName()
  * @method ?\Stancer\Sepa\Check\Status getStatus()
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method ?boolean get_date_birth()
  * @method string get_endpoint() Get API endpoint.
@@ -29,6 +30,8 @@ use Stancer;
  * @method string get_uri() Get entity resource location.
  *
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read ?boolean $dateBirth

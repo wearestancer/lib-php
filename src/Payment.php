@@ -41,13 +41,14 @@ use Stancer;
  * @method ?\Stancer\Card get_card() Get card object.
  * @method ?string get_country()
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method ?\Stancer\Currency get_currency() Get processed currency.
  * @method ?\Stancer\Customer get_customer() Get customer object.
  * @method ?\DateTimeImmutable get_date_bank() Get delivery date of the funds traded by the bank.
  * @method ?string get_description() Get payment description.
  * @method ?\Stancer\Device get_device() Get customer's device object.
- * @method string get_endpoint() Get API endpoint.
+ * @method string get_endpoint() Return API endpoint.
  * @method string get_entity_name() Get entity name.
  * @method ?string get_id() Get object ID.
  * @method ?string get_method() Get payment method used.
@@ -103,6 +104,8 @@ use Stancer;
  *
  * @property ?integer $amount Transaction amount.
  * @property boolean|\Stancer\Auth|string|null $auth Auth object, must be set for 3-D Secure card payments.
+ * @property ?\Stancer\Address $billingAddress The billing address links to the payment.
+ * @property ?\Stancer\Address $billing_address The billing address links to the payment.
  * @property ?boolean $capture Capture immediately the payment.
  * @property ?\Stancer\Card $card Card object.
  * @property ?string $country
@@ -124,11 +127,12 @@ use Stancer;
  * @property ?string $unique_id Unicity key.
  *
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read ?\DateTimeImmutable $dateBank Delivery date of the funds traded by the bank.
  * @property-read ?\DateTimeImmutable $date_bank Delivery date of the funds traded by the bank.
- * @property-read string $endpoint API endpoint.
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
@@ -171,9 +175,10 @@ class Payment extends Stancer\Core\AbstractObject
 {
     use Stancer\Traits\AmountTrait;
     use Stancer\Traits\SearchTrait;
+    use Stancer\Traits\TransactionTrait;
 
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    final public const ENDPOINT = 'checkout';
+    final public const ENDPOINT = 'payments';
 
     /**
      * @phpstan-var array<string, DataModel>
@@ -198,6 +203,12 @@ class Payment extends Stancer\Core\AbstractObject
             'type' => self::BOOLEAN,
         ],
         'card' => [
+            'changed' => [
+                [
+                    'sinceVersion' => Stancer\Enum\ApiVersion::VERSION_2,
+                    'onlyID' => true,
+                ],
+            ],
             'desc' => 'Card object',
             'type' => Stancer\Card::class,
         ],
@@ -205,11 +216,23 @@ class Payment extends Stancer\Core\AbstractObject
             'type' => self::STRING,
         ],
         'currency' => [
+            'changed' => [
+                [
+                    'sinceVersion' => Stancer\Enum\ApiVersion::VERSION_2,
+                    'required' => false,
+                ],
+            ],
             'desc' => 'Processed currency',
             'required' => true,
             'type' => Stancer\Currency::class,
         ],
         'customer' => [
+            'changed' => [
+                [
+                    'sinceVersion' => Stancer\Enum\ApiVersion::VERSION_2,
+                    'onlyID' => true,
+                ],
+            ],
             'desc' => 'Customer object',
             'type' => Stancer\Customer::class,
         ],
@@ -302,38 +325,15 @@ class Payment extends Stancer\Core\AbstractObject
     ];
 
     /**
-     * Add an allowed method.
-     *
-     * @param Stancer\Payment\MethodsAllowed|string $method New method.
-     *
-     * @return $this
-     * @throws Stancer\Exceptions\InvalidArgumentException When currency is EUR and trying to set "sepa" method.
-     */
-    public function addMethodsAllowed(Stancer\Payment\MethodsAllowed|string $method): static
-    {
-        $currency = $this->getCurrency();
-
-        if ($currency && $method && $method === 'sepa' && $currency !== Stancer\Currency::EUR) {
-            $message = sprintf('You can not use "%s" method with "%s" currency.', $method, $currency->value);
-
-            throw new Stancer\Exceptions\InvalidArgumentException($message);
-        }
-
-        // @phpstan-ignore-next-line The method is not defined in parent object so it will trigger __call ...
-        return parent::addMethodsAllowed($method);
-        // ... and that's that we want
-    }
-
-    /**
      * Charge a card or a bank account.
      *
      * This method is Stripe compatible.
      *
      * @param array $options Charge options.
      *
-     * @return $this
-     *
      * @phpstan-param PaymentChargeOptions $options
+     *
+     * @return $this
      */
     public static function charge(array $options): static
     {
@@ -383,9 +383,9 @@ class Payment extends Stancer\Core\AbstractObject
      *
      * @see self::refund()
      *
-     * @throws Stancer\Exceptions\BadMethodCallException On every call, this method is not allowed in this context.
-     *
      * @phpstan-return $this
+     *
+     * @throws Stancer\Exceptions\BadMethodCallException On every call, this method is not allowed in this context.
      */
     #[\Override]
     public function delete(): static
@@ -405,12 +405,12 @@ class Payment extends Stancer\Core\AbstractObject
      *
      * @param array $terms Search terms. May have `order_id` or `unique_id` key.
      *
-     * @throws Stancer\Exceptions\InvalidSearchOrderIdFilterException When `order_id` is invalid.
-     * @throws Stancer\Exceptions\InvalidSearchUniqueIdFilterException When `unique_id` is invalid.
-     *
      * @phpstan-param array{order_id?: string, unique_id?: string} $terms
      *
      * @phpstan-return array{order_id?: string, unique_id?: string}
+     *
+     * @throws Stancer\Exceptions\InvalidSearchOrderIdFilterException When `order_id` is invalid.
+     * @throws Stancer\Exceptions\InvalidSearchUniqueIdFilterException When `unique_id` is invalid.
      */
     public static function filterListParams(array $terms): array
     {
@@ -450,6 +450,22 @@ class Payment extends Stancer\Core\AbstractObject
     }
 
     /**
+     * Return API endpoint.
+     */
+    public function getEndpoint(): string
+    {
+        $config = Stancer\Config::getGlobal();
+
+        if ($config->version === Stancer\Enum\ApiVersion::VERSION_1) {
+            return 'checkout';
+        }
+
+        return static::ENDPOINT;
+    }
+
+    // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
+
+    /**
      * Return the URL for Stancer payment page.
      *
      * Maybe used as an iframe or a redirection page if you needed it.
@@ -457,11 +473,11 @@ class Payment extends Stancer\Core\AbstractObject
      * @param array $params Parameters to add to the URL.
      * @param boolean $force Get the payment page url even without return URL.
      *
+     * @phpstan-param array{lang?: string} $params Parameters to add to the URL.
+     *
      * @throws Stancer\Exceptions\MissingApiKeyException When no public key was given in configuration.
      * @throws Stancer\Exceptions\MissingReturnUrlException When no return URL was given to payment data.
      * @throws Stancer\Exceptions\MissingPaymentIdException When no payment has no ID.
-     *
-     * @phpstan-param array{lang?: string} $params Parameters to add to the URL.
      */
     public function getPaymentPageUrl(array $params = [], bool $force = false): string
     {
@@ -703,7 +719,7 @@ class Payment extends Stancer\Core\AbstractObject
         if ($this->getId() && $this->isModified()) {
             return parent::send();
         }
-
+        $config = Stancer\Config::getGlobal();
         $amount = $this->getAmount();
         $currency = $this->getCurrency();
 
@@ -711,7 +727,7 @@ class Payment extends Stancer\Core\AbstractObject
             throw new Stancer\Exceptions\InvalidAmountException();
         }
 
-        if (!$currency) {
+        if (!$currency && $config->version === Stancer\Enum\ApiVersion::VERSION_1) {
             throw new Stancer\Exceptions\InvalidCurrencyException();
         }
 
@@ -821,44 +837,6 @@ class Payment extends Stancer\Core\AbstractObject
         $this->dataModel['method']['value'] = 'card';
 
         return $this;
-    }
-
-    /**
-     * Set the currency.
-     *
-     * @param Stancer\Currency|string $currency The currency.
-     *
-     * @return $this
-     * @throws Stancer\Exceptions\InvalidCurrencyException When currency is EUR and "sepa" is already allowed.
-     * @throws Stancer\Exceptions\InvalidCurrencyException When the currency is invalid.
-     */
-    public function setCurrency(Stancer\Currency|string $currency): static
-    {
-        try {
-            if (is_string($currency)) {
-                $new = Stancer\Currency::from(strtolower($currency));
-            } else {
-                $new = $currency;
-            }
-        } catch (\ValueError $exception) {
-            $params = [
-                $currency,
-                implode(', ', array_map(fn (Stancer\Currency $case): string => $case->value, Stancer\Currency::cases())),
-            ];
-            $message = vsprintf('"%s" is not a valid currency, please use one of the following : %s', $params);
-
-            throw new Stancer\Exceptions\InvalidCurrencyException($message, previous: $exception);
-        }
-
-        $methods = $this->getMethodsAllowed();
-
-        if (in_array(Stancer\Payment\MethodsAllowed::SEPA, $methods, true) && $new !== Stancer\Currency::EUR) {
-            $message = sprintf('You can not use "%s" currency with "%s" method.', $new->value, 'sepa');
-
-            throw new Stancer\Exceptions\InvalidCurrencyException($message);
-        }
-
-        return parent::setCurrency($new);
     }
 
     /**

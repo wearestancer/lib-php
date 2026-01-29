@@ -29,7 +29,7 @@ use Stancer;
  * @method string get_secret_key() Get secret API key.
  * @method integer get_timeout() Get API timeout.
  * @method string get_uri() Get API URI.
- * @method integer get_version() Get API version.
+ * @method \Stancer\Enum\ApiVersion get_version() Get API version.
  * @method boolean is_live_mode() Indicate if API is in live mode.
  * @method boolean is_not_live_mode() Indicate if API is not in live mode.
  * @method boolean is_not_test_mode() Indicate if API is not in test mode.
@@ -47,7 +47,7 @@ use Stancer;
  * @method $this set_mode(string $mode) Set API mode (test or live).
  * @method $this set_port(integer $port) Set API port.
  * @method $this set_timeout(integer $timeout) Set API timeout.
- * @method $this set_version(integer $version) Set API version.
+ * @method $this set_version(\Stancer\Enum\ApiVersion $version) Set API version.
  *
  * @property boolean $debug Debug mode.
  * @property ?\DateTimeZone $defaultTimeZone Default time zone.
@@ -59,7 +59,7 @@ use Stancer;
  * @property string $mode API mode (test or live).
  * @property ?integer $port API port.
  * @property integer $timeout API timeout.
- * @property integer $version API version.
+ * @property \Stancer\Enum\ApiVersion $version API version.
  *
  * @property-read string $basicAuthHeader HTTP "basic" authentication header's value.
  * @property-read string $basic_auth_header HTTP "basic" authentication header's value.
@@ -127,7 +127,7 @@ class Config
 
     protected ?\DateTimeZone $timezone = null;
 
-    protected int $version = 1;
+    protected Stancer\Enum\ApiVersion $version = Stancer\Enum\ApiVersion::VERSION_1;
 
     /**
      * Create an API configuration.
@@ -183,6 +183,7 @@ class Config
         description: 'HTTP "basic" authentication header\'s value',
         nullable: false,
         restricted: true,
+        type: 'string',
     )]
     public function getBasicAuthHeader(): string
     {
@@ -238,7 +239,12 @@ class Config
      *
      * @phpstan-return non-empty-string
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Default user agent', nullable: false, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Default user agent',
+        nullable: false,
+        restricted: true,
+        type: 'string',
+    )]
     public function getDefaultUserAgent(): string
     {
         $params = [];
@@ -296,7 +302,7 @@ class Config
      *
      * Default : api.stancer.com
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'API host', nullable: false)]
+    #[Stancer\Core\Documentation\FormatProperty(description: 'API host', nullable: false, type: 'string')]
     public function getHost(): string
     {
         return $this->host;
@@ -358,7 +364,7 @@ class Config
      *
      * You should use class constant `LIVE_MODE` and `TEST_MODE`.
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'API mode (test or live)', value: 'test')]
+    #[Stancer\Core\Documentation\FormatProperty(description: 'API mode (test or live)', type: 'string', value: 'test')]
     public function getMode(): string
     {
         return $this->mode ?: static::TEST_MODE;
@@ -384,7 +390,12 @@ class Config
      *
      * @throws Stancer\Exceptions\MissingApiKeyException When no key is found.
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Public API key', nullable: false, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Public API key',
+        nullable: false,
+        restricted: true,
+        type: 'string',
+    )]
     public function getPublicKey(): string
     {
         $key = $this->keys['ptest'];
@@ -409,7 +420,12 @@ class Config
      *
      * @throws Stancer\Exceptions\MissingApiKeyException When no key is found.
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Secret API key', nullable: false, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Secret API key',
+        nullable: false,
+        restricted: true,
+        type: 'string',
+    )]
     public function getSecretKey(): string
     {
         $key = $this->keys['stest'];
@@ -447,7 +463,12 @@ class Config
      *
      * Default : 1
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'API URI', nullable: false, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'API URI',
+        nullable: false,
+        restricted: true,
+        type: 'string',
+    )]
     public function getUri(): string
     {
         $pattern = '%1$s://%2$s/v%4$s/';
@@ -460,7 +481,7 @@ class Config
             'https',
             $this->getHost(),
             $this->getPort(),
-            $this->getVersion(),
+            $this->getVersion()->value,
         ];
 
         return vsprintf($pattern, $params);
@@ -469,12 +490,10 @@ class Config
     /**
      * Return API version.
      *
-     * Default : 1
-     *
-     * @return integer
+     * Default : Stancer\Enum\ApiVersion::Version_1
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'API version', nullable: false, type: 'integer')]
-    public function getVersion(): int
+    #[Stancer\Core\Documentation\FormatProperty(description: 'API version', nullable: false, type: '\\Stancer\\Enum\\ApiVersion')]
+    public function getVersion(): Stancer\Enum\ApiVersion
     {
         return $this->version;
     }
@@ -772,11 +791,11 @@ class Config
     /**
      * Update API version.
      *
-     * @param integer $version New version.
+     * @param Stancer\Enum\ApiVersion $version New version.
      *
      * @return $this
      */
-    public function setVersion(int $version): self
+    public function setVersion(Stancer\Enum\ApiVersion $version): self
     {
         $this->version = $version;
 

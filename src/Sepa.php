@@ -22,6 +22,7 @@ use Stancer;
  * @method ?\Stancer\Sepa\Check get_check()
  * @method ?string get_country() Get IBAN country.
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method ?\DateTimeInterface get_date_birth() Get account holder birth date.
  * @method ?\DateTimeInterface get_date_mandate() Get mandate signature date.
@@ -57,6 +58,8 @@ use Stancer;
  * @property-read ?\Stancer\Sepa\Check $check
  * @property-read ?string $country IBAN country.
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $endpoint API endpoint.
@@ -155,7 +158,12 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
     /**
      * Return IBAN with usual readeable format (AAAA BBBB CCCC ...).
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Formatted IBAN', required: true, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Formatted IBAN',
+        required: true,
+        restricted: true,
+        type: self::STRING,
+    )]
     public function getFormattedIban(): ?string
     {
         $iban = $this->getIban();

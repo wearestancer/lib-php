@@ -1320,12 +1320,12 @@ class Config extends Stancer\Tests\atoum
             ->assert('Random values / camelCase method')
                 ->if($host = uniqid())
                 ->and($port = rand(0, PHP_INT_MAX))
-                ->and($version = rand(0, PHP_INT_MAX))
+                ->and($version = rand(1, 2))
                 ->and($protocol = 'https')
 
                 ->given($this->newTestedInstance([])->setHost($host))
                 ->and($this->testedInstance->setPort($port))
-                ->and($this->testedInstance->setVersion($version))
+                ->and($this->testedInstance->setVersion(Stancer\Enum\ApiVersion::from($version)))
 
                 ->then
                     ->string($this->testedInstance->getUri())
@@ -1334,12 +1334,12 @@ class Config extends Stancer\Tests\atoum
             ->assert('Random values / snake_case method')
                 ->if($host = uniqid())
                 ->and($port = rand(0, PHP_INT_MAX))
-                ->and($version = rand(0, PHP_INT_MAX))
+                ->and($version = rand(1, 2))
                 ->and($protocol = 'https')
 
                 ->given($this->newTestedInstance([])->set_host($host))
                 ->and($this->testedInstance->set_port($port))
-                ->and($this->testedInstance->set_version($version))
+                ->and($this->testedInstance->set_version(Stancer\Enum\ApiVersion::from($version)))
 
                 ->then
                     ->string($this->testedInstance->get_uri())
@@ -1348,12 +1348,12 @@ class Config extends Stancer\Tests\atoum
             ->assert('Random values / property')
                 ->if($host = uniqid())
                 ->and($port = rand(0, PHP_INT_MAX))
-                ->and($version = rand(0, PHP_INT_MAX))
+                ->and($version = rand(1, 2))
                 ->and($protocol = 'https')
 
                 ->given($this->newTestedInstance([])->host = $host)
                 ->and($this->testedInstance->port = $port)
-                ->and($this->testedInstance->version = $version)
+                ->and($this->testedInstance->version = Stancer\Enum\ApiVersion::from($version))
 
                 ->then
                     ->string($this->testedInstance->uri)
@@ -1364,37 +1364,50 @@ class Config extends Stancer\Tests\atoum
     public function testGetVersion_SetVersion()
     {
         $this
-            ->if($defaultVersion = 1)
-            ->and($randomVersion = rand(0, PHP_INT_MAX))
+            ->if($defaultVersion = Stancer\Enum\ApiVersion::VERSION_1)
+            ->and($randomVersion = rand(1, 2))
             ->then
                 ->assert('camelCase method')
-                    ->integer($this->newTestedInstance([])->getVersion())
+                    ->enum($this->newTestedInstance([])->getVersion())
                         ->isIdenticalTo($defaultVersion)
 
-                    ->object($this->testedInstance->setVersion($randomVersion))
+                    ->object($this->testedInstance->setVersion(Stancer\Enum\ApiVersion::from($randomVersion)))
                         ->isTestedInstance
 
-                    ->integer($this->testedInstance->getVersion())
-                        ->isIdenticalTo($randomVersion)
+                    ->enum($this->testedInstance->getVersion())
+                        ->isIdenticalTo(Stancer\Enum\ApiVersion::from($randomVersion))
 
                 ->assert('snake_case method')
-                    ->integer($this->newTestedInstance([])->get_version())
+                    ->enum($this->newTestedInstance([])->get_version())
                         ->isIdenticalTo($defaultVersion)
 
-                    ->object($this->testedInstance->set_version($randomVersion))
+                    ->object($this->testedInstance->set_version(Stancer\Enum\ApiVersion::from($randomVersion)))
                         ->isTestedInstance
 
-                    ->integer($this->testedInstance->get_version())
-                        ->isIdenticalTo($randomVersion)
+                    ->enum($this->testedInstance->get_version())
+                        ->isIdenticalTo(Stancer\Enum\ApiVersion::from($randomVersion))
 
                 ->assert('property')
-                    ->integer($this->newTestedInstance([])->version)
+                    ->enum($this->newTestedInstance([])->version)
                         ->isIdenticalTo($defaultVersion)
 
-                    ->integer($this->testedInstance->version = $randomVersion)
+                    ->enum($this->testedInstance->version = Stancer\Enum\ApiVersion::from($randomVersion))
 
-                    ->integer($this->testedInstance->version)
-                        ->isIdenticalTo($randomVersion)
+                    ->enum($this->testedInstance->version)
+                        ->isIdenticalTo(Stancer\Enum\ApiVersion::from($randomVersion))
+
+                ->assert('Invalid API Version')
+                    ->given($wrongVersionNumber = rand(3, PHP_INT_MAX))
+                    ->enum($this->newTestedInstance([])->version)
+                        ->isIdenticalTo($defaultVersion)
+                    ->exception(function () use ($wrongVersionNumber) {
+                        $this->testedInstance->setVersion(Stancer\Enum\ApiVersion::from($wrongVersionNumber));
+                    })
+                        ->isInstanceOf(\ValueError::class)
+
+                    ->exception(function () {
+                        $this->testedInstance->getSecretKey();
+                    })
         ;
     }
 

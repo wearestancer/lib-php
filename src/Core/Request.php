@@ -132,6 +132,8 @@ class Request
      * @param Stancer\Core\AbstractObject $object Object.
      * @param array $options Guzzle options.
      *
+     * @phpstan-param RequestOptions $options
+     *
      * @throws Stancer\Exceptions\InvalidArgumentException When calling with unsupported verb.
      * @throws Stancer\Exceptions\TooManyRedirectsException On too many redirection case (HTTP 310).
      * @throws Stancer\Exceptions\NotAuthorizedException On credential problem (HTTP 401).
@@ -139,8 +141,6 @@ class Request
      * @throws Stancer\Exceptions\ClientException On HTTP 4** errors.
      * @throws Stancer\Exceptions\ServerException On HTTP 5** errors.
      * @throws Stancer\Exceptions\Exception On every over exception.
-     *
-     * @phpstan-param RequestOptions $options
      */
     public function request(Stancer\Http\Verb\AbstractVerb $verb, AbstractObject $object, array $options = []): string
     {

@@ -1,6 +1,10 @@
 {
   "amount": 10000,
-  "auth": "requested",
+  "auth": {
+    "redirect_url": null,
+    "return_url": null,
+    "status": "requested"
+  },
   "country": "",
   "created": 1562085759,
   "currency": "eur",
@@ -8,7 +12,7 @@
     "country": null,
     "created": 1562085759,
     "email": "john.doe@example.com",
-    "id": "cust_IYsHodYTugeBndSIOdm6rnBA",
+    "id": "cust_9Cle7TXKkjhwqcWx4Kl5cQYk",
     "mobile": null,
     "name": "John Doe"
   },

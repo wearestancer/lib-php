@@ -411,6 +411,18 @@ class SearchTrait extends Stancer\Tests\atoum
                             ->call('request')
                                 ->withArguments('GET', $location, $options)
                                     ->once
+                ->assert('Invalid Inner Search')
+                    ->exception(function () {
+                        $this->invoke($this->newTestedInstance)->search(
+                            static::class,
+                            $this->testedInstance->getEntityName(),
+                            [],
+                            'test',
+                        );
+                    })
+                    ->isInstanceOf(Stancer\Exceptions\InvalidSearchFilterException::class)
+                        ->message
+                            ->isIdenticalTo('You cannot search linked item before sending the object.')
         ;
     }
 

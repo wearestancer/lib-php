@@ -17,7 +17,12 @@ class Payout extends Stancer\Tests\atoum
         ;
     }
 
-    public function testGetAmount()
+    /**
+     * @DataProvider versionDataProvider
+     *
+     * @param integer $version
+     */
+    public function testGetAmount(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->if($value = rand(50, 99999))
@@ -33,7 +38,7 @@ class Payout extends Stancer\Tests\atoum
                         ->isIdenticalTo('You are not allowed to modify "amount".')
 
             ->if($client = new mock\Stancer\Http\Client())
-            ->and($this->mockConfig($client))
+            ->and($this->mockConfig($client, $version))
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
             ->then
                 ->integer($this->newTestedInstance(uniqid())->getAmount())
@@ -44,7 +49,10 @@ class Payout extends Stancer\Tests\atoum
         ;
     }
 
-    public function testGetCurrency()
+    /**
+     * @DataProvider versionDataProvider
+     */
+    public function testGetCurrency(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->if($value = uniqid())
@@ -60,7 +68,7 @@ class Payout extends Stancer\Tests\atoum
                         ->isIdenticalTo('You are not allowed to modify "currency".')
 
             ->if($client = new mock\Stancer\Http\Client())
-            ->and($this->mockConfig($client))
+            ->and($this->mockConfig($client, $version))
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
             ->then
                 ->string($this->newTestedInstance(uniqid())->getCurrency())
@@ -71,7 +79,10 @@ class Payout extends Stancer\Tests\atoum
         ;
     }
 
-    public function testGetDateBank()
+    /**
+     * @DataProvider versionDataProvider
+     */
+    public function testGetDateBank(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->if($value = uniqid())
@@ -87,7 +98,7 @@ class Payout extends Stancer\Tests\atoum
                         ->isIdenticalTo('You are not allowed to modify "dateBank".')
 
             ->if($client = new mock\Stancer\Http\Client())
-            ->and($this->mockConfig($client))
+            ->and($this->mockConfig($client, $version))
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
             ->then
                 ->dateTime($this->newTestedInstance(uniqid())->getDateBank())
@@ -100,7 +111,10 @@ class Payout extends Stancer\Tests\atoum
         ;
     }
 
-    public function testGetDatePaym()
+    /**
+     * @DataProvider versionDataProvider
+     */
+    public function testGetDatePaym(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->if($value = uniqid())
@@ -116,7 +130,7 @@ class Payout extends Stancer\Tests\atoum
                         ->isIdenticalTo('You are not allowed to modify "datePaym".')
 
             ->if($client = new mock\Stancer\Http\Client())
-            ->and($this->mockConfig($client))
+            ->and($this->mockConfig($client, $version))
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
             ->then
                 ->dateTime($this->newTestedInstance(uniqid())->getDatePaym())
@@ -137,13 +151,16 @@ class Payout extends Stancer\Tests\atoum
         ;
     }
 
-    public function testDisputesDetails()
+    /**
+     * @DataProvider versionDataProvider
+     */
+    public function testDisputesDetails(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
 
-            ->and($config = $this->mockConfig($client))
+            ->and($config = $this->mockConfig($client, $version))
             ->and($options = $this->mockRequestOptions($config))
 
             ->if($this->newTestedInstance('pout_GexV3lpllrBkyRny15qfsMC0')) // from fixture
@@ -367,7 +384,10 @@ class Payout extends Stancer\Tests\atoum
         ;
     }
 
-    public function testGetDetails()
+    /**
+     * @DataProvider versionDataProvider
+     */
+    public function testGetDetails(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->if($value = uniqid())
@@ -383,7 +403,7 @@ class Payout extends Stancer\Tests\atoum
                         ->isIdenticalTo('You are not allowed to modify "details".')
 
             ->if($client = new mock\Stancer\Http\Client())
-            ->and($this->mockConfig($client))
+            ->and($this->mockConfig($client, $version))
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
             ->then
                 ->object($this->newTestedInstance(uniqid())->getDetails())
@@ -432,7 +452,12 @@ class Payout extends Stancer\Tests\atoum
         ;
     }
 
-    public function testGetFees()
+    /**
+     * @DataProvider versionDataProvider
+     *
+     * @param integer $version
+     */
+    public function testGetFees(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->if($value = rand(0, 100))
@@ -448,7 +473,7 @@ class Payout extends Stancer\Tests\atoum
                         ->isIdenticalTo('You are not allowed to modify "fees".')
 
             ->if($client = new mock\Stancer\Http\Client())
-            ->and($this->mockConfig($client))
+            ->and($this->mockConfig($client, $version))
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
             ->then
                 ->integer($this->newTestedInstance(uniqid())->getFees())
@@ -459,7 +484,12 @@ class Payout extends Stancer\Tests\atoum
         ;
     }
 
-    public function testGetStatementDescription()
+    /**
+     * @DataProvider versionDataProvider
+     *
+     * @param integer $version
+     */
+    public function testGetStatementDescription(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->if($value = uniqid())
@@ -475,7 +505,7 @@ class Payout extends Stancer\Tests\atoum
                         ->isIdenticalTo('You are not allowed to modify "statementDescription".')
 
             ->if($client = new mock\Stancer\Http\Client())
-            ->and($this->mockConfig($client))
+            ->and($this->mockConfig($client, $version))
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
             ->then
                 ->string($this->newTestedInstance(uniqid())->getStatementDescription())
@@ -486,7 +516,10 @@ class Payout extends Stancer\Tests\atoum
         ;
     }
 
-    public function testGetStatus()
+    /**
+     * @DataProvider versionDataProvider
+     */
+    public function testGetStatus(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->if($value = uniqid())
@@ -502,7 +535,7 @@ class Payout extends Stancer\Tests\atoum
                         ->isIdenticalTo('You are not allowed to modify "status".')
 
             ->if($client = new mock\Stancer\Http\Client())
-            ->and($this->mockConfig($client))
+            ->and($this->mockConfig($client, $version))
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
             ->then
                 ->enum($this->newTestedInstance(uniqid())->getStatus())
@@ -513,11 +546,14 @@ class Payout extends Stancer\Tests\atoum
         ;
     }
 
-    public function testList()
+    /**
+     * @DataProvider versionDataProvider
+     */
+    public function testList(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client))
+            ->and($config = $this->mockConfig($client, $version))
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'list'))
             ->and($options = $this->mockRequestOptions($config))
 
@@ -547,13 +583,16 @@ class Payout extends Stancer\Tests\atoum
         ;
     }
 
-    public function testPaymentsDetails()
+    /**
+     * @DataProvider versionDataProvider
+     */
+    public function testPaymentsDetails(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
 
-            ->and($config = $this->mockConfig($client))
+            ->and($config = $this->mockConfig($client, $version))
             ->and($options = $this->mockRequestOptions($config))
 
             ->if($this->newTestedInstance('pout_GexV3lpllrBkyRny15qfsMC0')) // from fixture
@@ -781,13 +820,16 @@ class Payout extends Stancer\Tests\atoum
         ;
     }
 
-    public function testRefundsDetails()
+    /**
+     * @DataProvider versionDataProvider
+     */
+    public function testRefundsDetails(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
             ->and($this->calling($client)->request = $this->mockJsonResponse('payout', 'read'))
 
-            ->and($config = $this->mockConfig($client))
+            ->and($config = $this->mockConfig($client, $version))
             ->and($options = $this->mockRequestOptions($config))
 
             ->if($this->newTestedInstance('pout_GexV3lpllrBkyRny15qfsMC0')) // from fixture

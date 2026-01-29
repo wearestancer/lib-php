@@ -91,14 +91,17 @@ class Customer extends Stancer\Tests\atoum
         ;
     }
 
-    public function testSend()
+    /**
+     * @DataProvider versionDataProvider
+     */
+    public function testSend(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client())
             ->and($response = $this->mockJsonResponse('customers', 'create', new mock\GuzzleHttp\Psr7\Response()))
             ->and($this->calling($client)->request = $response)
 
-            ->and($config = $this->mockConfig($client))
+            ->and($config = $this->mockConfig($client, $version))
 
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setEmail(uniqid()))
@@ -195,11 +198,14 @@ class Customer extends Stancer\Tests\atoum
         ;
     }
 
-    public function testSend_forUpdate()
+    /**
+     * @DataProvider versionDataProvider
+     */
+    public function testSend_forUpdate(Stancer\Enum\ApiVersion $version)
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
-            ->and($config = $this->mockConfig($client))
+            ->and($config = $this->mockConfig($client, $version))
 
             ->then
                 ->assert('Modify a fresh and not populated instance, will send only known data')

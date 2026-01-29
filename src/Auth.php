@@ -14,6 +14,7 @@ use Stancer;
  * @method ?string getReturnUrl() Get the return URL at end of the authentification session.
  * @method \Stancer\Auth\Status getStatus() Get the authentification status.
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_endpoint() Get API endpoint.
  * @method string get_entity_name() Get entity name.
@@ -28,12 +29,16 @@ use Stancer;
  * @property ?string $return_url The return URL at end of the authentification session.
  *
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $endpoint API endpoint.
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
+ * @property-read ?mixed $jsonSerialize Alias for `Stancer\Auth::jsonSerialize()`.
+ * @property-read ?mixed $json_serialize Alias for `Stancer\Auth::jsonSerialize()`.
  * @property-read ?string $redirectUrl The redirection URL to start an authentification session.
  * @property-read ?string $redirect_url The redirection URL to start an authentification session.
  * @property-read \Stancer\Auth\Status $status The authentification status.
@@ -71,6 +76,22 @@ class Auth extends Stancer\Core\AbstractObject
     protected array $modified = [
         'status',
     ];
+
+    /**
+     * Override of jsonSerialize to let us send a boolean even if we have an AuthObject.
+     *
+     * @return array<string,mixed>|bool|int|string|null
+     */
+    #[\Override]
+    public function jsonSerialize(): mixed
+    {
+        $version = Stancer\Config::getGlobal()->getVersion();
+        if ($version === Stancer\Enum\ApiVersion::VERSION_1) {
+            return parent::jsonSerialize();
+        }
+
+        return true;
+    }
 
     /**
      * Update return URL.
