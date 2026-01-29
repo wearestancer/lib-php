@@ -63,6 +63,18 @@ class atoum extends base\test
         return json_decode($this->getFixture(...$parts), true);
     }
 
+    /**
+     * We set 50 as a min.
+     *
+     * if we want to fail the payment we will not use this function
+     *
+     * @param integer $max
+     */
+    public function getRandomAmount(int $max = 1000): int
+    {
+        return rand(50, $max);
+    }
+
     public function getRandomDate(int $min, ?int $max = null): string
     {
         if (!$max) {
@@ -83,11 +95,6 @@ class atoum extends base\test
         $day = rand(1, $dMax);
 
         return sprintf('%04d-%02d-%02d', $year, $month, $day);
-    }
-
-    public function getRandomInteger(int $min, int $max): int
-    {
-        return rand($min, $max);
     }
 
     public function getRandomNumber(): string

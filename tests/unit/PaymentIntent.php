@@ -26,7 +26,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     public function testAmount()
     {
         $this
-            ->given($amount = rand(50, 10000))
+            ->given($amount = $this->getRandomAmount())
 
             ->if($this->newTestedInstance)
             ->then
@@ -1553,7 +1553,7 @@ class PaymentIntent extends Stancer\Tests\atoum
 
                 ->assert('Flat send both')
                     ->given($this->newTestedInstance)
-                    ->and($this->testedInstance->setAmount(rand(50, 1000)))
+                    ->and($this->testedInstance->setAmount($this->getRandomAmount()))
                     ->and($this->testedInstance->setCurrency('eur'))
                     ->and($this->testedInstance->setCard($card))
                     ->and($this->testedInstance->setCustomer($customer))
@@ -1579,7 +1579,7 @@ class PaymentIntent extends Stancer\Tests\atoum
             ->given($this->newTestedInstance)
 
             ->given($card = new Stancer\Card())
-            ->and($this->testedInstance->setAmount(rand(50, 1000)))
+            ->and($this->testedInstance->setAmount($this->getRandomAmount()))
             ->and($this->testedInstance->setCurrency('eur'))
             ->and($this->testedInstance->setCard($card))
 
@@ -1634,7 +1634,7 @@ class PaymentIntent extends Stancer\Tests\atoum
             ->given($this->newTestedInstance)
 
             ->given($customer = new Stancer\Customer())
-            ->and($this->testedInstance->setAmount(rand(50, 1000)))
+            ->and($this->testedInstance->setAmount($this->getRandomAmount()))
             ->and($this->testedInstance->setCurrency('eur'))
             ->and($this->testedInstance->setCustomer($customer))
             ->and($customer->setName($this->getRandomString(5, 25)))
@@ -1688,7 +1688,7 @@ class PaymentIntent extends Stancer\Tests\atoum
             ->given($this->newTestedInstance)
 
             ->given($sepa = new Stancer\Sepa())
-            ->and($this->testedInstance->setAmount(rand(50, 1000)))
+            ->and($this->testedInstance->setAmount($this->getRandomAmount()))
             ->and($this->testedInstance->setCurrency('eur'))
             ->and($sepa->setIban($this->ibanDataProvider(true)))
             ->and($sepa->setName($this->getRandomString(3, 64)))

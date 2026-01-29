@@ -44,7 +44,7 @@ class Refund extends TestCase
     {
         $this
             ->given($payment = new Stancer\Payment())
-            ->and($payment->setAmount($amount = rand(50, 10000)))
+            ->and($payment->setAmount($amount = $this->getRandomAmount()))
             ->and($payment->setDescription(sprintf('Refund test, %.02f %s', $amount / 100, $currency)))
             ->and($payment->setCurrency($currency))
             ->and($payment->setCard($card = new Stancer\Card()))

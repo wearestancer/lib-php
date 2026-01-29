@@ -19,7 +19,7 @@ class Inner extends Stancer\Tests\atoum
     public function testGetAmount()
     {
         $this
-            ->if($value = rand(50, 9999999))
+            ->if($value = $this->getRandomAmount())
             ->then
                 ->variable($this->newTestedInstance->getAmount())
                     ->isNull

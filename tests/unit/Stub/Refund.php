@@ -39,7 +39,7 @@ class Refund extends Stancer\Tests\atoum
                 ->and($payment = new Stancer\Payment($paym))
                 ->and($payment->setCurrency('eur'))
 
-                ->if($amount = rand(50, 99999))
+                ->if($amount = $this->getRandomAmount())
 
                 ->if($this->newTestedInstance)
                 ->and($this->testedInstance->testOnlySetAmount($amount))

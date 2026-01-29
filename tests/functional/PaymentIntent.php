@@ -92,7 +92,7 @@ class PaymentIntent extends TestCase
 
     public function testSend()
     {
-        $amount = rand(50, 100);
+        $amount = $this->getRandomAmount();
         $desc = $this->getRandomString(3, 64);
         $methods_allowed = [Stancer\Payment\MethodsAllowed::CARD];
         $capture = false;
@@ -137,7 +137,7 @@ class PaymentIntent extends TestCase
         $currency = 'eur';
         $this
             ->assert('With authentication')
-                ->given($amount = rand(50, 99999))
+                ->given($amount = $this->getRandomAmount())
                 ->and($description = vsprintf('Automatic auth test, %.02f %s', [
                     $amount / 100,
                     $currency,
@@ -202,7 +202,7 @@ class PaymentIntent extends TestCase
                         ->isIdenticalTo(Stancer\ThreeDomainsSecure\Status::REQUIRED)
 
             ->assert('For payment page')
-                ->given($amount = rand(50, 100))
+                ->given($amount = $this->getRandomAmount())
                 ->and($description = vsprintf('Non authenticated payment page test, %.02f %s', [
                     $amount / 100,
                     $currency,
@@ -237,7 +237,7 @@ class PaymentIntent extends TestCase
                         ->hasDay(date('d'))
 
             ->assert('For payment page with authentication')
-                ->given($amount = rand(50, 100))
+                ->given($amount = $this->getRandomAmount())
                 ->and($description = vsprintf('Authenticated payment page test, %.02f %s', [
                     $amount / 100,
                     $currency,
@@ -276,7 +276,7 @@ class PaymentIntent extends TestCase
 
             ->assert('Patch card and status')
                 ->given($this->newTestedInstance)
-                ->and($amount = rand(50, 100))
+                ->and($amount = $this->getRandomAmount())
                 ->and($description = sprintf('Automatic test, PATCH card, %.02f %s', $amount / 100, $currency))
 
                 ->if($customer = new Stancer\Customer())
@@ -332,7 +332,7 @@ class PaymentIntent extends TestCase
 
             ->assert('With order ID')
                 ->given($this->newTestedInstance)
-                ->and($amount = rand(50, 100))
+                ->and($amount = $this->getRandomAmount())
                 ->and($description = sprintf('Automatic test, with unique ID, %.02f %s', $amount / 100, $currency))
                 ->and($uniqueID = $this->getRandomString(10, 20))
 
@@ -391,14 +391,14 @@ class PaymentIntent extends TestCase
 
             ->assert('Allow duplicate customer')
                 ->given($this->newTestedInstance)
-                ->and($amount = rand(50, 100))
+                ->and($amount = $this->getRandomAmount())
                 ->and($description = sprintf('Automatic test, duplicate customer, %.02f %s', $amount / 100, $currency))
 
                 ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth(rand(1, 12)))
-                ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
-                ->and($card->setCvc((string) rand(100, 999)))
+                ->and($card->setExpirationMonth($this->getRandomMonth()))
+                ->and($card->setExpirationYear($this->getRandomExpYear()))
+                ->and($card->setCvc($this->getRandomCvc()))
 
                 ->if($customer = new Stancer\Customer())
                 ->and($customer->setName($name)) // From previous test

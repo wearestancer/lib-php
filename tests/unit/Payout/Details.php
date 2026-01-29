@@ -17,7 +17,7 @@ class Details extends Stancer\Tests\atoum
     public function testDisputes()
     {
         $this
-            ->if($amount = rand(50, 999999))
+            ->if($amount = $this->getRandomAmount())
             ->then
                 ->variable($this->newTestedInstance->getDisputes())
                     ->isNull
@@ -43,7 +43,7 @@ class Details extends Stancer\Tests\atoum
     public function testPayments()
     {
         $this
-            ->if($amount = rand(50, 999999))
+            ->if($amount = $this->getRandomAmount())
             ->then
                 ->variable($this->newTestedInstance->getPayments())
                     ->isNull
@@ -69,7 +69,7 @@ class Details extends Stancer\Tests\atoum
     public function testRefunds()
     {
         $this
-            ->if($amount = rand(50, 999999))
+            ->if($amount = $this->getRandomAmount())
             ->then
                 ->variable($this->newTestedInstance->getRefunds())
                     ->isNull

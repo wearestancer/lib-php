@@ -100,7 +100,7 @@ class Payment extends TestCase
         $this
             ->assert('Regular listing')
                 ->given($this->newTestedInstance)
-                ->and($this->testedInstance->setAmount($amount = rand(50, 100)))
+                ->and($this->testedInstance->setAmount($amount = $this->getRandomAmount()))
                 ->and($this->testedInstance->setDescription(sprintf('Automatic test for list, %.02f %s', $amount / 100, $currency)))
                 ->and($this->testedInstance->setCurrency($currency))
                 ->and($this->testedInstance->setCard($card = new Stancer\Card()))
@@ -174,7 +174,7 @@ class Payment extends TestCase
         $this
             ->given($this->newTestedInstance)
             ->then
-                ->object($this->testedInstance->setAmount($amount = rand(50, 100)))
+                ->object($this->testedInstance->setAmount($amount = $this->getRandomAmount()))
                     ->isTestedInstance
 
                 ->object($this->testedInstance->setDescription(sprintf('Automatic test, %.02f %s', $amount / 100, $currency)))
@@ -224,7 +224,7 @@ class Payment extends TestCase
         $this
             ->given(Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
             ->assert('Auth V1')
-                ->given($amount = rand(50, 100))
+                ->given($amount = $this->getRandomAmount())
                 ->and($description = vsprintf('Automatic auth test, %.02f %s', [
                     $amount / 100,
                     $currency,
@@ -298,7 +298,7 @@ class Payment extends TestCase
                     ->object($auth->getStatus())
                         ->isInstanceOf(Stancer\Auth\Status::class)
             ->assert('For payment page v1')
-                ->given($amount = rand(50, 100))
+                ->given($amount = $this->getRandomAmount())
                 ->and($description = vsprintf('Authenticated payment page test, %.02f %s', [
                     $amount / 100,
                     $currency,
@@ -352,7 +352,7 @@ class Payment extends TestCase
 
             ->assert('Auth V2')
                 ->given(Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
-                ->given($amount = rand(50, 100))
+                ->given($amount = $this->getRandomAmount())
                 ->and($description = vsprintf('Automatic auth test, %.02f %s', [
                     $amount / 100,
                     $currency,
@@ -415,7 +415,7 @@ class Payment extends TestCase
                         ->isInstanceOf(Stancer\Auth::class)
 
             ->assert('For payment page v2')
-                ->given($amount = rand(50, 100))
+                ->given($amount = $this->getRandomAmount())
                 ->and($description = vsprintf('Authenticated payment page test, %.02f %s', [
                     $amount / 100,
                     $currency,
@@ -470,7 +470,7 @@ class Payment extends TestCase
     {
         $this
             ->assert('For payment page')
-                ->given($amount = rand(50, 100))
+                ->given($amount = $this->getRandomAmount())
                 ->and($description = vsprintf('Non authenticated payment page test, %.02f %s', [
                     $amount / 100,
                     $currency,
@@ -509,7 +509,7 @@ class Payment extends TestCase
 
             ->assert('Patch card and status')
                 ->given($this->newTestedInstance)
-                ->and($amount = rand(50, 100))
+                ->and($amount = $this->getRandomAmount())
                 ->and($description = sprintf('Automatic test, PATCH card, %.02f %s', $amount / 100, $currency))
 
                 ->if($customer = new Stancer\Customer())
@@ -603,7 +603,7 @@ class Payment extends TestCase
 
             ->assert('With unique ID')
                 ->given($this->newTestedInstance)
-                ->and($amount = rand(50, 100))
+                ->and($amount = $this->getRandomAmount())
                 ->and($description = sprintf('Automatic test, with unique ID, %.02f %s', $amount / 100, $currency))
                 ->and($uniqueID = $this->getRandomString(10, 20))
 
@@ -658,7 +658,7 @@ class Payment extends TestCase
                         ->hasLength(29)
 
                 ->if($this->newTestedInstance)
-                ->and($this->testedInstance->setAmount(rand(50, 99999)))
+                ->and($this->testedInstance->setAmount($this->getRandomAmount()))
                 ->and($this->testedInstance->setCard($card))
                 ->and($this->testedInstance->setCurrency($currency))
                 ->and($this->testedInstance->setDescription('Will fail'))
@@ -674,7 +674,7 @@ class Payment extends TestCase
             ->if(Stancer\Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
             ->assert('Allow duplicate customer')
                 ->given($this->newTestedInstance)
-                ->and($amount = rand(50, 100))
+                ->and($amount = $this->getRandomAmount())
                 ->and($description = sprintf('Automatic test, duplicate customer, %.02f %s', $amount / 100, $currency))
 
                 ->if($card = new Stancer\Card())
@@ -722,7 +722,7 @@ class Payment extends TestCase
             ->if(Stancer\Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
             ->assert('Allow duplicate customer')
                 ->given($this->newTestedInstance)
-                ->and($amount = rand(50, 100))
+                ->and($amount = $this->getRandomAmount())
                 ->and($description = sprintf('Automatic test, duplicate customer, %.02f %s', $amount / 100, $currency))
 
                 ->if($card = new Stancer\Card())
@@ -775,7 +775,7 @@ class Payment extends TestCase
     public function testSendWithCard($currency)
     {
         $this
-            ->given($amount = rand(50, 100))
+            ->given($amount = $this->getRandomAmount())
             ->and($description = vsprintf('Automatic test, with card, %.02f %s', [
                 $amount / 100,
                 $currency,
@@ -838,7 +838,7 @@ class Payment extends TestCase
     {
         $this
             ->assert('With a sepa account')
-                ->given($amount = rand(50, 100))
+                ->given($amount = $this->getRandomAmount())
                 ->and($description = vsprintf('Automatic test, with SEPA, %.02f %s', [
                     $amount / 100,
                     $currency,

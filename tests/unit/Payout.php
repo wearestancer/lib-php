@@ -25,7 +25,7 @@ class Payout extends Stancer\Tests\atoum
     public function testGetAmount(Stancer\Enum\ApiVersion $version)
     {
         $this
-            ->if($value = rand(50, 99999))
+            ->if($value = $this->getRandomAmount())
             ->then
                 ->variable($this->newTestedInstance->getAmount())
                     ->isNull

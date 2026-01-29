@@ -18,7 +18,7 @@ class Dispute extends TestCase
     {
         $currency = $this->cardCurrencyDataProvider(true);
         $payment = new Stancer\Payment();
-        $payment->setAmount($amount = rand(50, 10000));
+        $payment->setAmount($amount = $this->getRandomAmount());
         $payment->setDescription(sprintf('Automatic test for disputes list, %.02f %s', $amount / 100, $currency));
         $payment->setCurrency($currency);
         $payment->setCard($card = new Stancer\Card());
