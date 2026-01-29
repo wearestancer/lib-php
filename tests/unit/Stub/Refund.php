@@ -35,7 +35,7 @@ class Refund extends Stancer\Tests\atoum
                 ->if($this->calling($client)->request[] = new Stancer\Http\Response(200, '{}'))
                 ->and($this->calling($client)->request[] = new Stancer\Http\Response(200, $this->getFixture('refund', 'read')))
 
-                ->if($paym = 'paym_' . bin2hex(random_bytes(12)))
+                ->if($paym = 'paym_' . $this->getRandomString(24))
                 ->and($payment = new Stancer\Payment($paym))
                 ->and($payment->setCurrency('eur'))
 
@@ -82,7 +82,7 @@ class Refund extends Stancer\Tests\atoum
                 ->if($this->calling($client)->request[] = new Stancer\Http\Response(200, '{}'))
                 ->and($this->calling($client)->request[] = new Stancer\Http\Response(200, $this->getFixture('refund', 'read')))
 
-                ->if($paym = 'paym_' . bin2hex(random_bytes(12)))
+                ->if($paym = 'paym_' . $this->getRandomString(24))
                 ->and($payment = new Stancer\Payment($paym))
                 ->and($payment->setCurrency('eur'))
 

@@ -31,7 +31,7 @@ class atoum extends base\test
             $version = Stancer\Enum\ApiVersion::VERSION_1;
         }
         if ($method !== 'testGetGlobal_SetGlobal') {
-            Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))])
+            Stancer\Config::init(['stest_' . $this->getRandomString(24)])
                 ->setVersion($version)
             ;
         }
@@ -159,7 +159,7 @@ class atoum extends base\test
      */
     public function mockConfig($client, Stancer\Enum\ApiVersion $version = Stancer\Enum\ApiVersion::VERSION_1): Stancer\Config
     {
-        $config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]);
+        $config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]);
         $config->setHttpClient($client);
         $config->setDebug(false);
         $config->setVersion($version);

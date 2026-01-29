@@ -337,7 +337,7 @@ class Client extends Stancer\Tests\atoum
     public function testRequest()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
 
             ->assert('Basic request')
                 ->given($this->newTestedInstance)
@@ -720,7 +720,7 @@ class Client extends Stancer\Tests\atoum
     public function testRequest_exceptions($error, $code, $class, $message, $logLevel, $logMessage)
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
 
             ->assert($code . ' should throw ' . $class)
                 ->given($this->newTestedInstance)

@@ -418,8 +418,8 @@ class Payment extends Stancer\Tests\atoum
     public function testGetPaymentPageUrl(Stancer\Enum\ApiVersion $version)
     {
         $this
-            ->given($secret = 'stest_' . bin2hex(random_bytes(12)))
-            ->and($public = 'ptest_' . bin2hex(random_bytes(12)))
+            ->given($secret = 'stest_' . $this->getRandomString(24))
+            ->and($public = 'ptest_' . $this->getRandomString(24))
             ->and($config = Stancer\Config::init([$secret]))
             ->and($config->setDebug(false))
             ->and($config->setVersion($version))

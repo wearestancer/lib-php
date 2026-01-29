@@ -12,7 +12,7 @@ class Sepa extends Stancer\Tests\atoum
     public function testCheck()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
             ->and($config->setDebug(false))
 
             ->assert('Without ID')
@@ -478,7 +478,7 @@ class Sepa extends Stancer\Tests\atoum
     public function testValidate()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
             ->and($config->setDebug(false))
             ->and($options = [
                 'headers' => [

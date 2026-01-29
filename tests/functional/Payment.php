@@ -31,7 +31,7 @@ class Payment extends TestCase
     public function testBadCredential()
     {
         $this
-            ->given(Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))])->setHost(getenv('API_HOST')))
+            ->given(Stancer\Config::init(['stest_' . $this->getRandomString(24)])->setHost(getenv('API_HOST')))
             ->and($this->newTestedInstance(uniqid()))
             ->then
                 ->exception(function () {
@@ -45,7 +45,7 @@ class Payment extends TestCase
     {
         $this
             ->assert('Unknown payment result a 404 exception')
-                ->if($this->newTestedInstance($id = 'paym_' . bin2hex(random_bytes(12))))
+                ->if($this->newTestedInstance($id = 'paym_' . $this->getRandomString(24)))
                 ->then
                     ->exception(function () {
                         $this->testedInstance->getAmount();
@@ -157,7 +157,7 @@ class Payment extends TestCase
 
         $this
             ->assert('Empty list')
-                ->generator(testedClass::list(['order_id' => bin2hex(random_bytes(12))]))
+                ->generator(testedClass::list(['order_id' => $this->getRandomString(24)]))
                     ->yields
                         ->variable
                             ->isNull
