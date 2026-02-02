@@ -11,6 +11,9 @@ class Auth extends Stancer\Tests\atoum
         return $this->choose(Stancer\Auth\Status::cases());
     }
 
+    /**
+     * @tag Auth
+     */
     public function testClass()
     {
         $this
@@ -38,6 +41,9 @@ class Auth extends Stancer\Tests\atoum
         }
     }
 
+    /**
+     * @tag AbstractObject AliasTrait Auth
+     */
     public function testGetRedirectUrl()
     {
         $this
@@ -74,6 +80,9 @@ class Auth extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AbstractObject AliasTrait Auth
+     */
     public function testGetReturnUrl_SetReturnUrl()
     {
         $this
@@ -149,6 +158,9 @@ class Auth extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AbstractObject AliasTrait Auth
+     */
     public function testGetStatus()
     {
         $this

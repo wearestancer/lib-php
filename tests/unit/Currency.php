@@ -6,6 +6,9 @@ use Stancer;
 
 class Currency extends Stancer\Tests\atoum
 {
+    /**
+     * @tag Currency
+     */
     public function testClass()
     {
         $this

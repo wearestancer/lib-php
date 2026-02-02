@@ -7,6 +7,9 @@ use Stancer\Stub\Traits\AliasTrait as testedClass;
 
 class AliasTrait extends Stancer\Tests\atoum
 {
+    /**
+     * @tag AliasTrait
+     */
     public function test__call_aliases()
     {
         $this
@@ -32,6 +35,9 @@ class AliasTrait extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AbstractObject AliasTrait
+     */
     public function test__call_changeCase()
     {
         $this
@@ -57,6 +63,9 @@ class AliasTrait extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AliasTrait
+     */
     public function test__call_exception()
     {
         $this
@@ -74,6 +83,9 @@ class AliasTrait extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AbstractObject AliasTrait
+     */
     public function test__call_getter()
     {
         $this
@@ -111,6 +123,9 @@ class AliasTrait extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AbstractObject AliasTrait
+     */
     public function test__callStatic_changeCase()
     {
         $this
@@ -138,6 +153,9 @@ class AliasTrait extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AbstractObject AliasTrait
+     */
     public function test__callStatic_exception()
     {
         $this

@@ -14,6 +14,9 @@ class Config extends Stancer\Tests\atoum
     use Stancer\Tests\Provider\Cards;
     use Stancer\Tests\Provider\Dates;
 
+    /**
+     * @tag AliasTrait Config
+     */
     public function testClass()
     {
         $this
@@ -24,6 +27,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AliasTrait Config
+     */
     public function testAddAppData()
     {
         $this
@@ -101,6 +107,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AliasTrait Config
+     */
     public function testGetBasicAuthHeader()
     {
         $this
@@ -125,6 +134,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AliasTrait Config
+     */
     public function testGetCalls()
     {
         $this
@@ -481,6 +493,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AliasTrait Config
+     */
     public function testGetDebug_SetDebug()
     {
         $this
@@ -607,6 +622,8 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
+     * @tag AliasTrait Config
+     *
      * @dataProvider timeZoneProvider
      *
      * @param mixed $zone
@@ -827,6 +844,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AliasTrait Config
+     */
     public function testGetDefaultUserAgent()
     {
         $this
@@ -873,6 +893,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AliasTrait Config
+     */
     public function testGetGlobal_SetGlobal()
     {
         $this
@@ -904,6 +927,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AliasTrait Config
+     */
     public function testGetHost_SetHost()
     {
         $this
@@ -941,6 +967,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AliasTrait Config
+     */
     public function testGetHttpClient_SetHttpClient()
     {
         $this
@@ -1013,6 +1042,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AliasTrait Config
+     */
     public function testGetLogger_SetLogger()
     {
         $this
@@ -1050,6 +1082,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AliasTrait Config
+     */
     public function testGetMode_SetMode()
     {
         $this
@@ -1130,6 +1165,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AliasTrait Config
+     */
     public function testGetPort_SetPort()
     {
         $this
@@ -1167,6 +1205,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AliasTrait Config
+     */
     public function testGetPublicKey()
     {
         $this
@@ -1206,6 +1247,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AliasTrait Config
+     */
     public function testGetSecretKey()
     {
         $this
@@ -1245,6 +1289,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AliasTrait Config
+     */
     public function testGetTimeout_SetTimeout()
     {
         $this
@@ -1304,6 +1351,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AliasTrait Config
+     */
     public function testGetUri()
     {
         $this
@@ -1361,6 +1411,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AliasTrait Config
+     */
     public function testGetVersion_SetVersion()
     {
         $this
@@ -1411,6 +1464,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag Config
+     */
     public function testInit()
     {
         $this
@@ -1431,6 +1487,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AliasTrait Config
+     */
     public function testModes()
     {
         $this
@@ -1528,6 +1587,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag Config
+     */
     public function testSetKeys()
     {
         $this

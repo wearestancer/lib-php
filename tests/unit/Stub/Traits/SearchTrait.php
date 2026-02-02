@@ -8,6 +8,9 @@ use Stancer\Stub\Traits\SearchTrait as testedClass;
 
 class SearchTrait extends Stancer\Tests\atoum
 {
+    /**
+     * @tag AbstractObject SearchTrait
+     */
     public function testIssueGitLab2()
     {
         $this
@@ -125,6 +128,9 @@ class SearchTrait extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AbstractObject SearchTrait
+     */
     public function testList()
     {
         $this
@@ -426,6 +432,9 @@ class SearchTrait extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AbstractObject SearchTrait
+     */
     public function testList_with_date_period()
     {
         $created = time() - rand(10000, 1000000);
@@ -564,6 +573,9 @@ class SearchTrait extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AbstractObject SearchTrait
+     */
     public function testList_with_until()
     {
         $created = time() - rand(10, 1000000);

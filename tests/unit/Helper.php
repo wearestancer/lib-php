@@ -10,6 +10,8 @@ class Helper extends Stancer\Tests\atoum
     use Stancer\Tests\Provider\Strings;
 
     /**
+     * @tag Helper
+     *
      * @dataProvider caseStringDataProvider
      *
      * @param mixed $camel
@@ -21,6 +23,8 @@ class Helper extends Stancer\Tests\atoum
     }
 
     /**
+     * @tag Helper
+     *
      * @dataProvider caseStringDataProvider
      *
      * @param mixed $camel
