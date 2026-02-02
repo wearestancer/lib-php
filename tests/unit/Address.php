@@ -7,6 +7,9 @@ use Stancer;
 
 class Address extends Stancer\Tests\atoum
 {
+    /**
+     * @tag metaTesting
+     */
     public function testClass()
     {
         $this
@@ -15,6 +18,9 @@ class Address extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AbstractObject
+     */
     public function testCity()
     {
         $this
@@ -44,6 +50,9 @@ class Address extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AbstractObject
+     */
     public function testCountry()
     {
         $this
@@ -84,6 +93,8 @@ class Address extends Stancer\Tests\atoum
     }
 
     /**
+     * @tag AbstractObject Address AliasTrait
+     *
      * @DataProvider versionDataProvider
      */
     public function testGet(Stancer\Enum\ApiVersion $version)
@@ -144,6 +155,9 @@ class Address extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AbstractObject
+     */
     public function testLineOne()
     {
         $this
@@ -174,6 +188,9 @@ class Address extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AbstractObject
+     */
     public function testLineTwo()
     {
         $this
@@ -204,6 +221,9 @@ class Address extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AbstractObject
+     */
     public function testLineThree()
     {
         $this
@@ -234,6 +254,9 @@ class Address extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AbstractObject Address
+     */
     public function testMetadata()
     {
         $this
@@ -291,6 +314,9 @@ class Address extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AbstractObject Address AliasTrait
+     */
     public function testMetadataInvalidJson()
     {
         $this
@@ -307,6 +333,8 @@ class Address extends Stancer\Tests\atoum
     }
 
     /**
+     * @tag AbstractObject Address AliasTrait
+     *
      * @DataProvider versionDataProvider
      */
     public function testSend(Stancer\Enum\ApiVersion $version)
@@ -367,6 +395,9 @@ class Address extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AbstractObject
+     */
     public function testState()
     {
         $this
@@ -406,6 +437,9 @@ class Address extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tag AbstractObject
+     */
     public function testZipCode()
     {
         $this
