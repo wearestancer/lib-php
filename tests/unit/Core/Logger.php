@@ -2,8 +2,8 @@
 
 namespace Stancer\tests\unit\Core;
 
-use Stancer;
 use Psr;
+use Stancer;
 
 class Logger extends Stancer\Tests\atoum
 {
@@ -41,10 +41,10 @@ class Logger extends Stancer\Tests\atoum
                     }
                 })
                 ->then
-                    ->variable($this->testedInstance->$method(uniqid()))
+                    ->variable($this->testedInstance->{$method}(uniqid()))
                         ->isNull
 
-                    ->variable($this->testedInstance->$method(uniqid(), $params))
+                    ->variable($this->testedInstance->{$method}(uniqid(), $params))
                         ->isNull
 
                     ->function('fopen') // We do not open any file

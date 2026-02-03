@@ -4,7 +4,8 @@ namespace Stancer\Stub;
 
 use Stancer;
 
-trait TestMethodTrait {
+trait TestMethodTrait
+{
     public function __set(string $property, $value): void
     {
         $prop = Stancer\Helper::snakeCaseToCamelCase($property);

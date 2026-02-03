@@ -1,13 +1,18 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Payment;
+
+use Stancer\Traits\CapturableTrait;
 
 /**
  * List of a payment status.
  */
 enum Status: string
 {
+    use CapturableTrait;
+
     case AUTHORIZE = 'authorize';
     case AUTHORIZED = 'authorized';
     case CANCELED = 'canceled';

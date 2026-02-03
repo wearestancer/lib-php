@@ -1,9 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Payout\Details;
 
-use Generator;
 use Stancer;
 
 /**
@@ -16,6 +16,7 @@ use Stancer;
  * @method 'disputes'|'payments'|'refunds' getType()
  * @method integer get_amount()
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_currency()
  * @method string get_endpoint() Get API endpoint.
@@ -27,6 +28,8 @@ use Stancer;
  *
  * @property-read integer $amount
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $currency
@@ -45,7 +48,6 @@ class Inner extends Stancer\Core\AbstractObject
     }
 
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [
@@ -91,17 +93,18 @@ class Inner extends Stancer\Core\AbstractObject
      * `start` must be an integer, will be used as a pagination cursor, starts at 0.
      *
      * @param array $terms Search terms. May have `created`, `limit` or `start` key.
-     * @return Generator<Stancer\Core\AbstractObject>
+     *
+     * @phpstan-param SearchFilters $terms
+     *
+     * @return \Generator<Stancer\Core\AbstractObject>
      * @throws Stancer\Exceptions\InvalidSearchFilterException When `$terms` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchCreationFilterException When `created` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchCreationFilterException When `created` is a DatePeriod without end.
      * @throws Stancer\Exceptions\InvalidSearchCreationUntilFilterException When `created_until` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchLimitException When `limit` is invalid.
      * @throws Stancer\Exceptions\InvalidSearchStartException When `start` is invalid.
-     *
-     * @phpstan-param SearchFilters $terms
      */
-    public function __invoke(array $terms): Generator
+    public function __invoke(array $terms): \Generator
     {
         $map = [
             'disputes' => Stancer\Dispute::class,
@@ -114,9 +117,8 @@ class Inner extends Stancer\Core\AbstractObject
 
     /**
      * Return resource location.
-     *
-     * @return string
      */
+    #[\Override]
     #[Stancer\Core\Documentation\FormatProperty(
         description: 'Current resource location',
         nullable: false,

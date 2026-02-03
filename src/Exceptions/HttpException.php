@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Exceptions;
@@ -6,7 +7,6 @@ namespace Stancer\Exceptions;
 use GuzzleHttp\Exception\RequestException;
 use Psr;
 use Stancer;
-use Throwable;
 
 /**
  * Base exception class for all Stancer HTTP based exceptions.
@@ -30,9 +30,9 @@ class HttpException extends Exception implements Stancer\Interfaces\ExceptionInt
      *
      * @param string|null $message The Exception message to throw.
      * @param integer $code The Exception code.
-     * @param Throwable|null $previous The previous exception used for the exception chaining.
+     * @param \Throwable|null $previous The previous exception used for the exception chaining.
      */
-    public function __construct(string $message = null, int $code = 0, Throwable $previous = null)
+    public function __construct(?string $message = null, int $code = 0, ?\Throwable $previous = null)
     {
         parent::__construct($message, $code, $previous);
 
@@ -46,7 +46,6 @@ class HttpException extends Exception implements Stancer\Interfaces\ExceptionInt
      * Create an instance from an array.
      *
      * @param array $params Parameters, keys must correspond to exception properties.
-     * @return static
      *
      * @phpstan-param CreateExceptionParameters $params
      */
@@ -77,7 +76,6 @@ class HttpException extends Exception implements Stancer\Interfaces\ExceptionInt
      * Return classname for a given HTTP status.
      *
      * @param integer $status HTTP status.
-     * @return string
      */
     public static function getClassFromStatus(int $status): string
     {
@@ -94,6 +92,7 @@ class HttpException extends Exception implements Stancer\Interfaces\ExceptionInt
             408 => RequestTimeoutException::class,
             409 => ConflictException::class,
             410 => GoneException::class,
+            422 => UnprocessableEntityException::class,
             500 => InternalServerErrorException::class,
         ];
 
@@ -118,8 +117,6 @@ class HttpException extends Exception implements Stancer\Interfaces\ExceptionInt
 
     /**
      * Return default message for that kind of exception.
-     *
-     * @return string
      */
     public static function getDefaultMessage(): string
     {
@@ -134,8 +131,6 @@ class HttpException extends Exception implements Stancer\Interfaces\ExceptionInt
 
     /**
      * Get the request that caused the exception.
-     *
-     * @return Psr\Http\Message\RequestInterface|null
      */
     public function getRequest(): ?Psr\Http\Message\RequestInterface
     {
@@ -144,8 +139,6 @@ class HttpException extends Exception implements Stancer\Interfaces\ExceptionInt
 
     /**
      * Get the associated response.
-     *
-     * @return Psr\Http\Message\ResponseInterface|null
      */
     public function getResponse(): ?Psr\Http\Message\ResponseInterface
     {
@@ -154,8 +147,6 @@ class HttpException extends Exception implements Stancer\Interfaces\ExceptionInt
 
     /**
      * Return HTTP status code for this kind of exception.
-     *
-     * @return string|null
      */
     public static function getStatus(): ?string
     {

@@ -2,8 +2,8 @@
 
 namespace Stancer\tests\unit\Exceptions;
 
-use Stancer;
 use Psr;
+use Stancer;
 
 class InvalidExpirationMonthException extends Stancer\Tests\atoum
 {

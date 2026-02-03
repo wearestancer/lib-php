@@ -1,13 +1,10 @@
 <?php
-declare(strict_types=1);
 
-// Next line is required, we can not force type in function signature, it triggers a fatal error.
-// phpcs:disable Squiz.Commenting.FunctionComment.ScalarTypeHintMissing
+declare(strict_types=1);
 
 namespace Stancer\Http;
 
 use Psr;
-use Stancer;
 
 /**
  * Basic HTTP URI.
@@ -16,15 +13,17 @@ class Uri implements Psr\Http\Message\UriInterface
 {
     /**
      * @var array Uri components.
+     *
      * @phpstan-var UriComponents Uri components.
      */
     protected array $components = [];
 
     /**
-     * @param string|array $uri URI to parse.
+     * @param array|string $uri URI to parse.
+     *
      * @phpstan-param string|UriComponents $uri
      */
-    public function __construct(string|array $uri = [])
+    public function __construct(array|string $uri = [])
     {
         $parts = $uri;
 
@@ -89,7 +88,6 @@ class Uri implements Psr\Http\Message\UriInterface
      * - If a fragment is present, it MUST be prefixed by "#".
      *
      * @see http://tools.ietf.org/html/rfc3986#section-4.1
-     * @return string
      */
     public function __toString(): string
     {
@@ -121,39 +119,6 @@ class Uri implements Psr\Http\Message\UriInterface
     }
 
     /**
-     * Clean port value.
-     *
-     * @return $this
-     */
-    protected function cleanPort(): self
-    {
-        if (is_null($this->getPort())) {
-            return $this;
-        }
-
-        if (!$this->getScheme()) {
-            return $this;
-        }
-
-        $defaults = [
-            'https' => 443,
-            'http' => 80,
-        ];
-
-        if (!array_key_exists($this->getScheme(), $defaults)) {
-            return $this;
-        }
-
-        $port = $defaults[$this->getScheme()];
-
-        if ($this->getPort() === $port) {
-            unset($this->components['port']);
-        }
-
-        return $this;
-    }
-
-    /**
      * Retrieve the authority component of the URI.
      *
      * If no authority information is present, this method MUST return an empty
@@ -169,6 +134,7 @@ class Uri implements Psr\Http\Message\UriInterface
      * scheme, it SHOULD NOT be included.
      *
      * @see https://tools.ietf.org/html/rfc3986#section-3.2
+     *
      * @return string The URI authority, in "[user-info@]host[:port]" format.
      */
     public function getAuthority(): string
@@ -191,8 +157,6 @@ class Uri implements Psr\Http\Message\UriInterface
 
     /**
      * Retrieve URI components.
-     *
-     * @return array
      *
      * @phpstan-return UriComponents
      */
@@ -226,6 +190,7 @@ class Uri implements Psr\Http\Message\UriInterface
      *
      * @see https://tools.ietf.org/html/rfc3986#section-2
      * @see https://tools.ietf.org/html/rfc3986#section-3.5
+     *
      * @return string The URI fragment.
      */
     public function getFragment(): string
@@ -241,8 +206,6 @@ class Uri implements Psr\Http\Message\UriInterface
      * <pre>
      * path[?query][#fragment]
      * </pre>
-     *
-     * @return string
      */
     public function getLocalCommand(): string
     {
@@ -271,6 +234,7 @@ class Uri implements Psr\Http\Message\UriInterface
      * Section 3.2.2.
      *
      * @see http://tools.ietf.org/html/rfc3986#section-3.2.2
+     *
      * @return string The URI host.
      */
     public function getHost(): string
@@ -301,6 +265,7 @@ class Uri implements Psr\Http\Message\UriInterface
      *
      * @see https://tools.ietf.org/html/rfc3986#section-2
      * @see https://tools.ietf.org/html/rfc3986#section-3.3
+     *
      * @return string The URI path.
      */
     public function getPath(): string
@@ -350,6 +315,7 @@ class Uri implements Psr\Http\Message\UriInterface
      *
      * @see https://tools.ietf.org/html/rfc3986#section-2
      * @see https://tools.ietf.org/html/rfc3986#section-3.4
+     *
      * @return string The URI query string.
      */
     public function getQuery(): string
@@ -369,6 +335,7 @@ class Uri implements Psr\Http\Message\UriInterface
      * added.
      *
      * @see https://tools.ietf.org/html/rfc3986#section-3.1
+     *
      * @return string The URI scheme.
      */
     public function getScheme(): string
@@ -398,8 +365,6 @@ class Uri implements Psr\Http\Message\UriInterface
 
     /**
      * Return a string representation of current URI.
-     *
-     * @return string
      */
     public function toString(): string
     {
@@ -418,6 +383,7 @@ class Uri implements Psr\Http\Message\UriInterface
      * An empty fragment value is equivalent to removing the fragment.
      *
      * @param string $fragment The fragment to use with the new instance.
+     *
      * @return static A new instance with the specified fragment.
      */
     public function withFragment(string $fragment): static
@@ -438,6 +404,7 @@ class Uri implements Psr\Http\Message\UriInterface
      * An empty host value is equivalent to removing the host.
      *
      * @param string $host The hostname to use with the new instance.
+     *
      * @return static A new instance with the specified host.
      */
     public function withHost(string $host): static
@@ -468,6 +435,7 @@ class Uri implements Psr\Http\Message\UriInterface
      * Implementations ensure the correct encoding as outlined in getPath().
      *
      * @param string $path The path to use with the new instance.
+     *
      * @return static A new instance with the specified path.
      */
     public function withPath(string $path): static
@@ -493,6 +461,7 @@ class Uri implements Psr\Http\Message\UriInterface
      *
      * @param integer|null $port The port to use with the new instance; a null value
      *     removes the port information.
+     *
      * @return static A new instance with the specified port.
      */
     public function withPort(?int $port): static
@@ -516,6 +485,7 @@ class Uri implements Psr\Http\Message\UriInterface
      * An empty query string value is equivalent to removing the query string.
      *
      * @param string $query The query string to use with the new instance.
+     *
      * @return static A new instance with the specified query string.
      */
     public function withQuery(string $query): static
@@ -539,6 +509,7 @@ class Uri implements Psr\Http\Message\UriInterface
      * An empty scheme is equivalent to removing the scheme.
      *
      * @param string $scheme The scheme to use with the new instance.
+     *
      * @return static A new instance with the specified scheme.
      */
     public function withScheme(string $scheme): static
@@ -562,6 +533,7 @@ class Uri implements Psr\Http\Message\UriInterface
      *
      * @param string $user The user name to use for authority.
      * @param string $password The password associated with $user.
+     *
      * @return static A new instance with the specified user information.
      */
     public function withUserInfo(string $user, ?string $password = null): static
@@ -572,5 +544,38 @@ class Uri implements Psr\Http\Message\UriInterface
         $components['pass'] = $password;
 
         return new static($components);
+    }
+
+    /**
+     * Clean port value.
+     *
+     * @return $this
+     */
+    protected function cleanPort(): self
+    {
+        if (is_null($this->getPort())) {
+            return $this;
+        }
+
+        if (!$this->getScheme()) {
+            return $this;
+        }
+
+        $defaults = [
+            'https' => 443,
+            'http' => 80,
+        ];
+
+        if (!array_key_exists($this->getScheme(), $defaults)) {
+            return $this;
+        }
+
+        $port = $defaults[$this->getScheme()];
+
+        if ($this->getPort() === $port) {
+            unset($this->components['port']);
+        }
+
+        return $this;
     }
 }

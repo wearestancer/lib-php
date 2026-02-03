@@ -3,9 +3,11 @@
 namespace Stancer\Tests\functional;
 
 use atoum;
-use closure;
 use Stancer;
 
+/**
+ * @internal
+ */
 class TestCase extends Stancer\Tests\atoum
 {
     protected Stancer\Config $config;
@@ -15,19 +17,19 @@ class TestCase extends Stancer\Tests\atoum
         ?atoum\atoum\annotations\extractor $annotationExtractor = null,
         ?atoum\atoum\asserter\generator $asserterGenerator = null,
         ?atoum\atoum\test\assertion\manager $assertionManager = null,
-        ?closure $reflectionClassFactory = null
-    )
-    {
+        ?\Closure $reflectionClassFactory = null
+    ) {
         parent::__construct($adapter, $annotationExtractor, $asserterGenerator, $assertionManager, $reflectionClassFactory);
 
         $this->config = Stancer\Config::setGlobal(new Stancer\Config([]));
     }
 
-    public function beforeTestMethod($testMethod)
+    public function beforeTestMethod($testMethod, ?Stancer\Enum\ApiVersion $version = null)
     {
         $env = [
             'API_HOST' => '',
             'API_KEY' => '',
+            'API_VERSION' => '',
         ];
 
         foreach ($env as $key => &$value) {
@@ -37,8 +39,36 @@ class TestCase extends Stancer\Tests\atoum
                 $this->skip('Missing env ' . $key);
             }
         }
+        $envVersion = Stancer\Enum\ApiVersion::from($env['API_VERSION']);
+        if (!$envVersion) {
+            $this->skip('Api version incorrect');
+        }
 
-        $this->config->setKeys($env['API_KEY'])->setHost($env['API_HOST']);
+        // We had a check to run test only if we can contact the server.
+        $this->config
+            ->setKeys($env['API_KEY'])
+            ->setHost($env['API_HOST'])
+            ->setVersion($version ?? $envVersion)
+        ;
+        $client = $this->config->getHttpClient();
+        $verb = 'get';
+        $options['headers']['Authorization'] = $this->config->getBasicAuthHeader();
+        $options['headers']['Content-Type'] = 'application/json';
+        $options['headers']['User-Agent'] = $this->config->getDefaultUserAgent();
+        $version = $this->config->getVersion();
+        $location = 'https://' . $this->config->getHost() . '/v' . $version->value . '/cards/?start=1';
+
+        try {
+            $client->request($verb, $location, $options);
+        } catch (Stancer\Exceptions\ClientException $e) {
+            if ($e->getCode() == 401) {
+                $this->skip('You don\'t have permission, check your key and host');
+            }
+        } catch (Stancer\Exceptions\HttpException) {
+            $this->skip("The server cannot be contacted, check it's name or your certifications.");
+        } catch (\Exception $e) {
+            $this->skip('Contacting the server result in a ' . $e->getCode() . 'error, ' . $e->getMessage());
+        }
     }
 
     public function getDisputedCardNumber()
@@ -54,7 +84,16 @@ class TestCase extends Stancer\Tests\atoum
         return array_shift($cards);
     }
 
-    public function getValidCardNumber()
+    public function getNotFoundExceptionMessage($id, $ressource_name): string
+    {
+        if ($this->config->version === Stancer\Enum\ApiVersion::VERSION_1) {
+            return 'No such ' . strtolower($ressource_name) . ' ' . $id;
+        }
+
+        return $ressource_name . ' `' . $id . '` not found';
+    }
+
+    public function getValidCardNumber(): string
     {
         $cards = [
             '4242424242424242',

@@ -1,9 +1,11 @@
 <?php
 
-$runner
-    ->addTestsFromDirectory(__DIR__ . '/tests/unit')
-    ->addTestsFromDirectory(__DIR__ . '/tests/functional')
-;
+match (getenv('TEST_ENV')) {
+    'UNIT' => $runner->addTestsFromDirectory(__DIR__ . '/tests/unit'),
+    'FUNCTIONAL' => $runner->addTestsFromDirectory(__DIR__ . '/tests/functional'),
+    default => $runner->addTestsFromDirectory(__DIR__ . '/tests/unit')
+                ->addTestsFromDirectory(__DIR__ . '/tests/functional'),
+};
 
 // Extensions
 

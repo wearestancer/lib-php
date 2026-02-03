@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Core\Request;
 
-use Stancer;
 use Psr;
+use Stancer;
 
 /**
  * Register API call.
@@ -14,6 +15,7 @@ use Psr;
  * @method ?\Psr\Http\Message\RequestInterface getRequest() Get called request.
  * @method ?\Psr\Http\Message\ResponseInterface getResponse() Get the response received.
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_endpoint() Get API endpoint.
  * @method string get_entity_name() Get entity name.
@@ -24,6 +26,8 @@ use Psr;
  * @method string get_uri() Get entity resource location.
  *
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $endpoint API endpoint.
@@ -38,7 +42,6 @@ use Psr;
 class Call extends Stancer\Core\AbstractObject
 {
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [

@@ -2,10 +2,9 @@
 
 namespace Stancer\tests\unit;
 
-use DateTime;
+use mock;
 use Stancer;
 use Stancer\Customer as testedClass;
-use mock;
 
 class Customer extends Stancer\Tests\atoum
 {
@@ -42,6 +41,46 @@ class Customer extends Stancer\Tests\atoum
         ;
     }
 
+    public function testBillingAddress()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+            ->assert('Full new address')
+                ->if($address = new Stancer\Address())
+                ->and($address->setCity($this->getRandomString(1, 50)))
+                ->and($address->setCountry($this->getRandomString(2)))
+                ->and($address->setLine1($this->getRandomString(1, 50)))
+                ->and($address->setLine2($this->getRandomString(1, 50)))
+                ->and($address->setLine3($this->getRandomString(1, 50)))
+                ->and($address->setMetadata([$this->getRandomString(1, 50)]))
+                ->and($address->setState($this->getRandomString(1, 3)))
+                ->and($address->setzipCode($this->getRandomString(1, 16)))
+
+                ->variable($this->newTestedInstance->getBillingAddress())
+                    ->isNull
+
+                ->object($this->testedInstance->setBillingAddress($address))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getBillingAddress())
+                    ->isIdenticalTo($address)
+
+            ->given($this->newTestedInstance)
+            ->assert('ID address')
+                ->if($address = new Stancer\Address('addr_' . $this->getRandomString(24)))
+
+                ->variable($this->testedInstance->getBillingAddress())
+                    ->isNull
+
+                ->object($this->testedInstance->setBillingAddress($address))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getBillingAddress())
+                    ->isIdenticalTo($address)
+        ;
+    }
+
     public function testGetEndpoint()
     {
         $this
@@ -52,14 +91,17 @@ class Customer extends Stancer\Tests\atoum
         ;
     }
 
-    public function testSend()
+    /**
+     * @DataProvider versionDataProvider
+     */
+    public function testSend(Stancer\Enum\ApiVersion $version)
     {
         $this
-            ->given($client = new mock\GuzzleHttp\Client)
-            ->and($response = $this->mockJsonResponse('customers', 'create', new mock\GuzzleHttp\Psr7\Response))
+            ->given($client = new mock\GuzzleHttp\Client())
+            ->and($response = $this->mockJsonResponse('customers', 'create', new mock\GuzzleHttp\Psr7\Response()))
             ->and($this->calling($client)->request = $response)
 
-            ->and($config = $this->mockConfig($client))
+            ->and($config = $this->mockConfig($client, $version))
 
             ->if($this->newTestedInstance)
             ->and($this->testedInstance->setEmail(uniqid()))
@@ -87,7 +129,7 @@ class Customer extends Stancer\Tests\atoum
                     ->isIdenticalTo('cust_nwSpP6LKE828Inhiu1CXyp7l')
 
                 ->dateTime($this->testedInstance->getCreationDate())
-                    ->isEqualTo(new DateTime('@1538565198'))
+                    ->isEqualTo(new \DateTime('@1538565198'))
 
                 ->string($this->testedInstance->getEmail())
                     ->isIdenticalTo('david@coaster.net')
@@ -156,11 +198,14 @@ class Customer extends Stancer\Tests\atoum
         ;
     }
 
-    public function testSend_forUpdate()
+    /**
+     * @DataProvider versionDataProvider
+     */
+    public function testSend_forUpdate(Stancer\Enum\ApiVersion $version)
     {
         $this
-            ->given($client = new mock\Stancer\Http\Client)
-            ->and($config = $this->mockConfig($client))
+            ->given($client = new mock\Stancer\Http\Client())
+            ->and($config = $this->mockConfig($client, $version))
 
             ->then
                 ->assert('Modify a fresh and not populated instance, will send only known data')
@@ -302,6 +347,46 @@ class Customer extends Stancer\Tests\atoum
 
                 ->boolean($this->testedInstance->isModified())
                     ->isFalse
+        ;
+    }
+
+    public function testShippingAddress()
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+            ->assert('Full new address')
+                ->if($address = new Stancer\Address())
+                ->and($address->setCity($this->getRandomString(1, 50)))
+                ->and($address->setCountry($this->getRandomString(2)))
+                ->and($address->setLine1($this->getRandomString(1, 50)))
+                ->and($address->setLine2($this->getRandomString(1, 50)))
+                ->and($address->setLine3($this->getRandomString(1, 50)))
+                ->and($address->setMetadata([$this->getRandomString(1, 50)]))
+                ->and($address->setState($this->getRandomString(1, 3)))
+                ->and($address->setzipCode($this->getRandomString(1, 16)))
+
+                ->variable($this->newTestedInstance->getShippingAddress())
+                    ->isNull
+
+                ->object($this->testedInstance->setShippingAddress($address))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getShippingAddress())
+                    ->isIdenticalTo($address)
+
+            ->given($this->newTestedInstance)
+            ->assert('ID address')
+                ->if($address = new Stancer\Address('addr_' . $this->getRandomString(24)))
+
+                ->variable($this->testedInstance->getShippingAddress())
+                    ->isNull
+
+                ->object($this->testedInstance->setShippingAddress($address))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->getShippingAddress())
+                    ->isIdenticalTo($address)
         ;
     }
 }

@@ -1,7 +1,6 @@
 
 # composer
 vendor
-composer.lock
 
 # Tests report
 reports
@@ -16,3 +15,4 @@ reports
 # Local files
 .devcontainer/.env
 *.local.php
+.cache/

@@ -2,13 +2,11 @@
 
 namespace Stancer\tests\unit;
 
-use DateTime;
-use DateTimeZone;
 use GuzzleHttp;
+use mock;
 use Psr;
 use Stancer;
 use Stancer\Config as testedClass;
-use mock;
 
 class Config extends Stancer\Tests\atoum
 {
@@ -141,14 +139,14 @@ class Config extends Stancer\Tests\atoum
                 ->and($this->function->curl_getinfo = 200)
                 ->and($this->function->curl_errno = 0)
 
-                ->if($client = new mock\Stancer\Http\Client)
+                ->if($client = new mock\Stancer\Http\Client())
                 ->and($this->testedInstance->setHttpClient($client))
 
                 ->if($number = $this->cardNumberDataProvider(true))
                 ->and($obfuscated = str_pad('', strlen($number) - 4, 'x') . substr($number, -4))
                 ->and($card = new Stancer\Card(['number' => $number]))
                 ->and($payment = new Stancer\Payment(['card' => $card]))
-                ->and($req = new Stancer\Core\Request)
+                ->and($req = new Stancer\Core\Request())
                 ->then
                     ->array($this->testedInstance->getCalls())
                         ->isEmpty
@@ -239,14 +237,14 @@ class Config extends Stancer\Tests\atoum
                 ->and($this->function->curl_getinfo = 401)
                 ->and($this->function->curl_errno = rand(100, 200))
 
-                ->if($client = new mock\Stancer\Http\Client)
+                ->if($client = new mock\Stancer\Http\Client())
                 ->and($this->testedInstance->setHttpClient($client))
 
                 ->if($iban = $this->ibanDataProvider(true))
                 ->and($sepa = new Stancer\Sepa(['iban' => $iban]))
                 ->and($obfuscated = str_pad($sepa->getLast4(), strlen($sepa->getIban()), 'x', STR_PAD_LEFT))
                 ->and($payment = new Stancer\Payment(['sepa' => $sepa]))
-                ->and($req = new Stancer\Core\Request)
+                ->and($req = new Stancer\Core\Request())
                 ->then
                     ->assert('default empty')
                         ->array($this->testedInstance->getCalls())
@@ -357,7 +355,7 @@ class Config extends Stancer\Tests\atoum
                 ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . bin2hex(random_bytes(12))])))
                 ->and($this->testedInstance->setDebug(true))
 
-                ->if($client = new mock\GuzzleHttp\Client)
+                ->if($client = new mock\GuzzleHttp\Client())
                 ->and($body = uniqid())
                 ->and($response = new mock\GuzzleHttp\Psr7\Response(200, [], $body))
                 ->and($this->calling($client)->request = $response)
@@ -368,7 +366,7 @@ class Config extends Stancer\Tests\atoum
                 ->and($sepa = new Stancer\Sepa(['iban' => $iban]))
                 ->and($obfuscated = str_pad($sepa->getLast4(), strlen($sepa->getIban()), 'x', STR_PAD_LEFT))
                 ->and($payment = new Stancer\Payment(['sepa' => $sepa]))
-                ->and($req = new Stancer\Core\Request)
+                ->and($req = new Stancer\Core\Request())
                 ->then
                     ->array($this->testedInstance->getCalls())
                         ->isEmpty
@@ -419,7 +417,7 @@ class Config extends Stancer\Tests\atoum
                 ->and($obfuscated = str_pad(substr($number, -4), strlen($number), 'x', STR_PAD_LEFT))
                 ->and($card = new Stancer\Card(['number' => $number]))
                 ->and($payment = new Stancer\Payment(['card' => $card]))
-                ->and($req = new Stancer\Core\Request)
+                ->and($req = new Stancer\Core\Request())
                 ->then
                     ->array($this->testedInstance->getCalls())
                         ->isEmpty
@@ -467,11 +465,11 @@ class Config extends Stancer\Tests\atoum
                 ->and($this->function->curl_getinfo = 200)
                 ->and($this->function->curl_errno = 0)
 
-                ->if($client = new mock\Stancer\Http\Client)
+                ->if($client = new mock\Stancer\Http\Client())
                 ->and($this->testedInstance->setHttpClient($client))
 
-                ->if($object = new Stancer\Stub\Core\StubObject)
-                ->and($req = new Stancer\Core\Request)
+                ->if($object = new Stancer\Stub\Core\StubObject())
+                ->and($req = new Stancer\Core\Request())
                 ->then
                     ->array($this->testedInstance->getCalls())
                         ->isEmpty
@@ -610,6 +608,8 @@ class Config extends Stancer\Tests\atoum
 
     /**
      * @dataProvider timeZoneProvider
+     *
+     * @param mixed $zone
      */
     public function testGetDefaultTimeZone_SetDefaultTimeZone($zone)
     {
@@ -638,42 +638,42 @@ class Config extends Stancer\Tests\atoum
 
             ->assert('Exception if not a DateTimeZone instance')
                 ->exception(function () {
-                    $this->newTestedInstance([])->setDefaultTimeZone(new DateTime);
+                    $this->newTestedInstance([])->setDefaultTimeZone(new \DateTime());
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                     ->message
                         ->isIdenticalTo('Invalid time zone.')
 
                 ->exception(function () {
-                    $this->newTestedInstance([])->set_default_timezone(new DateTime);
+                    $this->newTestedInstance([])->set_default_timezone(new \DateTime());
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                     ->message
                         ->isIdenticalTo('Invalid time zone.')
 
                 ->exception(function () {
-                    $this->newTestedInstance([])->set_default_time_zone(new DateTime);
+                    $this->newTestedInstance([])->set_default_time_zone(new \DateTime());
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                     ->message
                         ->isIdenticalTo('Invalid time zone.')
 
                 ->exception(function () {
-                    $this->newTestedInstance([])->defaultTimeZone = new DateTime;
+                    $this->newTestedInstance([])->defaultTimeZone = new \DateTime();
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                     ->message
                         ->isIdenticalTo('Invalid time zone.')
 
                 ->exception(function () {
-                    $this->newTestedInstance([])->default_timezone = new DateTime;
+                    $this->newTestedInstance([])->default_timezone = new \DateTime();
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                     ->message
                         ->isIdenticalTo('Invalid time zone.')
 
                 ->exception(function () {
-                    $this->newTestedInstance([])->default_time_zone = new DateTime;
+                    $this->newTestedInstance([])->default_time_zone = new \DateTime();
                 })
                     ->isInstanceOf(Stancer\Exceptions\InvalidArgumentException::class)
                     ->message
@@ -729,7 +729,7 @@ class Config extends Stancer\Tests\atoum
                         ->isTestedInstance
 
                     ->object($this->testedInstance->getDefaultTimeZone())
-                        ->isInstanceOf(DateTimeZone::class)
+                        ->isInstanceOf(\DateTimeZone::class)
 
                     ->string($this->testedInstance->getDefaultTimeZone()->getName())
                         ->isIdenticalTo($zone)
@@ -747,7 +747,7 @@ class Config extends Stancer\Tests\atoum
                         ->isTestedInstance
 
                     ->object($this->testedInstance->get_default_timezone())
-                        ->isInstanceOf(DateTimeZone::class)
+                        ->isInstanceOf(\DateTimeZone::class)
 
                     ->string($this->testedInstance->get_default_timezone()->getName())
                         ->isIdenticalTo($zone)
@@ -765,7 +765,7 @@ class Config extends Stancer\Tests\atoum
                         ->isTestedInstance
 
                     ->object($this->testedInstance->get_default_time_zone())
-                        ->isInstanceOf(DateTimeZone::class)
+                        ->isInstanceOf(\DateTimeZone::class)
 
                     ->string($this->testedInstance->get_default_time_zone()->getName())
                         ->isIdenticalTo($zone)
@@ -780,7 +780,7 @@ class Config extends Stancer\Tests\atoum
                 ->if($this->newTestedInstance([])->defaultTimeZone = $zone)
                 ->then
                     ->object($this->testedInstance->defaultTimeZone)
-                        ->isInstanceOf(DateTimeZone::class)
+                        ->isInstanceOf(\DateTimeZone::class)
 
                     ->string($this->testedInstance->defaultTimeZone->getName())
                         ->isIdenticalTo($zone)
@@ -792,12 +792,12 @@ class Config extends Stancer\Tests\atoum
                         ->isNull
 
             ->assert('Update with an instance / snake_case property')
-                ->given($tz = new DateTimeZone($zone))
+                ->given($tz = new \DateTimeZone($zone))
 
                 ->if($this->newTestedInstance([])->default_timezone = $tz)
                 ->then
                     ->object($this->testedInstance->default_timezone)
-                        ->isInstanceOf(DateTimeZone::class)
+                        ->isInstanceOf(\DateTimeZone::class)
 
                     ->string($this->testedInstance->default_timezone->getName())
                         ->isIdenticalTo($zone)
@@ -809,12 +809,12 @@ class Config extends Stancer\Tests\atoum
                         ->isNull
 
             ->assert('Update with an instance / snake_case property alternative')
-                ->given($tz = new DateTimeZone($zone))
+                ->given($tz = new \DateTimeZone($zone))
 
                 ->if($this->newTestedInstance([])->default_time_zone = $tz)
                 ->then
                     ->object($this->testedInstance->default_time_zone)
-                        ->isInstanceOf(DateTimeZone::class)
+                        ->isInstanceOf(\DateTimeZone::class)
 
                     ->string($this->testedInstance->default_time_zone->getName())
                         ->isIdenticalTo($zone)
@@ -831,8 +831,8 @@ class Config extends Stancer\Tests\atoum
     {
         $this
             ->given($this->newTestedInstance([]))
-            ->and($guzzle = new mock\GuzzleHttp\ClientInterface)
-            ->and($client = new Stancer\Http\Client)
+            ->and($guzzle = new mock\GuzzleHttp\ClientInterface())
+            ->and($client = new Stancer\Http\Client())
             ->and($agent = vsprintf(' libstancer-php/%s (%s %s %s; php %s)', [
                 testedClass::VERSION,
                 PHP_OS,
@@ -944,8 +944,8 @@ class Config extends Stancer\Tests\atoum
     public function testGetHttpClient_SetHttpClient()
     {
         $this
-            ->given($guzzle = new mock\GuzzleHttp\ClientInterface)
-            ->and($client = new Stancer\Http\Client)
+            ->given($guzzle = new mock\GuzzleHttp\ClientInterface())
+            ->and($client = new Stancer\Http\Client())
             ->then
                 ->assert('camelCase method')
                     ->object($this->newTestedInstance([])->getHttpClient())
@@ -1016,7 +1016,7 @@ class Config extends Stancer\Tests\atoum
     public function testGetLogger_SetLogger()
     {
         $this
-            ->if($mock = new mock\Psr\Log\LoggerInterface)
+            ->if($mock = new mock\Psr\Log\LoggerInterface())
             ->then
                 ->assert('camelCase method')
                     ->object($this->newTestedInstance([])->getLogger())
@@ -1320,12 +1320,12 @@ class Config extends Stancer\Tests\atoum
             ->assert('Random values / camelCase method')
                 ->if($host = uniqid())
                 ->and($port = rand(0, PHP_INT_MAX))
-                ->and($version = rand(0, PHP_INT_MAX))
+                ->and($version = rand(1, 2))
                 ->and($protocol = 'https')
 
                 ->given($this->newTestedInstance([])->setHost($host))
                 ->and($this->testedInstance->setPort($port))
-                ->and($this->testedInstance->setVersion($version))
+                ->and($this->testedInstance->setVersion(Stancer\Enum\ApiVersion::from($version)))
 
                 ->then
                     ->string($this->testedInstance->getUri())
@@ -1334,12 +1334,12 @@ class Config extends Stancer\Tests\atoum
             ->assert('Random values / snake_case method')
                 ->if($host = uniqid())
                 ->and($port = rand(0, PHP_INT_MAX))
-                ->and($version = rand(0, PHP_INT_MAX))
+                ->and($version = rand(1, 2))
                 ->and($protocol = 'https')
 
                 ->given($this->newTestedInstance([])->set_host($host))
                 ->and($this->testedInstance->set_port($port))
-                ->and($this->testedInstance->set_version($version))
+                ->and($this->testedInstance->set_version(Stancer\Enum\ApiVersion::from($version)))
 
                 ->then
                     ->string($this->testedInstance->get_uri())
@@ -1348,12 +1348,12 @@ class Config extends Stancer\Tests\atoum
             ->assert('Random values / property')
                 ->if($host = uniqid())
                 ->and($port = rand(0, PHP_INT_MAX))
-                ->and($version = rand(0, PHP_INT_MAX))
+                ->and($version = rand(1, 2))
                 ->and($protocol = 'https')
 
                 ->given($this->newTestedInstance([])->host = $host)
                 ->and($this->testedInstance->port = $port)
-                ->and($this->testedInstance->version = $version)
+                ->and($this->testedInstance->version = Stancer\Enum\ApiVersion::from($version))
 
                 ->then
                     ->string($this->testedInstance->uri)
@@ -1364,37 +1364,50 @@ class Config extends Stancer\Tests\atoum
     public function testGetVersion_SetVersion()
     {
         $this
-            ->if($defaultVersion = 1)
-            ->and($randomVersion = rand(0, PHP_INT_MAX))
+            ->if($defaultVersion = Stancer\Enum\ApiVersion::VERSION_1)
+            ->and($randomVersion = rand(1, 2))
             ->then
                 ->assert('camelCase method')
-                    ->integer($this->newTestedInstance([])->getVersion())
+                    ->enum($this->newTestedInstance([])->getVersion())
                         ->isIdenticalTo($defaultVersion)
 
-                    ->object($this->testedInstance->setVersion($randomVersion))
+                    ->object($this->testedInstance->setVersion(Stancer\Enum\ApiVersion::from($randomVersion)))
                         ->isTestedInstance
 
-                    ->integer($this->testedInstance->getVersion())
-                        ->isIdenticalTo($randomVersion)
+                    ->enum($this->testedInstance->getVersion())
+                        ->isIdenticalTo(Stancer\Enum\ApiVersion::from($randomVersion))
 
                 ->assert('snake_case method')
-                    ->integer($this->newTestedInstance([])->get_version())
+                    ->enum($this->newTestedInstance([])->get_version())
                         ->isIdenticalTo($defaultVersion)
 
-                    ->object($this->testedInstance->set_version($randomVersion))
+                    ->object($this->testedInstance->set_version(Stancer\Enum\ApiVersion::from($randomVersion)))
                         ->isTestedInstance
 
-                    ->integer($this->testedInstance->get_version())
-                        ->isIdenticalTo($randomVersion)
+                    ->enum($this->testedInstance->get_version())
+                        ->isIdenticalTo(Stancer\Enum\ApiVersion::from($randomVersion))
 
                 ->assert('property')
-                    ->integer($this->newTestedInstance([])->version)
+                    ->enum($this->newTestedInstance([])->version)
                         ->isIdenticalTo($defaultVersion)
 
-                    ->integer($this->testedInstance->version = $randomVersion)
+                    ->enum($this->testedInstance->version = Stancer\Enum\ApiVersion::from($randomVersion))
 
-                    ->integer($this->testedInstance->version)
-                        ->isIdenticalTo($randomVersion)
+                    ->enum($this->testedInstance->version)
+                        ->isIdenticalTo(Stancer\Enum\ApiVersion::from($randomVersion))
+
+                ->assert('Invalid API Version')
+                    ->given($wrongVersionNumber = rand(3, PHP_INT_MAX))
+                    ->enum($this->newTestedInstance([])->version)
+                        ->isIdenticalTo($defaultVersion)
+                    ->exception(function () use ($wrongVersionNumber) {
+                        $this->testedInstance->setVersion(Stancer\Enum\ApiVersion::from($wrongVersionNumber));
+                    })
+                        ->isInstanceOf(\ValueError::class)
+
+                    ->exception(function () {
+                        $this->testedInstance->getSecretKey();
+                    })
         ;
     }
 

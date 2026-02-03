@@ -1,9 +1,8 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Refund;
-
-use Stancer;
 
 /**
  * List of a refund status.

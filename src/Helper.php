@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer;
@@ -12,8 +13,6 @@ class Helper
      * Convert `camelCase` text to `snake_case`.
      *
      * @param string $text Text to convert.
-     *
-     * @return string
      */
     public static function camelCaseToSnakeCase(string $text): string
     {
@@ -21,10 +20,14 @@ class Helper
             return '_' . strtolower($matches[0]);
         };
 
-        $rep = preg_replace_callback('`[A-Z]`', $replace, $text);
+        $rep = preg_replace_callback('`[0-9]*[A-Z]+`', $replace, $text);
 
         if (!$rep) {
             return '';
+        }
+
+        if (strpos($rep, '_') === 0) {
+            return substr($rep, 1);
         }
 
         return $rep;
@@ -34,8 +37,6 @@ class Helper
      * Convert `snake_case` text to `camelCase`.
      *
      * @param string $text Text to convert.
-     *
-     * @return string
      */
     public static function snakeCaseToCamelCase(string $text): string
     {
@@ -43,7 +44,7 @@ class Helper
             return strtoupper(ltrim($matches[0], '_'));
         };
 
-        $rep = preg_replace_callback('`_[a-z]`', $replace, $text);
+        $rep = preg_replace_callback('`_([a-z]|(?:[0-9][a-z]+))`', $replace, $text);
 
         if (!$rep) {
             return '';

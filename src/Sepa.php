@@ -1,11 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer;
 
-use DateTimeImmutable;
-use DateTimeInterface;
-use SensitiveParameter;
 use Stancer;
 
 /**
@@ -24,6 +22,7 @@ use Stancer;
  * @method ?\Stancer\Sepa\Check get_check()
  * @method ?string get_country() Get IBAN country.
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method ?\DateTimeInterface get_date_birth() Get account holder birth date.
  * @method ?\DateTimeInterface get_date_mandate() Get mandate signature date.
@@ -59,6 +58,8 @@ use Stancer;
  * @property-read ?\Stancer\Sepa\Check $check
  * @property-read ?string $country IBAN country.
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $endpoint API endpoint.
@@ -97,11 +98,11 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
         'dateBirth' => [
             'desc' => 'Account holder birth date',
             'format' => Stancer\Core\Type\Helper::DATE_ONLY,
-            'type' => DateTimeInterface::class,
+            'type' => \DateTimeInterface::class,
         ],
         'dateMandate' => [
             'desc' => 'Mandate signature date',
-            'type' => DateTimeInterface::class,
+            'type' => \DateTimeInterface::class,
         ],
         'iban' => [
             'desc' => 'International Bank Account Number',
@@ -134,15 +135,13 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
 
     /**
      * Return verification results.
-     *
-     * @return Stancer\Sepa\Check|null
      */
     public function getCheck(): ?Stancer\Sepa\Check
     {
         if ($this->id) {
             $check = $this->dataModelGetter('check', false);
 
-            if (!($check instanceof Stancer\Sepa\Check)) {
+            if (!$check instanceof Stancer\Sepa\Check) {
                 $check = new Stancer\Sepa\Check($this->id);
             }
 
@@ -158,10 +157,13 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
 
     /**
      * Return IBAN with usual readeable format (AAAA BBBB CCCC ...).
-     *
-     * @return string|null
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Formatted IBAN', required: true, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Formatted IBAN',
+        required: true,
+        restricted: true,
+        type: self::STRING,
+    )]
     public function getFormattedIban(): ?string
     {
         $iban = $this->getIban();
@@ -177,6 +179,7 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      * Add or update a Bank Identifier Code (BIC).
      *
      * @param string $bic A Bank Identifier Code.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidBicException When BIC seems invalid.
      */
@@ -198,11 +201,12 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
      * Add or update an International Bank Account Number (IBAN).
      *
      * @param string $iban An International Bank Account Number.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidIbanException When IBAN is invalid.
      */
     public function setIban(
-        #[SensitiveParameter]
+        #[\SensitiveParameter]
         string $iban
     ): self {
         $iban = str_replace(' ', '', $iban);

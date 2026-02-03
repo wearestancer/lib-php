@@ -3,29 +3,37 @@
 namespace Stancer\Tests;
 
 use atoum\atoum as base;
-use Stancer;
 use Faker;
-use Psr;
 use mock;
+use Psr;
+use Stancer;
 
 class atoum extends base\test
 {
     public function __construct(
-        base\adapter $adapter = null,
-        base\annotations\extractor $annotationExtractor = null,
-        base\asserter\generator $asserterGenerator = null,
-        base\test\assertion\manager $assertionManager = null,
-        \closure $reflectionClassFactory = null
+        ?base\adapter $adapter = null,
+        ?base\annotations\extractor $annotationExtractor = null,
+        ?base\asserter\generator $asserterGenerator = null,
+        ?base\test\assertion\manager $assertionManager = null,
+        ?\Closure $reflectionClassFactory = null
     ) {
         parent::__construct($adapter, $annotationExtractor, $asserterGenerator, $assertionManager, $reflectionClassFactory);
 
-        $this->getAsserterGenerator()->addNamespace('Stancer\Tests\asserters');
+        $this->getAsserterGenerator()->addNamespace('Stancer\\Tests\\asserters');
     }
 
     public function beforeTestMethod($method)
     {
+        $env = getenv('API_VERSION');
+        if ($env && $tmp = Stancer\Enum\ApiVersion::from($env)) {
+            $version = $tmp;
+        } else {
+            $version = Stancer\Enum\ApiVersion::VERSION_1;
+        }
         if ($method !== 'testGetGlobal_SetGlobal') {
-            Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]);
+            Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))])
+                ->setVersion($version)
+            ;
         }
     }
 
@@ -55,7 +63,7 @@ class atoum extends base\test
         return json_decode($this->getFixture(...$parts), true);
     }
 
-    public function getRandomDate(int $min, int $max = null): string
+    public function getRandomDate(int $min, ?int $max = null): string
     {
         if (!$max) {
             $max = date('Y');
@@ -68,7 +76,7 @@ class atoum extends base\test
 
         if ($month == 2) {
             $dMax = 27;
-        } else if (in_array($month, [4, 6, 9, 11])) {
+        } elseif (in_array($month, [4, 6, 9, 11])) {
             $dMax = 30;
         }
 
@@ -77,17 +85,31 @@ class atoum extends base\test
         return sprintf('%04d-%02d-%02d', $year, $month, $day);
     }
 
+    public function getRandomInteger(int $min, int $max): int
+    {
+        return random_int($min, $max);
+    }
+
     public function getRandomNumber(): string
     {
         // Simulate a french mobile phone number
         $first = rand(0, 1) + 6;
-        $loop = 4;
+        $loop = 3;
 
         $number = '+33' . $first;
 
         if ($first === 7) {
             $number .= str_pad(rand(30, 99), 2, '0');
-            $loop--;
+        }
+        if ($first === 6) {
+            $nine_list = ['5', '8', '9'];
+            $first_number_duo = [
+                str_pad((string) rand(0, 20), 2, '0'),
+                (string) rand(40, 80),
+                '3' . (string) rand(0, 8),
+                '9' . $nine_list[rand(0, 2)],
+            ];
+            $number .= $first_number_duo[rand(0, 3)];
         }
 
         for ($idx = 0; $idx < $loop; $idx++) {
@@ -97,7 +119,7 @@ class atoum extends base\test
         return $number;
     }
 
-    public function getRandomString(int $min, int $max = null): string
+    public function getRandomString(int $min, ?int $max = null): string
     {
         if (!$max) {
             $max = $min;
@@ -125,28 +147,29 @@ class atoum extends base\test
     {
         $data = random_bytes(16);
 
-        $data[6] = chr(ord($data[6]) & 0x0f | 0x40);
-        $data[8] = chr(ord($data[8]) & 0x3f | 0x80);
+        $data[6] = chr(ord($data[6]) & 0x0F | 0x40);
+        $data[8] = chr(ord($data[8]) & 0x3F | 0x80);
 
         return vsprintf('%s%s-%s-%s-%s-%s%s%s', str_split(bin2hex($data), 4));
     }
 
     /**
-     * @param Psr\Http\Client\ClientInterface|mock\Psr\Http\Client\ClientInterface $client
+     * @param mock\Psr\Http\Client\ClientInterface|Psr\Http\Client\ClientInterface $client
+     * @param \Stancer\Enum\ApiVersion $version
      */
-    public function mockConfig($client): Stancer\Config
+    public function mockConfig($client, Stancer\Enum\ApiVersion $version = Stancer\Enum\ApiVersion::VERSION_1): Stancer\Config
     {
         $config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]);
         $config->setHttpClient($client);
         $config->setDebug(false);
+        $config->setVersion($version);
 
         return $config;
     }
 
     public function mockEmptyJsonResponse(
         Psr\Http\Message\ResponseInterface $response = new mock\Stancer\Http\Response(200)
-    ): Psr\Http\Message\ResponseInterface
-    {
+    ): Psr\Http\Message\ResponseInterface {
         return $this->mockResponse('{}', $response);
     }
 
@@ -154,16 +177,14 @@ class atoum extends base\test
         string $dir,
         string $file,
         Psr\Http\Message\ResponseInterface $response = new mock\Stancer\Http\Response(200)
-    ): Psr\Http\Message\ResponseInterface
-    {
+    ): Psr\Http\Message\ResponseInterface {
         return $this->mockResponse($this->getFixture($dir, $file), $response);
     }
 
     public function mockJsonResponses(
         array $files,
         Psr\Http\Message\ResponseInterface $response = new mock\Stancer\Http\Response(200)
-    ): Psr\Http\Message\ResponseInterface
-    {
+    ): Psr\Http\Message\ResponseInterface {
         foreach ($files as $file) {
             $this->calling($response)->getBody[] = new Stancer\Http\Stream($this->getFixture(...$file));
         }
@@ -174,8 +195,7 @@ class atoum extends base\test
     public function mockResponse(
         string $body,
         Psr\Http\Message\ResponseInterface $response = new mock\Stancer\Http\Response(200)
-    ): Psr\Http\Message\ResponseInterface
-    {
+    ): Psr\Http\Message\ResponseInterface {
         $this->calling($response)->getBody = new Stancer\Http\Stream($body);
 
         return $response;
@@ -191,5 +211,13 @@ class atoum extends base\test
             ],
             'timeout' => $config->getTimeout(),
         ], $more);
+    }
+
+    public function versionDataProvider()
+    {
+        return [
+            [Stancer\Enum\ApiVersion::VERSION_1],
+            [Stancer\Enum\ApiVersion::VERSION_2],
+        ];
     }
 }

@@ -36,7 +36,6 @@ class Status extends Stancer\Tests\atoum
                 ->hasConstant('UNAVAILABLE')
                 ->constant('UNAVAILABLE')
                     ->isEqualTo('unavailable')
-
         ;
     }
 }

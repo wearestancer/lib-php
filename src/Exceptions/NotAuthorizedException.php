@@ -1,10 +1,11 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Exceptions;
 
-use Stancer\Interfaces\ExceptionInterface;
 use Psr;
+use Stancer\Interfaces\ExceptionInterface;
 
 /**
  * The request has not been applied because it lacks valid authentication credentials.
@@ -21,8 +22,6 @@ class NotAuthorizedException extends ClientException implements ExceptionInterfa
 
     /**
      * Return default message for that kind of exception.
-     *
-     * @return string
      */
     public static function getDefaultMessage(): string
     {

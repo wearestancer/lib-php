@@ -2,8 +2,8 @@
 
 namespace Stancer\Stub\Http;
 
-use Stancer;
 use Psr;
+use Stancer;
 
 class Message implements Psr\Http\Message\MessageInterface
 {

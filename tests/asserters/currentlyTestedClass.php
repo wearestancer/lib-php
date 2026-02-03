@@ -3,7 +3,6 @@
 namespace Stancer\Tests\asserters;
 
 use atoum;
-use BackedEnum;
 
 class currentlyTestedClass extends atoum\atoum\asserters\testedClass
 {
@@ -35,7 +34,7 @@ class currentlyTestedClass extends atoum\atoum\asserters\testedClass
             } else {
                 $this->fail($failMessage ?? $this->_('%s does not uses trait %s', $this, $trait));
             }
-        } catch (\reflectionException $exception) {
+        } catch (\ReflectionException $exception) {
             throw new atoum\atoum\exceptions\logic('Argument of ' . __METHOD__ . '() must be a trait', previous: $exception);
         }
 
@@ -46,7 +45,7 @@ class currentlyTestedClass extends atoum\atoum\asserters\testedClass
     {
         $className = $this->isEnum($failMessage)->class->getName();
 
-        if (is_a($className, BackedEnum::class, true)) {
+        if (is_a($className, \BackedEnum::class, true)) {
             $this->pass();
         } else {
             $this->fail($failMessage ?: $this->_('%s is not a backed enum', $this));

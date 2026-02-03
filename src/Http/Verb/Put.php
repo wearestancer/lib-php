@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Http\Verb;
@@ -6,6 +7,4 @@ namespace Stancer\Http\Verb;
 /**
  * HTTP PUT.
  */
-class Put extends AbstractVerb
-{
-}
+class Put extends AbstractVerb {}

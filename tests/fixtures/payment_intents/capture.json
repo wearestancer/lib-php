@@ -1,0 +1,23 @@
+{
+  "amount": 100,
+  "capture": false,
+  "card": "card_XZ8h7vcnEIecJkDdlnI5gyD5",
+  "created_at": 1721139663,
+  "currency": "eur",
+  "customer": null,
+  "date_settlement": null,
+  "description": null,
+  "id": "pi_UBW7wgcQiRv0YsfnaKjc4XvM",
+  "metadata": null,
+  "methods_allowed": [
+      "card",
+      "sepa"
+  ],
+  "order_id": null,
+  "payment": null,
+  "return_url": null,
+  "sepa": null,
+  "status": "captured",
+  "threeds": "required",
+  "url": "https://payment.stancer.com/test_pi_UBW7wgcQiRv0YsfnaKjc4XvM"
+}

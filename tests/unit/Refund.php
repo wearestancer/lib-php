@@ -2,7 +2,6 @@
 
 namespace Stancer\tests\unit;
 
-use DateTime;
 use Stancer;
 
 class Refund extends Stancer\Tests\atoum
@@ -21,7 +20,7 @@ class Refund extends Stancer\Tests\atoum
     {
         $this
             ->if($this->newTestedInstance)
-            ->and($date = new DateTime)
+            ->and($date = new \DateTime())
             ->then
                 ->variable($this->testedInstance->getDateBank())
                     ->isNull
@@ -44,7 +43,7 @@ class Refund extends Stancer\Tests\atoum
     {
         $this
             ->if($this->newTestedInstance)
-            ->and($date = new DateTime)
+            ->and($date = new \DateTime())
             ->then
                 ->variable($this->testedInstance->getDateRefund())
                     ->isNull

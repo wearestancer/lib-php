@@ -2,11 +2,12 @@
 
 namespace Stancer\Tests\functional;
 
-use DateTime;
 use Stancer;
 
 /**
  * @namespace \Tests\functional
+ *
+ * @internal
  */
 class Sepa extends TestCase
 {
@@ -21,28 +22,28 @@ class Sepa extends TestCase
                     })
                         ->isInstanceOf(Stancer\Exceptions\NotFoundException::class)
                         ->message
-                            ->isIdenticalTo('No such sepa ' . $id)
+                            ->isIdenticalTo($this->getNotFoundExceptionMessage($id, 'SEPA'))
 
             ->assert('Get test sepa')
-                ->if($this->newTestedInstance('sepa_bIvCZePYqfMlU11TANT8IqL1'))
+                ->if($this->newTestedInstance('sepa_XbEkAt8hAKTbh6Yel7xjEk7O'))
                 ->then
                     ->string($this->testedInstance->getBic())
-                        ->isIdenticalTo('TESTSEPP')
+                        ->isIdenticalTo('TESTFRPP')
 
                     ->dateTime($this->testedInstance->getDateMandate())
-                        ->isEqualTo(new DateTime('@1601045728'))
+                        ->isEqualTo(new \DateTimeImmutable('2024-12-25'))
 
                     ->string($this->testedInstance->getLast4())
-                        ->isIdenticalTo('0003')
+                        ->isIdenticalTo('2606')
 
                     ->string($this->testedInstance->getMandate())
-                        ->isIdenticalTo('mandate-identifier')
+                        ->isIdenticalTo('libraries_mandate_id')
 
                     ->string($this->testedInstance->getName())
-                        ->isIdenticalTo('John Doe')
+                        ->isIdenticalTo('Patrice Dinde')
 
                     ->dateTime($this->testedInstance->getCreationDate())
-                        ->isEqualTo(new DateTime('@1601045777'))
+                        ->isEqualTo(new \DateTime('@1758551637'))
         ;
     }
 }

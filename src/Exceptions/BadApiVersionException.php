@@ -1,0 +1,13 @@
+<?php
+
+declare(strict_types=1);
+
+namespace Stancer\Exceptions;
+
+/**
+ * Error Raised when The user try to use an endpoint not available to his API version.
+ */
+class BadApiVersionException extends Exception
+{
+    public string $defaultMessage = "Your Api version doesn't permit you to do that";
+}

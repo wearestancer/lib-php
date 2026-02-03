@@ -215,7 +215,7 @@ class Check extends Stancer\Tests\atoum
 
                 ->if($bban = rand())
                 ->and($country = 'FR')
-                ->and($validation = $bban . '1527' . '00') // 15 => F / 27 => R
+                ->and($validation = $bban . '152700') // 15 => F / 27 => R
                 ->and($check = sprintf('%02d', 98 - ($validation % 97)))
                 ->and($iban = $country . $check . $bban)
 
@@ -264,7 +264,7 @@ class Check extends Stancer\Tests\atoum
 
                 ->if($bban = rand())
                 ->and($country = 'FR')
-                ->and($validation = $bban . '1527' . '00') // 15 => F / 27 => R
+                ->and($validation = $bban . '152700') // 15 => F / 27 => R
                 ->and($check = sprintf('%02d', 98 - ($validation % 97)))
                 ->and($iban = $country . $check . $bban)
 

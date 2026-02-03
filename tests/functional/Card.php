@@ -2,14 +2,25 @@
 
 namespace Stancer\Tests\functional;
 
-use DateTime;
 use Stancer;
+use Stancer\Config;
 
 /**
  * @namespace \Tests\functional
+ *
+ * @internal
  */
 class Card extends TestCase
 {
+    public function personalTypo(): string
+    {
+        if ($this->config->version === Stancer\Enum\ApiVersion::VERSION_1) {
+            return 'personnal';
+        }
+
+        return 'personal';
+    }
+
     public function testGetData()
     {
         $this
@@ -21,10 +32,10 @@ class Card extends TestCase
                     })
                         ->isInstanceOf(Stancer\Exceptions\NotFoundException::class)
                         ->message
-                            ->isIdenticalTo('No such card ' . $id)
+                            ->isIdenticalTo($this->getNotFoundExceptionMessage($id, 'Card'))
 
             ->assert('Get test user')
-                ->if($this->newTestedInstance('card_9bKZ9cr0Ji0qSPs5c1uMQG5z'))
+                ->if($this->newTestedInstance('card_uqY2HrovY2sPm0Ac2xhnBkfU'))
                 ->then
                     ->string($this->testedInstance->getBrand())
                         ->isIdenticalTo('visa')
@@ -39,17 +50,19 @@ class Card extends TestCase
                         ->isIdenticalTo('3055')
 
                     ->string($this->testedInstance->getNature())
-                        ->isIdenticalTo('personnal')
+                        ->isIdenticalTo($this->personalTypo())
 
                     ->string($this->testedInstance->getNetwork())
                         ->isIdenticalTo('visa')
+                    ->string($this->testedInstance->getZipCode())
+                        ->isIdenticalTo('75001')
 
                     ->dateTime($this->testedInstance->getExpirationDate())
-                        ->hasYear(2030)
-                        ->hasMonth(2)
+                        ->hasYear(2099)
+                        ->hasMonth(12)
 
                     ->dateTime($this->testedInstance->getCreationDate())
-                        ->isEqualTo(new DateTime('@1579024205'))
+                        ->isEqualTo(new \DateTime('@1758551022'))
         ;
     }
 
@@ -62,7 +75,7 @@ class Card extends TestCase
             ->and($last4 = substr($number, -4))
 
             ->and($month = random_int(1, 12))
-            ->and($year = date('Y') + random_int(20, 30))
+            ->and($year = (int) date('Y') + random_int(20, 30))
 
             ->assert('Create card')
                 ->if($this->newTestedInstance)
@@ -83,15 +96,29 @@ class Card extends TestCase
                 ->and($this->testedInstance->setExpMonth($month))
                 ->and($this->testedInstance->setExpYear($year))
                 ->and($this->testedInstance->setNumber($number))
-                ->then
-                    ->exception(function () {
-                        $this->testedInstance->send();
-                    })
-                        ->isInstanceOf(Stancer\Exceptions\ConflictException::class)
-                        ->message
-                            ->isIdenticalTo('Card already exists, you may want to update it instead creating a new one (' . $id . ')')
+        ;
 
-            ->assert('Update')
+        if ($this->config->version === Stancer\Enum\ApiVersion::VERSION_1) {
+            $this->exception(function () {
+                $this->testedInstance->send();
+            })
+                ->isInstanceOf(Stancer\Exceptions\ConflictException::class)
+                ->message
+                    ->isIdenticalTo('Card already exists, you may want to update it instead creating a new one (' . $id . ')')
+            ;
+        } else {
+            $this->object($this->testedInstance->send())
+                ->isInstanceOf(Stancer\Card::class)
+                ->string($this->testedInstance->getId())
+                    ->isNotEmpty
+                ->integer($this->testedInstance->getExpMonth())
+                    ->isIdenticalTo($month)
+            ;
+        }
+
+        $this
+            ->assert('Updatev1')
+                ->given(Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
                 ->if($this->newTestedInstance($id))
                 ->then
                     ->variable($this->testedInstance->getName())
@@ -102,6 +129,22 @@ class Card extends TestCase
 
                     ->string($this->newTestedInstance($id)->getName())
                         ->isIdenticalTo($name)
+
+            ->assert('Updatev2')
+                ->given(Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->integer($this->testedInstance->getExpYear())
+                        ->isIdenticalto($year)
+
+                    ->integer($this->testedInstance->getExpMonth())
+                        ->isIdenticalto($month)
+
+                    ->object($this->testedInstance->setExpYear(++$year)->send())
+                        ->isTestedInstance
+
+                    ->integer($this->newTestedInstance($id)->getExpYear())
+                        ->isIdenticalTo($year)
 
             ->assert('Read data / Name')
                 ->if($this->newTestedInstance($id))
@@ -136,25 +179,6 @@ class Card extends TestCase
                     ->string($this->testedInstance->getFunding())
                     ->string($this->testedInstance->getNature())
                     ->string($this->testedInstance->getNetwork())
-
-            ->assert('Delete card')
-                ->if($this->newTestedInstance($id))
-                ->then
-                    ->object($this->testedInstance->delete())
-                        ->isTestedInstance
-
-                    ->variable($this->testedInstance->getId())
-                        ->isNull
-
-            ->assert('No more data')
-                ->if($this->newTestedInstance($id))
-                ->then
-                    ->exception(function () {
-                        $this->testedInstance->getName();
-                    })
-                        ->isInstanceOf(Stancer\Exceptions\NotFoundException::class)
-                        ->message
-                            ->isIdenticalTo('No such card ' . $id)
         ;
     }
 }

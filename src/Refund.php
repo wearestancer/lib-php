@@ -1,10 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer;
 
-use DateTimeImmutable;
-use Override;
 use Stancer;
 
 /**
@@ -19,6 +18,7 @@ use Stancer;
  * @method ?\Stancer\Refund\Status getStatus() Get refund status.
  * @method integer get_amount() Get amount to refund.
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_currency() Get processed currency.
  * @method ?\DateTimeImmutable get_date_bank() Get delivery date of the funds by the bank.
@@ -36,6 +36,8 @@ use Stancer;
  *
  * @property-read integer $amount Amount to refund.
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $currency Processed currency.
@@ -53,7 +55,7 @@ use Stancer;
  * @property-read ?\Stancer\Refund\Status $status Refund status.
  * @property-read string $uri Entity resource location.
  */
-#[Stancer\Core\Documentation\AddMethod('setPayment', ['Stancer\Payment $payment'], '$this', stan: true)]
+#[Stancer\Core\Documentation\AddMethod('setPayment', ['Stancer\\Payment $payment'], '$this', stan: true)]
 class Refund extends Stancer\Core\AbstractObject
 {
     use Stancer\Traits\AmountTrait;
@@ -63,7 +65,6 @@ class Refund extends Stancer\Core\AbstractObject
     final public const ENDPOINT = 'refunds';
 
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [
@@ -87,12 +88,12 @@ class Refund extends Stancer\Core\AbstractObject
         'dateBank' => [
             'desc' => 'Delivery date of the funds by the bank',
             'restricted' => true,
-            'type' => DateTimeImmutable::class,
+            'type' => \DateTimeImmutable::class,
         ],
         'dateRefund' => [
             'desc' => 'Date when the API sent the refund request to the bank',
             'restricted' => true,
-            'type' => DateTimeImmutable::class,
+            'type' => \DateTimeImmutable::class,
         ],
         'payment' => [
             'desc' => 'Refunded payment identifier',
@@ -115,10 +116,10 @@ class Refund extends Stancer\Core\AbstractObject
      *
      * @return boolean
      */
-    #[Override]
+    #[\Override]
     public function isModified(): bool
     {
-        return !!count($this->modified);
+        return (bool) count($this->modified);
     }
 
     /**
@@ -129,7 +130,7 @@ class Refund extends Stancer\Core\AbstractObject
      * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
-    #[Override]
+    #[\Override]
     public function send(): static
     {
         $payment = $this->getPayment();

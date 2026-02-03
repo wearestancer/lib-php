@@ -2,7 +2,6 @@
 
 namespace Stancer\Stub\Core;
 
-use DateTimeInterface;
 use Stancer;
 
 class StubObject extends Stancer\Core\AbstractObject
@@ -10,24 +9,24 @@ class StubObject extends Stancer\Core\AbstractObject
     use Stancer\Stub\TestMethodTrait;
 
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    final const ENDPOINT = 'objects'; // invalid but must be not empty
+    final public const ENDPOINT = 'objects'; // invalid but must be not empty
 
     protected array $dataModel = [
         'date1' => [
-            'type' => DateTimeInterface::class,
+            'type' => \DateTimeInterface::class,
         ],
         'date2' => [
             'list' => true,
-            'type' => DateTimeInterface::class,
+            'type' => \DateTimeInterface::class,
         ],
         'date3' => [
             'format' => Stancer\Core\Type\Helper::DATE_ONLY,
-            'type' => DateTimeInterface::class,
+            'type' => \DateTimeInterface::class,
         ],
         'date4' => [
             'format' => Stancer\Core\Type\Helper::DATE_ONLY,
             'list' => true,
-            'type' => DateTimeInterface::class,
+            'type' => \DateTimeInterface::class,
         ],
         'enum' => [
             'type' => Stancer\Stub\FakeStatus::class,
@@ -106,6 +105,10 @@ class StubObject extends Stancer\Core\AbstractObject
             'exportable' => false,
             'type' => self::class,
         ],
+        'object4' => [
+            'onlyID' => true,
+            'type' => Stancer\Card::class,
+        ],
         'restricted1' => [
             'restricted' => true,
             'type' => 'string',
@@ -128,6 +131,23 @@ class StubObject extends Stancer\Core\AbstractObject
         'array4' => [
             'list' => true,
             'type' => self::class,
+        ],
+        'serializable' => [
+            'list' => true,
+            'type' => \JsonSerializable::class,
+        ],
+        'stringable' => [
+            'list' => true,
+            'type' => \Stringable::class,
+        ],
+        'modifiedDataType' => [
+            'changed' => [
+                [
+                    'sinceVersion' => Stancer\Enum\ApiVersion::VERSION_2,
+                    'type' => self::INTEGER,
+                ],
+            ],
+            'type' => self::STRING,
         ],
     ];
 

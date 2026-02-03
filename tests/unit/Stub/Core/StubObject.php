@@ -2,14 +2,13 @@
 
 namespace Stancer\tests\unit\Stub\Core;
 
-use DateTime;
-use DateTimeZone;
 use GuzzleHttp;
-use Stancer;
 use mock;
+use Stancer;
 
 class StubObject extends Stancer\Tests\atoum
 {
+    use Stancer\Tests\Provider\Cards;
     use Stancer\Tests\Provider\Dates;
 
     public function invalidDataProvider()
@@ -120,7 +119,7 @@ class StubObject extends Stancer\Tests\atoum
             'object1',
             $this->makeStringBetween(10, 20),
             Stancer\Exceptions\InvalidArgumentException::class,
-            'Type mismatch, given "string" expected "Stancer\Card".',
+            'Type mismatch, given "string" expected "Stancer\\Card".',
         ];
 
         // restricted
@@ -168,7 +167,7 @@ class StubObject extends Stancer\Tests\atoum
             'array3',
             [$this->makeStringBetween(10, 20)],
             Stancer\Exceptions\InvalidArgumentException::class,
-            'Type mismatch, given "string" expected "Stancer\Card".',
+            'Type mismatch, given "string" expected "Stancer\\Card".',
         ];
 
         // array3, array of object
@@ -176,7 +175,7 @@ class StubObject extends Stancer\Tests\atoum
             'array3',
             [$this->makeIntegerBetween(10, 20)],
             Stancer\Exceptions\InvalidArgumentException::class,
-            'Type mismatch, given "integer" expected "Stancer\Card".',
+            'Type mismatch, given "integer" expected "Stancer\\Card".',
         ];
 
         return $datas;
@@ -520,6 +519,9 @@ class StubObject extends Stancer\Tests\atoum
 
     /**
      * @dataProvider validDataProvider
+     *
+     * @param mixed $property
+     * @param mixed $value
      */
     public function testCreate($property, $value)
     {
@@ -556,6 +558,9 @@ class StubObject extends Stancer\Tests\atoum
 
     /**
      * @dataProvider validDataProvider
+     *
+     * @param mixed $property
+     * @param mixed $value
      */
     public function testDataModelAdderThrowsNotAList($property, $value)
     {
@@ -588,6 +593,9 @@ class StubObject extends Stancer\Tests\atoum
 
     /**
      * @dataProvider validDataProvider
+     *
+     * @param mixed $property
+     * @param mixed $value
      */
     public function testDataModelGetterAndSetter($property, $value)
     {
@@ -617,6 +625,10 @@ class StubObject extends Stancer\Tests\atoum
 
     /**
      * @dataProvider validArrayDataProvider
+     *
+     * @param mixed $property
+     * @param mixed $value
+     * @param mixed $extra
      */
     public function testDataModelGetterSetterAdderOnArray($property, $value, $extra)
     {
@@ -680,7 +692,7 @@ class StubObject extends Stancer\Tests\atoum
     public function testDataModelGetterWillCallPopulate()
     {
         $this
-            ->given($client = new mock\GuzzleHttp\Client)
+            ->given($client = new mock\GuzzleHttp\Client())
             ->and($id = uniqid())
             ->and($timestamp = time())
             ->and($string1 = $this->makeStringBetween(10, 20))
@@ -758,6 +770,11 @@ class StubObject extends Stancer\Tests\atoum
 
     /**
      * @dataProvider invalidDataProvider
+     *
+     * @param mixed $property
+     * @param mixed $value
+     * @param mixed $class
+     * @param mixed $message
      */
     public function testDataModelSetterThrowsInvalidData($property, $value, $class, $message)
     {
@@ -794,6 +811,8 @@ class StubObject extends Stancer\Tests\atoum
 
     /**
      * @dataProvider timeZoneProvider
+     *
+     * @param mixed $zone
      */
     public function testDateProperty_hydratation($zone)
     {
@@ -801,9 +820,9 @@ class StubObject extends Stancer\Tests\atoum
             ->given($config = Stancer\Config::getGlobal())
 
             ->if($timestamp = rand(946681200, 1893452400))
-            ->and($datetime = new DateTime('@' . $timestamp))
-            ->and($timezone = new DateTimeZone($zone))
-            ->and($defaultTimezone = new DateTimeZone('+00:00'))
+            ->and($datetime = new \DateTime('@' . $timestamp))
+            ->and($timezone = new \DateTimeZone($zone))
+            ->and($defaultTimezone = new \DateTimeZone('+00:00'))
 
             ->if($data = [
                 'date1' => $timestamp,
@@ -842,6 +861,8 @@ class StubObject extends Stancer\Tests\atoum
 
     /**
      * @dataProvider timeZoneProvider
+     *
+     * @param mixed $zone
      */
     public function testDateProperty_withAnInteger($zone)
     {
@@ -849,9 +870,9 @@ class StubObject extends Stancer\Tests\atoum
             ->given($config = Stancer\Config::getGlobal())
 
             ->if($timestamp = rand(946681200, 1893452400))
-            ->and($datetime = new DateTime('@' . $timestamp))
-            ->and($timezone = new DateTimeZone($zone))
-            ->and($defaultTimezone = new DateTimeZone('+00:00'))
+            ->and($datetime = new \DateTime('@' . $timestamp))
+            ->and($timezone = new \DateTimeZone($zone))
+            ->and($defaultTimezone = new \DateTimeZone('+00:00'))
             ->then
                 ->variable($this->newTestedInstance->getDate1())
                     ->isNull
@@ -892,6 +913,8 @@ class StubObject extends Stancer\Tests\atoum
 
     /**
      * @dataProvider timeZoneProvider
+     *
+     * @param mixed $zone
      */
     public function testDateProperty_withAnObject($zone)
     {
@@ -899,9 +922,9 @@ class StubObject extends Stancer\Tests\atoum
             ->given($config = Stancer\Config::getGlobal())
 
             ->if($timestamp = rand(946681200, 1893452400))
-            ->and($datetime = new DateTime('@' . $timestamp))
-            ->and($timezone = new DateTimeZone($zone))
-            ->and($defaultTimezone = new DateTimeZone('+00:00'))
+            ->and($datetime = new \DateTime('@' . $timestamp))
+            ->and($timezone = new \DateTimeZone($zone))
+            ->and($defaultTimezone = new \DateTimeZone('+00:00'))
             ->then
                 ->variable($this->newTestedInstance->getDate1())
                     ->isNull
@@ -942,6 +965,8 @@ class StubObject extends Stancer\Tests\atoum
 
     /**
      * @dataProvider timeZoneProvider
+     *
+     * @param mixed $zone
      */
     public function testDatePropertyList_hydratation($zone)
     {
@@ -949,9 +974,9 @@ class StubObject extends Stancer\Tests\atoum
             ->given($config = Stancer\Config::getGlobal())
 
             ->if($timestamp = rand(946681200, 1893452400))
-            ->and($datetime = new DateTime('@' . $timestamp))
-            ->and($timezone = new DateTimeZone($zone))
-            ->and($defaultTimezone = new DateTimeZone('+00:00'))
+            ->and($datetime = new \DateTime('@' . $timestamp))
+            ->and($timezone = new \DateTimeZone($zone))
+            ->and($defaultTimezone = new \DateTimeZone('+00:00'))
 
             ->if($data = [
                 'date2' => [
@@ -1015,6 +1040,8 @@ class StubObject extends Stancer\Tests\atoum
 
     /**
      * @dataProvider timeZoneProvider
+     *
+     * @param mixed $zone
      */
     public function testDatePropertyList_withAnInteger($zone)
     {
@@ -1022,9 +1049,9 @@ class StubObject extends Stancer\Tests\atoum
             ->given($config = Stancer\Config::getGlobal())
 
             ->if($timestamp = rand(946681200, 1893452400))
-            ->and($datetime = new DateTime('@' . $timestamp))
-            ->and($timezone = new DateTimeZone($zone))
-            ->and($defaultTimezone = new DateTimeZone('+00:00'))
+            ->and($datetime = new \DateTime('@' . $timestamp))
+            ->and($timezone = new \DateTimeZone($zone))
+            ->and($defaultTimezone = new \DateTimeZone('+00:00'))
             ->then
                 ->array($this->newTestedInstance->getDate2())
                     ->isEmpty
@@ -1079,6 +1106,8 @@ class StubObject extends Stancer\Tests\atoum
 
     /**
      * @dataProvider timeZoneProvider
+     *
+     * @param mixed $zone
      */
     public function testDatePropertyList_withAnObject($zone)
     {
@@ -1086,9 +1115,9 @@ class StubObject extends Stancer\Tests\atoum
             ->given($config = Stancer\Config::getGlobal())
 
             ->if($timestamp = rand(946681200, 1893452400))
-            ->and($datetime = new DateTime('@' . $timestamp))
-            ->and($timezone = new DateTimeZone($zone))
-            ->and($defaultTimezone = new DateTimeZone('+00:00'))
+            ->and($datetime = new \DateTime('@' . $timestamp))
+            ->and($timezone = new \DateTimeZone($zone))
+            ->and($defaultTimezone = new \DateTimeZone('+00:00'))
             ->then
                 ->array($this->newTestedInstance->getDate2())
                     ->isEmpty
@@ -1146,7 +1175,7 @@ class StubObject extends Stancer\Tests\atoum
         $this
             ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
 
-            ->if($client = new mock\Stancer\Http\Client)
+            ->if($client = new mock\Stancer\Http\Client())
             ->and($config->setHttpClient($client))
             ->and($config->setDebug(false))
 
@@ -1168,7 +1197,7 @@ class StubObject extends Stancer\Tests\atoum
                 ->if($this->newTestedInstance(uniqid()))
                 ->then
                     ->dateTime($this->testedInstance->getCreationDate())
-                        ->isEqualTo(new DateTime('@' . $created))
+                        ->isEqualTo(new \DateTime('@' . $created))
         ;
     }
 
@@ -1193,7 +1222,7 @@ class StubObject extends Stancer\Tests\atoum
             ->if($response = new mock\Stancer\Http\Response(200))
             ->and($this->calling($response)->getBody[] = new Stancer\Http\Stream(json_encode($data)))
 
-            ->if($client = new mock\Stancer\Http\Client)
+            ->if($client = new mock\Stancer\Http\Client())
             ->and($this->calling($client)->request = $response)
 
             ->if($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
@@ -1265,6 +1294,12 @@ class StubObject extends Stancer\Tests\atoum
 
     /**
      * @dataProvider validDataProvider
+     *
+     * @param mixed $property
+     * @param mixed $value
+     * @param mixed $min
+     * @param mixed $max
+     * @param mixed $fixed
      */
     public function testGetModel($property, $value, $min, $max, $fixed)
     {
@@ -1829,8 +1864,8 @@ class StubObject extends Stancer\Tests\atoum
                 ->assert('Allow formatter')
                     ->given($timestamp1 = rand(946681200, 1893452400))
                     ->and($timestamp2 = rand(946681200, 1893452400))
-                    ->and($date1 = new DateTime('@' . $timestamp1))
-                    ->and($date2 = new DateTime('@' . $timestamp2))
+                    ->and($date1 = new \DateTime('@' . $timestamp1))
+                    ->and($date2 = new \DateTime('@' . $timestamp2))
 
                     ->if($this->newTestedInstance)
                     ->and($this->testedInstance->setDate3($date1))
@@ -1857,6 +1892,103 @@ class StubObject extends Stancer\Tests\atoum
                                         ->isIdenticalTo($date2->format('Y-m-d'))
                                 ;
                             })
+                ->assert('Serializable serialize')
+                    ->given($this->newTestedInstance)
+                    ->and($this->testedInstance->setSerializable([new Stancer\Stub\JsonSerialize('test')]))
+                    ->then
+                        ->array($serial = $this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('serializable')
+                        ->array($data = $serial['serializable'])
+                            ->hasSize(1)
+                            ->string($data[0])
+                                ->isIdenticalTo('test')
+
+                ->assert('Stringable stringify')
+                    ->given($this->newTestedInstance)
+                    ->and($this->testedInstance->setStringable([new Stancer\Stub\Stringable('test')]))
+                    ->then
+                        ->array($serial = $this->testedInstance->jsonSerialize())
+                            ->hasSize(1)
+                            ->hasKey('stringable')
+                        ->array($data = $serial['stringable'])
+                            ->hasSize(1)
+                            ->string($data[0])
+                                ->isIdenticalTo('test')
+        ;
+    }
+
+    public function test_ModifyDataVersion()
+    {
+        $this
+            ->given($config = Stancer\Config::getGlobal())
+            ->given($stringData = $this->getRandomString(1, 20))
+            ->given($intData = $this->getRandomInteger(1, 100))
+
+            ->and($config->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
+            ->assert('In V1 it\'s a string')
+                ->object($this->newTestedInstance(['modifiedDataType' => $stringData]))
+                    ->isInstanceOf(Stancer\Stub\Core\StubObject::class)
+                ->string($this->testedInstance->getModifiedDataType())
+                    ->isIdenticalTo($stringData)
+
+                    ->assert('In V1 it\'s not an integer')
+                ->exception(function () use ($intData) {
+                    $this->newTestedInstance(['modifiedDataType' => $intData]);
+                })
+
+            ->given($config->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
+            ->assert('In V2 it\'s a integer')
+                ->object($this->newTestedInstance(['modifiedDataType' => $intData]))
+                    ->isInstanceOf(Stancer\Stub\Core\StubObject::class)
+                ->integer($this->testedInstance->getModifiedDataType())
+                    ->isIdenticalTo($intData)
+
+            ->assert('In V2 it\'s not a string')
+                ->exception(function () use ($stringData) {
+                    $this->newTestedInstance(['modifiedDataType' => $stringData]);
+                })
+
+            ->given(
+                $data = [
+                    'changed' => [
+                        [
+                            'sinceVersion' => Stancer\Enum\ApiVersion::VERSION_2,
+                            'desc' => 'Description for version 2',
+                        ],
+                    ],
+                    'desc' => 'Description for version 1',
+                ]
+            )
+            ->assert('test the method directly (unmodified)')
+
+                ->array(
+                    $modifyData = $this
+                        ->invoke($this->newTestedInstance)
+                        ->modifyDataVersion(
+                            Stancer\Enum\ApiVersion::VERSION_1,
+                            $data
+                        )
+                )
+                    ->hasSize(2)
+                    ->hasKey('desc')
+
+                    ->string($modifyData['desc'])
+                        ->isIdenticalTo('Description for version 1')
+            ->assert('test the method directly (modified)')
+                ->array(
+                    $modifyData = $this
+                        ->invoke($this->newTestedInstance)
+                        ->modifyDataVersion(
+                            Stancer\Enum\ApiVersion::VERSION_2,
+                            $data
+                        )
+                )
+                    ->hasSize(2)
+                    ->hasKey('desc')
+
+                    ->string($modifyData['desc'])
+                        ->isIdenticalTo('Description for version 2')
         ;
     }
 
@@ -1894,7 +2026,7 @@ class StubObject extends Stancer\Tests\atoum
                 ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($config->setDebug(false))
 
-                ->if($client = new mock\GuzzleHttp\Client)
+                ->if($client = new mock\GuzzleHttp\Client())
                 ->and($id = uniqid())
                 ->and($timestamp = time())
                 ->and($body = '{"id":"' . $id . '","created":' . $timestamp . '}')
@@ -1919,7 +2051,7 @@ class StubObject extends Stancer\Tests\atoum
                 ->and($string1 = $this->makeStringBetween(10, 20))
                 ->and($integer1 = $this->makeIntegerBetween(10, 20))
 
-                ->if($client = new mock\GuzzleHttp\Client)
+                ->if($client = new mock\GuzzleHttp\Client())
                 ->and($body = json_encode(compact('id', 'created', 'string1', 'integer1')))
                 ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
                 ->and($this->calling($client)->request = $response)
@@ -1948,7 +2080,7 @@ class StubObject extends Stancer\Tests\atoum
                 ->and($string1 = $this->makeStringBetween(10, 20))
                 ->and($integer1 = $this->makeIntegerBetween(10, 20))
 
-                ->if($client = new mock\GuzzleHttp\Client)
+                ->if($client = new mock\GuzzleHttp\Client())
                 ->and($body = json_encode(compact('id', 'created', 'string1', 'integer1')))
                 ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
                 ->and($this->calling($client)->request = $response)
@@ -1980,7 +2112,7 @@ class StubObject extends Stancer\Tests\atoum
                 ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($config->setDebug(false))
 
-                ->if($client = new mock\GuzzleHttp\Client)
+                ->if($client = new mock\GuzzleHttp\Client())
                 ->and($id = uniqid())
                 ->and($timestamp = time())
                 ->and($body = '{"id":"' . $id . '","created":' . $timestamp . ',"object2":"' . uniqid() . '","array4":["' . uniqid() . '"]}')
@@ -2031,7 +2163,7 @@ class StubObject extends Stancer\Tests\atoum
                 ->and($handler = GuzzleHttp\HandlerStack::create($mock))
                 ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
 
-                ->if($mock = new mock\GuzzleHttp\Client)
+                ->if($mock = new mock\GuzzleHttp\Client())
                 ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
                 ->and($this->calling($mock)->request = $response)
 
@@ -2082,7 +2214,7 @@ class StubObject extends Stancer\Tests\atoum
                 ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($config->setDebug(false))
 
-                ->if($client = new mock\GuzzleHttp\Client)
+                ->if($client = new mock\GuzzleHttp\Client())
                 ->and($id = uniqid())
                 ->and($timestamp = time())
                 ->and($data = [
@@ -2160,13 +2292,13 @@ class StubObject extends Stancer\Tests\atoum
 
                 ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($body = json_encode(compact('id', 'created', 'string1', 'integer1')))
-                ->and($client = new mock\GuzzleHttp\Client)
+                ->and($client = new mock\GuzzleHttp\Client())
                 ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
                 ->and($this->calling($client)->request = $response)
                 ->and($config->setHttpClient($client))
                 ->and($config->setDebug(false))
 
-                ->and($logger = new mock\Stancer\Core\Logger)
+                ->and($logger = new mock\Stancer\Core\Logger())
                 ->and($config->setLogger($logger))
                 ->and($logMessage = sprintf('StubObject "%s" created', $id))
 
@@ -2210,13 +2342,13 @@ class StubObject extends Stancer\Tests\atoum
 
                 ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
                 ->and($body = json_encode(compact('id', 'created', 'string1')))
-                ->and($client = new mock\GuzzleHttp\Client)
+                ->and($client = new mock\GuzzleHttp\Client())
                 ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
                 ->and($this->calling($client)->request = $response)
                 ->and($config->setHttpClient($client))
                 ->and($config->setDebug(false))
 
-                ->and($logger = new mock\Stancer\Core\Logger)
+                ->and($logger = new mock\Stancer\Core\Logger())
                 ->and($config->setLogger($logger))
                 ->and($logMessage = sprintf('StubObject "%s" updated', $id))
 
@@ -2254,7 +2386,7 @@ class StubObject extends Stancer\Tests\atoum
 
             ->assert('No error if returned body is null (saw with PATCH implementation)')
                 ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
-                ->and($client = new mock\Stancer\Http\Client)
+                ->and($client = new mock\Stancer\Http\Client())
                 ->and($config->setHttpClient($client))
                 ->and($config->setDebug(false))
 
@@ -2295,6 +2427,107 @@ class StubObject extends Stancer\Tests\atoum
 
                     ->boolean($this->testedInstance->isModified())
                         ->isFalse
+        ;
+    }
+
+    public function testSend_withOnlyID()
+    {
+        $this
+            ->given($client = new mock\Stancer\Http\Client())
+            ->and($config = $this->mockConfig($client))
+            ->and($cardResponse = $this->mockJsonResponse('card', 'create'))
+            ->and($this->calling($client)->request = $cardResponse)
+
+            ->given($string1 = $this->getRandomString(10, 20))
+            ->and($integer1 = random_int(10, 20))
+            ->and($year = (date('Y') + random_int(1, 50)))
+
+            ->if($options = [])
+            ->and($options['headers'] = [
+                'Authorization' => $config->getBasicAuthHeader(),
+                'Content-Type' => 'application/json',
+                'User-Agent' => $config->getDefaultUserAgent(),
+            ])
+            ->and($options['timeout'] = $config->getTimeout())
+            ->and($optionCard = $options)
+            ->and($location = $this->newTestedInstance->getUri())
+
+            ->if($body = [
+                'string1' => $string1,
+                'integer1' => $integer1,
+                'object4' => 'card_m8H4p4n1Oyf1PbaHGBBPfU4a', // from fixtures
+            ])
+            ->and($options['body'] = json_encode($body))
+
+            ->if($card = new Stancer\Card())
+            ->and($card->setCvc((string) random_int(100, 999)))
+            ->and($card->setExpMonth(random_int(1, 12)))
+            ->and($card->setExpYear($year))
+            ->and($card->setNumber($this->cardNumberDataProvider(true)))
+            ->and($optionCard['body'] = json_encode($card))
+            ->and($locationCard = $card->getUri())
+
+            ->if($this->testedInstance->setString1($string1))
+            ->and($this->testedInstance->setInteger1($integer1))
+            ->and($this->testedInstance->setObject4($card))
+
+            ->then
+                ->assert('modified object 4 is sent before the object')
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
+                    ->boolean($card->isModified())
+                        ->isTrue
+
+                    ->object($this->testedInstance->send())
+                        ->isTestedInstance
+
+                    ->object($this->testedInstance->getObject4())
+                        ->isInstanceOf(Stancer\Card::class)
+
+                    ->string($this->testedInstance->getObject4()->getId())
+                        ->isNotEmpty
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('POST', $location, $options)
+                                ->once
+                        ->call('request')
+                            ->withArguments('POST', $locationCard, $optionCard)
+                                ->once
+
+            ->if($this->newTestedInstance->setString1($string1))
+            ->and($this->testedInstance->setInteger1($integer1))
+
+            ->if($completeCard = new Stancer\Card('card_m8H4p4n1Oyf1PbaHGBBPfU4a')) // from fixtures
+            ->and($this->testedInstance->setObject4($completeCard))
+
+            ->then
+                ->assert('ID\'d object4 doesn\'t need to be sent')
+
+                    ->boolean($this->testedInstance->isModified())
+                        ->isTrue
+
+                    ->boolean($completeCard->isModified())
+                        ->isFalse
+
+                    ->object($this->testedInstance->send())
+                        ->isTestedInstance
+
+                    ->object($this->testedInstance->getObject4())
+                        ->isInstanceOf(Stancer\Card::class)
+
+                    ->string($this->testedInstance->getObject4()->getId())
+                        ->isNotEmpty
+
+                    ->mock($client)
+                        ->call('request')
+                            ->withArguments('POST', $location, $options)
+                                ->once
+                        ->call('request')
+                            ->withArguments('POST', $locationCard, $optionCard)
+                                ->never
         ;
     }
 
@@ -2567,7 +2800,7 @@ class StubObject extends Stancer\Tests\atoum
         // object 1
         $datas[] = [
             'object1',
-            new Stancer\Card,
+            new Stancer\Card(),
             null,
             null,
             null,
@@ -2583,10 +2816,10 @@ class StubObject extends Stancer\Tests\atoum
         $array2 = [];
         $array3 = [];
 
-        for ($idx = 0; $idx <= 3; $idx ++) {
+        for ($idx = 0; $idx <= 3; $idx++) {
             $array1[] = $this->makeStringBetween(10, 20);
             $array2[] = $this->makeIntegerBetween(10, 20);
-            $array3[] = new Stancer\Card;
+            $array3[] = new Stancer\Card();
 
             // array 1, array of string
             $datas[] = [
@@ -2606,7 +2839,7 @@ class StubObject extends Stancer\Tests\atoum
             $datas[] = [
                 'array3',
                 $array3,
-                new Stancer\Card,
+                new Stancer\Card(),
             ];
         }
 

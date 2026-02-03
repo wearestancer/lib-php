@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Interfaces;
@@ -16,8 +17,6 @@ interface HttpClientInterface
      * @param string $method HTTP method.
      * @param string $uri URI string.
      * @param mixed[] $options Request options to apply.
-     *
-     * @return Psr\Http\Message\ResponseInterface
      *
      * @phpstan-param array{body?: string, headers?: array<string, string|string[]>, timeout?: int} $options
      *   Request options to apply.

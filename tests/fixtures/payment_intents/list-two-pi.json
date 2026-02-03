@@ -1,0 +1,53 @@
+{
+  "payment_intents": [
+      {
+          "amount": 4492,
+          "capture": true,
+          "card": "card_rGiigLShvOu920KThkbqjEyH",
+          "created_at": 1718799734,
+          "currency": "eur",
+          "customer": "cust_w1Om62wxpChiaM37jzBCbegV",
+          "description": "Automatic test, duplicate customer, 44.92 eur",
+          "id": "pi_3G2eWFsPOQSdWVXb7HnDP7Zt",
+          "metadata": null,
+          "methods_allowed": [
+              "card",
+              "sepa"
+          ],
+          "order_id": null,
+          "payment": null,
+          "return_url": null,
+          "sepa": null,
+          "status": "require_authentication",
+          "threeds": "required",
+          "url": "https://payment.stancer.com/test_pi_3G2eWFsPOQSdWVXb7HnDP7Zt"
+      },
+      {
+          "amount": 3448,
+          "capture": false,
+          "card": null,
+          "created_at": 1718799733,
+          "currency": "eur",
+          "customer": "cust_fr6k8WkbIVi3Ur9euOaXPOcA",
+          "description": "plfsQDPscBT6hNLpfNIG4omIipxrFK",
+          "id": "pi_hX59mjTCvC0TuGbkTEAFOF7l",
+          "metadata": null,
+          "methods_allowed": [
+              "card"
+          ],
+          "order_id": null,
+          "payment": null,
+          "return_url": null,
+          "sepa": null,
+          "status": "require_payment_method",
+          "threeds": "none",
+          "url": "https://payment.stancer.com/test_pi_hX59mjTCvC0TuGbkTEAFOF7l"
+      }
+  ],
+  "range": {
+    "end": 2,
+    "has_more": false,
+    "limit": 2,
+    "start": 0
+  }
+}

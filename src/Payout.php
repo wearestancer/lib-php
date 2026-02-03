@@ -1,10 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer;
 
-use DateTimeImmutable;
-use Override;
 use Stancer;
 
 /**
@@ -21,6 +20,7 @@ use Stancer;
  * @method \Stancer\Payout\Status getStatus() Get payout status.
  * @method integer get_amount() Get the total credit transfer amount you will receive.
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_currency() Get processed currency.
  * @method ?\DateTimeImmutable get_date_bank() Get the date you will receive the credit transfer.
@@ -37,6 +37,8 @@ use Stancer;
  *
  * @property-read integer $amount The total credit transfer amount you will receive.
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $currency Processed currency.
@@ -65,7 +67,6 @@ class Payout extends Stancer\Core\AbstractObject
     final public const ENDPOINT = 'payouts';
 
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [
@@ -85,20 +86,20 @@ class Payout extends Stancer\Core\AbstractObject
             'desc' => 'The date you will receive the credit transfer',
             'format' => Stancer\Core\Type\Helper::DATE_ONLY,
             'restricted' => true,
-            'type' => DateTimeImmutable::class,
+            'type' => \DateTimeImmutable::class,
         ],
         'datePaym' => [
             'desc' => 'The date the payment transactions were made',
             'format' => Stancer\Core\Type\Helper::DATE_ONLY,
             'nullable' => false,
             'restricted' => true,
-            'type' => DateTimeImmutable::class,
+            'type' => \DateTimeImmutable::class,
         ],
         'datePayment' => [
             'desc' => 'The date the payment transactions were made',
             'nullable' => false,
             'restricted' => true,
-            'type' => DateTimeImmutable::class,
+            'type' => \DateTimeImmutable::class,
         ],
         'details' => [
             'desc' => 'Payout details',
@@ -129,10 +130,8 @@ class Payout extends Stancer\Core\AbstractObject
      * Return the date the payment transactions were made.
      *
      * Alias for `datePaym`.
-     *
-     * @return DateTimeImmutable
      */
-    public function getDatePayment(): DateTimeImmutable
+    public function getDatePayment(): \DateTimeImmutable
     {
         return $this->datePaym;
     }
@@ -143,11 +142,12 @@ class Payout extends Stancer\Core\AbstractObject
      * Overrided to handle details.
      *
      * @param array<string, mixed> $data Data for hydration.
-     * @return $this
      *
      * @phpstan-param PayoutResponse $data
+     *
+     * @return $this
      */
-    #[Override]
+    #[\Override]
     public function hydrate(array $data): static
     {
         $data['details'] = [];

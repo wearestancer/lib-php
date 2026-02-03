@@ -2,8 +2,8 @@
 
 namespace Stancer\Http\tests\unit;
 
-use Stancer;
 use Psr;
+use Stancer;
 
 class Stream extends Stancer\Tests\atoum
 {

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Http\Verb;
@@ -13,8 +14,6 @@ abstract class AbstractVerb
 
     /**
      * Return the HTTP verb.
-     *
-     * @return string
      */
     public function __toString(): string
     {

@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer;
@@ -19,6 +20,7 @@ use Stancer;
  * @method ?string get_city() Get city of the payer.
  * @method ?string get_country() Get country of the payer.
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_endpoint() Get API endpoint.
  * @method string get_entity_name() Get entity name.
@@ -51,6 +53,8 @@ use Stancer;
  * @property-read ?string $city City of the payer.
  * @property-read ?string $country Country of the payer.
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $endpoint API endpoint.
@@ -64,7 +68,6 @@ use Stancer;
 class Device extends Stancer\Core\AbstractObject
 {
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [
@@ -150,6 +153,7 @@ class Device extends Stancer\Core\AbstractObject
      * We allow IPv4 and IPv6 addresses.
      *
      * @param string $ip New IP address.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidIpAddressException When $ip is not a correct IP address.
      */

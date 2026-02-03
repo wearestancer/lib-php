@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer;
@@ -16,6 +17,7 @@ use Stancer;
  * @method string getResponse() Get the response code.
  * @method integer get_amount() Get the disputed amount.
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method string get_currency() Get the currency of the disputed amount.
  * @method string get_endpoint() Get API endpoint.
@@ -28,6 +30,8 @@ use Stancer;
  *
  * @property-read integer $amount The disputed amount.
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read string $currency The currency of the disputed amount.
@@ -49,7 +53,6 @@ class Dispute extends Stancer\Core\AbstractObject
     final public const ENDPOINT = 'disputes';
 
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [

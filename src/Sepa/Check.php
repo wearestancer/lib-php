@@ -1,10 +1,9 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer\Sepa;
 
-use Override;
-use ReturnTypeWillChange;
 use Stancer;
 
 /**
@@ -18,6 +17,7 @@ use Stancer;
  * @method ?float getScoreName()
  * @method ?\Stancer\Sepa\Check\Status getStatus()
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method ?boolean get_date_birth()
  * @method string get_endpoint() Get API endpoint.
@@ -30,6 +30,8 @@ use Stancer;
  * @method string get_uri() Get entity resource location.
  *
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read ?boolean $dateBirth
@@ -53,7 +55,6 @@ class Check extends Stancer\Core\AbstractObject
     final public const ENDPOINT = 'sepa/check';
 
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [
@@ -86,8 +87,6 @@ class Check extends Stancer\Core\AbstractObject
 
     /**
      * Return Sepa object attached to this check.
-     *
-     * @return Stancer\Sepa|null
      */
     public function getSepa(): ?Stancer\Sepa
     {
@@ -106,9 +105,10 @@ class Check extends Stancer\Core\AbstractObject
      * Return a array representation of the current object for a conversion as JSON.
      *
      * @uses self::toArray()
-     * @return string|integer|boolean|null|array<string, mixed>
+     *
+     * @return array<string, mixed>|boolean|integer|string|null
      */
-    #[Override]
+    #[\Override]
     public function jsonSerialize(): mixed
     {
         $sepa = $this->getSepa();
@@ -132,7 +132,7 @@ class Check extends Stancer\Core\AbstractObject
      * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When all requirement are not provided.
      */
-    #[Override]
+    #[\Override]
     public function send(): static
     {
         $this->modified[] = 'sepa'; // Mandatory, force `parent::send()` to work.

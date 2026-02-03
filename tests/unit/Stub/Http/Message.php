@@ -3,7 +3,6 @@
 namespace Stancer\tests\unit\Stub\Http;
 
 use Stancer;
-use mock;
 
 class Message extends Stancer\Tests\atoum
 {

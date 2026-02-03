@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer;
@@ -6,7 +7,6 @@ namespace Stancer;
 use DateTimeZone;
 use GuzzleHttp;
 use Psr;
-use SensitiveParameter;
 use Stancer;
 
 /**
@@ -21,7 +21,7 @@ use Stancer;
  * @method string get_default_user_agent() Get default user agent.
  * @method static static get_global() Return current instance.
  * @method string get_host() Get API host.
- * @method \Stancer\Http\Client|\GuzzleHttp\ClientInterface get_http_client() Get HTTP client instance.
+ * @method \GuzzleHttp\ClientInterface|\Stancer\Http\Client get_http_client() Get HTTP client instance.
  * @method \Psr\Log\LoggerInterface get_logger() Get logger handler.
  * @method string get_mode() Get API mode (test or live).
  * @method ?integer get_port() Get API port.
@@ -29,7 +29,7 @@ use Stancer;
  * @method string get_secret_key() Get secret API key.
  * @method integer get_timeout() Get API timeout.
  * @method string get_uri() Get API URI.
- * @method integer get_version() Get API version.
+ * @method \Stancer\Enum\ApiVersion get_version() Get API version.
  * @method boolean is_live_mode() Indicate if API is in live mode.
  * @method boolean is_not_live_mode() Indicate if API is not in live mode.
  * @method boolean is_not_test_mode() Indicate if API is not in test mode.
@@ -40,26 +40,26 @@ use Stancer;
  * @method $this set_default_time_zone(\DateTimeZone $default_time_zone) Set default time zone.
  * @method static self set_global(self $instance) Register a configuration for deferred API call.
  * @method $this set_host(string $host) Set API host.
- * @method $this set_http_client(\Stancer\Http\Client|\GuzzleHttp\ClientInterface $http_client) Set HTTP client
+ * @method $this set_http_client(\GuzzleHttp\ClientInterface|\Stancer\Http\Client $http_client) Set HTTP client
  *   instance.
  * @method $this set_keys($keys) Update authentication keys.
  * @method $this set_logger(\Psr\Log\LoggerInterface $logger) Set logger handler.
  * @method $this set_mode(string $mode) Set API mode (test or live).
  * @method $this set_port(integer $port) Set API port.
  * @method $this set_timeout(integer $timeout) Set API timeout.
- * @method $this set_version(integer $version) Set API version.
+ * @method $this set_version(\Stancer\Enum\ApiVersion $version) Set API version.
  *
  * @property boolean $debug Debug mode.
  * @property ?\DateTimeZone $defaultTimeZone Default time zone.
  * @property ?\DateTimeZone $default_time_zone Default time zone.
  * @property string $host API host.
- * @property \Stancer\Http\Client|\GuzzleHttp\ClientInterface $httpClient HTTP client instance.
- * @property \Stancer\Http\Client|\GuzzleHttp\ClientInterface $http_client HTTP client instance.
+ * @property \GuzzleHttp\ClientInterface|\Stancer\Http\Client $httpClient HTTP client instance.
+ * @property \GuzzleHttp\ClientInterface|\Stancer\Http\Client $http_client HTTP client instance.
  * @property \Psr\Log\LoggerInterface $logger Logger handler.
  * @property string $mode API mode (test or live).
  * @property ?integer $port API port.
  * @property integer $timeout API timeout.
- * @property integer $version API version.
+ * @property \Stancer\Enum\ApiVersion $version API version.
  *
  * @property-read string $basicAuthHeader HTTP "basic" authentication header's value.
  * @property-read string $basic_auth_header HTTP "basic" authentication header's value.
@@ -93,7 +93,7 @@ class Config
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     public const TEST_MODE = 'test';
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    public const VERSION = '2.0.1';
+    public const VERSION = '2.1.0';
 
     /** @var non-empty-array<string|null>[] */
     protected array $app = [];
@@ -105,9 +105,8 @@ class Config
 
     protected string $host = 'api.stancer.com';
 
-    protected Stancer\Http\Client|GuzzleHttp\ClientInterface|null $httpClient = null;
+    protected GuzzleHttp\ClientInterface|Stancer\Http\Client|null $httpClient = null;
 
-    /** @var self|null */
     protected static ?self $instance = null;
 
     /** @var array<string, string|null> */
@@ -126,9 +125,9 @@ class Config
 
     protected int $timeout = 0;
 
-    protected ?DateTimeZone $timezone = null;
+    protected ?\DateTimeZone $timezone = null;
 
-    protected int $version = 1;
+    protected Stancer\Enum\ApiVersion $version = Stancer\Enum\ApiVersion::VERSION_1;
 
     /**
      * Create an API configuration.
@@ -137,10 +136,11 @@ class Config
      * You needed to set a configuration as global to be used on every API call.
      *
      * @see self::init() for a quick config setup
+     *
      * @param string[] $keys Authentication keys.
      */
     public function __construct(
-        #[SensitiveParameter]
+        #[\SensitiveParameter]
         array $keys
     ) {
         $this->setKeys($keys);
@@ -151,9 +151,8 @@ class Config
      *
      * @param string $name Application name.
      * @param string $version Application version.
-     * @return self
      */
-    public function addAppData(string $name, string $version = null): self
+    public function addAppData(string $name, ?string $version = null): self
     {
         $this->app[] = [
             $name,
@@ -167,6 +166,7 @@ class Config
      * Add a call to the list.
      *
      * @param Stancer\Core\Request\Call $call New call to add.
+     *
      * @return $this
      */
     public function addCall(Stancer\Core\Request\Call $call): self
@@ -178,13 +178,12 @@ class Config
 
     /**
      * Return HTTP "basic" authentication header's value.
-     *
-     * @return string
      */
     #[Stancer\Core\Documentation\FormatProperty(
         description: 'HTTP "basic" authentication header\'s value',
         nullable: false,
         restricted: true,
+        type: 'string',
     )]
     public function getBasicAuthHeader(): string
     {
@@ -228,11 +227,9 @@ class Config
 
     /**
      * Return default time zone.
-     *
-     * @return DateTimeZone|null
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Default time zone', type: DateTimeZone::class)]
-    public function getDefaultTimeZone(): ?DateTimeZone
+    #[Stancer\Core\Documentation\FormatProperty(description: 'Default time zone', type: \DateTimeZone::class)]
+    public function getDefaultTimeZone(): ?\DateTimeZone
     {
         return $this->timezone;
     }
@@ -240,10 +237,14 @@ class Config
     /**
      * Return default user agent.
      *
-     * @return string
      * @phpstan-return non-empty-string
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Default user agent', nullable: false, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Default user agent',
+        nullable: false,
+        restricted: true,
+        type: 'string',
+    )]
     public function getDefaultUserAgent(): string
     {
         $params = [];
@@ -285,7 +286,6 @@ class Config
      * This is used to prevent passing an API instance on every call.
      * `Api::setGlobal()` is called on every new instance to simplify your workflow.
      *
-     * @return static
      * @throws Stancer\Exceptions\InvalidArgumentException When no previous instance was stored (use `Config::init()`).
      */
     public static function getGlobal(): static
@@ -301,10 +301,8 @@ class Config
      * Return API host.
      *
      * Default : api.stancer.com
-     *
-     * @return string
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'API host', nullable: false)]
+    #[Stancer\Core\Documentation\FormatProperty(description: 'API host', nullable: false, type: 'string')]
     public function getHost(): string
     {
         return $this->host;
@@ -316,8 +314,6 @@ class Config
      * You can give your instance of `Stancer\Http\Client` or `GuzzleHttp\ClientInterface`
      * with `Api::setHttpClient()` method.
      * If none provided, we will spawn a default instance for you.
-     *
-     * @return Stancer\Http\Client|GuzzleHttp\ClientInterface
      */
     #[Stancer\Core\Documentation\FormatProperty(
         description: 'HTTP client instance',
@@ -327,7 +323,7 @@ class Config
             GuzzleHttp\ClientInterface::class,
         ],
     )]
-    public function getHttpClient(): Stancer\Http\Client|GuzzleHttp\ClientInterface
+    public function getHttpClient(): GuzzleHttp\ClientInterface|Stancer\Http\Client
     {
         if ($this->httpClient) {
             return $this->httpClient;
@@ -342,8 +338,6 @@ class Config
 
     /**
      * Return a valid and PSR3 compatible logger instance.
-     *
-     * @return Psr\Log\LoggerInterface
      */
     #[Stancer\Core\Documentation\FormatProperty(
         description: 'Logger handler',
@@ -369,10 +363,8 @@ class Config
      * Default : test
      *
      * You should use class constant `LIVE_MODE` and `TEST_MODE`.
-     *
-     * @return string
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'API mode (test or live)', value: 'test')]
+    #[Stancer\Core\Documentation\FormatProperty(description: 'API mode (test or live)', type: 'string', value: 'test')]
     public function getMode(): string
     {
         return $this->mode ?: static::TEST_MODE;
@@ -396,10 +388,14 @@ class Config
     /**
      * Return public API key.
      *
-     * @return string
      * @throws Stancer\Exceptions\MissingApiKeyException When no key is found.
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Public API key', nullable: false, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Public API key',
+        nullable: false,
+        restricted: true,
+        type: 'string',
+    )]
     public function getPublicKey(): string
     {
         $key = $this->keys['ptest'];
@@ -422,10 +418,14 @@ class Config
     /**
      * Return secret API key.
      *
-     * @return string
      * @throws Stancer\Exceptions\MissingApiKeyException When no key is found.
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'Secret API key', nullable: false, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'Secret API key',
+        nullable: false,
+        restricted: true,
+        type: 'string',
+    )]
     public function getSecretKey(): string
     {
         $key = $this->keys['stest'];
@@ -462,10 +462,13 @@ class Config
      * Return API URI.
      *
      * Default : 1
-     *
-     * @return string
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'API URI', nullable: false, restricted: true)]
+    #[Stancer\Core\Documentation\FormatProperty(
+        description: 'API URI',
+        nullable: false,
+        restricted: true,
+        type: 'string',
+    )]
     public function getUri(): string
     {
         $pattern = '%1$s://%2$s/v%4$s/';
@@ -478,7 +481,7 @@ class Config
             'https',
             $this->getHost(),
             $this->getPort(),
-            $this->getVersion(),
+            $this->getVersion()->value,
         ];
 
         return vsprintf($pattern, $params);
@@ -487,12 +490,10 @@ class Config
     /**
      * Return API version.
      *
-     * Default : 1
-     *
-     * @return integer
+     * Default : Stancer\Enum\ApiVersion::Version_1
      */
-    #[Stancer\Core\Documentation\FormatProperty(description: 'API version', nullable: false, type: 'integer')]
-    public function getVersion(): int
+    #[Stancer\Core\Documentation\FormatProperty(description: 'API version', nullable: false, type: '\\Stancer\\Enum\\ApiVersion')]
+    public function getVersion(): Stancer\Enum\ApiVersion
     {
         return $this->version;
     }
@@ -501,11 +502,11 @@ class Config
      * Proxy that create a new instance of configuration and register it as global.
      *
      * @see self::setGlobal()
+     *
      * @param string[] $keys Authentication keys.
-     * @return self
      */
     public static function init(
-        #[SensitiveParameter]
+        #[\SensitiveParameter]
         array $keys
     ): self {
         $obj = new static($keys);
@@ -581,6 +582,7 @@ class Config
      * Change debug mode.
      *
      * @param boolean $value New value for the mode.
+     *
      * @return $this
      */
     public function setDebug(bool $value): self
@@ -593,7 +595,8 @@ class Config
     /**
      * Update default time zone.
      *
-     * @param string|DateTimeZone $tz New time zone.
+     * @param \DateTimeZone|string $tz New time zone.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When `$tz` is not a string or a DateTimeZone instance.
      */
@@ -606,7 +609,7 @@ class Config
             $message = sprintf('Invalid time zone "%s".', $tz);
 
             try {
-                $zone = new DateTimeZone($tz);
+                $zone = new \DateTimeZone($tz);
             } catch (\Exception $exception) {
                 $code = (int) $exception->getCode();
 
@@ -614,7 +617,7 @@ class Config
             }
         }
 
-        if (!($zone instanceof DateTimeZone)) {
+        if (!($zone instanceof \DateTimeZone)) {
             throw new Stancer\Exceptions\InvalidArgumentException($message);
         }
 
@@ -627,7 +630,6 @@ class Config
      * Register a configuration for deferred API call.
      *
      * @param self $instance Current API instance.
-     * @return self
      *
      * @phpstan-param static $instance Current API instance.
      */
@@ -642,6 +644,7 @@ class Config
      * Update API host.
      *
      * @param string $host New host.
+     *
      * @return $this
      */
     public function setHost(string $host): self
@@ -657,7 +660,8 @@ class Config
      * Be careful, no limitation is done on this method to allow you to use your own
      * implementation of an HTTP client.
      *
-     * @param Stancer\Http\Client|GuzzleHttp\ClientInterface $client New instance.
+     * @param GuzzleHttp\ClientInterface|Stancer\Http\Client $client New instance.
+     *
      * @return $this
      */
     public function setHttpClient($client): self
@@ -675,7 +679,7 @@ class Config
      * @return $this
      */
     public function setKeys(
-        #[SensitiveParameter]
+        #[\SensitiveParameter]
         $keys
     ): self {
         if (!is_array($keys)) {
@@ -691,7 +695,7 @@ class Config
 
         foreach ($keys as $key) {
             foreach ($prefixes as $prefix) {
-                if (preg_match('`^' . $prefix . '_\w{24}$`', $key)) {
+                if (preg_match('`^' . $prefix . '_\\w{24}$`', $key)) {
                     $this->keys[$prefix] = $key;
                 }
             }
@@ -704,6 +708,7 @@ class Config
      * Update logger handler.
      *
      * @param Psr\Log\LoggerInterface $logger A PSR3 compatible logger.
+     *
      * @return $this
      */
     public function setLogger(Psr\Log\LoggerInterface $logger): self
@@ -719,6 +724,7 @@ class Config
      * You should use class constant `LIVE_MODE` and `TEST_MODE` to be sure.
      *
      * @param string $mode New mode. Should be class constant `LIVE_MODE` or `TEST_MODE`.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException If new mode is not valid.
      */
@@ -744,6 +750,7 @@ class Config
      * Update API port.
      *
      * @param integer $port New port.
+     *
      * @return $this
      */
     public function setPort(int $port): self
@@ -757,6 +764,7 @@ class Config
      * Update API timeout.
      *
      * @param integer $timeout New timeout.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When setting a too high timeout.
      */
@@ -783,10 +791,11 @@ class Config
     /**
      * Update API version.
      *
-     * @param integer $version New version.
+     * @param Stancer\Enum\ApiVersion $version New version.
+     *
      * @return $this
      */
-    public function setVersion(int $version): self
+    public function setVersion(Stancer\Enum\ApiVersion $version): self
     {
         $this->version = $version;
 

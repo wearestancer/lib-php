@@ -2,9 +2,8 @@
 
 namespace Stancer\Http\tests\unit;
 
-use CurlHandle;
-use Stancer;
 use mock;
+use Stancer;
 
 class Client extends Stancer\Tests\atoum
 {
@@ -229,7 +228,7 @@ class Client extends Stancer\Tests\atoum
             ->if($this->newTestedInstance)
             ->then
                 ->object($this->testedInstance->getCurlResource())
-                    ->isInstanceOf(CurlHandle::class)
+                    ->isInstanceOf(\CurlHandle::class)
         ;
     }
 
@@ -304,6 +303,11 @@ class Client extends Stancer\Tests\atoum
 
     /**
      * @dataProvider headerLineDataProvider
+     *
+     * @param mixed $line
+     * @param mixed $expectedReturn
+     * @param mixed $expectedName
+     * @param mixed $expectedValues
      */
     public function testParseHeaderLine($line, $expectedReturn, $expectedName, $expectedValues)
     {
@@ -581,8 +585,8 @@ class Client extends Stancer\Tests\atoum
                 ->and($this->function->curl_exec = json_encode($body))
                 ->and($this->function->curl_getinfo = 400)
 
-                ->if($object = new mock\Stancer\Core\AbstractObject)
-                ->and($method = new Stancer\Http\Verb\Post)
+                ->if($object = new mock\Stancer\Core\AbstractObject())
+                ->and($method = new Stancer\Http\Verb\Post())
                 ->then
                     ->exception(function () use ($method, $object) {
                         $this->testedInstance->request($method, $object);
@@ -604,8 +608,8 @@ class Client extends Stancer\Tests\atoum
                 ->and($this->function->curl_exec = json_encode($body))
                 ->and($this->function->curl_getinfo = 400)
 
-                ->if($object = new mock\Stancer\Core\AbstractObject)
-                ->and($method = new Stancer\Http\Verb\Post)
+                ->if($object = new mock\Stancer\Core\AbstractObject())
+                ->and($method = new Stancer\Http\Verb\Post())
                 ->then
                     ->exception(function () use ($method, $object) {
                         $this->testedInstance->request($method, $object);
@@ -628,8 +632,8 @@ class Client extends Stancer\Tests\atoum
                 ->and($this->function->curl_exec = json_encode($body))
                 ->and($this->function->curl_getinfo = 400)
 
-                ->if($object = new mock\Stancer\Core\AbstractObject)
-                ->and($method = new Stancer\Http\Verb\Post)
+                ->if($object = new mock\Stancer\Core\AbstractObject())
+                ->and($method = new Stancer\Http\Verb\Post())
                 ->then
                     ->exception(function () use ($method, $object) {
                         $this->testedInstance->request($method, $object);
@@ -649,8 +653,8 @@ class Client extends Stancer\Tests\atoum
                 ->and($this->function->curl_exec = json_encode($body))
                 ->and($this->function->curl_getinfo = 400)
 
-                ->if($object = new mock\Stancer\Core\AbstractObject)
-                ->and($method = new Stancer\Http\Verb\Post)
+                ->if($object = new mock\Stancer\Core\AbstractObject())
+                ->and($method = new Stancer\Http\Verb\Post())
                 ->then
                     ->exception(function () use ($method, $object) {
                         $this->testedInstance->request($method, $object);
@@ -705,6 +709,13 @@ class Client extends Stancer\Tests\atoum
 
     /**
      * @dataProvider errorDataProvider
+     *
+     * @param mixed $error
+     * @param mixed $code
+     * @param mixed $class
+     * @param mixed $message
+     * @param mixed $logLevel
+     * @param mixed $logMessage
      */
     public function testRequest_exceptions($error, $code, $class, $message, $logLevel, $logMessage)
     {
@@ -725,7 +736,7 @@ class Client extends Stancer\Tests\atoum
                     }
                 })
 
-                ->if($logger = new mock\Stancer\Core\Logger)
+                ->if($logger = new mock\Stancer\Core\Logger())
                 ->and($config->setLogger($logger))
                 ->then
                     ->exception(function () {

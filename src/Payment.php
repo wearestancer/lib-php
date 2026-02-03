@@ -1,13 +1,10 @@
 <?php
+
 declare(strict_types=1);
 
 namespace Stancer;
 
-use DateTime;
-use DateTimeImmutable;
-use Override;
 use Stancer;
-use ValueError;
 
 /**
  * Representation of a payment.
@@ -16,6 +13,7 @@ use ValueError;
  * @method static array<mixed> filter_list_params(array<mixed> $terms) Filter for list method.
  * @method ?integer getAmount() Get transaction amount.
  * @method ?\Stancer\Auth getAuth() Get auth object, must be set for 3-D Secure card payments.
+ * @method ?\Stancer\Address getBillingAddress() Get the billing address links to the payment.
  * @method ?boolean getCapture() Get capture immediately the payment.
  * @method ?\Stancer\Card getCard() Get card object.
  * @method ?string getCountry()
@@ -33,28 +31,31 @@ use ValueError;
  * @method ?string getResponseAuthor()
  * @method ?string getReturnUrl() Get URL to redirect back your customer after processing the payment.
  * @method ?\Stancer\Sepa getSepa() Get SEPA object.
+ * @method ?\Stancer\Address getShippingAddress() Get the shipping address links to the payment.
  * @method ?\Stancer\Payment\Status getStatus() Get status of the payment.
  * @method ?string getUniqueId() Get unicity key.
  * @method ?integer get_amount() Get transaction amount.
  * @method ?\Stancer\Auth get_auth() Get auth object, must be set for 3-D Secure card payments.
+ * @method ?\Stancer\Address get_billing_address() Get the billing address links to the payment.
  * @method ?boolean get_capture() Get capture immediately the payment.
  * @method ?\Stancer\Card get_card() Get card object.
  * @method ?string get_country()
  * @method ?\DateTimeImmutable get_created() Get creation date.
+ * @method ?\DateTimeImmutable get_created_at() Get creation date.
  * @method ?\DateTimeImmutable get_creation_date() Get creation date.
  * @method ?\Stancer\Currency get_currency() Get processed currency.
  * @method ?\Stancer\Customer get_customer() Get customer object.
  * @method ?\DateTimeImmutable get_date_bank() Get delivery date of the funds traded by the bank.
  * @method ?string get_description() Get payment description.
  * @method ?\Stancer\Device get_device() Get customer's device object.
- * @method string get_endpoint() Get API endpoint.
+ * @method string get_endpoint() Return API endpoint.
  * @method string get_entity_name() Get entity name.
  * @method ?string get_id() Get object ID.
  * @method ?string get_method() Get payment method used.
  * @method Stancer\Payment\MethodsAllowed[] get_methods_allowed() Get list of payment methods allowed for this payment.
  * @method ?string get_order_id() Get order identifier.
- * @method string get_payment_page_url(array<mixed> $params = [], boolean $force = false) Return the URL for Stancer
- *   payment page.
+ * @method string get_payment_page_url(array<mixed> $params = [], boolean $force = false) Return the URL for
+ *   Stancer payment page.
  * @method int get_refundable_amount() Return the refundable amount.
  * @method int get_refunded_amount() Return the already refunded amount.
  * @method Stancer\Refund[] get_refunds() Get array of refund objects.
@@ -62,6 +63,7 @@ use ValueError;
  * @method ?string get_response_author()
  * @method ?string get_return_url() Get URL to redirect back your customer after processing the payment.
  * @method ?\Stancer\Sepa get_sepa() Get SEPA object.
+ * @method ?\Stancer\Address get_shipping_address() Get the shipping address links to the payment.
  * @method ?\Stancer\Payment\Status get_status() Get status of the payment.
  * @method ?string get_unique_id() Get unicity key.
  * @method string get_uri() Get entity resource location.
@@ -70,15 +72,18 @@ use ValueError;
  * @method boolean is_not_success() Indicates if payment is not a success.
  * @method boolean is_success() Indicates if payment is a success.
  * @method static \Generator<static> list(SearchFilters $terms)
+ * @method $this setBillingAddress(\Stancer\Address $billingAddress) Set the billing address links to the payment.
  * @method $this setCapture(boolean $capture) Set capture immediately the payment.
  * @method $this setCountry(string $country)
  * @method $this setCustomer(\Stancer\Customer $customer) Set customer object.
  * @method $this setDescription(string $description) Set payment description.
  * @method $this setDevice(\Stancer\Device $device) Set customer's device object.
  * @method $this setOrderId(string $orderId) Set order identifier.
+ * @method $this setShippingAddress(\Stancer\Address $shippingAddress) Set the shipping address links to the payment.
  * @method $this setUniqueId(string $uniqueId) Set unicity key.
  * @method $this set_amount(integer $amount) Set transaction amount.
- * @method $this set_auth(\Stancer\Auth|boolean|string $auth) Set auth object, must be set for 3-D Secure card payments.
+ * @method $this set_auth(boolean|\Stancer\Auth|string $auth) Set auth object, must be set for 3-D Secure card payments.
+ * @method $this set_billing_address(\Stancer\Address $billing_address) Set the billing address links to the payment.
  * @method $this set_capture(boolean $capture) Set capture immediately the payment.
  * @method $this set_card(\Stancer\Card $card) Set card object.
  * @method $this set_country(string $country)
@@ -91,13 +96,16 @@ use ValueError;
  * @method $this set_order_id(string $order_id) Set order identifier.
  * @method $this set_return_url(string $return_url) Set URL to redirect back your customer after processing the payment.
  * @method $this set_sepa(\Stancer\Sepa $sepa) Set SEPA object.
+ * @method $this set_shipping_address(\Stancer\Address $shipping_address) Set the shipping address links to the payment.
  * @method $this set_status(\Stancer\Payment\Status $status) Set status of the payment.
  * @method $this set_unique_id(string $unique_id) Set unicity key.
  *
  * @phpstan-method $this addRefunds(Stancer\Refund $refund)
  *
  * @property ?integer $amount Transaction amount.
- * @property \Stancer\Auth|boolean|string|null $auth Auth object, must be set for 3-D Secure card payments.
+ * @property boolean|\Stancer\Auth|string|null $auth Auth object, must be set for 3-D Secure card payments.
+ * @property ?\Stancer\Address $billingAddress The billing address links to the payment.
+ * @property ?\Stancer\Address $billing_address The billing address links to the payment.
  * @property ?boolean $capture Capture immediately the payment.
  * @property ?\Stancer\Card $card Card object.
  * @property ?string $country
@@ -112,16 +120,19 @@ use ValueError;
  * @property ?string $returnUrl URL to redirect back your customer after processing the payment.
  * @property ?string $return_url URL to redirect back your customer after processing the payment.
  * @property ?\Stancer\Sepa $sepa SEPA object.
+ * @property ?\Stancer\Address $shippingAddress The shipping address links to the payment.
+ * @property ?\Stancer\Address $shipping_address The shipping address links to the payment.
  * @property ?\Stancer\Payment\Status $status Status of the payment.
  * @property ?string $uniqueId Unicity key.
  * @property ?string $unique_id Unicity key.
  *
  * @property-read ?\DateTimeImmutable $created Creation date.
+ * @property-read ?\DateTimeImmutable $createdAt Creation date.
+ * @property-read ?\DateTimeImmutable $created_at Creation date.
  * @property-read ?\DateTimeImmutable $creationDate Creation date.
  * @property-read ?\DateTimeImmutable $creation_date Creation date.
  * @property-read ?\DateTimeImmutable $dateBank Delivery date of the funds traded by the bank.
  * @property-read ?\DateTimeImmutable $date_bank Delivery date of the funds traded by the bank.
- * @property-read string $endpoint API endpoint.
  * @property-read string $entityName Entity name.
  * @property-read string $entity_name Entity name.
  * @property-read ?string $id Object ID.
@@ -140,8 +151,8 @@ use ValueError;
  * @property-read ?string $response_author
  * @property-read string $uri Entity resource location.
  */
-#[Stancer\Core\Documentation\AddMethod('addRefunds', ['Stancer\Refund $refund'], '$this', stan: true)]
-#[Stancer\Core\Documentation\AddMethod('list', ['SearchFilters $terms'], 'static Generator<static>')]
+#[Stancer\Core\Documentation\AddMethod('addRefunds', ['Stancer\\Refund $refund'], '$this', stan: true)]
+#[Stancer\Core\Documentation\AddMethod('list', ['SearchFilters $terms'], 'static \\Generator<static>')]
 #[Stancer\Core\Documentation\AddProperty(
     'auth',
     property: [
@@ -164,12 +175,12 @@ class Payment extends Stancer\Core\AbstractObject
 {
     use Stancer\Traits\AmountTrait;
     use Stancer\Traits\SearchTrait;
+    use Stancer\Traits\TransactionTrait;
 
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    final public const ENDPOINT = 'checkout';
+    final public const ENDPOINT = 'payments';
 
     /**
-     * @var array
      * @phpstan-var array<string, DataModel>
      */
     protected array $dataModel = [
@@ -182,11 +193,22 @@ class Payment extends Stancer\Core\AbstractObject
             'desc' => 'Auth object, must be set for 3-D Secure card payments',
             'type' => Stancer\Auth::class,
         ],
+        'billingAddress' => [
+            'desc' => 'The billing address links to the payment',
+            'onlyID' => true,
+            'type' => Stancer\Address::class,
+        ],
         'capture' => [
             'desc' => 'Capture immediately the payment',
             'type' => self::BOOLEAN,
         ],
         'card' => [
+            'changed' => [
+                [
+                    'sinceVersion' => Stancer\Enum\ApiVersion::VERSION_2,
+                    'onlyID' => true,
+                ],
+            ],
             'desc' => 'Card object',
             'type' => Stancer\Card::class,
         ],
@@ -194,18 +216,30 @@ class Payment extends Stancer\Core\AbstractObject
             'type' => self::STRING,
         ],
         'currency' => [
+            'changed' => [
+                [
+                    'sinceVersion' => Stancer\Enum\ApiVersion::VERSION_2,
+                    'required' => false,
+                ],
+            ],
             'desc' => 'Processed currency',
             'required' => true,
             'type' => Stancer\Currency::class,
         ],
         'customer' => [
+            'changed' => [
+                [
+                    'sinceVersion' => Stancer\Enum\ApiVersion::VERSION_2,
+                    'onlyID' => true,
+                ],
+            ],
             'desc' => 'Customer object',
             'type' => Stancer\Customer::class,
         ],
         'dateBank' => [
             'desc' => 'Delivery date of the funds traded by the bank',
             'restricted' => true,
-            'type' => DateTimeImmutable::class,
+            'type' => \DateTimeImmutable::class,
         ],
         'description' => [
             'desc' => 'Payment description',
@@ -271,6 +305,11 @@ class Payment extends Stancer\Core\AbstractObject
             'desc' => 'SEPA object',
             'type' => Stancer\Sepa::class,
         ],
+        'shippingAddress' => [
+            'desc' => 'The shipping address links to the payment',
+            'onlyID' => true,
+            'type' => Stancer\Address::class,
+        ],
         'status' => [
             'desc' => 'Status of the payment',
             'type' => Stancer\Payment\Status::class,
@@ -286,36 +325,15 @@ class Payment extends Stancer\Core\AbstractObject
     ];
 
     /**
-     * Add an allowed method.
-     *
-     * @param Stancer\Payment\MethodsAllowed|string $method New method.
-     * @return $this
-     * @throws Stancer\Exceptions\InvalidArgumentException When currency is EUR and trying to set "sepa" method.
-     */
-    public function addMethodsAllowed(Stancer\Payment\MethodsAllowed|string $method): static
-    {
-        $currency = $this->getCurrency();
-
-        if ($currency && $method && $method === 'sepa' && $currency !== Stancer\Currency::EUR) {
-            $message = sprintf('You can not use "%s" method with "%s" currency.', $method, $currency->value);
-
-            throw new Stancer\Exceptions\InvalidArgumentException($message);
-        }
-
-        // @phpstan-ignore-next-line The method is not defined in parent object so it will trigger __call ...
-        return parent::addMethodsAllowed($method);
-        // ... and that's that we want
-    }
-
-    /**
      * Charge a card or a bank account.
      *
      * This method is Stripe compatible.
      *
      * @param array $options Charge options.
-     * @return $this
      *
      * @phpstan-param PaymentChargeOptions $options
+     *
+     * @return $this
      */
     public static function charge(array $options): static
     {
@@ -357,19 +375,19 @@ class Payment extends Stancer\Core\AbstractObject
 
         $means = new $class($id);
 
-        return $obj->hydrate($options)->$method($means->hydrate($data))->send();
+        return $obj->hydrate($options)->{$method}($means->hydrate($data))->send();
     }
 
     /**
      * Delete the current object in the API.
      *
      * @see self::refund()
-     * @return void No return possible
-     * @throws Stancer\Exceptions\BadMethodCallException On every call, this method is not allowed in this context.
      *
      * @phpstan-return $this
+     *
+     * @throws Stancer\Exceptions\BadMethodCallException On every call, this method is not allowed in this context.
      */
-    #[Override]
+    #[\Override]
     public function delete(): static
     {
         $message = 'You are not allowed to delete a payment, you need to refund it instead.';
@@ -386,12 +404,13 @@ class Payment extends Stancer\Core\AbstractObject
      * you specified in your initial payment request.
      *
      * @param array $terms Search terms. May have `order_id` or `unique_id` key.
-     * @return array
-     * @throws Stancer\Exceptions\InvalidSearchOrderIdFilterException When `order_id` is invalid.
-     * @throws Stancer\Exceptions\InvalidSearchUniqueIdFilterException When `unique_id` is invalid.
      *
      * @phpstan-param array{order_id?: string, unique_id?: string} $terms
+     *
      * @phpstan-return array{order_id?: string, unique_id?: string}
+     *
+     * @throws Stancer\Exceptions\InvalidSearchOrderIdFilterException When `order_id` is invalid.
+     * @throws Stancer\Exceptions\InvalidSearchUniqueIdFilterException When `unique_id` is invalid.
      */
     public static function filterListParams(array $terms): array
     {
@@ -430,6 +449,20 @@ class Payment extends Stancer\Core\AbstractObject
         return $params;
     }
 
+    /**
+     * Return API endpoint.
+     */
+    public function getEndpoint(): string
+    {
+        $config = Stancer\Config::getGlobal();
+
+        if ($config->version === Stancer\Enum\ApiVersion::VERSION_1) {
+            return 'checkout';
+        }
+
+        return static::ENDPOINT;
+    }
+
     // phpcs:disable Squiz.Commenting.FunctionCommentThrowTag.WrongNumber
 
     /**
@@ -439,12 +472,12 @@ class Payment extends Stancer\Core\AbstractObject
      *
      * @param array $params Parameters to add to the URL.
      * @param boolean $force Get the payment page url even without return URL.
-     * @return string
+     *
+     * @phpstan-param array{lang?: string} $params Parameters to add to the URL.
+     *
      * @throws Stancer\Exceptions\MissingApiKeyException When no public key was given in configuration.
      * @throws Stancer\Exceptions\MissingReturnUrlException When no return URL was given to payment data.
      * @throws Stancer\Exceptions\MissingPaymentIdException When no payment has no ID.
-     *
-     * @phpstan-param array{lang?: string} $params Parameters to add to the URL.
      */
     public function getPaymentPageUrl(array $params = [], bool $force = false): string
     {
@@ -478,8 +511,6 @@ class Payment extends Stancer\Core\AbstractObject
 
         return vsprintf('https://%s/%s/%s', $data) . $query;
     }
-
-    // phpcs:enable
 
     /**
      * Return the refundable amount.
@@ -578,6 +609,7 @@ class Payment extends Stancer\Core\AbstractObject
      * @param integer $amount Amount.
      * @param string $currency Currency.
      * @param Stancer\Interfaces\PaymentMeansInterface $means Payment means.
+     *
      * @return $this
      */
     public function pay(int $amount, string $currency, Stancer\Interfaces\PaymentMeansInterface $means): static
@@ -599,6 +631,7 @@ class Payment extends Stancer\Core\AbstractObject
      * Refund a payment, or part of it.
      *
      * @param integer|null $amount Amount to refund, if not present all paid amount will be refund.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidAmountException When trying to refund more than paid.
      * @throws Stancer\Exceptions\InvalidAmountException When the amount is invalid.
@@ -670,6 +703,7 @@ class Payment extends Stancer\Core\AbstractObject
      * Send the current object.
      *
      * @uses Request::post()
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidAmountException When no amount was given.
      * @throws Stancer\Exceptions\InvalidCurrencyException When no currency was given.
@@ -679,13 +713,13 @@ class Payment extends Stancer\Core\AbstractObject
      *   was asked and an error occur during device creation.
      * @throws Stancer\Exceptions\InvalidExpirationException When card's expiration is invalid.
      */
-    #[Override]
+    #[\Override]
     public function send(): static
     {
         if ($this->getId() && $this->isModified()) {
             return parent::send();
         }
-
+        $config = Stancer\Config::getGlobal();
         $amount = $this->getAmount();
         $currency = $this->getCurrency();
 
@@ -693,7 +727,7 @@ class Payment extends Stancer\Core\AbstractObject
             throw new Stancer\Exceptions\InvalidAmountException();
         }
 
-        if (!$currency) {
+        if (!$currency && $config->version === Stancer\Enum\ApiVersion::VERSION_1) {
             throw new Stancer\Exceptions\InvalidCurrencyException();
         }
 
@@ -706,9 +740,7 @@ class Payment extends Stancer\Core\AbstractObject
         $sepa = $this->getSepa();
 
         if (!is_object($this->getDevice())) {
-            // phpcs:disable Squiz.PHP.DisallowBooleanStatement.Found
             $mandatoryDevice = is_object($auth) && $auth->getReturnUrl();
-            // phpcs:enable
 
             try {
                 $device = new Stancer\Device();
@@ -726,7 +758,7 @@ class Payment extends Stancer\Core\AbstractObject
 
         if ($card && !$card->getId()) {
             $expiration = $card->getExpirationDate();
-            $now = new DateTime();
+            $now = new \DateTime();
 
             if ($expiration < $now) {
                 throw new Stancer\Exceptions\InvalidExpirationException('Card expiration is invalid.');
@@ -769,10 +801,11 @@ class Payment extends Stancer\Core\AbstractObject
      * If you are using our payment page, you can simpliy pass a boolean to acitvate an authenticated payment,
      * we will manage everything else for you.
      *
-     * @param Stancer\Auth|string|boolean $auth Authentication data.
+     * @param boolean|Stancer\Auth|string $auth Authentication data.
+     *
      * @return $this
      */
-    public function setAuth(Stancer\Auth|string|bool $auth): static
+    public function setAuth(bool|Stancer\Auth|string $auth): static
     {
         if ($auth === false) {
             return $this;
@@ -795,6 +828,7 @@ class Payment extends Stancer\Core\AbstractObject
      * Set a card.
      *
      * @param Stancer\Card $card New card instance.
+     *
      * @return $this
      */
     public function setCard(Card $card): static
@@ -806,46 +840,10 @@ class Payment extends Stancer\Core\AbstractObject
     }
 
     /**
-     * Set the currency.
-     *
-     * @param Stancer\Currency|string $currency The currency.
-     * @return $this
-     * @throws Stancer\Exceptions\InvalidCurrencyException When currency is EUR and "sepa" is already allowed.
-     * @throws Stancer\Exceptions\InvalidCurrencyException When the currency is invalid.
-     */
-    public function setCurrency(Stancer\Currency|string $currency): static
-    {
-        try {
-            if (is_string($currency)) {
-                $new = Stancer\Currency::from(strtolower($currency));
-            } else {
-                $new = $currency;
-            }
-        } catch (ValueError $exception) {
-            $params = [
-                $currency,
-                implode(', ', array_map(fn(Stancer\Currency $case): string => $case->value, Stancer\Currency::cases())),
-            ];
-            $message = vsprintf('"%s" is not a valid currency, please use one of the following : %s', $params);
-
-            throw new Stancer\Exceptions\InvalidCurrencyException($message, previous: $exception);
-        }
-
-        $methods = $this->getMethodsAllowed();
-
-        if (in_array(Stancer\Payment\MethodsAllowed::SEPA, $methods, true) && $new !== Stancer\Currency::EUR) {
-            $message = sprintf('You can not use "%s" currency with "%s" method.', $new->value, 'sepa');
-
-            throw new Stancer\Exceptions\InvalidCurrencyException($message);
-        }
-
-        return parent::setCurrency($new);
-    }
-
-    /**
      * Set allowed methods.
      *
      * @param non-empty-array<Stancer\Currency|string> $methods New methods.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidArgumentException When currency is EUR and trying to set "sepa" method.
      * @throws Stancer\Exceptions\InvalidArgumentException When the method is invalid.
@@ -853,7 +851,7 @@ class Payment extends Stancer\Core\AbstractObject
     public function setMethodsAllowed(array $methods): static
     {
         $new = [];
-        $cast = fn(Stancer\Payment\MethodsAllowed $case): string => $case->value;
+        $cast = fn (Stancer\Payment\MethodsAllowed $case): string => $case->value;
 
         foreach ($methods as $method) {
             try {
@@ -862,7 +860,7 @@ class Payment extends Stancer\Core\AbstractObject
                 } else {
                     $new[] = $method;
                 }
-            } catch (ValueError $exception) {
+            } catch (\ValueError $exception) {
                 $params = [
                     $method,
                     implode(', ', array_map($cast, Stancer\Payment\MethodsAllowed::cases())),
@@ -894,6 +892,7 @@ class Payment extends Stancer\Core\AbstractObject
      * Update return URL.
      *
      * @param string $url New HTTPS URL.
+     *
      * @return $this
      * @throws Stancer\Exceptions\InvalidUrlException When URL is not an HTTPS URL.
      */
@@ -910,6 +909,7 @@ class Payment extends Stancer\Core\AbstractObject
      * Ask for a new status.
      *
      * @param Stancer\Payment\Status|string $status New status value.
+     *
      * @return $this
      * @throws Stancer\Exceptions\BadMethodCallException If the value is passed by string
      *      and it does not match a valid status.
@@ -922,7 +922,7 @@ class Payment extends Stancer\Core\AbstractObject
             } else {
                 $new = $status;
             }
-        } catch (ValueError $exception) {
+        } catch (\ValueError $exception) {
             $message = 'You only can set `AUTHORIZE`, to ask for an authorization, or `CAPTURE`, to ask for a capture.';
 
             throw new Stancer\Exceptions\BadMethodCallException($message, previous: $exception);
@@ -935,6 +935,7 @@ class Payment extends Stancer\Core\AbstractObject
      * Set a sepa account.
      *
      * @param Stancer\Sepa $sepa New sepa instance.
+     *
      * @return $this
      */
     public function setSepa(Sepa $sepa): static

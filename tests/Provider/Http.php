@@ -115,8 +115,11 @@ trait Http
         foreach ($verbs as $verb) {
             foreach ($urls as $url) {
                 yield [$verb, $url];
+
                 yield [(string) $verb, $url];
+
                 yield [$verb, (string) $url];
+
                 yield [(string) $verb, (string) $url];
             }
         }
@@ -134,7 +137,6 @@ trait Http
                 ];
             }
         }
-
 
         $data[] = [310, Stancer\Exceptions\TooManyRedirectsException::class];
 
