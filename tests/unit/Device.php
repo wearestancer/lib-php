@@ -9,7 +9,7 @@ class Device extends Stancer\Tests\atoum
     use Stancer\Tests\Provider\Network;
 
     /**
-     * @tag Device
+     * @tags Device
      */
     public function testClass()
     {
@@ -20,7 +20,7 @@ class Device extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Device
+     * @tags AbstractObject AliasTrait Device
      */
     public function test__construct()
     {
@@ -39,7 +39,7 @@ class Device extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Device
+     * @tags AbstractObject AliasTrait Device
      */
     public function testGetCity_SetCity()
     {
@@ -106,7 +106,7 @@ class Device extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Device
+     * @tags AbstractObject AliasTrait Device
      */
     public function testGetCountry_SetCountry()
     {
@@ -173,7 +173,7 @@ class Device extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Device
+     * @tags AbstractObject AliasTrait Device
      */
     public function testGetHttpAccept_SetHttpAccept()
     {
@@ -241,7 +241,7 @@ class Device extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Device
+     * @tags AbstractObject AliasTrait Device
      *
      * @dataProvider ipDataProvider
      *
@@ -320,7 +320,7 @@ class Device extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Device
+     * @tags AbstractObject AliasTrait Device
      */
     public function testGetLanguages_SetLanguages()
     {
@@ -374,7 +374,7 @@ class Device extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Device
+     * @tags AbstractObject AliasTrait Device
      */
     public function testGetPort_SetPort()
     {
@@ -428,7 +428,7 @@ class Device extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Device
+     * @tags AbstractObject AliasTrait Device
      */
     public function testGetUserAgent_SetUserAgent()
     {
@@ -496,7 +496,7 @@ class Device extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Device
+     * @tags AbstractObject Device
      */
     public function testHydrateFromEnvironment()
     {

@@ -9,7 +9,7 @@ use Stancer\Stub\Traits\SearchTrait as testedClass;
 class SearchTrait extends Stancer\Tests\atoum
 {
     /**
-     * @tag AbstractObject SearchTrait
+     * @tags AbstractObject SearchTrait
      */
     public function testIssueGitLab2()
     {
@@ -129,7 +129,7 @@ class SearchTrait extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject SearchTrait
+     * @tags AbstractObject SearchTrait
      */
     public function testList()
     {
@@ -433,7 +433,7 @@ class SearchTrait extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject SearchTrait
+     * @tags AbstractObject SearchTrait
      */
     public function testList_with_date_period()
     {
@@ -574,7 +574,7 @@ class SearchTrait extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject SearchTrait
+     * @tags AbstractObject SearchTrait
      */
     public function testList_with_until()
     {

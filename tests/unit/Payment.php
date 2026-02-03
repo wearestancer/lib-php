@@ -66,7 +66,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Address Payment
+     * @tags AbstractObject Address Payment
      */
     public function testBillingAddress()
     {
@@ -109,7 +109,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
      *
      * @DataProvider versionDataProvider
      */
@@ -254,7 +254,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Payment
+     * @tags Payment
      */
     public function testClass()
     {
@@ -267,7 +267,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     *  @tag AbstractObject Payment
+     *  @tags AbstractObject Payment
      */
     public function testDelete()
     {
@@ -282,7 +282,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     *  @tag AbstractObject Payment
+     *  @tags AbstractObject Payment
      */
     public function testFilterListParams()
     {
@@ -346,7 +346,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     *  @tag AbstractObject AliasTrait Payment
+     *  @tags AbstractObject AliasTrait Payment
      */
     public function testGetDateBank()
     {
@@ -411,7 +411,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Payment
+     * @tags AbstractObject AliasTrait Payment
      *
      * @dataProvider versionDataProvider
      */
@@ -432,7 +432,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
      *
      * @dataProvider versionDataProvider
      */
@@ -616,7 +616,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
      *
      * @dataProvider versionDataProvider
      */
@@ -665,7 +665,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Payment
+     * @tags AbstractObject Payment
      */
     public function testGetResponseAuthor()
     {
@@ -691,7 +691,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Payment
+     * @tags AbstractObject Payment
      */
     public function testGetReturnUrl_SetReturnUrl()
     {
@@ -720,7 +720,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Payment
+     * @tags AbstractObject AliasTrait Payment
      */
     public function testIsSuccess_IsNotSuccess()
     {
@@ -871,7 +871,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
      *
      * @dataProvider versionDataProvider
      */
@@ -895,7 +895,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Payment SearchTrait TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Payment SearchTrait TransactionTrait
      *
      * @dataProvider versionDataProvider
      */
@@ -1131,7 +1131,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Card Sepa Payment TransactionTrait
+     * @tags AbstractObject Card Sepa Payment TransactionTrait
      *
      * @dataProvider cardCurrencyDataProvider
      *
@@ -1216,7 +1216,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Card Payment TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Card Payment TransactionTrait
      *
      * @dataProvider versionDataProvider
      */
@@ -1281,7 +1281,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
      *
      * @dataProvider versionDataProvider
      */
@@ -1358,7 +1358,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Payment Refund TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Payment Refund TransactionTrait
      *
      * @dataProvider versionDataProvider
      */
@@ -1532,7 +1532,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
      *
      * @dataProvider versionDataProvider
      */
@@ -1580,7 +1580,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Payment Sepa TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Payment Sepa TransactionTrait
      *
      * @dataProvider versionDataProvider
      */
@@ -1665,7 +1665,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Auth Card Payment TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Auth Card Payment TransactionTrait
      *
      * @dataProvider versionAuthReturnUrlProvider
      */
@@ -1800,7 +1800,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Auth Card Payment TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Auth Card Payment TransactionTrait
      *
      * @dataProvider versionAuthReturnUrlProvider
      *
@@ -1930,7 +1930,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Auth Payment TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Auth Payment TransactionTrait
      *
      * @dataProvider versionAuthStatusProvider
      *
@@ -2019,7 +2019,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
      *
      * @dataProvider versionDataProvider
      *
@@ -2076,7 +2076,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait Payment
+     * @tags AbstractObject AmountTrait Payment
      */
     public function testSetAmount()
     {
@@ -2147,7 +2147,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Auth Payment
+     * @tags AbstractObject AliasTrait Auth Payment
      *
      * @dataProvider versionDataProvider
      */
@@ -2228,7 +2228,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Card Payment
+     * @tags AbstractObject Card Payment
      */
     public function testSetCard()
     {
@@ -2254,7 +2254,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject TransactionTrait
+     * @tags AbstractObject TransactionTrait
      *
      * @dataProvider cardCurrencyDataProvider
      *
@@ -2333,7 +2333,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Payment
+     * @tags AbstractObject Payment
      */
     public function testSetDescription()
     {
@@ -2380,7 +2380,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Payment Sepa
+     * @tags AbstractObject Payment Sepa
      */
     public function testSetSepa()
     {
@@ -2406,7 +2406,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Address Payment
+     * @tags AbstractObject Address Payment
      */
     public function testShippingAddress()
     {
@@ -2449,7 +2449,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Payment
+     * @tags AbstractObject Payment
      */
     public function testSetOrderId()
     {
@@ -2496,7 +2496,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Payment PaymentStatus
+     * @tags AbstractObject AliasTrait Payment PaymentStatus
      */
     public function testSetStatus()
     {
@@ -2619,7 +2619,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Payment
+     * @tags AbstractObject AliasTrait Payment
      */
     public function testSetUniqueId()
     {
@@ -2672,7 +2672,7 @@ class Payment extends Stancer\Tests\atoum
     //region API V1 tests
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
      */
     public function testSend_withoutCardOrSepaV1()
     {
@@ -2755,7 +2755,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Device Payment TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Device Payment TransactionTrait
      */
     public function testSend_deviceV1()
     {
@@ -2867,7 +2867,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Device Payment
+     * @tags AbstractObject AmountTrait AliasTrait Device Payment
      */
     public function testSend_exceptions_V1()
     {
@@ -2884,7 +2884,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Card Payment TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Card Payment TransactionTrait
      */
     public function testSend_withCardV1()
     {
@@ -3006,7 +3006,7 @@ class Payment extends Stancer\Tests\atoum
     //region API V2 tests
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Card Payment TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Card Payment TransactionTrait
      */
     public function testSend_withCardV2()
     {
@@ -3178,7 +3178,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
      */
     public function testSend_withoutCardOrSepaV2()
     {
@@ -3281,7 +3281,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AmountTrait AliasTrait Device Payment TransactionTrait
+     * @tags AbstractObject AmountTrait AliasTrait Device Payment TransactionTrait
      */
     public function testSend_deviceV2()
     {

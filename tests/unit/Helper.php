@@ -10,7 +10,7 @@ class Helper extends Stancer\Tests\atoum
     use Stancer\Tests\Provider\Strings;
 
     /**
-     * @tag Helper
+     * @tags Helper
      *
      * @dataProvider caseStringDataProvider
      *
@@ -23,7 +23,7 @@ class Helper extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Helper
+     * @tags Helper
      *
      * @dataProvider caseStringDataProvider
      *

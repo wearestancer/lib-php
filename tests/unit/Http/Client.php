@@ -1,6 +1,6 @@
 <?php
 
-namespace Stancer\Http\tests\unit;
+namespace Stancer\tests\unit\Http;
 
 use mock;
 use Stancer;
@@ -194,6 +194,9 @@ class Client extends Stancer\Tests\atoum
         return $lines;
     }
 
+    /**
+     * @tags Client Http
+     */
     public function testClass()
     {
         $this
@@ -202,6 +205,9 @@ class Client extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Client Http
+     */
     public function test__construct__destruct()
     {
         $this
@@ -222,6 +228,9 @@ class Client extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Client Http
+     */
     public function testGetCurlResource()
     {
         $this
@@ -232,6 +241,9 @@ class Client extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Client Http Request Response
+     */
     public function testGetLastRequest_LastResponse()
     {
         $this
@@ -302,6 +314,8 @@ class Client extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Client Http
+     *
      * @dataProvider headerLineDataProvider
      *
      * @param mixed $line
@@ -334,6 +348,9 @@ class Client extends Stancer\Tests\atoum
         }
     }
 
+    /**
+     * @tags Client Http Request
+     */
     public function testRequest()
     {
         $this
@@ -708,6 +725,8 @@ class Client extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Client Http Request
+     *
      * @dataProvider errorDataProvider
      *
      * @param mixed $error

@@ -9,7 +9,7 @@ use Stancer\Payout as testedClass;
 class Payout extends Stancer\Tests\atoum
 {
     /**
-     * @tag Payout
+     * @tags Payout
      */
     public function testClass()
     {
@@ -21,7 +21,7 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Payout
+     * @tags AbstractObject AliasTrait Payout
      *
      * @DataProvider versionDataProvider
      *
@@ -55,7 +55,7 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Payout
+     * @tags AbstractObject AliasTrait Payout
      *
      * @DataProvider versionDataProvider
      */
@@ -87,7 +87,7 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Payout
+     * @tags AbstractObject AliasTrait Payout
      *
      * @DataProvider versionDataProvider
      */
@@ -121,7 +121,7 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Payout
+     * @tags AbstractObject AliasTrait Payout
      *
      * @DataProvider versionDataProvider
      */
@@ -163,7 +163,7 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Dispute Payout SearchTrait
+     * @tags AbstractObject AliasTrait Dispute Payout SearchTrait
      *
      * @DataProvider versionDataProvider
      */
@@ -398,7 +398,7 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Payout
+     * @tags AbstractObject AliasTrait Payout
      *
      * @DataProvider versionDataProvider
      */
@@ -460,7 +460,7 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Payout
+     * @tags Payout
      */
     public function testGetEndpoint()
     {
@@ -471,7 +471,7 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Payout
+     * @tags AbstractObject AliasTrait Payout
      *
      * @DataProvider versionDataProvider
      *
@@ -505,7 +505,7 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Payout
+     * @tags AbstractObject AliasTrait Payout
      *
      * @DataProvider versionDataProvider
      *
@@ -539,7 +539,7 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Payout PayoutStatus
+     * @tags AbstractObject AliasTrait Payout PayoutStatus
      *
      * @DataProvider versionDataProvider
      */
@@ -571,7 +571,7 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Payout SearchTrait
+     * @tags AbstractObject Payout SearchTrait
      *
      * @DataProvider versionDataProvider
      */
@@ -610,7 +610,7 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Payment Payout SearchTrait
+     * @tags AbstractObject AliasTrait Payment Payout SearchTrait
      *
      * @DataProvider versionDataProvider
      */
@@ -849,7 +849,7 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Payout Refund SearchTrait
+     * @tags AbstractObject AliasTrait Payout Refund SearchTrait
      *
      * @DataProvider versionDataProvider
      */

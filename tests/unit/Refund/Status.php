@@ -6,6 +6,9 @@ use Stancer;
 
 class Status extends Stancer\Tests\atoum
 {
+    /**
+     * @tags Refund RefundStatus
+     */
     public function testClass()
     {
         $this

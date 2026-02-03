@@ -15,7 +15,7 @@ class Config extends Stancer\Tests\atoum
     use Stancer\Tests\Provider\Dates;
 
     /**
-     * @tag AliasTrait Config
+     * @tags AliasTrait Config
      */
     public function testClass()
     {
@@ -28,7 +28,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AliasTrait Config
+     * @tags AliasTrait Config
      */
     public function testAddAppData()
     {
@@ -108,7 +108,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AliasTrait Config
+     * @tags AliasTrait Config
      */
     public function testGetBasicAuthHeader()
     {
@@ -135,7 +135,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AliasTrait Config
+     * @tags AliasTrait Config
      */
     public function testGetCalls()
     {
@@ -494,7 +494,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AliasTrait Config
+     * @tags AliasTrait Config
      */
     public function testGetDebug_SetDebug()
     {
@@ -622,7 +622,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AliasTrait Config
+     * @tags AliasTrait Config
      *
      * @dataProvider timeZoneProvider
      *
@@ -845,7 +845,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AliasTrait Config
+     * @tags AliasTrait Config
      */
     public function testGetDefaultUserAgent()
     {
@@ -894,7 +894,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AliasTrait Config
+     * @tags AliasTrait Config
      */
     public function testGetGlobal_SetGlobal()
     {
@@ -928,7 +928,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AliasTrait Config
+     * @tags AliasTrait Config
      */
     public function testGetHost_SetHost()
     {
@@ -968,7 +968,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AliasTrait Config
+     * @tags AliasTrait Config
      */
     public function testGetHttpClient_SetHttpClient()
     {
@@ -1043,7 +1043,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AliasTrait Config
+     * @tags AliasTrait Config
      */
     public function testGetLogger_SetLogger()
     {
@@ -1083,7 +1083,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AliasTrait Config
+     * @tags AliasTrait Config
      */
     public function testGetMode_SetMode()
     {
@@ -1166,7 +1166,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AliasTrait Config
+     * @tags AliasTrait Config
      */
     public function testGetPort_SetPort()
     {
@@ -1206,7 +1206,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AliasTrait Config
+     * @tags AliasTrait Config
      */
     public function testGetPublicKey()
     {
@@ -1248,7 +1248,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AliasTrait Config
+     * @tags AliasTrait Config
      */
     public function testGetSecretKey()
     {
@@ -1290,7 +1290,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AliasTrait Config
+     * @tags AliasTrait Config
      */
     public function testGetTimeout_SetTimeout()
     {
@@ -1352,7 +1352,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AliasTrait Config
+     * @tags AliasTrait Config
      */
     public function testGetUri()
     {
@@ -1412,7 +1412,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AliasTrait Config
+     * @tags AliasTrait Config
      */
     public function testGetVersion_SetVersion()
     {
@@ -1465,7 +1465,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Config
+     * @tags Config
      */
     public function testInit()
     {
@@ -1488,7 +1488,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AliasTrait Config
+     * @tags AliasTrait Config
      */
     public function testModes()
     {
@@ -1588,7 +1588,7 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Config
+     * @tags Config
      */
     public function testSetKeys()
     {

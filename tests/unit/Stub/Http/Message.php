@@ -7,7 +7,7 @@ use Stancer;
 class Message extends Stancer\Tests\atoum
 {
     /**
-     * @tag Message
+     * @tags Message
      */
     public function testAddHeader()
     {
@@ -36,7 +36,7 @@ class Message extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Message
+     * @tags Message
      */
     public function testGetBody()
     {
@@ -62,7 +62,7 @@ class Message extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Message
+     * @tags Message
      */
     public function testGetHeader()
     {
@@ -84,7 +84,7 @@ class Message extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Message
+     * @tags Message
      */
     public function testGetHeaderLine()
     {
@@ -109,7 +109,7 @@ class Message extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Message
+     * @tags Message
      */
     public function testGetHeaders()
     {
@@ -133,7 +133,7 @@ class Message extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Message
+     * @tags Message
      */
     public function testGetProtocolVersion()
     {
@@ -157,7 +157,7 @@ class Message extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Message
+     * @tags Message
      */
     public function testHasHeader()
     {
@@ -185,7 +185,7 @@ class Message extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Message
+     * @tags Message
      */
     public function testRemoveHeader()
     {
@@ -210,7 +210,7 @@ class Message extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Message
+     * @tags Message
      */
     public function testWithAddedHeader()
     {
@@ -271,7 +271,7 @@ class Message extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Message
+     * @tags Message
      */
     public function testWithBody()
     {
@@ -309,7 +309,7 @@ class Message extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Message
+     * @tags Message
      */
     public function testWithHeader()
     {
@@ -370,7 +370,7 @@ class Message extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Message
+     * @tags Message
      */
     public function testWithModifiedBody()
     {
@@ -441,7 +441,7 @@ class Message extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Message
+     * @tags Message
      */
     public function testWithoutHeader()
     {
@@ -497,7 +497,7 @@ class Message extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Message
+     * @tags Message
      */
     public function testWithProtocolVersion()
     {

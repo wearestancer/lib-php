@@ -6,6 +6,9 @@ use Stancer;
 
 class Details extends Stancer\Tests\atoum
 {
+    /**
+     * @tags AbstractObject Payout PayoutDetails
+     */
     public function testClass()
     {
         $this
@@ -14,6 +17,9 @@ class Details extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Dispute Payout PayoutDetails
+     */
     public function testDisputes()
     {
         $this
@@ -40,6 +46,9 @@ class Details extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Payment Payout PayoutDetails
+     */
     public function testPayments()
     {
         $this
@@ -66,6 +75,9 @@ class Details extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject  Payout PayoutDetails Refund
+     */
     public function testRefunds()
     {
         $this

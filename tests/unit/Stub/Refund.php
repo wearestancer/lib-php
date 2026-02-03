@@ -26,7 +26,7 @@ class Refund extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Refund
+     * @tags AbstractObject AliasTrait Refund
      */
     public function testSend()
     {

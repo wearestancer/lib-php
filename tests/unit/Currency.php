@@ -7,7 +7,7 @@ use Stancer;
 class Currency extends Stancer\Tests\atoum
 {
     /**
-     * @tag Currency
+     * @tags Currency
      */
     public function testClass()
     {

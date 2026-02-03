@@ -10,7 +10,7 @@ class Sepa extends Stancer\Tests\atoum
     use Stancer\Tests\Provider\Banks;
 
     /**
-     * @tag AbstractObject AliasTrait Sepa
+     * @tags AbstractObject AliasTrait Sepa
      */
     public function testCheck()
     {
@@ -93,7 +93,7 @@ class Sepa extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Sepa
+     * @tags Sepa
      */
     public function testClass()
     {
@@ -105,7 +105,7 @@ class Sepa extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Sepa
+     * @tags AbstractObject Sepa
      */
     public function testDateBirth()
     {
@@ -136,7 +136,7 @@ class Sepa extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Sepa
+     * @tags AbstractObject AliasTrait Sepa
      */
     public function testDateMandate()
     {
@@ -167,7 +167,7 @@ class Sepa extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Sepa
+     * @tags AbstractObject Sepa
      */
     public function testGetEndpoint()
     {
@@ -180,7 +180,7 @@ class Sepa extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Sepa
+     * @tags AbstractObject Sepa
      *
      * @dataProvider ibanDataProvider
      *
@@ -211,7 +211,7 @@ class Sepa extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Sepa
+     * @tags AbstractObject Sepa
      */
     public function testMandate()
     {
@@ -261,7 +261,7 @@ class Sepa extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Sepa
+     * @tags AbstractObject Sepa
      */
     public function testSetBic()
     {
@@ -315,7 +315,7 @@ class Sepa extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Sepa
+     * @tags AbstractObject Sepa
      */
     public function testSetIban()
     {
@@ -485,7 +485,7 @@ class Sepa extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Sepa
+     * @tags AbstractObject Sepa
      */
     public function testSetName()
     {
@@ -505,7 +505,7 @@ class Sepa extends Stancer\Tests\atoum
     }
 
     /**
-     *  @tag AbstractObject AliasTrait Sepa
+     *  @tags AbstractObject AliasTrait Sepa
      */
     public function testValidate()
     {

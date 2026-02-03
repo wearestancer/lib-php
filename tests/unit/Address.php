@@ -8,7 +8,7 @@ use Stancer;
 class Address extends Stancer\Tests\atoum
 {
     /**
-     * @tag Address
+     * @tags Address
      */
     public function testClass()
     {
@@ -19,7 +19,7 @@ class Address extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Address
+     * @tags AbstractObject Address
      */
     public function testCity()
     {
@@ -51,7 +51,7 @@ class Address extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Address
+     * @tags AbstractObject Address
      */
     public function testCountry()
     {
@@ -93,7 +93,7 @@ class Address extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Address AliasTrait
+     * @tags AbstractObject Address AliasTrait
      *
      * @DataProvider versionDataProvider
      */
@@ -156,7 +156,7 @@ class Address extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Address
+     * @tags AbstractObject Address
      */
     public function testLineOne()
     {
@@ -189,7 +189,7 @@ class Address extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Address
+     * @tags AbstractObject Address
      */
     public function testLineTwo()
     {
@@ -222,7 +222,7 @@ class Address extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Address
+     * @tags AbstractObject Address
      */
     public function testLineThree()
     {
@@ -255,7 +255,7 @@ class Address extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Address
+     * @tags AbstractObject Address
      */
     public function testMetadata()
     {
@@ -315,7 +315,7 @@ class Address extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Address AliasTrait
+     * @tags AbstractObject Address AliasTrait
      */
     public function testMetadataInvalidJson()
     {
@@ -333,7 +333,7 @@ class Address extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Address AliasTrait
+     * @tags AbstractObject Address AliasTrait
      *
      * @DataProvider versionDataProvider
      */
@@ -396,7 +396,7 @@ class Address extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Address
+     * @tags AbstractObject Address
      */
     public function testState()
     {
@@ -438,7 +438,7 @@ class Address extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Address
+     * @tags AbstractObject Address
      */
     public function testZipCode()
     {

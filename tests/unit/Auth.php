@@ -12,7 +12,7 @@ class Auth extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Auth
+     * @tags Auth
      */
     public function testClass()
     {
@@ -42,7 +42,7 @@ class Auth extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Auth
+     * @tags AbstractObject AliasTrait Auth
      */
     public function testGetRedirectUrl()
     {
@@ -81,7 +81,7 @@ class Auth extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Auth
+     * @tags AbstractObject AliasTrait Auth
      */
     public function testGetReturnUrl_SetReturnUrl()
     {
@@ -159,7 +159,7 @@ class Auth extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Auth
+     * @tags AbstractObject AliasTrait Auth
      */
     public function testGetStatus()
     {

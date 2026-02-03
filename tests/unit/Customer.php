@@ -9,7 +9,7 @@ use Stancer\Customer as testedClass;
 class Customer extends Stancer\Tests\atoum
 {
     /**
-     * @tag Customer
+     * @tags Customer
      */
     public function testClass()
     {
@@ -20,7 +20,7 @@ class Customer extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Customer
+     * @tags AbstractObject Customer
      */
     public function test__call()
     {
@@ -48,7 +48,7 @@ class Customer extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Address AbstractObject Customer
+     * @tags Address AbstractObject Customer
      */
     public function testBillingAddress()
     {
@@ -91,7 +91,7 @@ class Customer extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Customer
+     * @tags AbstractObject Customer
      */
     public function testGetEndpoint()
     {
@@ -104,7 +104,7 @@ class Customer extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Customer
+     * @tags AbstractObject AliasTrait Customer
      *
      * @DataProvider versionDataProvider
      */
@@ -213,7 +213,7 @@ class Customer extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Customer
+     * @tags AbstractObject AliasTrait Customer
      *
      * @DataProvider versionDataProvider
      */
@@ -285,7 +285,7 @@ class Customer extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Customer
+     * @tags AbstractObject Customer
      */
     public function testSetEmail()
     {
@@ -305,7 +305,7 @@ class Customer extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Customer
+     * @tags AbstractObject Customer
      */
     public function testSetExternalId()
     {
@@ -339,7 +339,7 @@ class Customer extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Customer
+     * @tags AbstractObject Customer
      */
     public function testSetMobile()
     {
@@ -359,7 +359,7 @@ class Customer extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Customer
+     * @tags AbstractObject Customer
      */
     public function testSetName()
     {
@@ -379,7 +379,7 @@ class Customer extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Customer
+     * @tags AbstractObject Customer
      */
     public function testShippingAddress()
     {

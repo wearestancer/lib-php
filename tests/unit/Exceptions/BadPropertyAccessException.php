@@ -4,9 +4,12 @@ namespace Stancer\tests\unit\Exceptions;
 
 use Psr;
 use Stancer;
-
+    /**
+     * @tags Exception
+     */
 class BadPropertyAccessException extends Stancer\Tests\atoum
 {
+
     public function testClass()
     {
         $this
@@ -15,6 +18,7 @@ class BadPropertyAccessException extends Stancer\Tests\atoum
                 ->implements(Stancer\Interfaces\ExceptionInterface::class)
         ;
     }
+
 
     public function testGetDefaultMessage()
     {

@@ -7,7 +7,7 @@ use Stancer;
 class Refund extends Stancer\Tests\atoum
 {
     /**
-     * @tag Refund
+     * @tags Refund
      */
     public function testClass()
     {
@@ -20,7 +20,7 @@ class Refund extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Refund
+     * @tags AbstractObject Refund
      */
     public function testGetDateBank()
     {
@@ -46,7 +46,7 @@ class Refund extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Refund
+     * @tags AbstractObject Refund
      */
     public function testGetDateRefund()
     {
@@ -72,7 +72,7 @@ class Refund extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag Refund
+     * @tags Refund
      */
     public function testGetEndpoint()
     {
@@ -85,7 +85,7 @@ class Refund extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Refund
+     * @tags AbstractObject AliasTrait Refund
      */
     public function testGetStatus()
     {
@@ -123,7 +123,7 @@ class Refund extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait AmountTrait Refund
+     * @tags AbstractObject AliasTrait AmountTrait Refund
      */
     public function testSetAmount()
     {

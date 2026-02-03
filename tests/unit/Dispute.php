@@ -9,7 +9,7 @@ class Dispute extends Stancer\Tests\atoum
     use Stancer\Tests\Provider\Currencies;
 
     /**
-     * @tag Dispute
+     * @tags Dispute
      */
     public function testClass()
     {
@@ -21,7 +21,7 @@ class Dispute extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Dispute
+     * @tags AbstractObject Dispute
      */
     public function testGetAmount()
     {
@@ -79,7 +79,7 @@ class Dispute extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Dispute
+     * @tags AbstractObject Dispute
      *
      * @dataProvider cardCurrencyDataProvider
      *
@@ -139,7 +139,7 @@ class Dispute extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject Dispute
+     * @tags AbstractObject Dispute
      */
     public function testGetEndpoint()
     {
@@ -152,7 +152,7 @@ class Dispute extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Dispute
+     * @tags AbstractObject AliasTrait Dispute
      */
     public function testGetOrderId()
     {
@@ -226,7 +226,7 @@ class Dispute extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Dispute
+     * @tags AbstractObject AliasTrait Dispute
      */
     public function testGetPayment()
     {
@@ -284,7 +284,7 @@ class Dispute extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Dispute
+     * @tags AbstractObject AliasTrait Dispute
      */
     public function testGetResponse()
     {

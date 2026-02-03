@@ -24,7 +24,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent
+     * @tags AbstractObject AliasTrait PaymentIntent
      */
     public function testAmount()
     {
@@ -69,7 +69,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent TransactionTrait
+     * @tags AbstractObject AliasTrait PaymentIntent TransactionTrait
      */
     public function testCapture()
     {
@@ -113,7 +113,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag PaymentIntent AbstractObject AliasTrait
+     * @tags PaymentIntent AbstractObject AliasTrait
      */
     public function testCard()
     {
@@ -151,7 +151,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag PaymentIntent
+     * @tags PaymentIntent
      */
     public function testClass()
     {
@@ -163,7 +163,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Card PaymentIntent TransactionTrait
+     * @tags AbstractObject AliasTrait Card PaymentIntent TransactionTrait
      *
      * @dataProvider cardCurrencyDataProvider
      *
@@ -213,7 +213,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent Sepa TransactionTrait
+     * @tags AbstractObject AliasTrait PaymentIntent Sepa TransactionTrait
      *
      * @dataProvider sepaCurrencyDataProvider
      *
@@ -271,7 +271,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent TransactionTrait
+     * @tags AbstractObject AliasTrait PaymentIntent TransactionTrait
      */
     public function testCreationDate()
     {
@@ -353,7 +353,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent Sepa
+     * @tags AbstractObject AliasTrait PaymentIntent Sepa
      */
     public function testCustomer()
     {
@@ -384,7 +384,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent
+     * @tags AbstractObject AliasTrait PaymentIntent
      */
     public function testDescription()
     {
@@ -433,7 +433,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent
+     * @tags AbstractObject AliasTrait PaymentIntent
      */
     public function testEndpoint()
     {
@@ -451,7 +451,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent SearchTrait TransactionTrait
+     * @tags AbstractObject AliasTrait PaymentIntent SearchTrait TransactionTrait
      */
     public function testList()
     {
@@ -718,7 +718,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent SearchTrait TransactionTrait
+     * @tags AbstractObject AliasTrait PaymentIntent SearchTrait TransactionTrait
      */
     public function testListNoMore()
     {
@@ -771,7 +771,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Payment PaymentIntent SearchTrait TransactionTrait
+     * @tags AbstractObject AliasTrait Payment PaymentIntent SearchTrait TransactionTrait
      */
     public function testListPayments()
     {
@@ -1076,7 +1076,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent
+     * @tags AbstractObject AliasTrait PaymentIntent
      */
     public function testMetadata()
     {
@@ -1197,7 +1197,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent TransactionTrait
+     * @tags AbstractObject AliasTrait PaymentIntent TransactionTrait
      *
      * @dataProvider cardCurrencyDataProvider
      *
@@ -1311,7 +1311,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent
+     * @tags AbstractObject AliasTrait PaymentIntent
      */
     public function testOrderId()
     {
@@ -1399,7 +1399,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent
+     * @tags AbstractObject AliasTrait PaymentIntent
      */
     public function testPayment()
     {
@@ -1440,7 +1440,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent TransactionTrait
+     * @tags AbstractObject AliasTrait PaymentIntent TransactionTrait
      */
     public function testPost_capture()
     {
@@ -1510,7 +1510,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent TransactionTrait
+     * @tags AbstractObject AliasTrait PaymentIntent TransactionTrait
      */
     public function testReturnUrl()
     {
@@ -1562,7 +1562,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Card PaymentIntent TransactionTrait
+     * @tags AbstractObject AliasTrait Card PaymentIntent TransactionTrait
      */
     public function testSend_flat()
     {
@@ -1628,7 +1628,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Card PaymentIntent TransactionTrait
+     * @tags AbstractObject AliasTrait Card PaymentIntent TransactionTrait
      */
     public function testSend_flatenedCard()
     {
@@ -1686,7 +1686,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Customer PaymentIntent TransactionTrait
+     * @tags AbstractObject AliasTrait Customer PaymentIntent TransactionTrait
      */
     public function testSend_flatenedCustomer()
     {
@@ -1743,7 +1743,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait  PaymentIntent  Sepa TransactionTrait
+     * @tags AbstractObject AliasTrait  PaymentIntent  Sepa TransactionTrait
      */
     public function testSend_flatenedSepa()
     {
@@ -1798,7 +1798,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Card PaymentIntent TransactionTrait
+     * @tags AbstractObject AliasTrait Card PaymentIntent TransactionTrait
      */
     public function testSend_patchCard()
     {
@@ -1851,7 +1851,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait Card PaymentIntent TransactionTrait
+     * @tags AbstractObject AliasTrait Card PaymentIntent TransactionTrait
      */
     public function testSend_withCard()
     {
@@ -1976,7 +1976,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent Sepa TransactionTrait
+     * @tags AbstractObject AliasTrait PaymentIntent Sepa TransactionTrait
      */
     public function testSend_withSepa()
     {
@@ -2118,7 +2118,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent Sepa
+     * @tags AbstractObject AliasTrait PaymentIntent Sepa
      */
     public function testSepa()
     {
@@ -2156,7 +2156,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent PaymentIntentStatus
+     * @tags AbstractObject AliasTrait PaymentIntent PaymentIntentStatus
      */
     public function testStatus()
     {
@@ -2199,7 +2199,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent
+     * @tags AbstractObject AliasTrait PaymentIntent
      */
     public function testThreeDS()
     {
@@ -2286,7 +2286,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tag AbstractObject AliasTrait PaymentIntent Sepa
+     * @tags AbstractObject AliasTrait PaymentIntent Sepa
      */
     public function testUrl()
     {

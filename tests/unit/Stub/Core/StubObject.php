@@ -216,6 +216,9 @@ class StubObject extends Stancer\Tests\atoum
         return substr(md5(uniqid()), 0, $length);
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function test__construct()
     {
         $this
@@ -248,6 +251,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function test__call()
     {
         $this
@@ -307,6 +313,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait
+     */
     public function test__get__set()
     {
         $this
@@ -370,6 +379,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testAllowedValues()
     {
         $this
@@ -518,6 +530,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider validDataProvider
      *
      * @param mixed $property
@@ -540,6 +554,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait
+     */
     public function testDataModelAdder()
     {
         $this
@@ -557,6 +574,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider validDataProvider
      *
      * @param mixed $property
@@ -576,6 +595,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testDataModelGetter()
     {
         $this
@@ -592,6 +614,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider validDataProvider
      *
      * @param mixed $property
@@ -624,6 +648,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider validArrayDataProvider
      *
      * @param mixed $property
@@ -689,6 +715,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait
+     */
     public function testDataModelGetterWillCallPopulate()
     {
         $this
@@ -725,6 +754,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait
+     */
     public function testDataModelSetter()
     {
         $this
@@ -741,6 +773,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait
+     */
     public function testDataModelThrowsUnknownProperty()
     {
         $this
@@ -769,6 +804,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider invalidDataProvider
      *
      * @param mixed $property
@@ -810,6 +847,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider timeZoneProvider
      *
      * @param mixed $zone
@@ -860,6 +899,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider timeZoneProvider
      *
      * @param mixed $zone
@@ -912,6 +953,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider timeZoneProvider
      *
      * @param mixed $zone
@@ -964,6 +1007,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider timeZoneProvider
      *
      * @param mixed $zone
@@ -1039,6 +1084,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider timeZoneProvider
      *
      * @param mixed $zone
@@ -1105,6 +1152,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider timeZoneProvider
      *
      * @param mixed $zone
@@ -1170,6 +1219,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testGetCreationDate()
     {
         $this
@@ -1201,6 +1253,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testGet()
     {
         $this
@@ -1293,6 +1348,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider validDataProvider
      *
      * @param mixed $property
@@ -1339,6 +1396,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testHydrate()
     {
         $this
@@ -1490,6 +1550,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testIsModified_isNotModified()
     {
         $this
@@ -1599,6 +1662,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testJsonSerialize()
     {
         $this
@@ -1918,6 +1984,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function test_ModifyDataVersion()
     {
         $this
@@ -1992,6 +2061,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testPopulate()
     {
         $this
@@ -2256,6 +2328,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testRetrieve()
     {
         $this
@@ -2270,6 +2345,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testSend()
     {
         $this
@@ -2430,6 +2508,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testSend_withOnlyID()
     {
         $this
@@ -2531,6 +2612,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testToArray()
     {
         $this
@@ -2556,6 +2640,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testToString_toJson_castToString()
     {
         $this
@@ -2689,6 +2776,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function validDataProvider()
     {
         $datas = [];
@@ -2809,6 +2899,9 @@ class StubObject extends Stancer\Tests\atoum
         return $datas;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function validArrayDataProvider()
     {
         $datas = [];
