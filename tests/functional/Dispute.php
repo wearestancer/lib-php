@@ -6,6 +6,8 @@ use Stancer;
 use Stancer\Dispute as testedClass;
 
 /**
+ * @tags AbstractObject Card Customer Dispute
+ *
  * @namespace \Tests\functional
  *
  * @internal

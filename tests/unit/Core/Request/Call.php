@@ -5,8 +5,14 @@ namespace Stancer\tests\unit\Core\Request;
 use GuzzleHttp;
 use Stancer;
 
+/**
+ *  @tags Call
+ */
 class Call extends Stancer\Tests\atoum
 {
+    /**
+     *  @tags Call AbstractObject AliasTrait
+     */
     public function testException()
     {
         $this
@@ -38,6 +44,9 @@ class Call extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     *  @tags Call AbstractObject AliasTrait Request
+     */
     public function testRequest()
     {
         $this
@@ -78,6 +87,9 @@ class Call extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     *  @tags Call AbstractObject AliasTrait Response
+     */
     public function testResponse()
     {
         $this

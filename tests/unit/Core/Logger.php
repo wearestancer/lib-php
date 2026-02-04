@@ -5,6 +5,9 @@ namespace Stancer\tests\unit\Core;
 use Psr;
 use Stancer;
 
+/**
+ *  @tags Logger
+ */
 class Logger extends Stancer\Tests\atoum
 {
     public function testClass()

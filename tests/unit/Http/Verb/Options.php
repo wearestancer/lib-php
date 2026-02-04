@@ -16,6 +16,7 @@ class Options extends Stancer\Tests\atoum
                 ->extends(Stancer\Http\Verb\AbstractVerb::class)
         ;
     }
+
     /**
      * @tags AbstractVerb Options Http
      */

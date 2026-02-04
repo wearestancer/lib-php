@@ -7,6 +7,8 @@ use Stancer\Config;
 use Stancer\Payment as testedClass;
 
 /**
+ * @tags AbstractObject Card Customer Sepa Payment
+ *
  * @namespace \Tests\functional
  *
  * @internal
