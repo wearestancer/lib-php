@@ -68,13 +68,20 @@ class Card extends TestCase
         ;
     }
 
-    public function testCrud()
+    /**
+     * @DataProvider versionDataProvider
+     */
+    public function testCrud(Stancer\Enum\ApiVersion $version)
     {
+        $this->config->setVersion($version);
+
         $this
             ->given($cvc = $this->getRandomCvc())
+            ->and(['network' => $network, 'card' => $card] = $this->getValidCardAndNetwork())
             ->and($name = $this->getRandomString(10))
-            ->and($number = $this->getValidCardNumber())
+            ->and($number = $card)
             ->and($last4 = substr($number, -4))
+            ->and($preferredNetwork = $network)
 
             ->and($month = $this->getRandomMonth())
             ->and($year = $this->getRandomExpYear())
@@ -85,6 +92,7 @@ class Card extends TestCase
                 ->and($this->testedInstance->setExpMonth($month))
                 ->and($this->testedInstance->setExpYear($year))
                 ->and($this->testedInstance->setNumber($number))
+                ->and($this->testedInstance->setPreferredNetwork($preferredNetwork))
                 ->then
                     ->object($this->testedInstance->send())
                         ->isTestedInstance
@@ -132,6 +140,9 @@ class Card extends TestCase
                     ->string($this->newTestedInstance($id)->getName())
                         ->isIdenticalTo($name)
 
+                    ->variable($this->testedInstance->getPreferredNetwork())
+                        ->isIdenticalTo($preferredNetwork)
+
             ->assert('Updatev2')
                 ->given(Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
                 ->if($this->newTestedInstance($id))
@@ -147,6 +158,9 @@ class Card extends TestCase
 
                     ->integer($this->newTestedInstance($id)->getExpYear())
                         ->isIdenticalTo($year)
+
+                    ->variable($this->testedInstance->getPreferredNetwork())
+                        ->isIdenticalTo($preferredNetwork)
 
             ->assert('Read data / Name')
                 ->if($this->newTestedInstance($id))
@@ -165,6 +179,12 @@ class Card extends TestCase
                 ->then
                     ->integer($this->testedInstance->getExpYear())
                         ->isIdenticalTo($year)
+
+            ->assert('Read data / preferred network')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->variable($this->testedInstance->getPreferredNetwork())
+                        ->isIdenticalTo($preferredNetwork)
 
             ->assert('Read data / Other field')
                 ->if($this->newTestedInstance($id))
