@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - Get Refund list from payments API V2 (CMS-490)
+- support for Card networks (CMS-169)
 
 ### Fixed
 - Added Tag in tests (CMS-467)
