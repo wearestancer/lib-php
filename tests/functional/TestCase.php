@@ -96,9 +96,8 @@ class TestCase extends Stancer\Tests\atoum
     public function getValidCardNumber(): string
     {
         $cards = $this->getCardBranded();
-        shuffle($cards);
+        $card = array_merge(...array_values($cards));
 
-        $card = $cards[0];
         shuffle($card);
 
         return $card[0];
@@ -106,15 +105,15 @@ class TestCase extends Stancer\Tests\atoum
 
     public function getValidCardAndNetwork()
     {
-        $cardsAndNetworks = $this->getCardBranded();
-        $networks = array_keys($cardsAndNetworks);
+        $cardsByNetworks = $this->getCardBranded();
+        $networks = array_keys($cardsByNetworks);
         $network = $networks[rand(0, count($networks) - 1)];
-        $cardsAndNetwork = $cardsAndNetworks[$network];
-        shuffle($cardsAndNetwork);
+        $cards = $cardsByNetworks[$network];
+        shuffle($cards);
 
         return [
             'network' => Stancer\Card\PreferredNetwork::tryFrom($network),
-            'card' => $cardsAndNetwork[0],
+            'card' => $cards[0],
         ];
     }
 
@@ -179,6 +178,6 @@ class TestCase extends Stancer\Tests\atoum
 
         shuffle($iban);
 
-        return array_shift($iban);
+        return $iban[0];
     }
 }

@@ -21,7 +21,7 @@ use Stancer;
  * @method ?string getNature() Get card nature.
  * @method ?string getNetwork() Get card network.
  * @method ?string getNumber() Get card number.
- * @method ?\Stancer\Card\PreferredNetwork getPreferred_network() Get card preferred network.
+ * @method ?\Stancer\Card\PreferredNetwork getPreferredNetwork() Get card preferred network.
  * @method ?string getZipCode()
  * @method ?string get_brand() Get card brand.
  * @method ?string get_brand_name() Get formatted brand name.
@@ -53,7 +53,7 @@ use Stancer;
  * @method $this setCvc(string $cvc) Set card Validation Code.
  * @method $this setExpYear(integer $expYear) Set card expiration year.
  * @method $this setName(string $name) Set card holder's name.
- * @method $this setPreferred_network(\Stancer\Card\PreferredNetwork $preferred_network) Set card preferred network.
+ * @method $this setPreferredNetwork(\Stancer\Card\PreferredNetwork $preferredNetwork) Set card preferred network.
  * @method $this setTokenize(boolean $tokenize) Is the card tokenized?
  * @method $this setZipCode(string $zipCode)
  * @method $this set_cvc(string $cvc) Set card Validation Code.
@@ -74,6 +74,7 @@ use Stancer;
  * @property ?integer $exp_year Card expiration year.
  * @property ?string $name Card holder's name.
  * @property ?string $number Card number.
+ * @property ?\Stancer\Card\PreferredNetwork $preferredNetwork Card preferred network.
  * @property ?\Stancer\Card\PreferredNetwork $preferred_network Card preferred network.
  * @property boolean $tokenize
  * @property ?string $zipCode
