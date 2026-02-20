@@ -69,17 +69,17 @@ class Card extends TestCase
     public function testCrud()
     {
         $this
-            ->given($cvc = random_int(100, 999))
+            ->given($cvc = $this->getRandomCvc())
             ->and($name = $this->getRandomString(10))
             ->and($number = $this->getValidCardNumber())
             ->and($last4 = substr($number, -4))
 
-            ->and($month = random_int(1, 12))
-            ->and($year = (int) date('Y') + random_int(20, 30))
+            ->and($month = $this->getRandomMonth())
+            ->and($year = $this->getRandomExpYear())
 
             ->assert('Create card')
                 ->if($this->newTestedInstance)
-                ->and($this->testedInstance->setCvc((string) $cvc))
+                ->and($this->testedInstance->setCvc($cvc))
                 ->and($this->testedInstance->setExpMonth($month))
                 ->and($this->testedInstance->setExpYear($year))
                 ->and($this->testedInstance->setNumber($number))
@@ -92,7 +92,7 @@ class Card extends TestCase
 
             ->assert('No duplication allowed')
                 ->if($this->newTestedInstance)
-                ->and($this->testedInstance->setCvc((string) $cvc))
+                ->and($this->testedInstance->setCvc($cvc))
                 ->and($this->testedInstance->setExpMonth($month))
                 ->and($this->testedInstance->setExpYear($year))
                 ->and($this->testedInstance->setNumber($number))

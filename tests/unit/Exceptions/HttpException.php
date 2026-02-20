@@ -143,7 +143,7 @@ class HttpException extends Stancer\Tests\atoum
             ->assert('Return object when a Guzzle RequestException is used')
                 ->given($request = new mock\Psr\Http\Message\RequestInterface())
                 ->and($response = new mock\Psr\Http\Message\ResponseInterface())
-                ->and($this->calling($response)->getStatusCode = random_int(400, 500))
+                ->and($this->calling($response)->getStatusCode = rand(400, 500))
 
                 ->and($previous = new GuzzleHttp\Exception\RequestException(uniqid(), $request, $response))
 

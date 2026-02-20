@@ -20,7 +20,7 @@ class Dispute extends Stancer\Tests\atoum
     public function testGetAmount()
     {
         $this
-            ->if($amount = rand(50, 10000))
+            ->if($amount = $this->getRandomAmount())
             ->then
                 ->assert('camelCase method')
                     ->variable($this->newTestedInstance->getAmount())

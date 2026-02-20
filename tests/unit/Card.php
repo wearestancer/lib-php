@@ -147,8 +147,8 @@ class Card extends Stancer\Tests\atoum
         $this
             ->assert('Month and year already set')
                 ->given($this->newTestedInstance)
-                ->and($month = rand(1, 12))
-                ->and($year = date('Y') + rand(0, 10))
+                ->and($month = $this->getRandomMonth())
+                ->and($year = $this->getRandomExpYear())
                 ->and($this->testedInstance->setExpirationMonth($month))
                 ->and($this->testedInstance->setExpirationYear($year))
 
@@ -177,7 +177,7 @@ class Card extends Stancer\Tests\atoum
 
             ->assert('Month not set')
                 ->given($this->newTestedInstance)
-                ->and($year = date('Y') + rand(0, 10))
+                ->and($year = $this->getRandomExpYear())
                 ->and($this->testedInstance->setExpirationYear($year))
 
                 ->then
@@ -225,7 +225,7 @@ class Card extends Stancer\Tests\atoum
 
             ->assert('Year not set')
                 ->given($this->newTestedInstance)
-                ->and($month = rand(1, 12))
+                ->and($month = $this->getRandomMonth())
                 ->and($this->testedInstance->setExpirationMonth($month))
 
                 ->then

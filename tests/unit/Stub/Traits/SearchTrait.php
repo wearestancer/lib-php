@@ -456,7 +456,7 @@ class SearchTrait extends Stancer\Tests\atoum
             ->given($client = new mock\Stancer\Http\Client())
             ->and($response = new mock\Stancer\Http\Response(200, json_encode($body)))
             ->and($this->calling($client)->request = $response)
-            ->and($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
             ->and($config->setHttpClient($client))
             ->and($config->setDebug(false))
 
@@ -594,7 +594,7 @@ class SearchTrait extends Stancer\Tests\atoum
             ->given($client = new mock\Stancer\Http\Client())
             ->and($response = new mock\Stancer\Http\Response(200, json_encode($body)))
             ->and($this->calling($client)->request = $response)
-            ->and($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
             ->and($config->setHttpClient($client))
             ->and($config->setDebug(false))
 

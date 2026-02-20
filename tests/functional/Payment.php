@@ -31,7 +31,7 @@ class Payment extends TestCase
     public function testBadCredential()
     {
         $this
-            ->given(Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))])->setHost(getenv('API_HOST')))
+            ->given(Stancer\Config::init(['stest_' . $this->getRandomString(24)])->setHost(getenv('API_HOST')))
             ->and($this->newTestedInstance(uniqid()))
             ->then
                 ->exception(function () {
@@ -45,7 +45,7 @@ class Payment extends TestCase
     {
         $this
             ->assert('Unknown payment result a 404 exception')
-                ->if($this->newTestedInstance($id = 'paym_' . bin2hex(random_bytes(12))))
+                ->if($this->newTestedInstance($id = 'paym_' . $this->getRandomString(24)))
                 ->then
                     ->exception(function () {
                         $this->testedInstance->getAmount();
@@ -100,15 +100,15 @@ class Payment extends TestCase
         $this
             ->assert('Regular listing')
                 ->given($this->newTestedInstance)
-                ->and($this->testedInstance->setAmount($amount = rand(50, 100)))
+                ->and($this->testedInstance->setAmount($amount = $this->getRandomAmount()))
                 ->and($this->testedInstance->setDescription(sprintf('Automatic test for list, %.02f %s', $amount / 100, $currency)))
                 ->and($this->testedInstance->setCurrency($currency))
                 ->and($this->testedInstance->setCard($card = new Stancer\Card()))
                 ->and($this->testedInstance->setOrderId($this->order))
                 ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth(rand(1, 12)))
-                ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
-                ->and($card->setCvc((string) rand(100, 999)))
+                ->and($card->setExpirationMonth($this->getRandomMonth()))
+                ->and($card->setExpirationYear($this->getRandomExpYear()))
+                ->and($card->setCvc($this->getRandomCvc()))
                 ->and($this->testedInstance->setCustomer($customer = new Stancer\Customer()))
                 ->and($customer->setName('John Doe'))
                 ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
@@ -157,7 +157,7 @@ class Payment extends TestCase
 
         $this
             ->assert('Empty list')
-                ->generator(testedClass::list(['order_id' => bin2hex(random_bytes(12))]))
+                ->generator(testedClass::list(['order_id' => $this->getRandomString(24)]))
                     ->yields
                         ->variable
                             ->isNull
@@ -174,7 +174,7 @@ class Payment extends TestCase
         $this
             ->given($this->newTestedInstance)
             ->then
-                ->object($this->testedInstance->setAmount($amount = rand(50, 100)))
+                ->object($this->testedInstance->setAmount($amount = $this->getRandomAmount()))
                     ->isTestedInstance
 
                 ->object($this->testedInstance->setDescription(sprintf('Automatic test, %.02f %s', $amount / 100, $currency)))
@@ -189,13 +189,13 @@ class Payment extends TestCase
                 ->object($card->setNumber($this->getValidCardNumber()))
                     ->isInstanceOf(Stancer\Card::class)
 
-                ->object($card->setExpirationMonth(rand(1, 12)))
+                ->object($card->setExpirationMonth($this->getRandomMonth()))
                     ->isInstanceOf(Stancer\Card::class)
 
-                ->object($card->setExpirationYear(date('Y') + rand(1, 5)))
+                ->object($card->setExpirationYear($this->getRandomExpYear()))
                     ->isInstanceOf(Stancer\Card::class)
 
-                ->object($card->setCvc((string) rand(100, 999)))
+                ->object($card->setCvc($this->getRandomCvc()))
                     ->isInstanceOf(Stancer\Card::class)
 
                 ->object($this->testedInstance->setCustomer($customer = new Stancer\Customer()))
@@ -224,7 +224,7 @@ class Payment extends TestCase
         $this
             ->given(Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
             ->assert('Auth V1')
-                ->given($amount = rand(50, 100))
+                ->given($amount = $this->getRandomAmount())
                 ->and($description = vsprintf('Automatic auth test, %.02f %s', [
                     $amount / 100,
                     $currency,
@@ -232,9 +232,9 @@ class Payment extends TestCase
 
                 ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth(rand(1, 12)))
-                ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
-                ->and($card->setCvc((string) rand(100, 999)))
+                ->and($card->setExpirationMonth($this->getRandomMonth()))
+                ->and($card->setExpirationYear($this->getRandomExpYear()))
+                ->and($card->setCvc($this->getRandomCvc()))
 
                 ->if($customer = new Stancer\Customer())
                 ->and($customer->setName('John Doe'))
@@ -298,7 +298,7 @@ class Payment extends TestCase
                     ->object($auth->getStatus())
                         ->isInstanceOf(Stancer\Auth\Status::class)
             ->assert('For payment page v1')
-                ->given($amount = rand(50, 100))
+                ->given($amount = $this->getRandomAmount())
                 ->and($description = vsprintf('Authenticated payment page test, %.02f %s', [
                     $amount / 100,
                     $currency,
@@ -352,7 +352,7 @@ class Payment extends TestCase
 
             ->assert('Auth V2')
                 ->given(Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
-                ->given($amount = rand(50, 100))
+                ->given($amount = $this->getRandomAmount())
                 ->and($description = vsprintf('Automatic auth test, %.02f %s', [
                     $amount / 100,
                     $currency,
@@ -360,9 +360,9 @@ class Payment extends TestCase
 
                 ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth(rand(1, 12)))
-                ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
-                ->and($card->setCvc((string) rand(100, 999)))
+                ->and($card->setExpirationMonth($this->getRandomMonth()))
+                ->and($card->setExpirationYear($this->getRandomExpYear()))
+                ->and($card->setCvc($this->getRandomCvc()))
 
                 ->if($customer = new Stancer\Customer())
                 ->and($customer->setName('John Doe'))
@@ -415,7 +415,7 @@ class Payment extends TestCase
                         ->isInstanceOf(Stancer\Auth::class)
 
             ->assert('For payment page v2')
-                ->given($amount = rand(50, 100))
+                ->given($amount = $this->getRandomAmount())
                 ->and($description = vsprintf('Authenticated payment page test, %.02f %s', [
                     $amount / 100,
                     $currency,
@@ -470,7 +470,7 @@ class Payment extends TestCase
     {
         $this
             ->assert('For payment page')
-                ->given($amount = rand(50, 100))
+                ->given($amount = $this->getRandomAmount())
                 ->and($description = vsprintf('Non authenticated payment page test, %.02f %s', [
                     $amount / 100,
                     $currency,
@@ -509,7 +509,7 @@ class Payment extends TestCase
 
             ->assert('Patch card and status')
                 ->given($this->newTestedInstance)
-                ->and($amount = rand(50, 100))
+                ->and($amount = $this->getRandomAmount())
                 ->and($description = sprintf('Automatic test, PATCH card, %.02f %s', $amount / 100, $currency))
 
                 ->if($customer = new Stancer\Customer())
@@ -603,7 +603,7 @@ class Payment extends TestCase
 
             ->assert('With unique ID')
                 ->given($this->newTestedInstance)
-                ->and($amount = rand(50, 100))
+                ->and($amount = $this->getRandomAmount())
                 ->and($description = sprintf('Automatic test, with unique ID, %.02f %s', $amount / 100, $currency))
                 ->and($uniqueID = $this->getRandomString(10, 20))
 
@@ -613,9 +613,9 @@ class Payment extends TestCase
 
                 ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth(rand(1, 12)))
-                ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
-                ->and($card->setCvc((string) rand(100, 999)))
+                ->and($card->setExpirationMonth($this->getRandomMonth()))
+                ->and($card->setExpirationYear($this->getRandomExpYear()))
+                ->and($card->setCvc($this->getRandomCvc()))
 
                 ->if($customer = new Stancer\Customer())
                 ->and($customer->setName($name))
@@ -658,7 +658,7 @@ class Payment extends TestCase
                         ->hasLength(29)
 
                 ->if($this->newTestedInstance)
-                ->and($this->testedInstance->setAmount(rand(50, 99999)))
+                ->and($this->testedInstance->setAmount($this->getRandomAmount()))
                 ->and($this->testedInstance->setCard($card))
                 ->and($this->testedInstance->setCurrency($currency))
                 ->and($this->testedInstance->setDescription('Will fail'))
@@ -674,14 +674,14 @@ class Payment extends TestCase
             ->if(Stancer\Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
             ->assert('Allow duplicate customer')
                 ->given($this->newTestedInstance)
-                ->and($amount = rand(50, 100))
+                ->and($amount = $this->getRandomAmount())
                 ->and($description = sprintf('Automatic test, duplicate customer, %.02f %s', $amount / 100, $currency))
 
                 ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth(rand(1, 12)))
-                ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
-                ->and($card->setCvc((string) rand(100, 999)))
+                ->and($card->setExpirationMonth($this->getRandomMonth()))
+                ->and($card->setExpirationYear($this->getRandomExpYear()))
+                ->and($card->setCvc($this->getRandomCvc()))
 
                 ->if($customer = new Stancer\Customer())
                 ->and($customer->setName($name)) // From previous test
@@ -722,14 +722,14 @@ class Payment extends TestCase
             ->if(Stancer\Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
             ->assert('Allow duplicate customer')
                 ->given($this->newTestedInstance)
-                ->and($amount = rand(50, 100))
+                ->and($amount = $this->getRandomAmount())
                 ->and($description = sprintf('Automatic test, duplicate customer, %.02f %s', $amount / 100, $currency))
 
                 ->if($card = new Stancer\Card())
                 ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth(rand(1, 12)))
-                ->and($card->setExpirationYear(rand(1, 15) + date('Y')))
-                ->and($card->setCvc((string) rand(100, 999)))
+                ->and($card->setExpirationMonth($this->getRandomMonth()))
+                ->and($card->setExpirationYear($this->getRandomExpYear()))
+                ->and($card->setCvc($this->getRandomCvc()))
 
                 ->if($customer = new Stancer\Customer())
                 ->and($customer->setName($name)) // From previous test
@@ -775,7 +775,7 @@ class Payment extends TestCase
     public function testSendWithCard($currency)
     {
         $this
-            ->given($amount = rand(50, 100))
+            ->given($amount = $this->getRandomAmount())
             ->and($description = vsprintf('Automatic test, with card, %.02f %s', [
                 $amount / 100,
                 $currency,
@@ -783,9 +783,9 @@ class Payment extends TestCase
 
             ->if($card = new Stancer\Card())
             ->and($card->setNumber($this->getValidCardNumber()))
-            ->and($card->setExpirationMonth(rand(1, 12)))
-            ->and($card->setExpirationYear(date('Y') + rand(1, 5)))
-            ->and($card->setCvc((string) rand(100, 999)))
+            ->and($card->setExpirationMonth($this->getRandomMonth()))
+            ->and($card->setExpirationYear($this->getRandomExpYear()))
+            ->and($card->setCvc($this->getRandomCvc()))
 
             ->if($customer = new Stancer\Customer())
             ->and($customer->setName('John Doe'))
@@ -838,7 +838,7 @@ class Payment extends TestCase
     {
         $this
             ->assert('With a sepa account')
-                ->given($amount = rand(50, 100))
+                ->given($amount = $this->getRandomAmount())
                 ->and($description = vsprintf('Automatic test, with SEPA, %.02f %s', [
                     $amount / 100,
                     $currency,
