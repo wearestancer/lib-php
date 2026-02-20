@@ -5,6 +5,9 @@ namespace Stancer\tests\unit\Core;
 use mock;
 use Stancer;
 
+/**
+ * @tags AbstractObject
+ */
 class AbstractObject extends Stancer\Tests\atoum
 {
     use Stancer\Tests\Provider\Dates;

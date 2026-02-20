@@ -8,6 +8,9 @@ use Stancer\Payout as testedClass;
 
 class Payout extends Stancer\Tests\atoum
 {
+    /**
+     * @tags Payout
+     */
     public function testClass()
     {
         $this
@@ -18,6 +21,8 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Payout
+     *
      * @DataProvider versionDataProvider
      *
      * @param integer $version
@@ -50,6 +55,8 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Payout
+     *
      * @DataProvider versionDataProvider
      */
     public function testGetCurrency(Stancer\Enum\ApiVersion $version)
@@ -80,6 +87,8 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Payout
+     *
      * @DataProvider versionDataProvider
      */
     public function testGetDateBank(Stancer\Enum\ApiVersion $version)
@@ -112,6 +121,8 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Payout
+     *
      * @DataProvider versionDataProvider
      */
     public function testGetDatePaym(Stancer\Enum\ApiVersion $version)
@@ -152,6 +163,8 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Dispute Payout SearchTrait
+     *
      * @DataProvider versionDataProvider
      */
     public function testDisputesDetails(Stancer\Enum\ApiVersion $version)
@@ -385,6 +398,8 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Payout
+     *
      * @DataProvider versionDataProvider
      */
     public function testGetDetails(Stancer\Enum\ApiVersion $version)
@@ -444,6 +459,9 @@ class Payout extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Payout
+     */
     public function testGetEndpoint()
     {
         $this
@@ -453,6 +471,8 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Payout
+     *
      * @DataProvider versionDataProvider
      *
      * @param integer $version
@@ -485,6 +505,8 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Payout
+     *
      * @DataProvider versionDataProvider
      *
      * @param integer $version
@@ -517,6 +539,8 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Payout PayoutStatus
+     *
      * @DataProvider versionDataProvider
      */
     public function testGetStatus(Stancer\Enum\ApiVersion $version)
@@ -547,6 +571,8 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject Payout SearchTrait
+     *
      * @DataProvider versionDataProvider
      */
     public function testList(Stancer\Enum\ApiVersion $version)
@@ -584,6 +610,8 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Payment Payout SearchTrait
+     *
      * @DataProvider versionDataProvider
      */
     public function testPaymentsDetails(Stancer\Enum\ApiVersion $version)
@@ -821,6 +849,8 @@ class Payout extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Payout Refund SearchTrait
+     *
      * @DataProvider versionDataProvider
      */
     public function testRefundsDetails(Stancer\Enum\ApiVersion $version)

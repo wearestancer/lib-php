@@ -7,7 +7,7 @@ use Stancer;
 class Status extends Stancer\Tests\atoum
 {
     /**
-     * @tags test
+     * @tags PaymentIntent PaymentIntentStatus
      */
     public function testClass()
     {

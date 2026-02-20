@@ -6,6 +6,9 @@ use Stancer;
 
 class MethodsAllowed extends Stancer\Tests\atoum
 {
+    /**
+     * @tags Payment PaymentMethodsAllowed
+     */
     public function testClass()
     {
         $this

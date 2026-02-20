@@ -6,6 +6,8 @@ use Stancer;
 use Stancer\Config;
 
 /**
+ * @tags Card AbstractObject
+ *
  * @namespace \Tests\functional
  *
  * @internal

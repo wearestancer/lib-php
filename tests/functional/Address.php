@@ -5,6 +5,8 @@ namespace Stancer\Tests\functional;
 use Stancer;
 
 /**
+ * @tags AbstractObject Address
+ *
  * @namespace \Tests\functional
  *
  * @internal

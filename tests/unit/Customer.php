@@ -8,6 +8,9 @@ use Stancer\Customer as testedClass;
 
 class Customer extends Stancer\Tests\atoum
 {
+    /**
+     * @tags Customer
+     */
     public function testClass()
     {
         $this
@@ -16,6 +19,9 @@ class Customer extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Customer
+     */
     public function test__call()
     {
         $this
@@ -41,6 +47,9 @@ class Customer extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Address AbstractObject Customer
+     */
     public function testBillingAddress()
     {
         $this
@@ -81,6 +90,9 @@ class Customer extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Customer
+     */
     public function testGetEndpoint()
     {
         $this
@@ -92,6 +104,8 @@ class Customer extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Customer
+     *
      * @DataProvider versionDataProvider
      */
     public function testSend(Stancer\Enum\ApiVersion $version)
@@ -199,6 +213,8 @@ class Customer extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Customer
+     *
      * @DataProvider versionDataProvider
      */
     public function testSend_forUpdate(Stancer\Enum\ApiVersion $version)
@@ -268,6 +284,9 @@ class Customer extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Customer
+     */
     public function testSetEmail()
     {
         $this
@@ -285,6 +304,9 @@ class Customer extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Customer
+     */
     public function testSetExternalId()
     {
         $this
@@ -316,6 +338,9 @@ class Customer extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Customer
+     */
     public function testSetMobile()
     {
         $this
@@ -333,6 +358,9 @@ class Customer extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Customer
+     */
     public function testSetName()
     {
         $this
@@ -350,6 +378,9 @@ class Customer extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Customer
+     */
     public function testShippingAddress()
     {
         $this

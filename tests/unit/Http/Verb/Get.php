@@ -1,11 +1,14 @@
 <?php
 
-namespace Stancer\Http\Verb\tests\unit;
+namespace Stancer\tests\unit\Http\Verb;
 
 use Stancer;
 
 class Get extends Stancer\Tests\atoum
 {
+    /**
+     * @tags AbstractVerb Get Http
+     */
     public function testClass()
     {
         $this
@@ -14,6 +17,9 @@ class Get extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractVerb Get Http
+     */
     public function testCastToString()
     {
         $this
@@ -24,6 +30,9 @@ class Get extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractVerb Get Http
+     */
     public function testIsAllowed()
     {
         $this

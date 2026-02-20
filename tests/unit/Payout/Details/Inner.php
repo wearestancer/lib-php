@@ -8,6 +8,9 @@ class Inner extends Stancer\Tests\atoum
 {
     use Stancer\Tests\Provider\Currencies;
 
+    /**
+     * @tags AbstractObject Payout PayoutDetails
+     */
     public function testClass()
     {
         $this
@@ -16,6 +19,9 @@ class Inner extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Payout PayoutDetails
+     */
     public function testGetAmount()
     {
         $this
@@ -40,6 +46,8 @@ class Inner extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject Payout PayoutDetails
+     *
      * @dataProvider cardCurrencyDataProvider
      *
      * @param mixed $currency

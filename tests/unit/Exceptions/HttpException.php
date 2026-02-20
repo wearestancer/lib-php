@@ -7,6 +7,9 @@ use mock;
 use Psr;
 use Stancer;
 
+/**
+ * @tags Exception
+ */
 class HttpException extends Stancer\Tests\atoum
 {
     use Stancer\Tests\Provider\Http;

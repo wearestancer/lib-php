@@ -6,6 +6,9 @@ use GuzzleHttp;
 use mock;
 use Stancer;
 
+/**
+ * @tags Request
+ */
 class Request extends Stancer\Tests\atoum
 {
     use Stancer\Tests\Provider\Banks;

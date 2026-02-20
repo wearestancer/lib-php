@@ -65,6 +65,9 @@ class Payment extends Stancer\Tests\atoum
         ];
     }
 
+    /**
+     * @tags AbstractObject Address Payment
+     */
     public function testBillingAddress()
     {
         $this
@@ -106,6 +109,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     *
      * @DataProvider versionDataProvider
      */
     public function testCharge(Stancer\Enum\ApiVersion $version)
@@ -248,6 +253,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Payment
+     */
     public function testClass()
     {
         $this
@@ -258,6 +266,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     *  @tags AbstractObject Payment
+     */
     public function testDelete()
     {
         $this
@@ -270,6 +281,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     *  @tags AbstractObject Payment
+     */
     public function testFilterListParams()
     {
         $gen = function ($length) {
@@ -331,6 +345,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     *  @tags AbstractObject AliasTrait Payment
+     */
     public function testGetDateBank()
     {
         $this
@@ -394,6 +411,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Payment
+     *
      * @dataProvider versionDataProvider
      */
     public function testGetEndpoint(Stancer\Enum\ApiVersion $version)
@@ -413,6 +432,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     *
      * @dataProvider versionDataProvider
      */
     public function testGetPaymentPageUrl(Stancer\Enum\ApiVersion $version)
@@ -595,6 +616,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     *
      * @dataProvider versionDataProvider
      */
     public function testGetRefundableAmount(Stancer\Enum\ApiVersion $version)
@@ -641,6 +664,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Payment
+     */
     public function testGetResponseAuthor()
     {
         $this
@@ -664,6 +690,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Payment
+     */
     public function testGetReturnUrl_SetReturnUrl()
     {
         $this
@@ -690,6 +719,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Payment
+     */
     public function testIsSuccess_IsNotSuccess()
     {
         $this
@@ -839,6 +871,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     *
      * @dataProvider versionDataProvider
      */
     public function testIssueTaiga7(Stancer\Enum\ApiVersion $version)
@@ -861,6 +895,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment SearchTrait TransactionTrait
+     *
      * @dataProvider versionDataProvider
      */
     public function testList(Stancer\Enum\ApiVersion $version)
@@ -1095,6 +1131,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject Card Sepa Payment TransactionTrait
+     *
      * @dataProvider cardCurrencyDataProvider
      *
      * @param mixed $currency
@@ -1178,6 +1216,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Card Payment TransactionTrait
+     *
      * @dataProvider versionDataProvider
      */
     public function testPay(Stancer\Enum\ApiVersion $version)
@@ -1241,6 +1281,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     *
      * @dataProvider versionDataProvider
      */
     public function testPost_capture(Stancer\Enum\ApiVersion $version)
@@ -1316,6 +1358,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment Refund TransactionTrait
+     *
      * @dataProvider versionDataProvider
      */
     public function testRefund(Stancer\Enum\ApiVersion $version)
@@ -1488,6 +1532,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     *
      * @dataProvider versionDataProvider
      */
     public function testSend_exceptions(Stancer\Enum\ApiVersion $version)
@@ -1534,6 +1580,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment Sepa TransactionTrait
+     *
      * @dataProvider versionDataProvider
      */
     public function testSend_withSepa(Stancer\Enum\ApiVersion $version)
@@ -1617,6 +1665,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Auth Card Payment TransactionTrait
+     *
      * @dataProvider versionAuthReturnUrlProvider
      */
     public function testSend_authenticatedPayment(Stancer\Enum\ApiVersion $version, callable $auth)
@@ -1750,6 +1800,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Auth Card Payment TransactionTrait
+     *
      * @dataProvider versionAuthReturnUrlProvider
      *
      * @param mixed $version
@@ -1878,6 +1930,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Auth Payment TransactionTrait
+     *
      * @dataProvider versionAuthStatusProvider
      *
      * @param mixed $authjson
@@ -1965,6 +2019,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     *
      * @dataProvider versionDataProvider
      *
      * @param mixed $version
@@ -2019,6 +2075,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AmountTrait Payment
+     */
     public function testSetAmount()
     {
         $this
@@ -2088,6 +2147,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Auth Payment
+     *
      * @dataProvider versionDataProvider
      */
     public function testSetAuth(Stancer\Enum\ApiVersion $version)
@@ -2166,6 +2227,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Card Payment
+     */
     public function testSetCard()
     {
         $this
@@ -2190,6 +2254,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject TransactionTrait
+     *
      * @dataProvider cardCurrencyDataProvider
      *
      * @param mixed $currency
@@ -2266,6 +2332,9 @@ class Payment extends Stancer\Tests\atoum
         }
     }
 
+    /**
+     * @tags AbstractObject Payment
+     */
     public function testSetDescription()
     {
         $description = '';
@@ -2310,6 +2379,9 @@ class Payment extends Stancer\Tests\atoum
         }
     }
 
+    /**
+     * @tags AbstractObject Payment Sepa
+     */
     public function testSetSepa()
     {
         $this
@@ -2333,6 +2405,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Address Payment
+     */
     public function testShippingAddress()
     {
         $this
@@ -2373,6 +2448,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Payment
+     */
     public function testSetOrderId()
     {
         $orderId = '';
@@ -2417,6 +2495,9 @@ class Payment extends Stancer\Tests\atoum
         }
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Payment PaymentStatus
+     */
     public function testSetStatus()
     {
         $this
@@ -2537,6 +2618,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Payment
+     */
     public function testSetUniqueId()
     {
         $uniqueId = '';
@@ -2587,6 +2671,9 @@ class Payment extends Stancer\Tests\atoum
 
     //region API V1 tests
 
+    /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     */
     public function testSend_withoutCardOrSepaV1()
     {
         $this
@@ -2667,6 +2754,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AmountTrait AliasTrait Device Payment TransactionTrait
+     */
     public function testSend_deviceV1()
     {
         $this
@@ -2777,7 +2867,7 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * Specific exceptions for API V1.
+     * @tags AbstractObject AmountTrait AliasTrait Device Payment
      */
     public function testSend_exceptions_V1()
     {
@@ -2793,6 +2883,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AmountTrait AliasTrait Card Payment TransactionTrait
+     */
     public function testSend_withCardV1()
     {
         $this
@@ -2912,6 +3005,9 @@ class Payment extends Stancer\Tests\atoum
 
     //region API V2 tests
 
+    /**
+     * @tags AbstractObject AmountTrait AliasTrait Card Payment TransactionTrait
+     */
     public function testSend_withCardV2()
     {
         $this
@@ -3081,6 +3177,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     */
     public function testSend_withoutCardOrSepaV2()
     {
         $this
@@ -3181,6 +3280,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AmountTrait AliasTrait Device Payment TransactionTrait
+     */
     public function testSend_deviceV2()
     {
         $this

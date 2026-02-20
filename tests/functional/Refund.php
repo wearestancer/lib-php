@@ -5,6 +5,8 @@ namespace Stancer\Tests\functional;
 use Stancer;
 
 /**
+ * @tags AbstractObject Card Customer Refund Payment
+ *
  * @namespace \Tests\functional
  *
  * @internal

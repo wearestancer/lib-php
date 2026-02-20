@@ -1,6 +1,6 @@
 <?php
 
-namespace Stancer\Http\tests\unit;
+namespace Stancer\tests\unit\Http;
 
 use Psr;
 use Stancer;
@@ -33,6 +33,8 @@ class Uri extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Uri Http
+     *
      * @dataProvider urlProvider
      *
      * @param mixed $uri
@@ -58,6 +60,8 @@ class Uri extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Uri Http
+     *
      * @dataProvider urlProvider
      *
      * @param mixed $uri
@@ -96,6 +100,8 @@ class Uri extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Uri Http
+     *
      * @dataProvider urlProvider
      *
      * @param mixed $uri
@@ -123,6 +129,8 @@ class Uri extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Uri Http
+     *
      * @dataProvider urlProvider
      *
      * @param mixed $uri
@@ -147,6 +155,8 @@ class Uri extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Uri Http
+     *
      * @dataProvider urlProvider
      *
      * @param mixed $uri
@@ -183,6 +193,8 @@ class Uri extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Uri Http
+     *
      * @dataProvider urlProvider
      *
      * @param mixed $uri
@@ -207,6 +219,8 @@ class Uri extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Uri Http
+     *
      * @dataProvider urlProvider
      *
      * @param mixed $uri
@@ -231,6 +245,8 @@ class Uri extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Uri Http
+     *
      * @dataProvider urlProvider
      *
      * @param mixed $uri
@@ -255,6 +271,8 @@ class Uri extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Uri Http
+     *
      * @dataProvider urlProvider
      *
      * @param mixed $uri
@@ -279,6 +297,8 @@ class Uri extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Uri Http
+     *
      * @dataProvider urlProvider
      *
      * @param mixed $uri
@@ -303,6 +323,8 @@ class Uri extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Uri Http
+     *
      * @dataProvider urlProvider
      *
      * @param mixed $uri
@@ -328,6 +350,8 @@ class Uri extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Uri Http
+     *
      * @dataProvider urlProvider
      *
      * @param mixed $uri
@@ -366,6 +390,8 @@ class Uri extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Uri Http
+     *
      * @dataProvider urlProvider
      *
      * @param mixed $uri
@@ -404,6 +430,8 @@ class Uri extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Uri Http
+     *
      * @dataProvider urlProvider
      *
      * @param mixed $uri
@@ -442,6 +470,8 @@ class Uri extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Uri Http
+     *
      * @dataProvider urlProvider
      *
      * @param mixed $uri
@@ -480,6 +510,8 @@ class Uri extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Uri Http
+     *
      * @dataProvider urlProvider
      *
      * @param mixed $uri
@@ -518,6 +550,8 @@ class Uri extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Uri Http
+     *
      * @dataProvider urlProvider
      *
      * @param mixed $uri
@@ -556,6 +590,8 @@ class Uri extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Uri Http
+     *
      * @dataProvider urlProvider
      *
      * @param mixed $uri

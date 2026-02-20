@@ -6,6 +6,9 @@ use mock;
 use Psr;
 use Stancer;
 
+/**
+ * @tags Exception
+ */
 class Exception extends Stancer\Tests\atoum
 {
     public function testClass()

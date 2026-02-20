@@ -8,6 +8,9 @@ class Card extends Stancer\Tests\atoum
 {
     use Stancer\Tests\Provider\Cards;
 
+    /**
+     * @tags Card
+     */
     public function testClass()
     {
         $this
@@ -18,6 +21,8 @@ class Card extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Card
+     *
      * @dataProvider brandDataProvider
      *
      * @param mixed $tag
@@ -66,6 +71,8 @@ class Card extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Card
+     *
      * @dataProvider brandDataProvider
      *
      * @param mixed $tag
@@ -132,6 +139,9 @@ class Card extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Card
+     */
     public function testGetEndpoint()
     {
         $this
@@ -142,6 +152,9 @@ class Card extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Card
+     */
     public function testGetExpDate()
     {
         $this
@@ -273,6 +286,9 @@ class Card extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Card
+     */
     public function testGetExpMonth_SetExpMonth()
     {
         foreach (range(1, 12) as $month) {
@@ -558,6 +574,9 @@ class Card extends Stancer\Tests\atoum
         }
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Card
+     */
     public function testGetExpYear_SetExpYear()
     {
         $currentYear = (int) date('Y');
@@ -731,6 +750,9 @@ class Card extends Stancer\Tests\atoum
         }
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Card
+     */
     public function testGetFunding()
     {
         $this
@@ -787,6 +809,9 @@ class Card extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Card
+     */
     public function testGetName_SetName()
     {
         $this
@@ -850,6 +875,9 @@ class Card extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Card
+     */
     public function testGetNature()
     {
         $this
@@ -906,6 +934,9 @@ class Card extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Card
+     */
     public function testGetNetwork()
     {
         $this
@@ -962,6 +993,9 @@ class Card extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Card
+     */
     public function testGetTokenize_SetTokenize()
     {
         $this
@@ -1024,6 +1058,9 @@ class Card extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Card
+     */
     public function testGetZipCode_SetZipCode()
     {
         $this
@@ -1105,6 +1142,9 @@ class Card extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Card
+     */
     public function testSetCvc()
     {
         for ($index = 0; $index < 5; $index++) {
@@ -1200,6 +1240,9 @@ class Card extends Stancer\Tests\atoum
         }
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Card
+     */
     public function testSetName()
     {
         $this
@@ -1218,6 +1261,8 @@ class Card extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Card
+     *
      * @dataProvider cardNumberDataProvider
      *
      * @param mixed $number
@@ -1349,6 +1394,8 @@ class Card extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Card
+     *
      * @dataProvider cardNumberDataProvider
      *
      * @param mixed $number

@@ -6,6 +6,9 @@ use Stancer;
 
 class Status extends Stancer\Tests\atoum
 {
+    /**
+     * @ThreeDomainSecureStatus
+     */
     public function testClass()
     {
         $this

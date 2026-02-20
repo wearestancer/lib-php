@@ -5,6 +5,9 @@ namespace Stancer\tests\unit\Exceptions;
 use Psr;
 use Stancer;
 
+/**
+ * @tags Exception
+ */
 class NotFoundException extends Stancer\Tests\atoum
 {
     public function testClass()

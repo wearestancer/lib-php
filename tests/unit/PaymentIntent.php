@@ -23,6 +23,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         Stancer\Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2);
     }
 
+    /**
+     * @tags AbstractObject AliasTrait PaymentIntent
+     */
     public function testAmount()
     {
         $this
@@ -65,6 +68,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait PaymentIntent TransactionTrait
+     */
     public function testCapture()
     {
         $this
@@ -106,6 +112,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags PaymentIntent AbstractObject AliasTrait
+     */
     public function testCard()
     {
         $this
@@ -141,6 +150,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags PaymentIntent
+     */
     public function testClass()
     {
         $this
@@ -151,6 +163,8 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Card PaymentIntent TransactionTrait
+     *
      * @dataProvider cardCurrencyDataProvider
      *
      * @param mixed $currency
@@ -199,6 +213,8 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait PaymentIntent Sepa TransactionTrait
+     *
      * @dataProvider sepaCurrencyDataProvider
      *
      * @param mixed $currency
@@ -254,6 +270,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         }
     }
 
+    /**
+     * @tags AbstractObject AliasTrait PaymentIntent TransactionTrait
+     */
     public function testCreationDate()
     {
         $this
@@ -333,6 +352,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait PaymentIntent Sepa
+     */
     public function testCustomer()
     {
         $this
@@ -361,6 +383,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait PaymentIntent
+     */
     public function testDescription()
     {
         $this
@@ -407,6 +432,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait PaymentIntent
+     */
     public function testEndpoint()
     {
         $this
@@ -422,6 +450,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait PaymentIntent SearchTrait TransactionTrait
+     */
     public function testList()
     {
         $this
@@ -686,6 +717,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait PaymentIntent SearchTrait TransactionTrait
+     */
     public function testListNoMore()
     {
         $this
@@ -736,6 +770,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Payment PaymentIntent SearchTrait TransactionTrait
+     */
     public function testListPayments()
     {
         $this
@@ -1038,6 +1075,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait PaymentIntent
+     */
     public function testMetadata()
     {
         $this
@@ -1157,6 +1197,8 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait PaymentIntent TransactionTrait
+     *
      * @dataProvider cardCurrencyDataProvider
      *
      * @param mixed $currency
@@ -1268,6 +1310,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         }
     }
 
+    /**
+     * @tags AbstractObject AliasTrait PaymentIntent
+     */
     public function testOrderId()
     {
         $this
@@ -1353,6 +1398,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait PaymentIntent
+     */
     public function testPayment()
     {
         $this
@@ -1391,6 +1439,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait PaymentIntent TransactionTrait
+     */
     public function testPost_capture()
     {
         $this
@@ -1458,6 +1509,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait PaymentIntent TransactionTrait
+     */
     public function testReturnUrl()
     {
         $this
@@ -1507,6 +1561,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Card PaymentIntent TransactionTrait
+     */
     public function testSend_flat()
     {
         $this
@@ -1570,6 +1627,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Card PaymentIntent TransactionTrait
+     */
     public function testSend_flatenedCard()
     {
         $this
@@ -1625,6 +1685,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Customer PaymentIntent TransactionTrait
+     */
     public function testSend_flatenedCustomer()
     {
         $this
@@ -1679,6 +1742,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait  PaymentIntent  Sepa TransactionTrait
+     */
     public function testSend_flatenedSepa()
     {
         $this
@@ -1731,6 +1797,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Card PaymentIntent TransactionTrait
+     */
     public function testSend_patchCard()
     {
         $this
@@ -1781,6 +1850,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Card PaymentIntent TransactionTrait
+     */
     public function testSend_withCard()
     {
         $this
@@ -1903,6 +1975,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait PaymentIntent Sepa TransactionTrait
+     */
     public function testSend_withSepa()
     {
         $this
@@ -2042,6 +2117,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait PaymentIntent Sepa
+     */
     public function testSepa()
     {
         $this
@@ -2077,6 +2155,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait PaymentIntent PaymentIntentStatus
+     */
     public function testStatus()
     {
         $this
@@ -2117,6 +2198,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait PaymentIntent
+     */
     public function testThreeDS()
     {
         $this
@@ -2201,6 +2285,9 @@ class PaymentIntent extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait PaymentIntent Sepa
+     */
     public function testUrl()
     {
         $this
