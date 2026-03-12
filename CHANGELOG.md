@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [unreleased]
 
+### Added
+- Get Refund list from payments API V2 (CMS-490)
+
 ### Fixed
 - Added Tag in tests (CMS-467)
 
