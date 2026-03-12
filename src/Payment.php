@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Stancer;
 
 use Stancer;
+use Stancer\Core\SearchObject;
 
 /**
  * Representation of a payment.
@@ -324,6 +325,21 @@ class Payment extends Stancer\Core\AbstractObject
         ],
     ];
 
+    #[\Override]
+    public function __call(string $method, array $arguments): mixed
+    {
+        $lower = strtolower($method);
+
+        switch ($lower) {
+            case 'getrefunds':
+            case 'get_refunds':
+                return $this->listRefunds();
+
+            default:
+                return parent::__call($method, $arguments);
+        }
+    }
+
     /**
      * Charge a card or a bank account.
      *
@@ -510,6 +526,40 @@ class Payment extends Stancer\Core\AbstractObject
         }
 
         return vsprintf('https://%s/%s/%s', $data) . $query;
+    }
+
+    /**
+     * Return a list of refunds linked to this payment.
+     *
+     * @return array<number,Stancer\Refund> a list of refunds.
+     */
+    public function listRefunds(): array
+    {
+        if (Stancer\Config::getGlobal()->version === Stancer\Enum\ApiVersion::VERSION_1) {
+            /** @var array<number,Stancer\Refund> */
+            return parent::__call('getrefunds', []);
+        }
+        if (!$this->id) {
+            return [];
+        }
+
+        $refunds = new SearchObject($this->id, 'refunds', $this::ENDPOINT);
+
+        $request = new Stancer\Core\Request();
+
+        /** @var array<mixed> $refundsListRaw */
+        $refundsListRaw = json_decode($request->get($refunds, []), true);
+        $refundList = [];
+
+        /** @phpstan-var array{id:string,string:mixed} $refundArray*/
+        foreach ($refundsListRaw as $refundArray) {
+            $refund = new Refund($refundArray['id']);
+            $refund->hydrate($refundArray);
+
+            $refundList[] = $refund;
+        }
+
+        return $refundList;
     }
 
     /**

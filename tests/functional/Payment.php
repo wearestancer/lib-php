@@ -93,6 +93,25 @@ class Payment extends TestCase
     }
 
     /**
+     *  @tags Refunds test
+     *
+     * @dataProvider versionDataProvider
+     */
+    public function testGetRefunds(Stancer\Enum\ApiVersion $version)
+    {
+        Stancer\Config::getGlobal()->setVersion($version);
+        $this
+            ->assert('get Refunded payment')
+                ->if($this->newTestedInstance('paym_EIBy6LjIdJgafLP65n4mbROD'))
+                ->then
+                    ->array($this->testedInstance->getRefunds())
+                        ->hasSize(1)
+                            ->object[0]
+                                ->isInstanceOf(Stancer\Refund::class)
+        ;
+    }
+
+    /**
      * @dataProvider cardCurrencyDataProvider
      *
      * @param mixed $currency

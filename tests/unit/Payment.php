@@ -1358,6 +1358,60 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags test
+     *
+     * @dataProvider versionDataProvider
+     */
+    public function testGetRefund(Stancer\Enum\ApiVersion $version)
+    {
+        $this
+            ->given($client = new mock\Stancer\Http\Client())
+            ->and($config = $this->mockConfig($client, $version))
+            ->and($options = $this->mockRequestOptions($config))
+
+            ->if($paymentData = $this->getFixtureData('payment', 'refunded_payment'))
+            ->if($response = $this->mockJsonResponse('payment', 'refund_list'))
+            ->and($this->calling($client)->request = $response)
+
+            ->then
+                ->given($this->newTestedInstance($id = 'paym_' . $this->getRandomString(24)))
+                ->and($this->testedInstance->hydrate($paymentData))
+                ->and($location = $this->testedInstance->uri . '/refunds')
+
+                ->assert('Refund in V2 call the API')
+                    ->array($refundList = $this->testedInstance->getRefunds())
+                            ->object($refundList[0])
+                                ->isInstanceOf(Stancer\Refund::class)
+                                ->integer($refundList[0]->amount)
+                                    ->isEqualTo(2500)
+                                ->string($refundList[0]->currency)
+                                    ->isIdenticalTo('eur')
+                                ->object($refundList[0]->status)
+                                    ->isIdenticalTo(Stancer\Refund\Status::TO_REFUND)
+                                ->string($refundList[0]->id)
+                                    ->isIdenticalTo('refd_J0r3rHzPaaXU2lBLkDFxpqpw')
+
+                            ->object($refundList[1])
+                                ->isInstanceOf(Stancer\Refund::class)
+                                ->integer($refundList[1]->amount)
+                                    ->isEqualTo(3021)
+                                ->string($refundList[1]->currency)
+                                    ->isIdenticalTo('eur')
+                                ->object($refundList[1]->status)
+                                    ->isIdenticalTo(Stancer\Refund\Status::TO_REFUND)
+                                ->string($refundList[1]->id)
+                                    ->isIdenticalTo('refd_ae1pJ2wdty6mGiRTTQ1FWw0V')
+        ;
+        if ($version === Stancer\Enum\ApiVersion::VERSION_2) {
+            $this->mock($client)
+                ->call('request')
+                    ->withArguments('GET', $location)
+                    ->once
+            ;
+        }
+    }
+
+    /**
      * @tags AbstractObject AmountTrait AliasTrait Payment Refund TransactionTrait
      *
      * @dataProvider versionDataProvider
