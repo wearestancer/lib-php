@@ -77,7 +77,7 @@ class atoum extends base\test
 
     public function getRandomCvc(): string
     {
-        return substr(uniqid(), 0, 3);
+        return (string) str_pad(rand(1, 999), 3, '0', STR_PAD_LEFT);
     }
 
     public function getRandomDate(int $min, ?int $max = null): string
