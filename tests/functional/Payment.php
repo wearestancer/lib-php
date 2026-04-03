@@ -102,10 +102,10 @@ class Payment extends TestCase
         Stancer\Config::getGlobal()->setVersion($version);
         $this
             ->assert('get Refunded payment')
-                ->if($this->newTestedInstance('paym_EIBy6LjIdJgafLP65n4mbROD'))
+                ->if($this->newTestedInstance('paym_KcW7ohSh9xTlqMQllhXBCLTr'))
                 ->then
                     ->array($this->testedInstance->getRefunds())
-                        ->hasSize(1)
+                        ->hasSize(3)
                             ->object[0]
                                 ->isInstanceOf(Stancer\Refund::class)
         ;

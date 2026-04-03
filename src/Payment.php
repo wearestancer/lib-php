@@ -277,6 +277,7 @@ class Payment extends Stancer\Core\AbstractObject
             'exportable' => false,
             'list' => true,
             'type' => Stancer\Refund::class,
+            'value' => [],
         ],
         'response' => [
             'desc' => 'Response of the bank processing',
@@ -324,21 +325,6 @@ class Payment extends Stancer\Core\AbstractObject
             'type' => self::STRING,
         ],
     ];
-
-    #[\Override]
-    public function __call(string $method, array $arguments): mixed
-    {
-        $lower = strtolower($method);
-
-        switch ($lower) {
-            case 'getrefunds':
-            case 'get_refunds':
-                return $this->listRefunds();
-
-            default:
-                return parent::__call($method, $arguments);
-        }
-    }
 
     /**
      * Charge a card or a bank account.
@@ -529,37 +515,48 @@ class Payment extends Stancer\Core\AbstractObject
     }
 
     /**
-     * Return a list of refunds linked to this payment.
-     *
-     * @return array<number,Stancer\Refund> a list of refunds.
+     * Populate refund list
+     * We use a call to our api in version superior to V1
+     * This call isn't standard inner route call so we make custom code for this route only.
      */
-    public function listRefunds(): array
+    public function populateRefunds(): static
     {
+        $paymentId = $this->getId();
+        if ($this->populated || !$paymentId || !$this->getEndpoint()) {
+            return $this;
+        }
         if (Stancer\Config::getGlobal()->version === Stancer\Enum\ApiVersion::VERSION_1) {
-            /** @var array<number,Stancer\Refund> */
-            return parent::__call('getrefunds', []);
+            return $this;
         }
-        if (!$this->id) {
-            return [];
-        }
-
-        $refunds = new SearchObject($this->id, 'refunds', $this::ENDPOINT);
+        $refunds = new SearchObject($paymentId, 'refunds', $this::ENDPOINT);
 
         $request = new Stancer\Core\Request();
 
         /** @var array<mixed> $refundsListRaw */
         $refundsListRaw = json_decode($request->get($refunds, []), true);
         $refundList = [];
+        if (count($refundsListRaw) === 0 || !is_array($refundsListRaw)) {
+            return $this;
+        }
 
         /** @phpstan-var array{id:string,string:mixed} $refundArray*/
         foreach ($refundsListRaw as $refundArray) {
             $refund = new Refund($refundArray['id']);
-            $refund->hydrate($refundArray);
-
             $refundList[] = $refund;
         }
 
-        return $refundList;
+        $this->dataModel['refunds']['value'] = $refundList;
+
+        return $this;
+    }
+
+    #[\Override]
+    public function populate(): static
+    {
+        $this->populateRefunds();
+        parent::populate();
+
+        return $this;
     }
 
     /**
