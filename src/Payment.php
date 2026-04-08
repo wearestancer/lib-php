@@ -277,7 +277,6 @@ class Payment extends Stancer\Core\AbstractObject
             'exportable' => false,
             'list' => true,
             'type' => Stancer\Refund::class,
-            'value' => [],
         ],
         'response' => [
             'desc' => 'Response of the bank processing',

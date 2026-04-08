@@ -177,6 +177,7 @@ trait SearchTrait
             }
             $object = new SearchObject($this->id, $innerSearch, $this::ENDPOINT);
         }
+        $until = null;
         $allowed = [
             'created',
             'created_until',

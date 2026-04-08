@@ -7,7 +7,7 @@ use Stancer\Config;
 use Stancer\Payment as testedClass;
 
 /**
- * @tags AbstractObject Card Customer Sepa Payment
+ * @tags AbstractObject Card Customer Sepa Payment Functional
  *
  * @namespace \Tests\functional
  *
@@ -104,10 +104,21 @@ class Payment extends TestCase
             ->assert('get Refunded payment')
                 ->if($this->newTestedInstance('paym_KcW7ohSh9xTlqMQllhXBCLTr'))
                 ->then
-                    ->array($this->testedInstance->getRefunds())
+                    ->array($refunds = $this->testedInstance->getRefunds())
                         ->hasSize(3)
                             ->object[0]
                                 ->isInstanceOf(Stancer\Refund::class)
+                    ->string($refunds[0]->getId())
+                        ->isIdenticalTo('refd_ILR6rtWxrteJjlNc4mW4yLZy')
+                    ->integer($this->testedInstance->getRefundableAmount)
+                        ->isIdenticalTo(0)
+            ->assert('empty refund is an empty array')
+                ->if($this->newTestedInstance('paym_Hw3siKc1oe37GamxlARuVN2F'))
+                ->then
+                    ->array($this->testedInstance->getRefunds())
+                        ->hasSize(0)
+                    ->integer($this->testedInstance->getRefundableAmount)
+                        ->isIdenticalTo(7810)
         ;
     }
 
