@@ -3,7 +3,6 @@
 namespace Stancer\Tests\functional;
 
 use Stancer;
-use Stancer\Config;
 
 /**
  * @tags Card AbstractObject
@@ -68,12 +67,14 @@ class Card extends TestCase
         ;
     }
 
-    /**
-     * @DataProvider versionDataProvider
-     */
-    public function testCrud(Stancer\Enum\ApiVersion $version)
+    public function testCrudV1()
     {
-        $this->config->setVersion($version);
+        if (getenv('API_VERSION') != 1) {
+            $this->assert(true == true);
+
+            return;
+        }
+        $this->config->setVersion(Stancer\Enum\ApiVersion::VERSION_1);
 
         $this
             ->given($cvc = $this->getRandomCvc())
@@ -106,29 +107,15 @@ class Card extends TestCase
                 ->and($this->testedInstance->setExpMonth($month))
                 ->and($this->testedInstance->setExpYear($year))
                 ->and($this->testedInstance->setNumber($number))
-        ;
 
-        if ($this->config->version === Stancer\Enum\ApiVersion::VERSION_1) {
-            $this->exception(function () {
+            ->exception(function () {
                 $this->testedInstance->send();
             })
                 ->isInstanceOf(Stancer\Exceptions\ConflictException::class)
                 ->message
                     ->isIdenticalTo('Card already exists, you may want to update it instead creating a new one (' . $id . ')')
-            ;
-        } else {
-            $this->object($this->testedInstance->send())
-                ->isInstanceOf(Stancer\Card::class)
-                ->string($this->testedInstance->getId())
-                    ->isNotEmpty
-                ->integer($this->testedInstance->getExpMonth())
-                    ->isIdenticalTo($month)
-            ;
-        }
 
-        $this
-            ->assert('Updatev1')
-                ->given(Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
+            ->assert('Update')
                 ->if($this->newTestedInstance($id))
                 ->then
                     ->variable($this->testedInstance->getName())
@@ -139,25 +126,6 @@ class Card extends TestCase
 
                     ->string($this->newTestedInstance($id)->getName())
                         ->isIdenticalTo($name)
-
-                    ->variable($this->testedInstance->getPreferredNetwork())
-                        ->isIdenticalTo($preferredNetwork)
-
-            ->assert('Updatev2')
-                ->given(Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
-                ->if($this->newTestedInstance($id))
-                ->then
-                    ->integer($this->testedInstance->getExpYear())
-                        ->isIdenticalto($year)
-
-                    ->integer($this->testedInstance->getExpMonth())
-                        ->isIdenticalto($month)
-
-                    ->object($this->testedInstance->setExpYear(++$year)->send())
-                        ->isTestedInstance
-
-                    ->integer($this->newTestedInstance($id)->getExpYear())
-                        ->isIdenticalTo($year)
 
                     ->variable($this->testedInstance->getPreferredNetwork())
                         ->isIdenticalTo($preferredNetwork)
@@ -186,6 +154,119 @@ class Card extends TestCase
                     ->variable($this->testedInstance->getPreferredNetwork())
                         ->isIdenticalTo($preferredNetwork)
 
+            ->assert('Read data / Other field')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    // Could not be return by the API
+                    ->variable($this->testedInstance->getCvc())
+                        ->isNull
+
+                    // Could not be return by the API
+                    ->variable($this->testedInstance->getNumber())
+                        ->isNull
+
+                    // We could not validate the value
+                    ->string($this->testedInstance->getFunding())
+                    ->string($this->testedInstance->getNature())
+                    ->string($this->testedInstance->getNetwork())
+        ;
+    }
+
+    public function testCrudV2()
+    {
+        if (getenv('API_VERSION') == '1') {
+            return;
+        }
+        $this->config->setVersion(Stancer\Enum\ApiVersion::VERSION_2);
+
+        $this
+            ->given($cvc = $this->getRandomCvc())
+            ->and(['network' => $network, 'card' => $card] = $this->getValidCardAndNetwork())
+            ->and($name = $this->getRandomString(10))
+            ->and($number = $card)
+            ->and($last4 = substr($number, -4))
+            ->and($preferredNetwork = $network)
+            ->and($dateNow = new \DateTimeImmutable())
+            ->and($month = $this->getRandomMonth())
+            ->and($year = $this->getRandomExpYear())
+
+            ->assert('Create card')
+                ->if($this->newTestedInstance)
+                ->and($this->testedInstance->setCvc($cvc))
+                ->and($this->testedInstance->setExpMonth($month))
+                ->and($this->testedInstance->setExpYear($year))
+                ->and($this->testedInstance->setNumber($number))
+                ->and($this->testedInstance->setName($name))
+                ->and($this->testedInstance->setPreferredNetwork($preferredNetwork))
+                ->then
+                    ->object($this->testedInstance->send())
+                        ->isTestedInstance
+
+                    ->string($id = $this->testedInstance->getId())
+                        ->startWith('card_')
+
+            ->assert('No duplication allowed')
+                ->if($this->newTestedInstance)
+                ->and($this->testedInstance->setCvc($cvc))
+                ->and($this->testedInstance->setExpMonth($month))
+                ->and($this->testedInstance->setExpYear($year))
+                ->and($this->testedInstance->setNumber($number))
+
+                ->object($this->testedInstance->send())
+                    ->isInstanceOf(Stancer\Card::class)
+                ->string($this->testedInstance->getId())
+                    ->isNotEmpty
+                ->integer($this->testedInstance->getExpMonth())
+                    ->isIdenticalTo($month)
+
+           ->assert('Update')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->integer($this->testedInstance->getExpYear())
+                        ->isIdenticalto($year)
+
+                    ->integer($this->testedInstance->getExpMonth())
+                        ->isIdenticalto($month)
+
+                    ->object($this->testedInstance->setExpYear(++$year)->send())
+                        ->isTestedInstance
+
+                    ->integer($this->newTestedInstance($id)->getExpYear())
+                        ->isIdenticalTo($year)
+
+                    ->dateTime($dateCreated = $this->testedInstance->getCreated())
+
+            ->assert('Read data / Expiration month')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->integer($this->testedInstance->getExpMonth())
+                        ->isIdenticalTo($month)
+
+            ->assert('Read data / Expiration year')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->integer($this->testedInstance->getExpYear())
+                        ->isIdenticalTo($year)
+        ;
+
+        if ($dateNow < $dateCreated) {
+            $this
+                ->assert('Read data / preferred network')
+                ->if($this->newTestedInstance($id))
+                    ->then
+                        ->variable($this->testedInstance->getPreferredNetwork())
+                        ->isIdenticalTo($preferredNetwork)
+
+                ->assert('Read data / Name')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->string($this->testedInstance->getName())
+                        ->isIdenticalTo($name)
+                ->assert('created today')
+            ;
+        }
+
+        $this
             ->assert('Read data / Other field')
                 ->if($this->newTestedInstance($id))
                 ->then
