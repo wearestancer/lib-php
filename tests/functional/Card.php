@@ -69,12 +69,9 @@ class Card extends TestCase
 
     public function testCrudV1()
     {
-        if (getenv('API_VERSION') != 1) {
-            $this->assert(true == true);
-
+        if ($this->config->version !== Stancer\Enum\ApiVersion::VERSION_1) {
             return;
         }
-        $this->config->setVersion(Stancer\Enum\ApiVersion::VERSION_1);
 
         $this
             ->given($cvc = $this->getRandomCvc())
@@ -174,10 +171,9 @@ class Card extends TestCase
 
     public function testCrudV2()
     {
-        if (getenv('API_VERSION') == '1') {
+        if ($this->config->version === Stancer\Enum\ApiVersion::VERSION_1) {
             return;
         }
-        $this->config->setVersion(Stancer\Enum\ApiVersion::VERSION_2);
 
         $this
             ->given($cvc = $this->getRandomCvc())

@@ -47,13 +47,9 @@ class Dispute extends TestCase
         ;
     }
 
-    /**
-     * @dataProvider versionDataProvider
-     */
-    public function testGetDispute(Stancer\Enum\ApiVersion $version)
+    public function testGetDispute()
     {
         $this
-            ->given(Stancer\Config::getGlobal()->setVersion($version))
             ->given($this->newTestedInstance('dspt_a4dIMSi7PBBoGiu2BocagB2f'))
             ->then
 
