@@ -280,4 +280,98 @@ class Card extends TestCase
                     ->string($this->testedInstance->getNetwork())
         ;
     }
+
+    public function testUpdateV1()
+    {
+        if ($this->config->version !== Stancer\Enum\ApiVersion::VERSION_1) {
+            return;
+        }
+        $this
+            ->given($cvc = $this->getRandomCvc())
+            ->and($card = 4000000000003055) // Card reserved for update testing (see youtrack API-549).
+            ->and($name = $this->getRandomString(10))
+            ->and($number = $card)
+
+            ->and($month = $this->getRandomMonth())
+            ->and($year = $this->getRandomExpYear())
+
+            ->assert('Create card')
+                ->if($this->newTestedInstance)
+                ->and($this->testedInstance->setCvc($cvc))
+                ->and($this->testedInstance->setExpMonth($month))
+                ->and($this->testedInstance->setExpYear($year))
+                ->and($this->testedInstance->setNumber($number))
+                ->then
+                    ->object($this->testedInstance->send())
+                        ->isTestedInstance
+
+                    ->string($id = $this->testedInstance->getId())
+                        ->startWith('card_')
+
+            ->assert('Update')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->variable($this->testedInstance->getName())
+                        ->isNull
+
+                    ->object($this->testedInstance->setName($name)->send())
+                        ->isTestedInstance
+
+                    ->string($this->newTestedInstance($id)->getName())
+                        ->isIdenticalTo($name)
+        ;
+    }
+
+    public function testUpdateV2()
+    {
+        if ($this->config->version === Stancer\Enum\ApiVersion::VERSION_1) {
+            return;
+        }
+
+        $this
+            ->given($cvc = $this->getRandomCvc())
+            ->and($number = 4000000000003055) // Card reserved for update testing (see youtrack API-549).
+            ->and($month = $this->getRandomMonth())
+            ->and($year = $this->getRandomExpYear())
+
+            ->assert('Create card')
+                ->if($this->newTestedInstance)
+                ->and($this->testedInstance->setCvc($cvc))
+                ->and($this->testedInstance->setExpMonth($month))
+                ->and($this->testedInstance->setExpYear($year))
+                ->and($this->testedInstance->setNumber($number))
+
+                ->then
+                    ->object($this->testedInstance->send())
+                        ->isTestedInstance
+
+                    ->string($id = $this->testedInstance->getId())
+                        ->startWith('card_')
+
+                   ->assert('Update')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->integer($year = $this->testedInstance->getExpYear())
+
+                    ->object($this->testedInstance->setExpYear($newYear = $year === 2099 ? --$year : ++$year)->send()) //stay in the bondary of our exp year
+                        ->isTestedInstance
+
+                    ->integer($this->newTestedInstance($id)->getExpYear())
+                        ->isIdenticalTo($newYear)
+
+                    ->dateTime($dateCreated = $this->testedInstance->getCreated())
+
+            ->assert('Read data / Expiration month')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->integer($this->testedInstance->getExpMonth())
+                        ->isIdenticalTo($month)
+
+            ->assert('Read data / Expiration year')
+                ->if($this->newTestedInstance($id))
+                ->then
+                    ->integer($this->testedInstance->getExpYear())
+                        ->isIdenticalTo($year)
+        ;
+    }
 }

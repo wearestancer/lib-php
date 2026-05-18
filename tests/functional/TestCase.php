@@ -138,7 +138,7 @@ class TestCase extends Stancer\Tests\atoum
                 '4000008260000000',
                 '4242424242424242',
                 '4444333322221111',
-                '4000000000003055',
+                // '4000000000003055', This card is only for card patching (see youtrack API-549)
                 '4000000760000002',
                 '4000001240000000',
                 '4000004840000008',
