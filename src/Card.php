@@ -21,6 +21,7 @@ use Stancer;
  * @method ?string getNature() Get card nature.
  * @method ?string getNetwork() Get card network.
  * @method ?string getNumber() Get card number.
+ * @method ?\Stancer\Card\PreferredNetwork getPreferredNetwork() Get card preferred network.
  * @method ?string getZipCode()
  * @method ?string get_brand() Get card brand.
  * @method ?string get_brand_name() Get formatted brand name.
@@ -44,6 +45,7 @@ use Stancer;
  * @method ?string get_nature() Get card nature.
  * @method ?string get_network() Get card network.
  * @method ?string get_number() Get card number.
+ * @method ?\Stancer\Card\PreferredNetwork get_preferred_network() Get card preferred network.
  * @method boolean get_tokenize() Is the card tokenized?
  * @method string get_uri() Get entity resource location.
  * @method ?string get_zip_code()
@@ -51,6 +53,7 @@ use Stancer;
  * @method $this setCvc(string $cvc) Set card Validation Code.
  * @method $this setExpYear(integer $expYear) Set card expiration year.
  * @method $this setName(string $name) Set card holder's name.
+ * @method $this setPreferredNetwork(\Stancer\Card\PreferredNetwork $preferredNetwork) Set card preferred network.
  * @method $this setTokenize(boolean $tokenize) Is the card tokenized?
  * @method $this setZipCode(string $zipCode)
  * @method $this set_cvc(string $cvc) Set card Validation Code.
@@ -60,6 +63,7 @@ use Stancer;
  * @method $this set_expiration_year(int $year) Alias for `self::setExpYear()`.
  * @method $this set_name(string $name) Set card holder's name.
  * @method $this set_number(string $number) Set card number.
+ * @method $this set_preferred_network(\Stancer\Card\PreferredNetwork $preferred_network) Set card preferred network.
  * @method $this set_tokenize(boolean $tokenize) Is the card tokenized?
  * @method $this set_zip_code(string $zip_code)
  *
@@ -70,6 +74,8 @@ use Stancer;
  * @property ?integer $exp_year Card expiration year.
  * @property ?string $name Card holder's name.
  * @property ?string $number Card number.
+ * @property ?\Stancer\Card\PreferredNetwork $preferredNetwork Card preferred network.
+ * @property ?\Stancer\Card\PreferredNetwork $preferred_network Card preferred network.
  * @property boolean $tokenize
  * @property ?string $zipCode
  * @property ?string $zip_code
@@ -175,6 +181,10 @@ class Card extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
                 'max' => 19,
             ],
             'type' => self::STRING,
+        ],
+        'preferredNetwork' => [
+            'desc' => 'Card preferred network',
+            'type' => Stancer\Card\PreferredNetwork::class,
         ],
         'tokenize' => [
             'type' => self::BOOLEAN,

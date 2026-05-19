@@ -4,10 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [unreleased]
+## [Unreleased]
 
 ### Added
 - Get Refund list from payments API V2 (CMS-490)
+- Support for Card networks (CMS-169)
 
 ### Fixed
 - Added Tag in tests (CMS-467)

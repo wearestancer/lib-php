@@ -9,6 +9,19 @@ class Card extends Stancer\Tests\atoum
     use Stancer\Tests\Provider\Cards;
 
     /**
+     * @tags Card NetworkProvider
+     */
+    public function networkProvider()
+    {
+        $provider = [];
+        foreach (Stancer\Card\PreferredNetwork::cases() as $preferredNetwork) {
+            $provider[] = [$preferredNetwork];
+        }
+
+        return $provider;
+    }
+
+    /**
      * @tags Card
      */
     public function testClass()
@@ -990,6 +1003,31 @@ class Card extends Stancer\Tests\atoum
                 ->then
                     ->string($this->testedInstance->network)
                         ->isIdenticalTo($value)
+        ;
+    }
+
+    /**
+     * @tags AbstractObject AliasTrait CardPreferredNetwork
+     *
+     * @dataProvider NetworkProvider
+     *
+     * @param mixed $preferredNetwork
+     */
+    public function testGet_Set_PreferredNetwork($preferredNetwork)
+    {
+        $this
+            ->given($this->newTestedInstance)
+            ->then
+                ->assert('Return null by default')
+                    ->variable($this->testedInstance->get_preferred_network())
+                        ->isIdenticalTo(null)
+                        ->isIdenticalTo($this->testedInstance->preferredNetwork)
+                        ->isIdenticalTo($this->testedInstance->getPreferredNetwork())
+                        ->isIdenticalTo($this->testedInstance->get_preferred_network())
+                ->assert('Testing Set & Get PreferredNetwork')
+                    ->given($this->testedInstance->preferred_network = $preferredNetwork)
+                        ->variable($this->testedInstance->preferred_network)
+                            ->isIdenticalTo($preferredNetwork)
         ;
     }
 

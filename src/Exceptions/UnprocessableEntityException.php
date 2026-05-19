@@ -31,21 +31,22 @@ class UnprocessableEntityException extends ClientException implements ExceptionI
      */
     public static function create(array $params = []): static
     {
-        $message = '';
+        $message = $params['message'] ?? self::$defaultMessage;
+        $newMessage = '';
         if (array_key_exists('detail', $params) && is_array($params['detail'])) {
             $detail = $params['detail'];
 
             if (is_string($detail['type']) && array_key_exists('type', $detail)) {
-                $message .= $detail['type'];
+                $newMessage .= $detail['type'];
             }
             if (is_string($detail['msg']) && array_key_exists('msg', $detail)) {
-                $message .= ': ' . $detail['msg'];
+                $newMessage .= ': ' . $detail['msg'];
             }
             if (is_array($detail['loc']) && array_key_exists('loc', $detail)) {
-                $message .= ' @ ' . implode(' -> ', $detail['loc']);
+                $newMessage .= ' @ ' . implode(' -> ', $detail['loc']);
             }
         }
-        $params['message'] = $message;
+        $params['message'] = $newMessage ? $newMessage : $message;
 
         return parent::create($params);
     }

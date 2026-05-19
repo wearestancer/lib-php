@@ -3,7 +3,6 @@
 namespace Stancer\Tests\functional;
 
 use Stancer;
-use Stancer\Config;
 use Stancer\Payment as testedClass;
 
 /**
@@ -165,7 +164,7 @@ class Payment extends TestCase
         ];
         foreach ($gen as $idx => $object) {
             $this
-            ->given($orderedList = Stancer\Config::getGlobal()->getVersion() === Stancer\Enum\ApiVersion::VERSION_1 ? $this->paymentList : array_reverse($this->paymentList))
+            ->given($orderedList = $this->config->version === Stancer\Enum\ApiVersion::VERSION_1 ? $this->paymentList : array_reverse($this->paymentList))
             ->object($object)
                     ->isInstanceOfTestedClass
                 ->string($object->getCard()->getLast4())
@@ -253,244 +252,245 @@ class Payment extends TestCase
      */
     public function testSendWithAuth($currency)
     {
-        $this
-            ->given(Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
-            ->assert('Auth V1')
-                ->given($amount = $this->getRandomAmount())
-                ->and($description = vsprintf('Automatic auth test, %.02f %s', [
-                    $amount / 100,
-                    $currency,
-                ]))
+        if ($this->config->version === Stancer\Enum\ApiVersion::VERSION_1) {
+            $this
+                ->assert('Auth V1')
+                    ->given($amount = $this->getRandomAmount())
+                    ->and($description = vsprintf('Automatic auth test, %.02f %s', [
+                        $amount / 100,
+                        $currency,
+                    ]))
 
-                ->if($card = new Stancer\Card())
-                ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth($this->getRandomMonth()))
-                ->and($card->setExpirationYear($this->getRandomExpYear()))
-                ->and($card->setCvc($this->getRandomCvc()))
+                    ->if($card = new Stancer\Card())
+                    ->and($card->setNumber($this->getValidCardNumber()))
+                    ->and($card->setExpirationMonth($this->getRandomMonth()))
+                    ->and($card->setExpirationYear($this->getRandomExpYear()))
+                    ->and($card->setCvc($this->getRandomCvc()))
 
-                ->if($customer = new Stancer\Customer())
-                ->and($customer->setName('John Doe'))
-                ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
+                    ->if($customer = new Stancer\Customer())
+                    ->and($customer->setName('John Doe'))
+                    ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
 
-                ->if($url = 'https://www.example.org/?' . uniqid())
+                    ->if($url = 'https://www.example.org/?' . uniqid())
 
-                ->if($this->newTestedInstance)
-                ->and($this->testedInstance->setAmount($amount))
-                ->and($this->testedInstance->setAuth($url))
-                ->and($this->testedInstance->setCurrency($currency))
-                ->and($this->testedInstance->setCard($card))
-                ->and($this->testedInstance->setCustomer($customer))
-                ->and($this->testedInstance->setDescription($description))
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->setAmount($amount))
+                    ->and($this->testedInstance->setAuth($url))
+                    ->and($this->testedInstance->setCurrency($currency))
+                    ->and($this->testedInstance->setCard($card))
+                    ->and($this->testedInstance->setCustomer($customer))
+                    ->and($this->testedInstance->setDescription($description))
 
-                // You may not need to do that, we will use REMOTE_ADDR and REMOTE_PORT environment variable
-                //  as IP and port (they are populated by Apache or nginx)
-                ->if($ip = $this->ipDataProvider(true))
-                ->and($port = rand(1, 65535))
-                ->and($this->testedInstance->setDevice(new Stancer\Device(['ip' => $ip, 'port' => $port])))
+                    // You may not need to do that, we will use REMOTE_ADDR and REMOTE_PORT environment variable
+                    //  as IP and port (they are populated by Apache or nginx)
+                    ->if($ip = $this->ipDataProvider(true))
+                    ->and($port = rand(1, 65535))
+                    ->and($this->testedInstance->setDevice(new Stancer\Device(['ip' => $ip, 'port' => $port])))
 
-                ->then
-                    ->object($this->testedInstance->send())
-                        ->isTestedInstance
-                    ->string($this->testedInstance->getId())
-                        ->startWith('paym_')
-                        ->hasLength(29)
+                    ->then
+                        ->object($this->testedInstance->send())
+                            ->isTestedInstance
+                        ->string($this->testedInstance->getId())
+                            ->startWith('paym_')
+                            ->hasLength(29)
 
-                    ->dateTime($this->testedInstance->getCreationDate())
-                        ->hasDay(date('d'))
+                        ->dateTime($this->testedInstance->getCreationDate())
+                            ->hasDay(date('d'))
 
-                    ->string($this->testedInstance->getMethod())
-                        ->isIdenticalTo('card')
+                        ->string($this->testedInstance->getMethod())
+                            ->isIdenticalTo('card')
 
-                    ->variable($this->testedInstance->getStatus())
-                        ->isNull
+                        ->variable($this->testedInstance->getStatus())
+                            ->isNull
 
-                    ->string($card->getId())
-                        ->startWith('card_')
-                        ->hasLength(29)
+                        ->string($card->getId())
+                            ->startWith('card_')
+                            ->hasLength(29)
 
-                    ->dateTime($card->getCreationDate())
-                        ->hasDay(date('d'))
+                        ->dateTime($card->getCreationDate())
+                            ->hasDay(date('d'))
 
-                    ->string($customer->getId())
-                        ->startWith('cust_')
-                        ->hasLength(29)
+                        ->string($customer->getId())
+                            ->startWith('cust_')
+                            ->hasLength(29)
 
-                    ->dateTime($customer->getCreationDate())
-                        ->hasDay(date('d'))
+                        ->dateTime($customer->getCreationDate())
+                            ->hasDay(date('d'))
 
-                    ->object($auth = $this->testedInstance->getAuth())
-                        ->isInstanceOf(Stancer\Auth::class)
+                        ->object($auth = $this->testedInstance->getAuth())
+                            ->isInstanceOf(Stancer\Auth::class)
 
-                    ->string($auth->getReturnUrl())
-                        ->isIdenticalTo($url)
+                        ->string($auth->getReturnUrl())
+                            ->isIdenticalTo($url)
 
-                    ->string($auth->getRedirectUrl())
-                        ->startWith('https://3ds.')
+                        ->string($auth->getRedirectUrl())
+                            ->startWith('https://3ds.')
 
-                    ->object($auth->getStatus())
-                        ->isInstanceOf(Stancer\Auth\Status::class)
-            ->assert('For payment page v1')
-                ->given($amount = $this->getRandomAmount())
-                ->and($description = vsprintf('Authenticated payment page test, %.02f %s', [
-                    $amount / 100,
-                    $currency,
-                ]))
+                        ->object($auth->getStatus())
+                            ->isInstanceOf(Stancer\Auth\Status::class)
+                ->assert('For payment page v1')
+                    ->given($amount = $this->getRandomAmount())
+                    ->and($description = vsprintf('Authenticated payment page test, %.02f %s', [
+                        $amount / 100,
+                        $currency,
+                    ]))
 
-                ->if($customer = new Stancer\Customer())
-                ->and($customer->setName('John Doe'))
-                ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
+                    ->if($customer = new Stancer\Customer())
+                    ->and($customer->setName('John Doe'))
+                    ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
 
-                ->if($this->newTestedInstance)
-                ->and($this->testedInstance->setAmount($amount))
-                ->and($this->testedInstance->setAuth(true))
-                ->and($this->testedInstance->setCurrency($currency))
-                ->and($this->testedInstance->setCustomer($customer))
-                ->and($this->testedInstance->setDescription($description))
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->setAmount($amount))
+                    ->and($this->testedInstance->setAuth(true))
+                    ->and($this->testedInstance->setCurrency($currency))
+                    ->and($this->testedInstance->setCustomer($customer))
+                    ->and($this->testedInstance->setDescription($description))
 
-                ->then
-                    ->object($this->testedInstance->send())
-                        ->isTestedInstance
+                    ->then
+                        ->object($this->testedInstance->send())
+                            ->isTestedInstance
 
-                    ->string($this->testedInstance->getId())
-                        ->startWith('paym_')
-                        ->hasLength(29)
+                        ->string($this->testedInstance->getId())
+                            ->startWith('paym_')
+                            ->hasLength(29)
 
-                    ->dateTime($this->testedInstance->getCreationDate())
-                        ->hasDay(date('d'))
+                        ->dateTime($this->testedInstance->getCreationDate())
+                            ->hasDay(date('d'))
 
-                    ->variable($this->testedInstance->getMethod())
-                        ->isNull
+                        ->variable($this->testedInstance->getMethod())
+                            ->isNull
 
-                    ->variable($this->testedInstance->getStatus())
-                        ->isNull
+                        ->variable($this->testedInstance->getStatus())
+                            ->isNull
 
-                    ->string($customer->getId())
-                        ->startWith('cust_')
-                        ->hasLength(29)
+                        ->string($customer->getId())
+                            ->startWith('cust_')
+                            ->hasLength(29)
 
-                    ->dateTime($customer->getCreationDate())
-                        ->hasDay(date('d'))
-                     ->object($auth = $this->testedInstance->getAuth())
-                        ->isInstanceOf(Stancer\Auth::class)
+                        ->dateTime($customer->getCreationDate())
+                            ->hasDay(date('d'))
+                         ->object($auth = $this->testedInstance->getAuth())
+                            ->isInstanceOf(Stancer\Auth::class)
 
-                    ->variable($auth->getReturnUrl())
-                        ->isNull
+                        ->variable($auth->getReturnUrl())
+                            ->isNull
 
-                    ->variable($auth->getRedirectUrl())
-                        ->isNull
+                        ->variable($auth->getRedirectUrl())
+                            ->isNull
 
-                    ->object($auth->getStatus())
-                        ->isIdenticalTo(Stancer\Auth\Status::REQUESTED)
+                        ->object($auth->getStatus())
+                            ->isIdenticalTo(Stancer\Auth\Status::REQUESTED)
+            ;
+        } else {
+            $this
+                ->assert('Auth')
+                    ->given($amount = $this->getRandomAmount())
+                    ->and($description = vsprintf('Automatic auth test, %.02f %s', [
+                        $amount / 100,
+                        $currency,
+                    ]))
 
-            ->assert('Auth V2')
-                ->given(Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
-                ->given($amount = $this->getRandomAmount())
-                ->and($description = vsprintf('Automatic auth test, %.02f %s', [
-                    $amount / 100,
-                    $currency,
-                ]))
+                    ->if($card = new Stancer\Card())
+                    ->and($card->setNumber($this->getValidCardNumber()))
+                    ->and($card->setExpirationMonth($this->getRandomMonth()))
+                    ->and($card->setExpirationYear($this->getRandomExpYear()))
+                    ->and($card->setCvc($this->getRandomCvc()))
 
-                ->if($card = new Stancer\Card())
-                ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth($this->getRandomMonth()))
-                ->and($card->setExpirationYear($this->getRandomExpYear()))
-                ->and($card->setCvc($this->getRandomCvc()))
+                    ->if($customer = new Stancer\Customer())
+                    ->and($customer->setName('John Doe'))
+                    ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
 
-                ->if($customer = new Stancer\Customer())
-                ->and($customer->setName('John Doe'))
-                ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
+                    ->if($url = 'https://www.example.org/?' . uniqid())
 
-                ->if($url = 'https://www.example.org/?' . uniqid())
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->setAmount($amount))
+                    ->and($this->testedInstance->setAuth(true))
+                    ->and($this->testedInstance->setCurrency($currency))
+                    ->and($this->testedInstance->setCard($card))
+                    ->and($this->testedInstance->setCustomer($customer))
+                    ->and($this->testedInstance->setDescription($description))
 
-                ->if($this->newTestedInstance)
-                ->and($this->testedInstance->setAmount($amount))
-                ->and($this->testedInstance->setAuth(true))
-                ->and($this->testedInstance->setCurrency($currency))
-                ->and($this->testedInstance->setCard($card))
-                ->and($this->testedInstance->setCustomer($customer))
-                ->and($this->testedInstance->setDescription($description))
+                    // You may not need to do that, we will use REMOTE_ADDR and REMOTE_PORT environment variable
+                    //  as IP and port (they are populated by Apache or nginx)
+                    ->if($ip = $this->ipDataProvider(true))
+                    ->and($port = rand(1, 65535))
+                    ->and($this->testedInstance->setDevice(new Stancer\Device(['ip' => $ip, 'port' => $port])))
 
-                // You may not need to do that, we will use REMOTE_ADDR and REMOTE_PORT environment variable
-                //  as IP and port (they are populated by Apache or nginx)
-                ->if($ip = $this->ipDataProvider(true))
-                ->and($port = rand(1, 65535))
-                ->and($this->testedInstance->setDevice(new Stancer\Device(['ip' => $ip, 'port' => $port])))
+                    ->then
+                        ->object($this->testedInstance->send())
+                            ->isTestedInstance
+                        // We cannot be sure of the status. It depend of the card (null if not tokenised or "to_capture")
 
-                ->then
-                    ->object($this->testedInstance->send())
-                        ->isTestedInstance
-                    ->string($this->testedInstance->getId())
-                        ->startWith('paym_')
-                        ->hasLength(29)
+                        ->string($this->testedInstance->getId())
+                            ->startWith('paym_')
+                            ->hasLength(29)
 
-                    ->dateTime($this->testedInstance->getCreationDate())
-                        ->hasDay(date('d'))
+                        ->dateTime($this->testedInstance->getCreationDate())
+                            ->hasDay(date('d'))
 
-                    ->string($this->testedInstance->getMethod())
-                        ->isIdenticalTo('card')
+                        ->string($this->testedInstance->getMethod())
+                            ->isIdenticalTo('card')
 
-                    ->variable($this->testedInstance->getStatus())
-                        ->isNull
+                        ->string($card->getId())
+                            ->startWith('card_')
+                            ->hasLength(29)
 
-                    ->string($card->getId())
-                        ->startWith('card_')
-                        ->hasLength(29)
+                        ->string($customer->getId())
+                            ->startWith('cust_')
+                            ->hasLength(29)
 
-                    ->string($customer->getId())
-                        ->startWith('cust_')
-                        ->hasLength(29)
+                        ->dateTime($customer->getCreationDate())
+                            ->hasDay(date('d'))
 
-                    ->dateTime($customer->getCreationDate())
-                        ->hasDay(date('d'))
+                        ->object($auth = $this->testedInstance->getAuth())
+                            ->isInstanceOf(Stancer\Auth::class)
 
-                    ->object($auth = $this->testedInstance->getAuth())
-                        ->isInstanceOf(Stancer\Auth::class)
+                ->assert('For payment page')
+                    ->given($amount = $this->getRandomAmount())
+                    ->and($description = vsprintf('Authenticated payment page test, %.02f %s', [
+                        $amount / 100,
+                        $currency,
+                    ]))
 
-            ->assert('For payment page v2')
-                ->given($amount = $this->getRandomAmount())
-                ->and($description = vsprintf('Authenticated payment page test, %.02f %s', [
-                    $amount / 100,
-                    $currency,
-                ]))
+                    ->if($customer = new Stancer\Customer())
+                    ->and($customer->setName('John Doe'))
+                    ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
 
-                ->if($customer = new Stancer\Customer())
-                ->and($customer->setName('John Doe'))
-                ->and($customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com'))
+                    ->if($this->newTestedInstance)
+                    ->and($this->testedInstance->setAmount($amount))
+                    ->and($this->testedInstance->setAuth(true))
+                    ->and($this->testedInstance->setCurrency($currency))
+                    ->and($this->testedInstance->setCustomer($customer))
+                    ->and($this->testedInstance->setDescription($description))
 
-                ->if($this->newTestedInstance)
-                ->and($this->testedInstance->setAmount($amount))
-                ->and($this->testedInstance->setAuth(true))
-                ->and($this->testedInstance->setCurrency($currency))
-                ->and($this->testedInstance->setCustomer($customer))
-                ->and($this->testedInstance->setDescription($description))
+                    ->then
+                        ->object($this->testedInstance->send())
+                            ->isTestedInstance
 
-                ->then
-                    ->object($this->testedInstance->send())
-                        ->isTestedInstance
+                        ->string($this->testedInstance->getId())
+                            ->startWith('paym_')
+                            ->hasLength(29)
 
-                    ->string($this->testedInstance->getId())
-                        ->startWith('paym_')
-                        ->hasLength(29)
+                        ->dateTime($this->testedInstance->getCreationDate())
+                            ->hasDay(date('d'))
 
-                    ->dateTime($this->testedInstance->getCreationDate())
-                        ->hasDay(date('d'))
+                        ->variable($this->testedInstance->getMethod())
+                            ->isNull
 
-                    ->variable($this->testedInstance->getMethod())
-                        ->isNull
+                        ->variable($this->testedInstance->getStatus())
+                            ->isNull
 
-                    ->variable($this->testedInstance->getStatus())
-                        ->isNull
+                        ->string($customer->getId())
+                            ->startWith('cust_')
+                            ->hasLength(29)
 
-                    ->string($customer->getId())
-                        ->startWith('cust_')
-                        ->hasLength(29)
+                        ->dateTime($customer->getCreationDate())
+                            ->hasDay(date('d'))
 
-                    ->dateTime($customer->getCreationDate())
-                        ->hasDay(date('d'))
-
-                    ->object($auth = $this->testedInstance->getAuth())
-                        ->isInstanceOf(Stancer\Auth::class)
-        ;
+                        ->object($auth = $this->testedInstance->getAuth())
+                            ->isInstanceOf(Stancer\Auth::class)
+            ;
+        }
     }
 
     /**
@@ -578,15 +578,43 @@ class Payment extends TestCase
                         ->isNull
 
                 ->given($paymId = $this->testedInstance->getId())
-                ->given(Stancer\Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
+        ;
+
+        if ($this->config->version === Stancer\Enum\ApiVersion::VERSION_1) {
+            $this
                 ->given($this->newTestedInstance($paymId))
                     ->assert('response patch V1')
                     ->object($this->testedInstance->setCard($card))
-                        ->isTestedInstance
+            ->isTestedInstance
 
                     ->object($this->testedInstance->send())
-                        ->isTestedInstance
+            ->isTestedInstance
 
+                    ->string($this->testedInstance->getMethod())
+            ->isEqualTo('card')
+
+                    ->string($this->testedInstance->getCard()->getId())
+            ->isIdenticalTo($card->getId())
+
+                    ->variable($this->testedInstance->getSepa())
+            ->isNull
+
+                    ->variable($this->testedInstance->getStatus())
+            ->isEqualTo(null)
+
+                    ->string($card->getId())
+            ->startWith('card_')
+            ->hasLength(29)
+            ;
+        } else {
+            $this
+            ->given($this->newTestedInstance($paymId))
+                ->assert('response patch V2')
+                ->object($this->testedInstance->setCard($card))
+                    ->isTestedInstance
+
+                ->object($this->testedInstance->send())
+                    ->isTestedInstance
                     ->string($this->testedInstance->getMethod())
                         ->isEqualTo('card')
 
@@ -597,42 +625,20 @@ class Payment extends TestCase
                         ->isNull
 
                     ->variable($this->testedInstance->getStatus())
-                        ->isEqualTo(null)
+                        ->isEqualTo(Stancer\Payment\Status::AUTHORIZED)
 
                     ->string($card->getId())
                         ->startWith('card_')
                         ->hasLength(29)
 
-                ->given(Stancer\Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
-                ->given($this->newTestedInstance($paymId))
-                    ->assert('response patch V2')
-                    ->object($this->testedInstance->setCard($card))
-                        ->isTestedInstance
+                ->object($this->testedInstance->setStatus(Stancer\Payment\Status::CAPTURE)->send())
+                    ->isTestedInstance
 
-                    ->object($this->testedInstance->send())
-                        ->isTestedInstance
-                        ->string($this->testedInstance->getMethod())
-                            ->isEqualTo('card')
-
-                        ->string($this->testedInstance->getCard()->getId())
-                            ->isIdenticalTo($card->getId())
-
-                        ->variable($this->testedInstance->getSepa())
-                            ->isNull
-
-                        ->variable($this->testedInstance->getStatus())
-                            ->isEqualTo(Stancer\Payment\Status::AUTHORIZED)
-
-                        ->string($card->getId())
-                            ->startWith('card_')
-                            ->hasLength(29)
-
-                    ->object($this->testedInstance->setStatus(Stancer\Payment\Status::CAPTURE)->send())
-                        ->isTestedInstance
-
-                    ->object($this->testedInstance->getStatus())
-                        ->isIdenticalTo(Stancer\Payment\Status::TO_CAPTURE)
-
+                ->object($this->testedInstance->getStatus())
+                    ->isIdenticalTo(Stancer\Payment\Status::TO_CAPTURE)
+            ;
+        }
+        $this
             ->assert('With unique ID')
                 ->given($this->newTestedInstance)
                 ->and($amount = $this->getRandomAmount())
@@ -663,31 +669,31 @@ class Payment extends TestCase
 
                 ->then
                     ->object($this->testedInstance->send())
-                        ->isTestedInstance
+        ->isTestedInstance
 
                     ->string($id = $this->testedInstance->getId())
-                        ->startWith('paym_')
-                        ->hasLength(29)
+        ->startWith('paym_')
+        ->hasLength(29)
 
                     ->string($this->testedInstance->getMethod())
-                        ->isIdenticalTo('card')
+        ->isIdenticalTo('card')
 
                     ->string($this->testedInstance->getUniqueId())
-                        ->isIdenticalTo($uniqueID)
+        ->isIdenticalTo($uniqueID)
 
                     ->object($this->testedInstance->getCard())
-                        ->isIdenticalTo($card)
+        ->isIdenticalTo($card)
 
                     ->string($card->getId())
-                        ->startWith('card_')
-                        ->hasLength(29)
+        ->startWith('card_')
+        ->hasLength(29)
 
                     ->object($this->testedInstance->getCustomer())
-                        ->isIdenticalTo($customer)
+        ->isIdenticalTo($customer)
 
                     ->string($customerID = $customer->getId())
-                        ->startWith('cust_')
-                        ->hasLength(29)
+        ->startWith('cust_')
+        ->hasLength(29)
 
                 ->if($this->newTestedInstance)
                 ->and($this->testedInstance->setAmount($this->getRandomAmount()))
@@ -699,11 +705,12 @@ class Payment extends TestCase
                     ->exception(function () {
                         $this->testedInstance->send();
                     })
-                        ->isInstanceOf(Stancer\Exceptions\ConflictException::class)
-                        ->message
-                            ->isIdenticalTo('Payment already exists, duplicate unique_id (' . $id . ')')
-
-            ->if(Stancer\Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
+        ->isInstanceOf(Stancer\Exceptions\ConflictException::class)
+        ->message
+            ->isIdenticalTo('Payment already exists, duplicate unique_id (' . $id . ')')
+        ;
+        if ($this->config->version === Stancer\Enum\ApiVersion::VERSION_1) {
+            $this
             ->assert('Allow duplicate customer')
                 ->given($this->newTestedInstance)
                 ->and($amount = $this->getRandomAmount())
@@ -728,75 +735,78 @@ class Payment extends TestCase
 
                 ->then
                     ->object($this->testedInstance->send())
-                        ->isTestedInstance
+            ->isTestedInstance
 
                     ->string($id = $this->testedInstance->getId())
-                        ->startWith('paym_')
-                        ->hasLength(29)
+            ->startWith('paym_')
+            ->hasLength(29)
 
                     ->string($this->testedInstance->getMethod())
-                        ->isIdenticalTo('card')
+            ->isIdenticalTo('card')
 
                     ->object($this->testedInstance->getCard())
-                        ->isIdenticalTo($card)
+            ->isIdenticalTo($card)
 
                     ->string($card->getId())
-                        ->startWith('card_')
-                        ->hasLength(29)
+            ->startWith('card_')
+            ->hasLength(29)
 
                     ->object($this->testedInstance->getCustomer())
-                        ->isIdenticalTo($customer)
+            ->isIdenticalTo($customer)
                     ->string($customer->getId())
-                        ->startWith('cust_')
-                        ->hasLength(29)
-                        ->isIdenticalTo($customerID) // From previous test
+            ->startWith('cust_')
+            ->hasLength(29)
+            ->isIdenticalTo($customerID) // From previous test
+            ;
+        } else {
+            $this
 
-            ->if(Stancer\Config::getGlobal()->setVersion(Stancer\Enum\ApiVersion::VERSION_2))
             ->assert('Allow duplicate customer')
-                ->given($this->newTestedInstance)
-                ->and($amount = $this->getRandomAmount())
-                ->and($description = sprintf('Automatic test, duplicate customer, %.02f %s', $amount / 100, $currency))
+            ->given($this->newTestedInstance)
+            ->and($amount = $this->getRandomAmount())
+            ->and($description = sprintf('Automatic test, duplicate customer, %.02f %s', $amount / 100, $currency))
 
-                ->if($card = new Stancer\Card())
-                ->and($card->setNumber($this->getValidCardNumber()))
-                ->and($card->setExpirationMonth($this->getRandomMonth()))
-                ->and($card->setExpirationYear($this->getRandomExpYear()))
-                ->and($card->setCvc($this->getRandomCvc()))
+            ->if($card = new Stancer\Card())
+            ->and($card->setNumber($this->getValidCardNumber()))
+            ->and($card->setExpirationMonth($this->getRandomMonth()))
+            ->and($card->setExpirationYear($this->getRandomExpYear()))
+            ->and($card->setCvc($this->getRandomCvc()))
 
-                ->if($customer = new Stancer\Customer())
-                ->and($customer->setName($name)) // From previous test
-                ->and($customer->setEmail($email)) // From previous test
-                ->and($customer->setMobile($mobile)) // From previous test
+            ->if($customer = new Stancer\Customer())
+            ->and($customer->setName($name)) // From previous test
+            ->and($customer->setEmail($email)) // From previous test
+            ->and($customer->setMobile($mobile)) // From previous test
 
-                ->if($this->testedInstance->setAmount($amount))
-                ->and($this->testedInstance->setCard($card))
-                ->and($this->testedInstance->setCurrency($currency))
-                ->and($this->testedInstance->setDescription($description))
-                ->and($this->testedInstance->setCustomer($customer))
+            ->if($this->testedInstance->setAmount($amount))
+            ->and($this->testedInstance->setCard($card))
+            ->and($this->testedInstance->setCurrency($currency))
+            ->and($this->testedInstance->setDescription($description))
+            ->and($this->testedInstance->setCustomer($customer))
 
-                ->then
-                    ->object($this->testedInstance->send())
-                        ->isTestedInstance
+            ->then
+                ->object($this->testedInstance->send())
+                    ->isTestedInstance
 
-                    ->string($id = $this->testedInstance->getId())
-                        ->startWith('paym_')
-                        ->hasLength(29)
+                ->string($id = $this->testedInstance->getId())
+                    ->startWith('paym_')
+                    ->hasLength(29)
 
-                    ->string($this->testedInstance->getMethod())
-                        ->isIdenticalTo('card')
+                ->string($this->testedInstance->getMethod())
+                    ->isIdenticalTo('card')
 
-                    ->object($this->testedInstance->getCard())
-                        ->isIdenticalTo($card)
+                ->object($this->testedInstance->getCard())
+                    ->isIdenticalTo($card)
 
-                    ->string($card->getId())
-                        ->startWith('card_')
-                        ->hasLength(29)
+                ->string($card->getId())
+                    ->startWith('card_')
+                    ->hasLength(29)
 
-                    ->string($customer->getId())
-                        ->startWith('cust_')
-                        ->hasLength(29)
-                        ->isNotIdenticalTo($customerID) // From previous test
-        ;
+                ->string($customer->getId())
+                    ->startWith('cust_')
+                    ->hasLength(29)
+                    ->isNotIdenticalTo($customerID) // From previous test
+            ;
+        }
     }
 
     /**

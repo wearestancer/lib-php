@@ -90,12 +90,8 @@ class Address extends TestCase
         ;
     }
 
-    /**
-     * @DataProvider versionDataProvider
-     */
-    public function testSend(Stancer\Enum\ApiVersion $version)
+    public function testSend()
     {
-        $this->config->version = $version;
         $this
             ->and($line1 = $this->getRandomstring(3, 50))
             ->and($line2 = $this->getRandomstring(3, 50))
@@ -148,9 +144,8 @@ class Address extends TestCase
     /**
      * @DataProvider versionDataProvider
      */
-    public function testUpdate(Stancer\Enum\ApiVersion $version)
+    public function testUpdate()
     {
-        $this->config->version = $version;
         $this
             ->given($this->newTestedInstance)
             ->and($zipCode = strtoupper($this->getRandomString(2, 16)))

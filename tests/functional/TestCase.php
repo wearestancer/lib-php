@@ -95,46 +95,68 @@ class TestCase extends Stancer\Tests\atoum
 
     public function getValidCardNumber(): string
     {
-        $cards = [
-            '4242424242424242',
-            '5555555555554444',
-            '4000000760000002',
-            '4000001240000000',
-            '4000004840000008',
-            '4000000400000008',
-            '4000000560000004',
-            '4000002080000001',
-            '4000002460000001',
-            '4000002500000003',
-            '4000002760000016',
-            '4000003720000005',
-            '4000003800000008',
-            '4000004420000006',
-            '4000005280000002',
-            '4000005780000007',
-            '4000006200000007',
-            '4000006430000009',
-            '4000007240000007',
-            '4000007520000008',
-            '4000007560000009',
-            '4000008260000000',
-            '4000000360000006',
-            '4000001560000002',
-            '4000003440000004',
-            '4000003920000003',
-            '3530111333300000',
-            '4000005540000008',
-            '4000007020000003',
-        ];
+        $cards = $this->getCardBranded();
+        $card = array_merge(...array_values($cards));
 
+        shuffle($card);
+
+        return $card[0];
+    }
+
+    public function getValidCardAndNetwork()
+    {
+        $cardsByNetworks = $this->getCardBranded();
+        $networks = array_keys($cardsByNetworks);
+        $network = $networks[rand(0, count($networks) - 1)];
+        $cards = $cardsByNetworks[$network];
         shuffle($cards);
 
-        return array_shift($cards);
+        return [
+            'network' => Stancer\Card\PreferredNetwork::tryFrom($network),
+            'card' => $cards[0],
+        ];
+    }
+
+    public function getCardBranded(): array
+    {
+        return [
+            'visa' => [
+                '4000000400000008',
+                '4000000560000004',
+                '4000002080000001',
+                '4000002460000001',
+                '4000002760000016',
+                '4000003720000005',
+                '4000003800000008',
+                '4000005280000002',
+                '4000005780000007',
+                '4000006200000007',
+                '4000006430000009',
+                '4000007240000007',
+                '4000007520000008',
+                '4000007560000009',
+                '4000008260000000',
+                '4242424242424242',
+                '4444333322221111',
+                // '4000000000003055', This card is only for card patching (see youtrack API-549)
+                '4000000760000002',
+                '4000001240000000',
+                '4000004840000008',
+            ],
+            'mastercard' => [
+                '5555555555554444',
+                '5200828282828210',
+                '5105105105105100',
+            ],
+            'national' => [
+                '4000002500000003',
+            ],
+        ];
     }
 
     public function getValidIban()
     {
-        $cards = [
+        $iban = [
             'AT611904300234573201',
             'BE62510007547061',
             'CH2089144321842946678',
@@ -154,8 +176,8 @@ class TestCase extends Stancer\Tests\atoum
             'SE3550000000054910000003',
         ];
 
-        shuffle($cards);
+        shuffle($iban);
 
-        return array_shift($cards);
+        return $iban[0];
     }
 }
