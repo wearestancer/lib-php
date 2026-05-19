@@ -127,7 +127,7 @@ class Config
 
     protected ?\DateTimeZone $timezone = null;
 
-    protected Stancer\Enum\ApiVersion $version = Stancer\Enum\ApiVersion::VERSION_1;
+    protected Stancer\Enum\ApiVersion $version = Stancer\Enum\ApiVersion::VERSION_2;
 
     /**
      * Create an API configuration.
@@ -490,7 +490,7 @@ class Config
     /**
      * Return API version.
      *
-     * Default : Stancer\Enum\ApiVersion::Version_1
+     * Default : Stancer\Enum\ApiVersion::Version_2
      */
     #[Stancer\Core\Documentation\FormatProperty(description: 'API version', nullable: false, type: '\\Stancer\\Enum\\ApiVersion')]
     public function getVersion(): Stancer\Enum\ApiVersion

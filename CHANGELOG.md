@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- API version is now set to v2 by default (CMS-513)
 - Type casting for more precise SEPA check (CMS-265)
 - Truncate user-agent to 255 character maximum (CMS-551)
 
