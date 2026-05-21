@@ -6,6 +6,9 @@ use Stancer;
 
 class StubObjectV1 extends Stancer\Tests\atoum
 {
+    /**
+     * @tags AbstractObject
+     */
     public function test_version()
     {
         $config = Stancer\Config::getGlobal();

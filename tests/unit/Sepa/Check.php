@@ -11,6 +11,9 @@ class Check extends Stancer\Tests\atoum
         return $this->choose(Stancer\Sepa\Check\Status::cases());
     }
 
+    /**
+     * @tags SepaCheck
+     */
     public function testClass()
     {
         $this
@@ -19,6 +22,9 @@ class Check extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject SepaCheck
+     */
     public function testGetDateBirth()
     {
         $this
@@ -55,6 +61,9 @@ class Check extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject SepaCheck
+     */
     public function testGetEndpoint()
     {
         $this
@@ -63,6 +72,9 @@ class Check extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject SepaCheck
+     */
     public function testGetResponse()
     {
         $this
@@ -92,6 +104,9 @@ class Check extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject SepaCheck
+     */
     public function testGetScoreName()
     {
         $this
@@ -137,6 +152,9 @@ class Check extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject SepaCheck
+     */
     public function testGetSepa()
     {
         $this
@@ -174,6 +192,9 @@ class Check extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject SepaCheck
+     */
     public function testGetStatus()
     {
         $this
@@ -203,6 +224,9 @@ class Check extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject SepaCheck
+     */
     public function testToJson()
     {
         $this

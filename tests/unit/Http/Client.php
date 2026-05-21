@@ -1,6 +1,6 @@
 <?php
 
-namespace Stancer\Http\tests\unit;
+namespace Stancer\tests\unit\Http;
 
 use mock;
 use Stancer;
@@ -194,6 +194,9 @@ class Client extends Stancer\Tests\atoum
         return $lines;
     }
 
+    /**
+     * @tags Client Http
+     */
     public function testClass()
     {
         $this
@@ -202,6 +205,9 @@ class Client extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Client Http
+     */
     public function test__construct__destruct()
     {
         $this
@@ -222,6 +228,9 @@ class Client extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Client Http
+     */
     public function testGetCurlResource()
     {
         $this
@@ -232,6 +241,9 @@ class Client extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Client Http Request Response
+     */
     public function testGetLastRequest_LastResponse()
     {
         $this
@@ -302,6 +314,8 @@ class Client extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Client Http
+     *
      * @dataProvider headerLineDataProvider
      *
      * @param mixed $line
@@ -334,10 +348,13 @@ class Client extends Stancer\Tests\atoum
         }
     }
 
+    /**
+     * @tags Client Http Request
+     */
     public function testRequest()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
 
             ->assert('Basic request')
                 ->given($this->newTestedInstance)
@@ -708,6 +725,8 @@ class Client extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Client Http Request
+     *
      * @dataProvider errorDataProvider
      *
      * @param mixed $error
@@ -720,7 +739,7 @@ class Client extends Stancer\Tests\atoum
     public function testRequest_exceptions($error, $code, $class, $message, $logLevel, $logMessage)
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
 
             ->assert($code . ' should throw ' . $class)
                 ->given($this->newTestedInstance)

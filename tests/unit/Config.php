@@ -14,6 +14,9 @@ class Config extends Stancer\Tests\atoum
     use Stancer\Tests\Provider\Cards;
     use Stancer\Tests\Provider\Dates;
 
+    /**
+     * @tags AliasTrait Config
+     */
     public function testClass()
     {
         $this
@@ -24,6 +27,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AliasTrait Config
+     */
     public function testAddAppData()
     {
         $this
@@ -101,13 +107,16 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AliasTrait Config
+     */
     public function testGetBasicAuthHeader()
     {
         $this
-            ->given($pprod = 'pprod_' . bin2hex(random_bytes(12)))
-            ->and($ptest = 'ptest_' . bin2hex(random_bytes(12)))
-            ->and($sprod = 'sprod_' . bin2hex(random_bytes(12)))
-            ->and($stest = 'stest_' . bin2hex(random_bytes(12)))
+            ->given($pprod = 'pprod_' . $this->getRandomString(24))
+            ->and($ptest = 'ptest_' . $this->getRandomString(24))
+            ->and($sprod = 'sprod_' . $this->getRandomString(24))
+            ->and($stest = 'stest_' . $this->getRandomString(24))
 
             ->and($this->newTestedInstance([$pprod, $ptest, $sprod, $stest]))
             ->then
@@ -125,13 +134,16 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AliasTrait Config
+     */
     public function testGetCalls()
     {
         $this
             ->given($this->function->setDefaultNamespace('Stancer\\Http'))
 
             ->assert('With debug mode activated / Default client / Without exception')
-                ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . bin2hex(random_bytes(12))])))
+                ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . $this->getRandomString(24)])))
                 ->and($this->testedInstance->setDebug(true))
 
                 ->if($body = uniqid())
@@ -229,7 +241,7 @@ class Config extends Stancer\Tests\atoum
                             ->isInstanceOf(Stancer\Http\Response::class)
 
             ->assert('With debug mode activated / Default client / With exception')
-                ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . bin2hex(random_bytes(12))])))
+                ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . $this->getRandomString(24)])))
                 ->and($this->testedInstance->setDebug(true))
 
                 ->if($body = uniqid())
@@ -352,7 +364,7 @@ class Config extends Stancer\Tests\atoum
                             ->isIdenticalTo($body)
 
             ->assert('With debug mode activated / Guzzle / Without exception')
-                ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . bin2hex(random_bytes(12))])))
+                ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . $this->getRandomString(24)])))
                 ->and($this->testedInstance->setDebug(true))
 
                 ->if($client = new mock\GuzzleHttp\Client())
@@ -402,7 +414,7 @@ class Config extends Stancer\Tests\atoum
                         ->isIdenticalTo($body)
 
             ->assert('With debug mode activated / Guzzle / With exception')
-                ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . bin2hex(random_bytes(12))])))
+                ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . $this->getRandomString(24)])))
                 ->and($this->testedInstance->setDebug(true))
 
                 ->if($body = uniqid())
@@ -457,7 +469,7 @@ class Config extends Stancer\Tests\atoum
                         ->isIdenticalTo($body)
 
             ->assert('Without debug mode activated')
-                ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . bin2hex(random_bytes(12))])))
+                ->given(testedClass::setGlobal($this->newTestedInstance(['stest_' . $this->getRandomString(24)])))
                 ->and($this->testedInstance->setDebug(false))
 
                 ->if($body = uniqid())
@@ -481,6 +493,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AliasTrait Config
+     */
     public function testGetDebug_SetDebug()
     {
         $this
@@ -607,6 +622,8 @@ class Config extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AliasTrait Config
+     *
      * @dataProvider timeZoneProvider
      *
      * @param mixed $zone
@@ -827,6 +844,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AliasTrait Config
+     */
     public function testGetDefaultUserAgent()
     {
         $this
@@ -873,6 +893,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AliasTrait Config
+     */
     public function testGetGlobal_SetGlobal()
     {
         $this
@@ -904,6 +927,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AliasTrait Config
+     */
     public function testGetHost_SetHost()
     {
         $this
@@ -941,6 +967,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AliasTrait Config
+     */
     public function testGetHttpClient_SetHttpClient()
     {
         $this
@@ -1013,6 +1042,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AliasTrait Config
+     */
     public function testGetLogger_SetLogger()
     {
         $this
@@ -1050,6 +1082,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AliasTrait Config
+     */
     public function testGetMode_SetMode()
     {
         $this
@@ -1130,6 +1165,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AliasTrait Config
+     */
     public function testGetPort_SetPort()
     {
         $this
@@ -1167,13 +1205,16 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AliasTrait Config
+     */
     public function testGetPublicKey()
     {
         $this
-            ->given($pprod = 'pprod_' . bin2hex(random_bytes(12)))
-            ->and($ptest = 'ptest_' . bin2hex(random_bytes(12)))
-            ->and($sprod = 'sprod_' . bin2hex(random_bytes(12)))
-            ->and($stest = 'stest_' . bin2hex(random_bytes(12)))
+            ->given($pprod = 'pprod_' . $this->getRandomString(24))
+            ->and($ptest = 'ptest_' . $this->getRandomString(24))
+            ->and($sprod = 'sprod_' . $this->getRandomString(24))
+            ->and($stest = 'stest_' . $this->getRandomString(24))
 
             ->if($this->newTestedInstance([$pprod, $ptest, $sprod, $stest]))
             ->then
@@ -1206,13 +1247,16 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AliasTrait Config
+     */
     public function testGetSecretKey()
     {
         $this
-            ->given($pprod = 'pprod_' . bin2hex(random_bytes(12)))
-            ->and($ptest = 'ptest_' . bin2hex(random_bytes(12)))
-            ->and($sprod = 'sprod_' . bin2hex(random_bytes(12)))
-            ->and($stest = 'stest_' . bin2hex(random_bytes(12)))
+            ->given($pprod = 'pprod_' . $this->getRandomString(24))
+            ->and($ptest = 'ptest_' . $this->getRandomString(24))
+            ->and($sprod = 'sprod_' . $this->getRandomString(24))
+            ->and($stest = 'stest_' . $this->getRandomString(24))
 
             ->if($this->newTestedInstance([$pprod, $ptest, $sprod, $stest]))
             ->then
@@ -1245,6 +1289,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AliasTrait Config
+     */
     public function testGetTimeout_SetTimeout()
     {
         $this
@@ -1304,6 +1351,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AliasTrait Config
+     */
     public function testGetUri()
     {
         $this
@@ -1361,6 +1411,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AliasTrait Config
+     */
     public function testGetVersion_SetVersion()
     {
         $this
@@ -1411,13 +1464,16 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Config
+     */
     public function testInit()
     {
         $this
-            ->given($pprod = 'pprod_' . bin2hex(random_bytes(12)))
-            ->and($ptest = 'ptest_' . bin2hex(random_bytes(12)))
-            ->and($sprod = 'sprod_' . bin2hex(random_bytes(12)))
-            ->and($stest = 'stest_' . bin2hex(random_bytes(12)))
+            ->given($pprod = 'pprod_' . $this->getRandomString(24))
+            ->and($ptest = 'ptest_' . $this->getRandomString(24))
+            ->and($sprod = 'sprod_' . $this->getRandomString(24))
+            ->and($stest = 'stest_' . $this->getRandomString(24))
 
             ->then
                 ->object($obj = testedClass::init([$pprod, $ptest, $sprod, $stest]))
@@ -1431,6 +1487,9 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AliasTrait Config
+     */
     public function testModes()
     {
         $this
@@ -1528,12 +1587,15 @@ class Config extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Config
+     */
     public function testSetKeys()
     {
         $this
-            ->given($ptest1 = 'ptest_' . bin2hex(random_bytes(12)))
-            ->and($ptest2 = 'ptest_' . bin2hex(random_bytes(12)))
-            ->and($stest = 'stest_' . bin2hex(random_bytes(12)))
+            ->given($ptest1 = 'ptest_' . $this->getRandomString(24))
+            ->and($ptest2 = 'ptest_' . $this->getRandomString(24))
+            ->and($stest = 'stest_' . $this->getRandomString(24))
 
             ->if($this->newTestedInstance([]))
             ->then

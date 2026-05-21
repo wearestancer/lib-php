@@ -6,6 +6,9 @@ use GuzzleHttp;
 use mock;
 use Stancer;
 
+/**
+ * @tags Request
+ */
 class Request extends Stancer\Tests\atoum
 {
     use Stancer\Tests\Provider\Banks;
@@ -104,7 +107,7 @@ class Request extends Stancer\Tests\atoum
                 ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
-                ->if($id = 'card_' . bin2hex(random_bytes(12)))
+                ->if($id = 'card_' . $this->getRandomString(24))
                 ->and($card = new Stancer\Card($id))
                 ->and($payment = new Stancer\Payment(['card' => $card]))
 
@@ -150,7 +153,7 @@ class Request extends Stancer\Tests\atoum
                 ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
-                ->if($id = 'sepa_' . bin2hex(random_bytes(12)))
+                ->if($id = 'sepa_' . $this->getRandomString(24))
                 ->and($sepa = new Stancer\Sepa($id))
                 ->and($payment = new Stancer\Payment(['sepa' => $sepa]))
 
@@ -294,7 +297,7 @@ class Request extends Stancer\Tests\atoum
                 ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
-                ->if($id = 'card_' . bin2hex(random_bytes(12)))
+                ->if($id = 'card_' . $this->getRandomString(24))
                 ->and($card = new Stancer\Card($id))
                 ->and($payment = new Stancer\Payment(['card' => $card]))
 
@@ -335,7 +338,7 @@ class Request extends Stancer\Tests\atoum
                 ->and($config = $this->mockConfig($client))
                 ->and($config->setDebug(true))
 
-                ->if($id = 'sepa_' . bin2hex(random_bytes(12)))
+                ->if($id = 'sepa_' . $this->getRandomString(24))
                 ->and($sepa = new Stancer\Sepa($id))
                 ->and($payment = new Stancer\Payment(['sepa' => $sepa]))
 
@@ -448,7 +451,7 @@ class Request extends Stancer\Tests\atoum
     {
         $this
             ->given($this->function->setDefaultNamespace('Stancer\\Http'))
-            ->if($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->if($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
             ->and($config->setDebug(false))
 
             ->assert('With bad credential')

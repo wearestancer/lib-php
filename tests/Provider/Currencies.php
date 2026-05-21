@@ -19,9 +19,9 @@ trait Currencies
             'USD',
         ];
 
-        shuffle($data);
-
         if ($one) {
+            shuffle($data);
+
             return $data[0];
         }
 

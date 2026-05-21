@@ -25,6 +25,9 @@ class Refund extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Refund
+     */
     public function testSend()
     {
         $this
@@ -35,11 +38,11 @@ class Refund extends Stancer\Tests\atoum
                 ->if($this->calling($client)->request[] = new Stancer\Http\Response(200, '{}'))
                 ->and($this->calling($client)->request[] = new Stancer\Http\Response(200, $this->getFixture('refund', 'read')))
 
-                ->if($paym = 'paym_' . bin2hex(random_bytes(12)))
+                ->if($paym = 'paym_' . $this->getRandomString(24))
                 ->and($payment = new Stancer\Payment($paym))
                 ->and($payment->setCurrency('eur'))
 
-                ->if($amount = rand(50, 99999))
+                ->if($amount = $this->getRandomAmount())
 
                 ->if($this->newTestedInstance)
                 ->and($this->testedInstance->testOnlySetAmount($amount))
@@ -82,7 +85,7 @@ class Refund extends Stancer\Tests\atoum
                 ->if($this->calling($client)->request[] = new Stancer\Http\Response(200, '{}'))
                 ->and($this->calling($client)->request[] = new Stancer\Http\Response(200, $this->getFixture('refund', 'read')))
 
-                ->if($paym = 'paym_' . bin2hex(random_bytes(12)))
+                ->if($paym = 'paym_' . $this->getRandomString(24))
                 ->and($payment = new Stancer\Payment($paym))
                 ->and($payment->setCurrency('eur'))
 

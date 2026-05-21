@@ -1,12 +1,15 @@
 <?php
 
-namespace Stancer\Http\tests\unit;
+namespace Stancer\tests\unit\Http;
 
 use Psr;
 use Stancer;
 
 class Stream extends Stancer\Tests\atoum
 {
+    /**
+     * @tags Stream Http
+     */
     public function testClass()
     {
         $this
@@ -15,6 +18,9 @@ class Stream extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Stream Http
+     */
     public function testClose()
     {
         $this
@@ -25,6 +31,9 @@ class Stream extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Stream Http
+     */
     public function testDetach()
     {
         $this
@@ -35,6 +44,9 @@ class Stream extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Stream Http
+     */
     public function testGetContent_castToString()
     {
         $this
@@ -100,6 +112,9 @@ class Stream extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Stream Http
+     */
     public function testGetMetadata()
     {
         $this
@@ -113,6 +128,9 @@ class Stream extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Stream Http
+     */
     public function testGetSize()
     {
         $this
@@ -126,6 +144,9 @@ class Stream extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Stream Http
+     */
     public function testIsReadable()
     {
         $this
@@ -136,6 +157,9 @@ class Stream extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Stream Http
+     */
     public function testIsSeekable()
     {
         $this
@@ -146,6 +170,9 @@ class Stream extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Stream Http
+     */
     public function testIsWritable()
     {
         $this
@@ -156,6 +183,9 @@ class Stream extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Stream Http
+     */
     public function testRead()
     {
         $this
@@ -202,6 +232,9 @@ class Stream extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Stream Http
+     */
     public function testSeek_Tell()
     {
         $this
@@ -336,6 +369,9 @@ class Stream extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Stream Http
+     */
     public function testWrite()
     {
         $this

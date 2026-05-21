@@ -6,6 +6,9 @@ use Stancer;
 
 class Details extends Stancer\Tests\atoum
 {
+    /**
+     * @tags AbstractObject Payout PayoutDetails
+     */
     public function testClass()
     {
         $this
@@ -14,10 +17,13 @@ class Details extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Dispute Payout PayoutDetails
+     */
     public function testDisputes()
     {
         $this
-            ->if($amount = rand(50, 999999))
+            ->if($amount = $this->getRandomAmount())
             ->then
                 ->variable($this->newTestedInstance->getDisputes())
                     ->isNull
@@ -40,10 +46,13 @@ class Details extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Payment Payout PayoutDetails
+     */
     public function testPayments()
     {
         $this
-            ->if($amount = rand(50, 999999))
+            ->if($amount = $this->getRandomAmount())
             ->then
                 ->variable($this->newTestedInstance->getPayments())
                     ->isNull
@@ -66,10 +75,13 @@ class Details extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject  Payout PayoutDetails Refund
+     */
     public function testRefunds()
     {
         $this
-            ->if($amount = rand(50, 999999))
+            ->if($amount = $this->getRandomAmount())
             ->then
                 ->variable($this->newTestedInstance->getRefunds())
                     ->isNull

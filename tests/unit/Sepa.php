@@ -9,10 +9,13 @@ class Sepa extends Stancer\Tests\atoum
 {
     use Stancer\Tests\Provider\Banks;
 
+    /**
+     * @tags AbstractObject AliasTrait Sepa
+     */
     public function testCheck()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
             ->and($config->setDebug(false))
 
             ->assert('Without ID')
@@ -89,6 +92,9 @@ class Sepa extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Sepa
+     */
     public function testClass()
     {
         $this
@@ -98,6 +104,9 @@ class Sepa extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Sepa
+     */
     public function testDateBirth()
     {
         $this
@@ -126,6 +135,9 @@ class Sepa extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Sepa
+     */
     public function testDateMandate()
     {
         $this
@@ -154,6 +166,9 @@ class Sepa extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Sepa
+     */
     public function testGetEndpoint()
     {
         $this
@@ -165,6 +180,8 @@ class Sepa extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject Sepa
+     *
      * @dataProvider ibanDataProvider
      *
      * @param mixed $iban
@@ -193,6 +210,9 @@ class Sepa extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Sepa
+     */
     public function testMandate()
     {
         $mandate = '';
@@ -240,6 +260,9 @@ class Sepa extends Stancer\Tests\atoum
         }
     }
 
+    /**
+     * @tags AbstractObject Sepa
+     */
     public function testSetBic()
     {
         $range = range(1, 20);
@@ -291,6 +314,9 @@ class Sepa extends Stancer\Tests\atoum
         }
     }
 
+    /**
+     * @tags AbstractObject Sepa
+     */
     public function testSetIban()
     {
         $this
@@ -458,6 +484,9 @@ class Sepa extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Sepa
+     */
     public function testSetName()
     {
         $this
@@ -475,10 +504,13 @@ class Sepa extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     *  @tags AbstractObject AliasTrait Sepa
+     */
     public function testValidate()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
             ->and($config->setDebug(false))
             ->and($options = [
                 'headers' => [

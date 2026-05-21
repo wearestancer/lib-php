@@ -1,6 +1,6 @@
 <?php
 
-namespace Stancer\Http\tests\unit;
+namespace Stancer\tests\unit\Http;
 
 use Psr;
 use Stancer;
@@ -9,6 +9,9 @@ class Response extends Stancer\Tests\atoum
 {
     use Stancer\Tests\Provider\Http;
 
+    /**
+     * @tags Response Http
+     */
     public function testClass()
     {
         $this
@@ -18,6 +21,8 @@ class Response extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Response Http
+     *
      * @dataProvider httpStatusDataProvider
      *
      * @param mixed $code
@@ -61,6 +66,8 @@ class Response extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Response Http
+     *
      * @dataProvider httpStatusDataProvider
      *
      * @param mixed $code
@@ -84,6 +91,9 @@ class Response extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Response Http
+     */
     public function testGetStatusCode()
     {
         $this
@@ -95,6 +105,9 @@ class Response extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Response Http Message
+     */
     public function testWithStatus()
     {
         $this

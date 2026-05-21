@@ -6,6 +6,9 @@ use Stancer;
 
 class Refund extends Stancer\Tests\atoum
 {
+    /**
+     * @tags Refund
+     */
     public function testClass()
     {
         $this
@@ -16,6 +19,9 @@ class Refund extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Refund
+     */
     public function testGetDateBank()
     {
         $this
@@ -39,6 +45,9 @@ class Refund extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Refund
+     */
     public function testGetDateRefund()
     {
         $this
@@ -62,6 +71,9 @@ class Refund extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Refund
+     */
     public function testGetEndpoint()
     {
         $this
@@ -72,6 +84,9 @@ class Refund extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Refund
+     */
     public function testGetStatus()
     {
         $this
@@ -107,12 +122,15 @@ class Refund extends Stancer\Tests\atoum
         }
     }
 
+    /**
+     * @tags AbstractObject AliasTrait AmountTrait Refund
+     */
     public function testSetAmount()
     {
         $this
             ->assert('camelCase method')
                 ->exception(function () {
-                    $this->newTestedInstance->setAmount(rand(0, PHP_INT_MAX));
+                    $this->newTestedInstance->setAmount($this->getRandomAmount());
                 })
                     ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                     ->message
@@ -120,7 +138,7 @@ class Refund extends Stancer\Tests\atoum
 
             ->assert('camelCase method')
                 ->exception(function () {
-                    $this->newTestedInstance->set_amount(rand(0, PHP_INT_MAX));
+                    $this->newTestedInstance->set_amount($this->getRandomAmount());
                 })
                     ->isInstanceOf(Stancer\Exceptions\BadMethodCallException::class)
                     ->message
@@ -128,7 +146,7 @@ class Refund extends Stancer\Tests\atoum
 
             ->assert('property')
                 ->exception(function () {
-                    $this->newTestedInstance->amount = rand(0, PHP_INT_MAX);
+                    $this->newTestedInstance->amount = $this->getRandomAmount();
                 })
                     ->isInstanceOf(Stancer\Exceptions\BadPropertyAccessException::class)
                     ->message

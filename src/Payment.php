@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Stancer;
 
 use Stancer;
+use Stancer\Core\SearchObject;
 
 /**
  * Representation of a payment.
@@ -510,6 +511,51 @@ class Payment extends Stancer\Core\AbstractObject
         }
 
         return vsprintf('https://%s/%s/%s', $data) . $query;
+    }
+
+    /**
+     * Populate refund list
+     * We use a call to our api in version superior to V1
+     * This call isn't standard inner route call so we make custom code for this route only.
+     */
+    public function populateRefunds(): static
+    {
+        $paymentId = $this->getId();
+        if ($this->populated || !$paymentId || !$this->getEndpoint()) {
+            return $this;
+        }
+        if (Stancer\Config::getGlobal()->version === Stancer\Enum\ApiVersion::VERSION_1) {
+            return $this;
+        }
+        $refunds = new SearchObject($paymentId, 'refunds', $this::ENDPOINT);
+
+        $request = new Stancer\Core\Request();
+
+        /** @var array<mixed> $refundsListRaw */
+        $refundsListRaw = json_decode($request->get($refunds, []), true);
+        $refundList = [];
+        if (count($refundsListRaw) === 0 || !is_array($refundsListRaw)) {
+            return $this;
+        }
+
+        /** @phpstan-var array{id:string,string:mixed} $refundArray*/
+        foreach ($refundsListRaw as $refundArray) {
+            $refund = new Refund($refundArray['id']);
+            $refundList[] = $refund;
+        }
+
+        $this->dataModel['refunds']['value'] = $refundList;
+
+        return $this;
+    }
+
+    #[\Override]
+    public function populate(): static
+    {
+        $this->populateRefunds();
+        parent::populate();
+
+        return $this;
     }
 
     /**

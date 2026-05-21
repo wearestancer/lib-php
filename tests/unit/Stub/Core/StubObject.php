@@ -216,6 +216,9 @@ class StubObject extends Stancer\Tests\atoum
         return substr(md5(uniqid()), 0, $length);
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function test__construct()
     {
         $this
@@ -248,6 +251,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function test__call()
     {
         $this
@@ -307,6 +313,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait
+     */
     public function test__get__set()
     {
         $this
@@ -370,6 +379,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testAllowedValues()
     {
         $this
@@ -518,6 +530,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider validDataProvider
      *
      * @param mixed $property
@@ -540,6 +554,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait
+     */
     public function testDataModelAdder()
     {
         $this
@@ -557,6 +574,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider validDataProvider
      *
      * @param mixed $property
@@ -576,6 +595,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testDataModelGetter()
     {
         $this
@@ -592,6 +614,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider validDataProvider
      *
      * @param mixed $property
@@ -624,6 +648,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider validArrayDataProvider
      *
      * @param mixed $property
@@ -689,6 +715,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait
+     */
     public function testDataModelGetterWillCallPopulate()
     {
         $this
@@ -699,7 +728,7 @@ class StubObject extends Stancer\Tests\atoum
             ->and($body = '{"id":"' . $id . '","created":' . $timestamp . ',"string1":"' . $string1 . '"}')
             ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
             ->and($this->calling($client)->request = $response)
-            ->and($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
             ->and($config->setHttpClient($client))
             ->and($config->setDebug(false))
 
@@ -725,6 +754,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait
+     */
     public function testDataModelSetter()
     {
         $this
@@ -741,6 +773,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait
+     */
     public function testDataModelThrowsUnknownProperty()
     {
         $this
@@ -769,6 +804,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider invalidDataProvider
      *
      * @param mixed $property
@@ -810,6 +847,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider timeZoneProvider
      *
      * @param mixed $zone
@@ -860,6 +899,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider timeZoneProvider
      *
      * @param mixed $zone
@@ -912,6 +953,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider timeZoneProvider
      *
      * @param mixed $zone
@@ -964,6 +1007,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider timeZoneProvider
      *
      * @param mixed $zone
@@ -1039,6 +1084,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider timeZoneProvider
      *
      * @param mixed $zone
@@ -1105,6 +1152,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider timeZoneProvider
      *
      * @param mixed $zone
@@ -1170,10 +1219,13 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testGetCreationDate()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
 
             ->if($client = new mock\Stancer\Http\Client())
             ->and($config->setHttpClient($client))
@@ -1201,6 +1253,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testGet()
     {
         $this
@@ -1225,7 +1280,7 @@ class StubObject extends Stancer\Tests\atoum
             ->if($client = new mock\Stancer\Http\Client())
             ->and($this->calling($client)->request = $response)
 
-            ->if($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->if($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
             ->and($config->setDebug(false))
             ->and($config->setHttpClient($client))
 
@@ -1293,6 +1348,8 @@ class StubObject extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject
+     *
      * @dataProvider validDataProvider
      *
      * @param mixed $property
@@ -1339,6 +1396,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testHydrate()
     {
         $this
@@ -1490,6 +1550,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testIsModified_isNotModified()
     {
         $this
@@ -1599,6 +1662,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testJsonSerialize()
     {
         $this
@@ -1918,12 +1984,15 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function test_ModifyDataVersion()
     {
         $this
             ->given($config = Stancer\Config::getGlobal())
             ->given($stringData = $this->getRandomString(1, 20))
-            ->given($intData = $this->getRandomInteger(1, 100))
+            ->given($intData = rand(1, 100))
 
             ->and($config->setVersion(Stancer\Enum\ApiVersion::VERSION_1))
             ->assert('In V1 it\'s a string')
@@ -1992,11 +2061,14 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testPopulate()
     {
         $this
             ->assert('Work with an id')
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
                 ->and($id = uniqid())
                 ->and($timestamp = time())
                 ->and($mock = new GuzzleHttp\Handler\MockHandler([
@@ -2023,7 +2095,7 @@ class StubObject extends Stancer\Tests\atoum
                         ->isEmpty
 
             ->assert('Only one request with two consecutive call')
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
                 ->and($config->setDebug(false))
 
                 ->if($client = new mock\GuzzleHttp\Client())
@@ -2044,7 +2116,7 @@ class StubObject extends Stancer\Tests\atoum
                             ->once
 
             ->assert('Send blocks populate')
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
                 ->and($config->setDebug(false))
                 ->and($id = uniqid())
                 ->and($created = time())
@@ -2073,7 +2145,7 @@ class StubObject extends Stancer\Tests\atoum
                                 ->never
 
             ->assert('Populate blocks send')
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
                 ->and($config->setDebug(false))
                 ->and($id = uniqid())
                 ->and($created = time())
@@ -2109,7 +2181,7 @@ class StubObject extends Stancer\Tests\atoum
                                 ->once
 
             ->assert('Inner object are marked as populated too')
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
                 ->and($config->setDebug(false))
 
                 ->if($client = new mock\GuzzleHttp\Client())
@@ -2138,7 +2210,7 @@ class StubObject extends Stancer\Tests\atoum
                         ->isTrue
 
             ->assert('Populate working normally')
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
                 ->and($config->setDebug(false))
                 ->and($id = uniqid())
                 ->and($created = time())
@@ -2211,7 +2283,7 @@ class StubObject extends Stancer\Tests\atoum
                             ->isTrue
 
             ->assert('Inner object are not marked as modified')
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
                 ->and($config->setDebug(false))
 
                 ->if($client = new mock\GuzzleHttp\Client())
@@ -2256,6 +2328,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testRetrieve()
     {
         $this
@@ -2270,6 +2345,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testSend()
     {
         $this
@@ -2290,7 +2368,7 @@ class StubObject extends Stancer\Tests\atoum
                 ->and($id = uniqid())
                 ->and($created = time())
 
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
                 ->and($body = json_encode(compact('id', 'created', 'string1', 'integer1')))
                 ->and($client = new mock\GuzzleHttp\Client())
                 ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
@@ -2340,7 +2418,7 @@ class StubObject extends Stancer\Tests\atoum
                 ->and($id = uniqid())
                 ->and($created = time())
 
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
                 ->and($body = json_encode(compact('id', 'created', 'string1')))
                 ->and($client = new mock\GuzzleHttp\Client())
                 ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
@@ -2385,7 +2463,7 @@ class StubObject extends Stancer\Tests\atoum
                         ->isFalse
 
             ->assert('No error if returned body is null (saw with PATCH implementation)')
-                ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+                ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
                 ->and($client = new mock\Stancer\Http\Client())
                 ->and($config->setHttpClient($client))
                 ->and($config->setDebug(false))
@@ -2430,6 +2508,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testSend_withOnlyID()
     {
         $this
@@ -2439,8 +2520,8 @@ class StubObject extends Stancer\Tests\atoum
             ->and($this->calling($client)->request = $cardResponse)
 
             ->given($string1 = $this->getRandomString(10, 20))
-            ->and($integer1 = random_int(10, 20))
-            ->and($year = (date('Y') + random_int(1, 50)))
+            ->and($integer1 = rand(10, 20))
+            ->and($year = $this->getRandomExpYear())
 
             ->if($options = [])
             ->and($options['headers'] = [
@@ -2460,8 +2541,8 @@ class StubObject extends Stancer\Tests\atoum
             ->and($options['body'] = json_encode($body))
 
             ->if($card = new Stancer\Card())
-            ->and($card->setCvc((string) random_int(100, 999)))
-            ->and($card->setExpMonth(random_int(1, 12)))
+            ->and($card->setCvc($this->getRandomCvc()))
+            ->and($card->setExpMonth($this->getRandomMonth()))
             ->and($card->setExpYear($year))
             ->and($card->setNumber($this->cardNumberDataProvider(true)))
             ->and($optionCard['body'] = json_encode($card))
@@ -2531,6 +2612,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testToArray()
     {
         $this
@@ -2556,6 +2640,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function testToString_toJson_castToString()
     {
         $this
@@ -2689,6 +2776,9 @@ class StubObject extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function validDataProvider()
     {
         $datas = [];
@@ -2809,6 +2899,9 @@ class StubObject extends Stancer\Tests\atoum
         return $datas;
     }
 
+    /**
+     * @tags AbstractObject
+     */
     public function validArrayDataProvider()
     {
         $datas = [];

@@ -1,6 +1,6 @@
 <?php
 
-namespace Stancer\Http\tests\unit;
+namespace Stancer\tests\unit\Http;
 
 use mock;
 use Psr;
@@ -10,6 +10,9 @@ class Request extends Stancer\Tests\atoum
 {
     use Stancer\Tests\Provider\Http;
 
+    /**
+     * @tags Request Http
+     */
     public function testClass()
     {
         $this
@@ -19,6 +22,8 @@ class Request extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Message Request Http
+     *
      * @dataProvider verbAndUrlProvider
      *
      * @param mixed $method
@@ -107,6 +112,9 @@ class Request extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Request Http
+     */
     public function testGetMethod()
     {
         $this
@@ -119,6 +127,9 @@ class Request extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Request Uri Http
+     */
     public function testGetUri()
     {
         $this
@@ -147,6 +158,8 @@ class Request extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags Request Uri Message Http
+     *
      * @dataProvider urlProvider
      *
      * @param mixed $location
@@ -172,6 +185,9 @@ class Request extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Request Uri Http
+     */
     public function testUpdateUri()
     {
         $this
@@ -295,6 +311,9 @@ class Request extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Request Http
+     */
     public function testWithMethod()
     {
         $this
@@ -338,6 +357,9 @@ class Request extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Request Uri Message Http
+     */
     public function testWithRequestTarget()
     {
         $this
@@ -381,6 +403,9 @@ class Request extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Request Uri Http
+     */
     public function testWithUri()
     {
         $this

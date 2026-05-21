@@ -5,6 +5,9 @@ namespace Stancer\tests\unit\Core;
 use mock;
 use Stancer;
 
+/**
+ * @tags AbstractObject
+ */
 class AbstractObject extends Stancer\Tests\atoum
 {
     use Stancer\Tests\Provider\Dates;
@@ -14,7 +17,7 @@ class AbstractObject extends Stancer\Tests\atoum
     {
         $this
             ->given($client = new mock\GuzzleHttp\Client())
-            ->and($api = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->and($api = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
             ->and($api->setHttpClient($client))
 
             ->assert('Without id')
@@ -143,7 +146,7 @@ class AbstractObject extends Stancer\Tests\atoum
     public function testDelete()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
             ->and($config->setDebug(false))
             ->and($client = new mock\Stancer\Http\Client())
             ->and($logger = new mock\Stancer\Core\Logger())
@@ -286,7 +289,7 @@ class AbstractObject extends Stancer\Tests\atoum
     public function testGetUri()
     {
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
             ->assert('No id')
                 ->if($this->newTestedInstance)
                 ->then
@@ -343,7 +346,7 @@ class AbstractObject extends Stancer\Tests\atoum
         // More tests available in stubs
 
         $this
-            ->given($config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]))
+            ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
 
             ->assert('No request if no id')
                 ->if($client = new mock\GuzzleHttp\Client())

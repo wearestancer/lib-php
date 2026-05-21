@@ -65,6 +65,9 @@ class Payment extends Stancer\Tests\atoum
         ];
     }
 
+    /**
+     * @tags AbstractObject Address Payment
+     */
     public function testBillingAddress()
     {
         $this
@@ -106,6 +109,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     *
      * @DataProvider versionDataProvider
      */
     public function testCharge(Stancer\Enum\ApiVersion $version)
@@ -119,7 +124,7 @@ class Payment extends Stancer\Tests\atoum
 
             ->assert('Test with a card token')
                 ->given($options = [
-                    'amount' => rand(50, 99999),
+                    'amount' => $this->getRandomAmount(),
                     'currency' => 'eur',
                     'description' => 'Stripe compatible charge',
                     'source' => 'card_' . uniqid(),
@@ -155,7 +160,7 @@ class Payment extends Stancer\Tests\atoum
 
             ->assert('Test with a sepa object')
                 ->given($options = [
-                    'amount' => rand(50, 99999),
+                    'amount' => $this->getRandomAmount(),
                     'currency' => 'eur',
                     'description' => 'Stripe compatible charge',
                     'source' => [
@@ -204,7 +209,7 @@ class Payment extends Stancer\Tests\atoum
                 ->given($id = 'sepa_' . uniqid())
                 ->and($last = substr(uniqid(), 0, 4))
                 ->and($options = [
-                    'amount' => rand(50, 99999),
+                    'amount' => $this->getRandomAmount(),
                     'currency' => 'eur',
                     'description' => 'Stripe compatible charge',
                     'source' => [
@@ -248,6 +253,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags Payment
+     */
     public function testClass()
     {
         $this
@@ -258,6 +266,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     *  @tags AbstractObject Payment
+     */
     public function testDelete()
     {
         $this
@@ -270,6 +281,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     *  @tags AbstractObject Payment
+     */
     public function testFilterListParams()
     {
         $gen = function ($length) {
@@ -331,6 +345,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     *  @tags AbstractObject AliasTrait Payment
+     */
     public function testGetDateBank()
     {
         $this
@@ -394,6 +411,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Payment
+     *
      * @dataProvider versionDataProvider
      */
     public function testGetEndpoint(Stancer\Enum\ApiVersion $version)
@@ -413,13 +432,15 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     *
      * @dataProvider versionDataProvider
      */
     public function testGetPaymentPageUrl(Stancer\Enum\ApiVersion $version)
     {
         $this
-            ->given($secret = 'stest_' . bin2hex(random_bytes(12)))
-            ->and($public = 'ptest_' . bin2hex(random_bytes(12)))
+            ->given($secret = 'stest_' . $this->getRandomString(24))
+            ->and($public = 'ptest_' . $this->getRandomString(24))
             ->and($config = Stancer\Config::init([$secret]))
             ->and($config->setDebug(false))
             ->and($config->setVersion($version))
@@ -430,7 +451,7 @@ class Payment extends Stancer\Tests\atoum
 
             ->and($config->setHttpClient($client))
 
-            ->if($amount = rand(100, 999999))
+            ->if($amount = $this->getRandomAmount())
             ->and($currency = $this->cardCurrencyDataProvider(true))
 
             ->if($return = 'https://www.example.org?' . uniqid())
@@ -595,6 +616,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait Refunds
+     *
      * @dataProvider versionDataProvider
      */
     public function testGetRefundableAmount(Stancer\Enum\ApiVersion $version)
@@ -602,45 +625,55 @@ class Payment extends Stancer\Tests\atoum
         $this
             ->given($client = new mock\Stancer\Http\Client())
             ->and($this->mockConfig($client, $version))
+            ->and($response = $this->mockJsonResponse('payment', 'read'))
+        ;
+        if ($version === Stancer\Enum\ApiVersion::VERSION_1) {
+            $this->calling($client)->request = $response;
+        } else {
+            $this->calling($client)->request = $response;
+            $refund = $this->mockJsonResponse('payment', 'refund_list');
+            $this->calling($client)->request[1] = $refund;
+        }
 
-            ->if($response = $this->mockJsonResponse('payment', 'read'))
-            ->and($this->calling($client)->request = $response)
+        $this
+        ->if($data = $this->getFixtureData('payment', 'read'))
+        ->and($paid = $data['amount'])
+        ->and($id = $data['id'])
 
-            ->if($data = $this->getFixtureData('payment', 'read'))
-            ->and($paid = $data['amount'])
-            ->and($id = $data['id'])
+        ->if($completeRefund = new Stancer\Stub\Refund())
+        ->and($completeRefund->testOnlySetAmount($paid))
 
-            ->if($completeRefund = new Stancer\Stub\Refund())
-            ->and($completeRefund->testOnlySetAmount($paid))
+        ->if($amount = $this->getRandomAmount($paid))
+        ->and($partialRefund = new Stancer\Stub\Refund())
+        ->and($partialRefund->testOnlySetAmount($amount))
 
-            ->if($amount = rand(50, $paid))
-            ->and($partialRefund = new Stancer\Stub\Refund())
-            ->and($partialRefund->testOnlySetAmount($amount))
+        ->then
+            ->assert('All paid amount is refundable if not refund was made')
+                ->integer($this->newTestedInstance($id)->getRefundableAmount())
+                    ->isIdenticalTo($paid)
 
-            ->then
-                ->assert('All paid amount is refundable if not refund was made')
-                    ->integer($this->newTestedInstance($id)->getRefundableAmount())
-                        ->isIdenticalTo($paid)
+                ->integer($this->testedInstance->getRefundedAmount())
+                    ->isZero
 
-                    ->integer($this->testedInstance->getRefundedAmount())
-                        ->isZero
+            ->assert('When all was refunded, no more refund is possible')
+                ->integer($this->newTestedInstance($id)->populate()->addRefunds($completeRefund)->getRefundableAmount())
+                    ->isZero
 
-                ->assert('When all was refunded, no more refund is possible')
-                    ->integer($this->newTestedInstance($id)->addRefunds($completeRefund)->getRefundableAmount())
-                        ->isZero
+                ->integer($this->testedInstance->getRefundedAmount())
+                    ->isIdenticalTo($paid)
 
-                    ->integer($this->testedInstance->getRefundedAmount())
-                        ->isIdenticalTo($paid)
+            ->assert('When one refund was done (' . $amount . ' / ' . $paid . ')')
+                ->integer($this->newTestedInstance($id)->populate()->addRefunds($partialRefund)->getRefundableAmount())
+                    ->isIdenticalTo($paid - $amount)
 
-                ->assert('When one refund was done (' . $amount . ' / ' . $paid . ')')
-                    ->integer($this->newTestedInstance($id)->addRefunds($partialRefund)->getRefundableAmount())
-                        ->isIdenticalTo($paid - $amount)
-
-                    ->integer($this->testedInstance->getRefundedAmount())
-                        ->isIdenticalTo($amount)
+                ->integer($this->testedInstance->getRefundedAmount())
+                    ->isIdenticalTo($amount)
         ;
     }
 
+    /**
+     * @tags AbstractObject Payment
+     */
     public function testGetResponseAuthor()
     {
         $this
@@ -664,6 +697,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Payment
+     */
     public function testGetReturnUrl_SetReturnUrl()
     {
         $this
@@ -690,6 +726,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Payment
+     */
     public function testIsSuccess_IsNotSuccess()
     {
         $this
@@ -839,6 +878,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     *
      * @dataProvider versionDataProvider
      */
     public function testIssueTaiga7(Stancer\Enum\ApiVersion $version)
@@ -861,6 +902,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment SearchTrait TransactionTrait
+     *
      * @dataProvider versionDataProvider
      */
     public function testList(Stancer\Enum\ApiVersion $version)
@@ -1095,6 +1138,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject Card Sepa Payment TransactionTrait
+     *
      * @dataProvider cardCurrencyDataProvider
      *
      * @param mixed $currency
@@ -1178,6 +1223,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Card Payment TransactionTrait
+     *
      * @dataProvider versionDataProvider
      */
     public function testPay(Stancer\Enum\ApiVersion $version)
@@ -1191,9 +1238,9 @@ class Payment extends Stancer\Tests\atoum
             ->then
                 ->assert('Pay with card')
                     ->if($card = new Stancer\Card())
-                    ->and($card->setCvc(substr(uniqid(), 0, 3)))
-                    ->and($card->setExpMonth(rand(1, 12)))
-                    ->and($card->setExpYear(date('Y') + rand(1, 10)))
+                    ->and($card->setCvc($this->getRandomCvc()))
+                    ->and($card->setExpMonth($this->getRandomMonth()))
+                    ->and($card->setExpYear($this->getRandomExpYear()))
                     ->and($card->setName(uniqid()))
                     ->and($card->setNumber('4111111111111111'))
                     ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
@@ -1202,7 +1249,7 @@ class Payment extends Stancer\Tests\atoum
                     ->and($obj = null)
                     ->then
                     ->when(function () use (&$obj, $card) {
-                        $obj = $this->newTestedInstance->pay(rand(50, 9999), 'EUR', $card);
+                        $obj = $this->newTestedInstance->pay($this->getRandomAmount(), 'EUR', $card);
                     })
                             ->error()
                                 ->withType(E_USER_DEPRECATED)
@@ -1225,7 +1272,7 @@ class Payment extends Stancer\Tests\atoum
                     ->and($obj = null)
                     ->then
                         ->when(function () use (&$obj, $sepa) {
-                            $obj = $this->newTestedInstance->pay(rand(50, 9999), 'EUR', $sepa);
+                            $obj = $this->newTestedInstance->pay($this->getRandomAmount(), 'EUR', $sepa);
                         })
                             ->error()
                                 ->withType(E_USER_DEPRECATED)
@@ -1241,6 +1288,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     *
      * @dataProvider versionDataProvider
      */
     public function testPost_capture(Stancer\Enum\ApiVersion $version)
@@ -1316,178 +1365,55 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags test AbstractObject AmountTrait AliasTrait Payment TransactionTrait Refund
+     *
      * @dataProvider versionDataProvider
      */
-    public function testRefund(Stancer\Enum\ApiVersion $version)
+    public function testGetRefund(Stancer\Enum\ApiVersion $version)
     {
         $this
-            ->given($logger = new mock\Stancer\Core\Logger())
+            ->given($client = new mock\Stancer\Http\Client())
+            ->and($config = $this->mockConfig($client, $version))
+            ->and($options = $this->mockRequestOptions($config))
 
-            ->if($paymentData = $this->getFixtureData('payment', 'read'))
-            ->and($paid = $paymentData['amount'])
+            ->if($paymentData = $this->getFixtureData('payment', 'refunded_payment'))
+            ->if($response = $this->mockJsonResponse('payment', 'refund_list'))
+            ->and($this->calling($client)->request = $response)
 
-            ->if($amount = rand(50, $paid - 50))
-            ->and($refund1Data = $this->getFixtureData('refund', 'read'))
-            ->and($refund1Data['amount'] = $amount)
-
-            ->if($lastPart = $paid - $amount)
-            ->and($refund2Data = $this->getFixtureData('refund', 'read'))
-            ->and($refund2Data['amount'] = $lastPart)
-
-            ->given($id = $paymentData['id'])
-            ->and($tooMuch = rand($paid + 1, 9999))
-            ->and($notEnough = rand(1, 49))
             ->then
-                ->assert('Without refunds we get an empty array')
-                    ->given($client = new mock\Stancer\Http\Client())
-                    ->and($config = $this->mockConfig($client, $version))
-                    ->and($config->setLogger($logger))
+                ->given($this->newTestedInstance($id = 'paym_' . $this->getRandomString(24)))
+                ->and($this->testedInstance->hydrate($paymentData))
+                ->and($location = $this->testedInstance->uri . '/refunds')
 
-                    ->if($this->calling($client)->request = $this->mockResponse(json_encode($paymentData)))
-                    ->and($this->newTestedInstance($id))
-                    ->then
-                        ->array($this->testedInstance->getRefunds())
-                            ->isEmpty
-
-                ->assert('We can not refund more than paid')
-                    ->if($this->calling($client)->request = $this->mockResponse(json_encode($paymentData)))
-                    ->and($this->newTestedInstance($id))
-                    ->then
-                        ->exception(function () use ($tooMuch) {
-                            $this->testedInstance->refund($tooMuch);
-                        })
-                            ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
-                            ->message
-                                ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $tooMuch / 100) . ' EUR) more than paid (34.06 EUR).')
-
-                ->assert('Amount must be greater or equal than 50')
-
-                    ->if($this->calling($client)->request = $this->mockResponse(json_encode($paymentData)))
-                    ->and($this->newTestedInstance($id))
-                    ->then
-                        ->exception(function () use ($notEnough) {
-                            $this->testedInstance->refund($notEnough);
-                        })
-                            ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
-                            ->message
-                                ->isIdenticalTo('Amount must be greater than or equal to 50.')
-
-                ->assert('We can put a refund amount')
-
-                    ->if($response = $this->mockResponse(json_encode($paymentData)))
-                    ->and($this->calling($client)->request = $response)
-                    ->and($this->calling($response)->getBody[2] = new Stancer\Http\Stream(json_encode($refund1Data)))
-                    ->and($this->newTestedInstance($id))
-                    ->then
-                        ->object($this->testedInstance->refund($amount))
-                            ->isTestedInstance
-
-                        ->array($refunds = $this->testedInstance->getRefunds())
-                            ->object[0]
+                ->assert('Refund in V2 call the API')
+                    ->array($refundList = $this->testedInstance->getRefunds())
+                            ->object($refundList[0])
                                 ->isInstanceOf(Stancer\Refund::class)
-                            ->size
-                                ->isEqualTo(1)
+                                ->integer($refundList[0]->amount)
+                                    ->isEqualTo(2500)
+                                ->string($refundList[0]->currency)
+                                    ->isIdenticalTo('eur')
+                                ->object($refundList[0]->status)
+                                    ->isIdenticalTo(Stancer\Refund\Status::TO_REFUND)
+                                ->string($refundList[0]->id)
+                                    ->isIdenticalTo('refd_J0r3rHzPaaXU2lBLkDFxpqpw')
 
-                        ->object($refunds[0]->getPayment())
-                            ->isTestedInstance
-
-                        ->integer($refunds[0]->getAmount())
-                            ->isIdenticalTo($amount)
-
-                        ->boolean($this->testedInstance->isModified())
-                            ->isFalse
-
-                        ->boolean($refunds[0]->isModified())
-                            ->isFalse
-
-                        ->mock($logger)
-                            ->call('info')
-                                ->withArguments(sprintf('Refund of %.02f EUR on payment "%s"', $amount / 100, $id))
-                                    ->once
-
-                ->assert('We can not refund more than refundable')
-
-                    ->if($response = $this->mockResponse(json_encode($paymentData)))
-                    ->and($this->calling($client)->request = $response)
-                    ->and($this->calling($response)->getBody[2] = new Stancer\Http\Stream(json_encode($refund1Data)))
-                    ->and($this->newTestedInstance($id))
-                    ->and($this->testedInstance->refund($amount))
-                    ->then
-                        ->exception(function () use ($paid) {
-                            $this->testedInstance->refund($paid);
-                        })
-                            ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
-                            ->message
-                                ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $paid / 100) . ' EUR) more than paid (34.06 EUR with ' . sprintf('%.02f', $amount / 100) . ' EUR already refunded).')
-
-                ->assert('Without amount we will refund all')
-
-                    ->if($response = $this->mockResponse(json_encode($paymentData)))
-                    ->and($this->calling($client)->request = $response)
-                    ->and($this->calling($response)->getBody[2] = new Stancer\Http\Stream(json_encode($refund1Data)))
-                    ->and($this->calling($response)->getBody[3] = new Stancer\Http\Stream(json_encode($refund2Data)))
-
-                    ->if($this->newTestedInstance($id)->refund($amount))
-                    ->then
-                        ->object($this->testedInstance->refund())
-                            ->isTestedInstance
-
-                        ->array($refunds = $this->testedInstance->getRefunds())
-                            ->hasSize(2)
-                            ->object[0]
+                            ->object($refundList[1])
                                 ->isInstanceOf(Stancer\Refund::class)
-                            ->object[1]
-                                ->isInstanceOf(Stancer\Refund::class)
-
-                        ->object($refunds[0]->getPayment())
-                            ->isTestedInstance
-
-                        ->integer($refunds[0]->getAmount())
-                            ->isIdenticalTo($amount)
-
-                        ->object($refunds[1]->getPayment())
-                            ->isTestedInstance
-
-                        ->integer($refunds[1]->getAmount())
-                            ->isIdenticalTo($lastPart)
-
-                        ->boolean($this->testedInstance->isModified())
-                            ->isFalse
-
-                        ->boolean($refunds[0]->isModified())
-                            ->isFalse
-
-                        ->boolean($refunds[1]->isModified())
-                            ->isFalse
-
-                        ->mock($logger)
-                            ->call('info')
-                                ->withArguments(sprintf('Refund of %.02f EUR on payment "%s"', $lastPart / 100, $id))
-                                    ->once
-
-                ->assert('We can not refund on unsent payment')
-                    ->exception(function () {
-                        $this->newTestedInstance->refund();
-                    })
-                        ->isInstanceOf(Stancer\Exceptions\MissingPaymentIdException::class)
-                        ->message
-                            ->isIdenticalTo('A payment ID is mandatory. Maybe you forgot to send the payment.')
-
-                ->assert('Should work with methods allowed (internal bug)')
-
-                    ->if($response = $this->mockJsonResponses([['payment', 'read-methods-allowed'], ['refund', 'read']]))
-                    ->and($this->calling($client)->request = $response)
-                    ->then
-                        ->array($this->newTestedInstance($id)->getMethodsAllowed())
-                            ->hasSize(2)
-                            ->containsValues([Stancer\Payment\MethodsAllowed::CARD, Stancer\Payment\MethodsAllowed::SEPA])
-
-                        ->object($this->testedInstance->refund())
-                            ->isTestedInstance
+                                ->integer($refundList[1]->amount)
+                                    ->isEqualTo(3021)
+                                ->string($refundList[1]->currency)
+                                    ->isIdenticalTo('eur')
+                                ->object($refundList[1]->status)
+                                    ->isIdenticalTo(Stancer\Refund\Status::TO_REFUND)
+                                ->string($refundList[1]->id)
+                                    ->isIdenticalTo('refd_ae1pJ2wdty6mGiRTTQ1FWw0V')
         ;
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     *
      * @dataProvider versionDataProvider
      */
     public function testSend_exceptions(Stancer\Enum\ApiVersion $version)
@@ -1507,7 +1433,7 @@ class Payment extends Stancer\Tests\atoum
                     ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
 
             ->if($this->newTestedInstance)
-            ->and($this->testedInstance->setAmount(rand(100, 999999)))
+            ->and($this->testedInstance->setAmount($this->getRandomAmount()))
             ->and($this->testedInstance->setCurrency($this->cardCurrencyDataProvider(true)))
             ->then
                 ->object($this->testedInstance->send())
@@ -1534,6 +1460,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment Sepa TransactionTrait
+     *
      * @dataProvider versionDataProvider
      */
     public function testSend_withSepa(Stancer\Enum\ApiVersion $version)
@@ -1551,7 +1479,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($sepa->setName(uniqid()))
 
             ->if($this->newTestedInstance)
-            ->and($this->testedInstance->setAmount(rand(100, 999999)))
+            ->and($this->testedInstance->setAmount($this->getRandomAmount()))
             ->and($this->testedInstance->setSepa($sepa))
             ->and($this->testedInstance->setCurrency('EUR'))
             ->and($this->testedInstance->setDescription(uniqid()))
@@ -1617,6 +1545,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Auth Card Payment TransactionTrait
+     *
      * @dataProvider versionAuthReturnUrlProvider
      */
     public function testSend_authenticatedPayment(Stancer\Enum\ApiVersion $version, callable $auth)
@@ -1644,7 +1574,7 @@ class Payment extends Stancer\Tests\atoum
                 return null;
             })
 
-            ->if($amount = rand(50, 99999))
+            ->if($amount = $this->getRandomAmount())
             ->and($currency = $this->cardCurrencyDataProvider(true))
             ->and($description = uniqid())
             ->and($url = 'https://www.example.org?' . uniqid())
@@ -1750,6 +1680,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Auth Card Payment TransactionTrait
+     *
      * @dataProvider versionAuthReturnUrlProvider
      *
      * @param mixed $version
@@ -1764,7 +1696,7 @@ class Payment extends Stancer\Tests\atoum
             ->if($response = $this->mockJsonResponse('payment', 'create-card-auth'))
             ->and($this->calling($client)->request = $response)
 
-            ->if($amount = rand(50, 99999))
+            ->if($amount = $this->getRandomAmount())
             ->and($currency = $this->cardCurrencyDataProvider(true))
             ->and($description = uniqid())
             ->and($url = 'https://www.example.org?' . uniqid())
@@ -1878,6 +1810,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Auth Payment TransactionTrait
+     *
      * @dataProvider versionAuthStatusProvider
      *
      * @param mixed $authjson
@@ -1891,7 +1825,7 @@ class Payment extends Stancer\Tests\atoum
             ->if($response = $this->mockJsonResponse('payment', 'create-no-method-auth'))
             ->and($this->calling($client)->request = $response)
 
-            ->if($amount = rand(100, 999999))
+            ->if($amount = $this->getRandomAmount())
             ->and($currency = $this->cardCurrencyDataProvider(true))
             ->and($description = uniqid())
 
@@ -1965,6 +1899,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     *
      * @dataProvider versionDataProvider
      *
      * @param mixed $version
@@ -1983,13 +1919,13 @@ class Payment extends Stancer\Tests\atoum
             ->and($customer->setEmail(uniqid() . '@example.org'))
             ->and($customer->setMobile(uniqid()))
 
-            ->if($amount = rand(100, 999999))
+            ->if($amount = $this->getRandomAmount())
             ->and($currency = $this->cardCurrencyDataProvider(true))
 
             ->if($card = new Stancer\Card())
-            ->and($card->setCvc(substr(uniqid(), 0, 3)))
-            ->and($card->setExpMonth(rand(1, 12)))
-            ->and($card->setExpYear(rand(date('Y'), 3000)))
+            ->and($card->setCvc($this->getRandomCvc()))
+            ->and($card->setExpMonth($this->getRandomMonth()))
+            ->and($card->setExpYear($this->getRandomExpYear()))
             ->and($card->setNumber('4111111111111111'))
 
             ->if($this->newTestedInstance)
@@ -2019,6 +1955,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AmountTrait Payment
+     */
     public function testSetAmount()
     {
         $this
@@ -2064,7 +2003,7 @@ class Payment extends Stancer\Tests\atoum
                         ->isEqualTo(50)
 
             ->assert('random value')
-                ->object($this->newTestedInstance->setAmount($amount = rand(50, 999999)))
+                ->object($this->newTestedInstance->setAmount($amount = $this->getRandomAmount(999999)))
                     ->isTestedInstance
                 ->integer($this->testedInstance->getAmount())
                     ->isEqualTo($amount)
@@ -2088,6 +2027,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Auth Payment
+     *
      * @dataProvider versionDataProvider
      */
     public function testSetAuth(Stancer\Enum\ApiVersion $version)
@@ -2166,6 +2107,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Card Payment
+     */
     public function testSetCard()
     {
         $this
@@ -2190,6 +2134,8 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject TransactionTrait
+     *
      * @dataProvider cardCurrencyDataProvider
      *
      * @param mixed $currency
@@ -2266,6 +2212,9 @@ class Payment extends Stancer\Tests\atoum
         }
     }
 
+    /**
+     * @tags AbstractObject Payment
+     */
     public function testSetDescription()
     {
         $description = '';
@@ -2310,6 +2259,9 @@ class Payment extends Stancer\Tests\atoum
         }
     }
 
+    /**
+     * @tags AbstractObject Payment Sepa
+     */
     public function testSetSepa()
     {
         $this
@@ -2333,6 +2285,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Address Payment
+     */
     public function testShippingAddress()
     {
         $this
@@ -2373,6 +2328,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Payment
+     */
     public function testSetOrderId()
     {
         $orderId = '';
@@ -2417,6 +2375,9 @@ class Payment extends Stancer\Tests\atoum
         }
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Payment PaymentStatus
+     */
     public function testSetStatus()
     {
         $this
@@ -2537,6 +2498,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Payment
+     */
     public function testSetUniqueId()
     {
         $uniqueId = '';
@@ -2587,6 +2551,9 @@ class Payment extends Stancer\Tests\atoum
 
     //region API V1 tests
 
+    /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     */
     public function testSend_withoutCardOrSepaV1()
     {
         $this
@@ -2601,7 +2568,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($customer->setEmail(uniqid() . '@example.org'))
             ->and($customer->setMobile(uniqid()))
 
-            ->if($amount = rand(100, 999999))
+            ->if($amount = $this->getRandomAmount())
             ->and($currency = $this->cardCurrencyDataProvider(true))
 
             ->if($this->newTestedInstance)
@@ -2667,6 +2634,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AmountTrait AliasTrait Device Payment TransactionTrait
+     */
     public function testSend_deviceV1()
     {
         $this
@@ -2683,9 +2653,9 @@ class Payment extends Stancer\Tests\atoum
             ->if($this->function->getenv = false)
 
             ->if($card = new Stancer\Card())
-            ->and($card->setCvc(substr(uniqid(), 0, 3)))
-            ->and($card->setExpMonth(rand(1, 12)))
-            ->and($card->setExpYear(rand(date('Y'), 3000)))
+            ->and($card->setCvc($this->getRandomCvc()))
+            ->and($card->setExpMonth($this->getRandomMonth()))
+            ->and($card->setExpYear($this->getRandomExpYear()))
             ->and($card->setName(uniqid()))
             ->and($card->setNumber('4111111111111111'))
             ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
@@ -2696,7 +2666,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($customer->setMobile(uniqid()))
 
             ->if($this->newTestedInstance)
-            ->and($this->testedInstance->setAmount(rand(100, 999999)))
+            ->and($this->testedInstance->setAmount($this->getRandomAmount()))
             ->and($this->testedInstance->setAuth($url))
             ->and($this->testedInstance->setCard($card))
             ->and($this->testedInstance->setCurrency('EUR'))
@@ -2777,14 +2747,14 @@ class Payment extends Stancer\Tests\atoum
     }
 
     /**
-     * Specific exceptions for API V1.
+     * @tags AbstractObject AmountTrait AliasTrait Device Payment
      */
     public function testSend_exceptions_V1()
     {
         $this
             ->given($client = new mock\Stancer\Http\Client())
             ->and($this->mockConfig($client, Stancer\Enum\ApiVersion::VERSION_1))
-            ->if($this->newTestedInstance->setAmount(rand(100, 999999)))
+            ->if($this->newTestedInstance->setAmount($this->getRandomAmount()))
             ->then
                 ->exception(function () {
                     $this->testedInstance->send();
@@ -2793,6 +2763,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AmountTrait AliasTrait Card Payment TransactionTrait
+     */
     public function testSend_withCardV1()
     {
         $this
@@ -2803,8 +2776,8 @@ class Payment extends Stancer\Tests\atoum
             ->and($this->calling($client)->request = $response)
 
             ->if($card = new Stancer\Card())
-            ->and($card->setCvc(substr(uniqid(), 0, 3)))
-            ->and($card->setExpMonth(rand(1, 12)))
+            ->and($card->setCvc($this->getRandomCvc()))
+            ->and($card->setExpMonth($this->getRandomMonth()))
             ->and($card->setExpYear(date('Y') - rand(1, 10)))
             ->and($card->setName(uniqid()))
             ->and($card->setNumber($number = '4111111111111111'))
@@ -2816,7 +2789,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($customer->setMobile(uniqid()))
 
             ->if($this->newTestedInstance)
-            ->and($this->testedInstance->setAmount(rand(100, 999999)))
+            ->and($this->testedInstance->setAmount($this->getRandomAmount()))
             ->and($this->testedInstance->setCard($card))
             ->and($this->testedInstance->setCurrency('EUR'))
             ->and($this->testedInstance->setCustomer($customer))
@@ -2836,7 +2809,7 @@ class Payment extends Stancer\Tests\atoum
                     ->message
                         ->isIdenticalTo('Card expiration is invalid.')
 
-            ->if($card->setExpYear(date('Y') + rand(1, 10)))
+            ->if($card->setExpYear($this->getRandomExpYear()))
             ->and($options = $this->mockRequestOptions($config, [
                 'body' => json_encode($this->testedInstance),
             ]))
@@ -2908,10 +2881,180 @@ class Payment extends Stancer\Tests\atoum
                     ->isNull
         ;
     }
+
+    /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment Refund TransactionTrait
+     */
+    public function testRefundV1()
+    {
+        $version = Stancer\Enum\ApiVersion::VERSION_1;
+        $this
+            ->given($logger = new mock\Stancer\Core\Logger())
+
+            ->if($paymentData = $this->getFixtureData('payment', 'read'))
+            ->and($paid = $paymentData['amount'])
+
+            ->if($amount = $this->getRandomAmount($paid - 50))
+            ->and($refund1Data = $this->getFixtureData('refund', 'read'))
+            ->and($refund1Data['amount'] = $amount)
+
+            ->if($lastPart = $paid - $amount)
+            ->and($refund2Data = $this->getFixtureData('refund', 'read'))
+            ->and($refund2Data['amount'] = $lastPart)
+
+            ->given($id = $paymentData['id'])
+            ->and($tooMuch = rand($paid + 1, 9999))
+            ->and($notEnough = rand(1, 49))
+            ->then
+                ->assert('Without refunds we get an empty array')
+                    ->given($client = new mock\Stancer\Http\Client())
+                    ->and($config = $this->mockConfig($client, $version))
+                    ->and($config->setLogger($logger))
+                    ->and($paymentResponse = $this->mockResponse(json_encode($paymentData)))
+                    ->if($this->calling($client)->request = $paymentResponse)
+
+                    ->and($this->newTestedInstance($id))
+                        ->then
+                            ->array($this->testedInstance->getRefunds())
+                            ->isEmpty
+
+                ->assert('We can not refund more than paid')
+                ->if($this->calling($client)->request = $paymentResponse)
+                ->and($this->newTestedInstance($id))
+                    ->then
+                        ->exception(function () use ($tooMuch) {
+                            $this->testedInstance->refund($tooMuch);
+                        })
+                            ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
+                                ->message
+                                    ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $tooMuch / 100) . ' EUR) more than paid (34.06 EUR).')
+
+                ->assert('Amount must be greater or equal than 50')
+                    ->if($this->calling($client)->request = $paymentResponse)
+                    ->and($this->newTestedInstance($id))
+                    ->then
+                        ->exception(function () use ($notEnough) {
+                            $this->testedInstance->refund($notEnough);
+                        })
+                        ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
+                            ->message
+                                ->isIdenticalTo('Amount must be greater than or equal to 50.')
+
+                ->assert('We can put a refund amount')
+                    ->if($this->calling($client)->request = $paymentResponse)
+                    ->and($this->calling($paymentResponse)->getBody[2] = new Stancer\Http\Stream(json_encode($refund1Data)))
+                    ->and($this->newTestedInstance($id))
+                    ->then
+                        ->object($this->testedInstance->refund($amount))
+                            ->isTestedInstance
+
+                        ->array($refunds = $this->testedInstance->getRefunds())
+                            ->object[0]
+                                ->isInstanceOf(Stancer\Refund::class)
+                            ->size
+                                ->isEqualTo(1)
+
+                        ->object($refunds[0]->getPayment())
+                            ->isTestedInstance
+
+                        ->integer($refunds[0]->getAmount())
+                            ->isIdenticalTo($amount)
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isFalse
+
+                         ->boolean($refunds[0]->isModified())
+                            ->isFalse
+
+                        ->mock($logger)
+                            ->call('info')
+                                ->withArguments(sprintf('Refund of %.02f EUR on payment "%s"', $amount / 100, $id))
+                                    ->once
+
+                ->assert('We can not refund more than refundable')
+                    ->if($this->calling($client)->request = $paymentResponse)
+                    ->and($this->calling($paymentResponse)->getBody[2] = new Stancer\Http\Stream(json_encode($refund1Data)))
+                    ->and($this->newTestedInstance($id))
+                    ->and($this->testedInstance->refund($amount))
+                    ->then
+                        ->exception(function () use ($paid) {
+                            $this->testedInstance->refund($paid);
+                        })
+                            ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
+                                ->message
+                                    ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $paid / 100) . ' EUR) more than paid (34.06 EUR with ' . sprintf('%.02f', $amount / 100) . ' EUR already refunded).')
+
+                ->assert('Without amount we will refund all')
+
+                    ->if($this->calling($client)->request = $paymentResponse)
+                    ->and($this->calling($paymentResponse)->getBody[2] = new Stancer\Http\Stream(json_encode($refund1Data)))
+                    ->and($this->calling($paymentResponse)->getBody[3] = new Stancer\Http\Stream(json_encode($refund2Data)))
+                    ->and($this->newTestedInstance($id)->refund($amount))
+                    ->then
+                        ->object($this->testedInstance->refund())
+                            ->isTestedInstance
+
+                        ->array($refunds = $this->testedInstance->getRefunds())
+                            ->hasSize(2)
+                            ->object[0]
+                                ->isInstanceOf(Stancer\Refund::class)
+                            ->object[1]
+                                ->isInstanceOf(Stancer\Refund::class)
+
+                        ->object($refunds[0]->getPayment())
+                            ->isTestedInstance
+
+                        ->integer($refunds[0]->getAmount())
+                            ->isIdenticalTo($amount)
+
+                        ->object($refunds[1]->getPayment())
+                            ->isTestedInstance
+
+                        ->integer($refunds[1]->getAmount())
+                            ->isIdenticalTo($lastPart)
+
+                        ->boolean($this->testedInstance->isModified())
+                            ->isFalse
+
+                        ->boolean($refunds[0]->isModified())
+                            ->isFalse
+
+                        ->boolean($refunds[1]->isModified())
+                            ->isFalse
+
+                        ->mock($logger)
+                            ->call('info')
+                                ->withArguments(sprintf('Refund of %.02f EUR on payment "%s"', $lastPart / 100, $id))
+                                    ->once
+
+                ->assert('We can not refund on unsent payment')
+                    ->exception(function () {
+                        $this->newTestedInstance->refund();
+                    })
+                        ->isInstanceOf(Stancer\Exceptions\MissingPaymentIdException::class)
+                        ->message
+                            ->isIdenticalTo('A payment ID is mandatory. Maybe you forgot to send the payment.')
+
+                ->assert('Should work with methods allowed (internal bug)')
+
+                ->if($response = $this->mockJsonResponses([['payment', 'read-methods-allowed'], ['refund', 'read']]))
+                ->and($this->calling($client)->request = $response)
+                ->then
+                    ->array($this->newTestedInstance($id)->getMethodsAllowed())
+                        ->hasSize(2)
+                        ->containsValues([Stancer\Payment\MethodsAllowed::CARD, Stancer\Payment\MethodsAllowed::SEPA])
+
+                        ->object($this->testedInstance->refund())
+                            ->isTestedInstance
+        ;
+    }
     //endregion
 
     //region API V2 tests
 
+    /**
+     * @tags AbstractObject AmountTrait AliasTrait Card Payment TransactionTrait
+     */
     public function testSend_withCardV2()
     {
         $this
@@ -2926,8 +3069,8 @@ class Payment extends Stancer\Tests\atoum
             ->and($this->calling($client)->request[3] = $response)
 
             ->if($card = new Stancer\Card())
-            ->and($card->setCvc(substr(uniqid(), 0, 3)))
-            ->and($card->setExpMonth(rand(1, 12)))
+            ->and($card->setCvc($this->getRandomCvc()))
+            ->and($card->setExpMonth($this->getRandomMonth()))
             ->and($card->setExpYear(date('Y') - rand(1, 10)))
             ->and($card->setName(uniqid()))
             ->and($card->setNumber($number = '4111111111111111'))
@@ -2939,7 +3082,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($customer->setMobile(uniqid()))
 
             ->if($this->newTestedInstance)
-            ->and($this->testedInstance->setAmount(rand(100, 999999)))
+            ->and($this->testedInstance->setAmount($this->getRandomAmount()))
             ->and($this->testedInstance->setCard($card))
             ->and($this->testedInstance->setCurrency('EUR'))
             ->and($this->testedInstance->setCustomer($customer))
@@ -2961,7 +3104,7 @@ class Payment extends Stancer\Tests\atoum
                         ->message
                             ->isIdenticalTo('Card expiration is invalid.')
 
-            ->if($card->setExpYear(date('Y') + rand(1, 10)))
+            ->if($card->setExpYear($this->getRandomExpYear()))
             ->and(
                 $cardOptions = $this->mockRequestOptions(
                     $config,
@@ -3081,6 +3224,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment TransactionTrait
+     */
     public function testSend_withoutCardOrSepaV2()
     {
         $this
@@ -3097,7 +3243,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($customer->setEmail(uniqid() . '@example.org'))
             ->and($customer->setMobile(uniqid()))
 
-            ->if($amount = rand(100, 999999))
+            ->if($amount = $this->getRandomAmount())
             ->and($currency = $this->cardCurrencyDataProvider(true))
 
             ->if($this->newTestedInstance)
@@ -3181,6 +3327,9 @@ class Payment extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AmountTrait AliasTrait Device Payment TransactionTrait
+     */
     public function testSend_deviceV2()
     {
         $this
@@ -3201,9 +3350,9 @@ class Payment extends Stancer\Tests\atoum
             ->if($this->function->getenv = false)
 
             ->if($card = new Stancer\Card())
-            ->and($card->setCvc(substr(uniqid(), 0, 3)))
-            ->and($card->setExpMonth(rand(1, 12)))
-            ->and($card->setExpYear(rand(date('Y'), 3000)))
+            ->and($card->setCvc($this->getRandomCvc()))
+            ->and($card->setExpMonth($this->getRandomMonth()))
+            ->and($card->setExpYear($this->getRandomExpYear()))
             ->and($card->setName(uniqid()))
             ->and($card->setNumber('4111111111111111'))
             ->and($card->setZipCode(substr(uniqid(), 0, rand(2, 8))))
@@ -3214,7 +3363,7 @@ class Payment extends Stancer\Tests\atoum
             ->and($customer->setMobile(uniqid()))
 
             ->if($this->newTestedInstance)
-            ->and($this->testedInstance->setAmount(rand(100, 999999)))
+            ->and($this->testedInstance->setAmount($this->getRandomAmount()))
             ->and($this->testedInstance->setAuth($url))
             ->and($this->testedInstance->setCard($card))
             ->and($this->testedInstance->setCurrency('EUR'))
@@ -3300,6 +3449,178 @@ class Payment extends Stancer\Tests\atoum
                             ->call('request')
                                 ->withArguments('POST', $location, $options)
                                     ->once
+        ;
+    }
+
+    /**
+     * @tags AbstractObject AmountTrait AliasTrait Payment Refund TransactionTrait
+     */
+    public function testRefundV2()
+    {
+        $version = Stancer\Enum\ApiVersion::VERSION_2;
+        $this
+            ->given($logger = new mock\Stancer\Core\Logger())
+
+            ->if($paymentData = $this->getFixtureData('payment', 'read'))
+            ->and($paid = $paymentData['amount'])
+
+            ->if($amount = $this->getRandomAmount($paid - 50))
+            ->and($refund1Data = $this->getFixtureData('refund', 'read'))
+            ->and($refund1Data['amount'] = $amount)
+
+            ->if($lastPart = $paid - $amount)
+            ->and($refund2Data = $this->getFixtureData('refund', 'read'))
+            ->and($refund2Data['amount'] = $lastPart)
+
+            ->given($id = $paymentData['id'])
+            ->and($tooMuch = rand($paid + 1, 9999))
+            ->and($notEnough = rand(1, 49))
+            ->then
+                ->assert('Without refunds we get an empty array')
+                    ->given($client = new mock\Stancer\Http\Client())
+                    ->and($config = $this->mockConfig($client, $version))
+                    ->and($config->setLogger($logger))
+                    ->and($paymentResponse = $this->mockResponse(json_encode($paymentData)))
+                    ->and($emptyRefund = $this->mockResponse(json_encode([])))
+                    ->if($this->calling($client)->request[1] = $emptyRefund)
+                    ->and($this->calling($client)->request = $paymentResponse)
+                    ->and($this->newTestedInstance($id))
+                        ->then
+                            ->array($this->testedInstance->getRefunds())
+                                ->isEmpty
+
+                ->assert('We can not refund more than paid')
+                    ->if($this->calling($client)->request[1] = $emptyRefund)
+                    ->and($this->calling($client)->request = $paymentResponse)
+                    ->and($this->newTestedInstance($id))
+                        ->then
+                            ->exception(function () use ($tooMuch) {
+                                $this->testedInstance->refund($tooMuch);
+                            })
+                            ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
+                                ->message
+                                ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $tooMuch / 100) . ' EUR) more than paid (34.06 EUR).')
+
+                ->assert('Amount must be greater or equal than 50')
+                    ->if($this->calling($client)->request = $this->mockResponse(json_encode($paymentData)))
+                    ->and($this->calling($client)->request[1] = $this->mockResponse(json_encode([])))
+                    ->and($this->newTestedInstance($id))
+                    ->then
+                        ->exception(function () use ($notEnough) {
+                            $this->testedInstance->refund($notEnough);
+                        })
+                        ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
+                            ->message
+                            ->isIdenticalTo('Amount must be greater than or equal to 50.')
+
+                ->assert('We can put a refund amount')
+                    ->if($this->calling($client)->request[1] = $emptyRefund)
+                    ->and($this->calling($client)->request[2] = $paymentResponse)
+                    ->and($this->calling($client)->request[3] = $this->mockResponse(json_encode($refund1Data)))
+                    ->and($this->newTestedInstance($id))
+                        ->then
+                            ->object($this->testedInstance->refund($amount))
+                                ->isTestedInstance
+
+                            ->array($refunds = $this->testedInstance->getRefunds())
+                                ->object[0]
+                                    ->isInstanceOf(Stancer\Refund::class)
+                                ->size
+                                    ->isEqualTo(1)
+
+                            ->object($refunds[0]->getPayment())
+                                ->isTestedInstance
+
+                            ->integer($refunds[0]->getAmount())
+                                ->isIdenticalTo($amount)
+
+                            ->boolean($this->testedInstance->isModified())
+                                ->isFalse
+
+                            ->boolean($refunds[0]->isModified())
+                                ->isFalse
+
+                            ->mock($logger)
+                                ->call('info')
+                                    ->withArguments(sprintf('Refund of %.02f EUR on payment "%s"', $amount / 100, $id))
+                                        ->once
+
+                ->assert('We can not refund more than refundable')
+
+                    ->if($this->calling($client)->request[1] = $emptyRefund)
+                    ->and($this->calling($client)->request[2] = $paymentResponse)
+                    ->and($this->calling($client)->request[3] = $this->mockResponse(json_encode($refund1Data)))
+                    ->and($this->newTestedInstance($id))
+                    ->and($this->testedInstance->refund($amount))
+                        ->then
+                            ->exception(function () use ($paid) {
+                                $this->testedInstance->refund($paid);
+                            })
+                            ->isInstanceOf(Stancer\Exceptions\InvalidAmountException::class)
+                                ->message
+                                    ->isIdenticalTo('You are trying to refund (' . sprintf('%.02f', $paid / 100) . ' EUR) more than paid (34.06 EUR with ' . sprintf('%.02f', $amount / 100) . ' EUR already refunded).')
+
+                ->assert('Without amount we will refund all')
+                    ->if($this->calling($client)->request[1] = $emptyRefund)
+                    ->and($this->calling($client)->request[2] = $paymentResponse)
+                    ->and($this->calling($client)->request[3] = $this->mockResponse(json_encode($refund1Data)))
+                    ->and($this->calling($client)->request[4] = $this->mockResponse(json_encode($refund2Data)))
+                    ->if($this->newTestedInstance($id)->refund($amount))
+                        ->then
+                            ->object($this->testedInstance->refund())
+                                ->isTestedInstance
+
+                            ->array($refunds = $this->testedInstance->getRefunds())
+                                ->hasSize(2)
+                                ->object[0]
+                                    ->isInstanceOf(Stancer\Refund::class)
+                                ->object[1]
+                                    ->isInstanceOf(Stancer\Refund::class)
+
+                            ->object($refunds[0]->getPayment())
+                                ->isTestedInstance
+
+                            ->integer($refunds[0]->getAmount())
+                                ->isIdenticalTo($amount)
+
+                            ->object($refunds[1]->getPayment())
+                                ->isTestedInstance
+
+                            ->integer($refunds[1]->getAmount())
+                                ->isIdenticalTo($lastPart)
+
+                            ->boolean($this->testedInstance->isModified())
+                                ->isFalse
+
+                            ->boolean($refunds[0]->isModified())
+                                ->isFalse
+
+                            ->boolean($refunds[1]->isModified())
+                                ->isFalse
+
+                            ->mock($logger)
+                                ->call('info')
+                                    ->withArguments(sprintf('Refund of %.02f EUR on payment "%s"', $lastPart / 100, $id))
+                                        ->once
+
+                ->assert('We can not refund on unsent payment')
+                    ->exception(function () {
+                        $this->newTestedInstance->refund();
+                    })
+                    ->isInstanceOf(Stancer\Exceptions\MissingPaymentIdException::class)
+                    ->message
+                        ->isIdenticalTo('A payment ID is mandatory. Maybe you forgot to send the payment.')
+
+                ->assert('Should work with methods allowed (internal bug)')
+                    ->if($this->calling($client)->request[1] = $emptyRefund)
+                    ->if($this->calling($client)->request[2] = $this->mockJsonResponses([['payment', 'read-methods-allowed'], ['refund', 'read']]))
+                    ->then
+                    ->array($this->newTestedInstance($id)->getMethodsAllowed())
+                        ->hasSize(2)
+                        ->containsValues([Stancer\Payment\MethodsAllowed::CARD, Stancer\Payment\MethodsAllowed::SEPA])
+
+                    ->object($this->testedInstance->refund())
+                        ->isTestedInstance
         ;
     }
     //endregion

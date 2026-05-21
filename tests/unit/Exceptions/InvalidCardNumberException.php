@@ -5,6 +5,9 @@ namespace Stancer\tests\unit\Exceptions;
 use Psr;
 use Stancer;
 
+/**
+ * @tags Exception
+ */
 class InvalidCardNumberException extends Stancer\Tests\atoum
 {
     public function testClass()

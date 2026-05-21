@@ -31,7 +31,7 @@ class atoum extends base\test
             $version = Stancer\Enum\ApiVersion::VERSION_1;
         }
         if ($method !== 'testGetGlobal_SetGlobal') {
-            Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))])
+            Stancer\Config::init(['stest_' . $this->getRandomString(24)])
                 ->setVersion($version)
             ;
         }
@@ -63,31 +63,52 @@ class atoum extends base\test
         return json_decode($this->getFixture(...$parts), true);
     }
 
+    /**
+     * We set 50 as a min.
+     *
+     * if we want to fail the payment we will not use this function
+     *
+     * @param integer $max
+     */
+    public function getRandomAmount(int $max = 1000): int
+    {
+        return rand(50, $max);
+    }
+
+    public function getRandomCvc(): string
+    {
+        return str_pad((string) rand(1, 999), 3, '0', STR_PAD_LEFT);
+    }
+
     public function getRandomDate(int $min, ?int $max = null): string
     {
-        if (!$max) {
-            $max = date('Y');
-        }
+        $year = $this->getRandomYear($min, $max);
+        $month = $this->getRandomMonth();
+        $day = $this->getRandomDay($month);
 
-        $year = random_int($min, $max);
-        $month = random_int(1, 12);
+        return sprintf('%04d-%02d-%02d', $year, $month, $day);
+    }
 
+    public function getRandomDay(int $month): int
+    {
         $dMax = 31;
-
         if ($month == 2) {
             $dMax = 27;
         } elseif (in_array($month, [4, 6, 9, 11])) {
             $dMax = 30;
         }
 
-        $day = random_int(1, $dMax);
-
-        return sprintf('%04d-%02d-%02d', $year, $month, $day);
+        return rand(1, $dMax);
     }
 
-    public function getRandomInteger(int $min, int $max): int
+    public function getRandomExpYear()
     {
-        return random_int($min, $max);
+        return $this->getRandomYear(date('Y') + 1, date('Y') + 30);
+    }
+
+    public function getRandomMonth(): int
+    {
+        return rand(1, 12);
     }
 
     public function getRandomNumber(): string
@@ -125,7 +146,7 @@ class atoum extends base\test
             $max = $min;
         }
 
-        $len = random_int($min, $max);
+        $len = rand($min, $max);
 
         if (!$len) {
             return '';
@@ -141,6 +162,15 @@ class atoum extends base\test
         }
 
         return $randomString;
+    }
+
+    public function getRandomYear(int $min, ?int $max = null): int
+    {
+        if (!$max) {
+            $max = date('Y');
+        }
+
+        return rand($min, $max);
     }
 
     public function getUuid(): string
@@ -159,7 +189,7 @@ class atoum extends base\test
      */
     public function mockConfig($client, Stancer\Enum\ApiVersion $version = Stancer\Enum\ApiVersion::VERSION_1): Stancer\Config
     {
-        $config = Stancer\Config::init(['stest_' . bin2hex(random_bytes(12))]);
+        $config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]);
         $config->setHttpClient($client);
         $config->setDebug(false);
         $config->setVersion($version);

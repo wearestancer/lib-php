@@ -1,11 +1,14 @@
 <?php
 
-namespace Stancer\Http\Verb\tests\unit;
+namespace Stancer\tests\unit\Http\Verb;
 
 use Stancer;
 
 class Delete extends Stancer\Tests\atoum
 {
+    /**
+     * @tags AbstractVerb Delete Http
+     */
     public function testClass()
     {
         $this
@@ -14,6 +17,9 @@ class Delete extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractVerb Delete Http
+     */
     public function testCastToString()
     {
         $this
@@ -24,6 +30,9 @@ class Delete extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractVerb Delete Http
+     */
     public function testIsAllowed()
     {
         $this

@@ -6,6 +6,8 @@ use Stancer;
 use Stancer\Dispute as testedClass;
 
 /**
+ * @tags AbstractObject Card Customer Dispute
+ *
  * @namespace \Tests\functional
  *
  * @internal
@@ -18,14 +20,14 @@ class Dispute extends TestCase
     {
         $currency = $this->cardCurrencyDataProvider(true);
         $payment = new Stancer\Payment();
-        $payment->setAmount($amount = rand(50, 10000));
+        $payment->setAmount($amount = $this->getRandomAmount());
         $payment->setDescription(sprintf('Automatic test for disputes list, %.02f %s', $amount / 100, $currency));
         $payment->setCurrency($currency);
         $payment->setCard($card = new Stancer\Card());
         $card->setNumber($this->getDisputedCardNumber());
-        $card->setExpirationMonth(rand(1, 12));
-        $card->setExpirationYear(date('Y') + rand(1, 5));
-        $card->setCvc((string) rand(100, 999));
+        $card->setExpirationMonth($this->getRandomMonth());
+        $card->setExpirationYear($this->getRandomExpYear());
+        $card->setCvc($this->getRandomCvc());
         $payment->setCustomer($customer = new Stancer\Customer());
         $customer->setName('John Doe');
         $customer->setEmail('john.doe' . $this->getRandomString(10) . '@example.com');
@@ -45,13 +47,9 @@ class Dispute extends TestCase
         ;
     }
 
-    /**
-     * @dataProvider versionDataProvider
-     */
-    public function testGetDispute(Stancer\Enum\ApiVersion $version)
+    public function testGetDispute()
     {
         $this
-            ->given(Stancer\Config::getGlobal()->setVersion($version))
             ->given($this->newTestedInstance('dspt_a4dIMSi7PBBoGiu2BocagB2f'))
             ->then
 

@@ -8,6 +8,9 @@ class Device extends Stancer\Tests\atoum
 {
     use Stancer\Tests\Provider\Network;
 
+    /**
+     * @tags Device
+     */
     public function testClass()
     {
         $this
@@ -16,6 +19,9 @@ class Device extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Device
+     */
     public function test__construct()
     {
         $this
@@ -32,6 +38,9 @@ class Device extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Device
+     */
     public function testGetCity_SetCity()
     {
         $this
@@ -96,6 +105,9 @@ class Device extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Device
+     */
     public function testGetCountry_SetCountry()
     {
         $this
@@ -160,6 +172,9 @@ class Device extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Device
+     */
     public function testGetHttpAccept_SetHttpAccept()
     {
         $this
@@ -226,6 +241,8 @@ class Device extends Stancer\Tests\atoum
     }
 
     /**
+     * @tags AbstractObject AliasTrait Device
+     *
      * @dataProvider ipDataProvider
      *
      * @param mixed $ip
@@ -302,6 +319,9 @@ class Device extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Device
+     */
     public function testGetLanguages_SetLanguages()
     {
         $this
@@ -353,6 +373,9 @@ class Device extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Device
+     */
     public function testGetPort_SetPort()
     {
         $this
@@ -404,6 +427,9 @@ class Device extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject AliasTrait Device
+     */
     public function testGetUserAgent_SetUserAgent()
     {
         $this
@@ -469,6 +495,9 @@ class Device extends Stancer\Tests\atoum
         ;
     }
 
+    /**
+     * @tags AbstractObject Device
+     */
     public function testHydrateFromEnvironment()
     {
         $this
