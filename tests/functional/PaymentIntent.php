@@ -77,6 +77,9 @@ class PaymentIntent extends TestCase
                     ->string($this->testedInstance->getPayment()->getId())
                         ->isIdenticalTo('paym_uMJLg1tMkxz66yYywqLdNaXP')
 
+                    ->string($this->testedInstance->getPayment()->getCustomer()->getId())
+                        ->isIdenticalTo($this->testedInstance->getCustomer()->getId())
+
                     ->array($this->testedInstance->getMethodsAllowed())
                         ->contains(Stancer\Payment\MethodsAllowed::CARD)
 

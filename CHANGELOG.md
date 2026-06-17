@@ -8,6 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - change phone randomization to catch less false negative tests
+- Object hydration does not populate object property anymore (CMS-523)
 
 
 ## [2.1.1] - 2026-05-19

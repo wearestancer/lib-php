@@ -46,7 +46,7 @@ class TestCase extends Stancer\Tests\atoum
 
         // We had a check to run test only if we can contact the server.
         $this->config
-            ->setKeys($env['API_KEY'])
+            ->setKeys([$env['API_KEY'], getenv('API_PUBLIC_KEY', '')])
             ->setHost($env['API_HOST'])
             ->setVersion($version ?? $envVersion)
         ;
