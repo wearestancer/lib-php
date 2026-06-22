@@ -1470,7 +1470,7 @@ class StubObject extends Stancer\Tests\atoum
                     ->array($this->testedInstance->testOnlyGetModified())
                         ->isEmpty
 
-                ->assert('Hydratation will pass populated flag')
+                ->assert('Hydratation will not pass the populated flag')
                     ->boolean($object->testOnlyGetPopulated())
                         ->isIdenticalTo($this->testedInstance->testOnlyGetPopulated())
                         ->isFalse
@@ -1483,8 +1483,7 @@ class StubObject extends Stancer\Tests\atoum
                         ->isIdenticalTo($object)
 
                     ->boolean($object->testOnlyGetPopulated())
-                        ->isIdenticalTo($this->testedInstance->testOnlyGetPopulated())
-                        ->isTrue
+                        ->isFalse
 
                     ->array($this->testedInstance->testOnlyGetModified())
                         ->contains('object2')
@@ -2180,7 +2179,7 @@ class StubObject extends Stancer\Tests\atoum
                             ->withArguments('GET')
                                 ->once
 
-            ->assert('Inner object are marked as populated too')
+            ->assert('Inner object are not marked as populated')
                 ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
                 ->and($config->setDebug(false))
 
@@ -2201,13 +2200,13 @@ class StubObject extends Stancer\Tests\atoum
                             ->once
 
                     ->boolean($this->testedInstance->getObject2()->testOnlyGetPopulated())
-                        ->isTrue
+                        ->isFalse
 
                     ->array($array4 = $this->testedInstance->getArray4())
                         ->hasSize(1)
 
                     ->boolean($array4[0]->testOnlyGetPopulated())
-                        ->isTrue
+                        ->isFalse
 
             ->assert('Populate working normally')
                 ->given($config = Stancer\Config::init(['stest_' . $this->getRandomString(24)]))
@@ -2229,15 +2228,10 @@ class StubObject extends Stancer\Tests\atoum
 
                 ->and($body = json_encode(compact('id', 'created', 'string1', 'string2', 'string3', 'string4', 'integer1', 'integer2', 'integer3', 'restricted1', 'object2')))
 
-                ->and($mock = new GuzzleHttp\Handler\MockHandler([
-                    new GuzzleHttp\Psr7\Response(200, [], $body),
-                ]))
-                ->and($handler = GuzzleHttp\HandlerStack::create($mock))
-                ->and($client = new GuzzleHttp\Client(['handler' => $handler]))
-
-                ->if($mock = new mock\GuzzleHttp\Client())
-                ->and($response = new GuzzleHttp\Psr7\Response(200, [], $body))
-                ->and($this->calling($mock)->request = $response)
+                ->and($client = new mock\Stancer\Http\Client())
+                ->and($response = $body)
+                ->and($this->calling($client)->request = $this->mockResponse($response))
+                ->and($config->setHttpClient($client))
 
                 ->then
                     ->if($config->setHttpClient($client))
@@ -2276,6 +2270,10 @@ class StubObject extends Stancer\Tests\atoum
                             ->isInstanceOfTestedClass
                         ->string($this->testedInstance->getObject2()->getId())
                             ->isIdenticalTo($object2)
+                        ->boolean($this->testedInstance->getObject2()->testOnlyGetPopulated())
+                            ->isFalse
+                        ->string($this->testedInstance->getObject2()->getString4())
+                            ->isIdenticalto($string4)
                         ->boolean($this->testedInstance->getObject2()->testOnlyGetPopulated())
                             ->isTrue
 

@@ -409,6 +409,7 @@ class Payment extends TestCase
                     ->and($this->testedInstance->setCard($card))
                     ->and($this->testedInstance->setCustomer($customer))
                     ->and($this->testedInstance->setDescription($description))
+                    ->and($this->testedInstance->setReturnUrl($url))
 
                     // You may not need to do that, we will use REMOTE_ADDR and REMOTE_PORT environment variable
                     //  as IP and port (they are populated by Apache or nginx)
@@ -445,12 +446,16 @@ class Payment extends TestCase
                         ->object($auth = $this->testedInstance->getAuth())
                             ->isInstanceOf(Stancer\Auth::class)
 
+                        ->string($this->testedInstance->getReturnUrl())
+                            ->isIdenticalTo($url)
+
                 ->assert('For payment page')
                     ->given($amount = $this->getRandomAmount())
                     ->and($description = vsprintf('Authenticated payment page test, %.02f %s', [
                         $amount / 100,
                         $currency,
                     ]))
+                    ->if($url = 'https://www.example.org/?' . uniqid())
 
                     ->if($customer = new Stancer\Customer())
                     ->and($customer->setName('John Doe'))
@@ -459,9 +464,11 @@ class Payment extends TestCase
                     ->if($this->newTestedInstance)
                     ->and($this->testedInstance->setAmount($amount))
                     ->and($this->testedInstance->setAuth(true))
+                    ->and($this->testedInstance->setCapture(false))
                     ->and($this->testedInstance->setCurrency($currency))
                     ->and($this->testedInstance->setCustomer($customer))
                     ->and($this->testedInstance->setDescription($description))
+                    ->and($this->testedInstance->setReturnUrl($url))
 
                     ->then
                         ->object($this->testedInstance->send())
@@ -489,6 +496,9 @@ class Payment extends TestCase
 
                         ->object($auth = $this->testedInstance->getAuth())
                             ->isInstanceOf(Stancer\Auth::class)
+
+                        ->string($this->testedInstance->getReturnUrl())
+                            ->isIdenticalTo($url)
             ;
         }
     }
