@@ -129,7 +129,7 @@ class atoum extends base\test
         }
         if ($first === 6) {
             $first_number_duo = [
-                str_pad((string) rand(0, 20), 2, '0'),
+                str_pad((string) rand(0, 20), 2, '0', STR_PAD_LEFT),
                 (string) rand(40, 80),
             ];
             $number .= $first_number_duo[rand(0, 1)];
