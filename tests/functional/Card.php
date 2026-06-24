@@ -218,17 +218,17 @@ class Card extends TestCase
            ->assert('Update')
                 ->if($this->newTestedInstance($id))
                 ->then
+                    // We cannot know exactly which expiration year the card has
                     ->integer($this->testedInstance->getExpYear())
-                        ->isIdenticalto($year)
-
+                        ->isLessThan(2099)
                     ->integer($this->testedInstance->getExpMonth())
                         ->isIdenticalto($month)
 
-                    ->object($this->testedInstance->setExpYear(++$year)->send())
+                    ->object($this->testedInstance->setExpYear($newYear = $year === 2099 ? --$year : ++$year)->send())
                         ->isTestedInstance
 
                     ->integer($this->newTestedInstance($id)->getExpYear())
-                        ->isIdenticalTo($year)
+                        ->isIdenticalTo($newYear)
 
                     ->dateTime($dateCreated = $this->testedInstance->getCreated())
 

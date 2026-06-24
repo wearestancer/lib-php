@@ -562,26 +562,6 @@ abstract class AbstractObject implements \JsonSerializable
                         $this->{$property} = $value;
                     }
                 }
-
-                if ($this->populated) {
-                    if (
-                        array_key_exists('value', $this->dataModel[$property])
-                        && $this->dataModel[$property]['value'] instanceof self
-                    ) {
-                        $this->dataModel[$property]['value']->populated = $this->populated;
-                    }
-
-                    if (
-                        array_key_exists('value', $this->dataModel[$property])
-                        && is_array($this->dataModel[$property]['value'])
-                    ) {
-                        foreach ($this->dataModel[$property]['value'] as $obj) {
-                            if ($obj instanceof self) {
-                                $obj->populated = $this->populated;
-                            }
-                        }
-                    }
-                }
             }
         }
 

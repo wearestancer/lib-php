@@ -179,7 +179,7 @@ class Customer extends TestCase
 
         ->assert('Only mobile is good')
             ->given($this->newTestedInstance)
-            ->and($this->testedInstance->setMobile($this->getRandomNumber()))
+            ->and($this->testedInstance->setMobile($mobile = $this->getRandomNumber()))
             ->then
                 ->variable($this->testedInstance->getId())
                     ->isNull
@@ -196,7 +196,7 @@ class Customer extends TestCase
     {
         $this
             ->given($this->newTestedInstance)
-            ->and($this->testedInstance->setMobile($this->getRandomNumber()))
+            ->and($this->testedInstance->setMobile($mobile = $this->getRandomNumber()))
             ->and($this->testedInstance->send())
 
             ->and($id = $this->testedInstance->getId())
