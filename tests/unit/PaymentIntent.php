@@ -1076,7 +1076,7 @@ class PaymentIntent extends Stancer\Tests\atoum
     }
 
     /**
-     * @tags AbstractObject AliasTrait PaymentIntent
+     * @tags AbstractObject AliasTrait PaymentIntent metadata
      */
     public function testMetadata()
     {
@@ -1136,10 +1136,15 @@ class PaymentIntent extends Stancer\Tests\atoum
                     ->hasKey('metadata')
                     ->child['metadata'](function ($metadata) use ($asString) {
                         $metadata
-                            ->hasSize(1)
-                            ->hasKey('string1')
-                            ->string['string1']
-                                ->isEqualTo($asString)
+                            ->hasSize(2)
+                            ->hasKey('custom-metadata')
+                            ->child['custom-metadata'](function ($customMetadata) use ($asString) {
+                                $customMetadata
+                                    ->hasKey('string1')
+                                        ->string['string1']
+                                        ->isEqualTo($asString)
+                                ;
+                            })
                         ;
                     })
 
@@ -1153,8 +1158,14 @@ class PaymentIntent extends Stancer\Tests\atoum
                 ->array($this->testedInstance->jsonSerialize())
                     ->hasSize(1)
                     ->hasKey('metadata')
-                    ->string['metadata']
-                        ->isEqualTo($asString)
+                   ->child['metadata'](function ($metadata) use ($asString) {
+                       $metadata
+                           ->hasSize(2)
+                           ->hasKey('custom-metadata')
+                                ->string['custom-metadata']
+                                ->isEqualTo($asString)
+                       ;
+                   })
 
             ->assert('Does not allow other objects')
                 ->exception(function () {
