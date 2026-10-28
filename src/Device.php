@@ -133,7 +133,7 @@ class Device extends Stancer\Core\AbstractObject
         }
 
         if (!$this->getUserAgent() && getenv('HTTP_USER_AGENT')) {
-            $this->setUserAgent(getenv('HTTP_USER_AGENT'));
+            $this->setUserAgent(substr(getenv('HTTP_USER_AGENT'), 0, 255));
         }
 
         if (!$this->getIp()) {

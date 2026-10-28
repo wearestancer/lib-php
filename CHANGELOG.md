@@ -10,6 +10,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Change phone randomization to catch less false positive tests
 - Some minor test improvements
 - Object hydration does not populate object property anymore (CMS-523)
+- Truncate user-agent to 255 character maximum (CMS-551)
 
 
 ## [2.1.1] - 2026-05-19
