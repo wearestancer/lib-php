@@ -222,14 +222,14 @@ class Sepa extends Stancer\Core\AbstractObject implements Stancer\Interfaces\Pay
         foreach ($letters as $letter) {
             $replace[$letter] = $index++;
         }
-
+        // We change all the letters into corresponding number.
         $code = str_replace(array_keys($replace), $replace, $code);
 
         $check = substr($code, 0, 2);
         $parts = explode(' ', chunk_split(substr($code, 2), 7, ' '));
-
+        // Parts is a string with only numbers we can cast it into int with no risk.
         foreach ($parts as $part) {
-            $check = ($check . $part) % 97;
+            $check = ((int) ($check . $part)) % 97;
         }
 
         if ($check !== 1) {
