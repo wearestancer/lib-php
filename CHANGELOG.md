@@ -6,6 +6,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- SDK and CMS metadata (CMS-550)
+
 ### Changed
 - Change phone randomization to catch less false positive tests
 - Some minor test improvements
