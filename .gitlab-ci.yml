@@ -3,11 +3,10 @@ stages:
   - lint
   - test
   - functional-test
+  - coverage
 
 
 variables:
-  ATOUM_COVERAGE_FILENAME: coverage.xml
-  ATOUM_XUNIT_FILENAME: xunit.xml
   DOCKER_REGISTRY: wearestancer
   PHP_BUILD_FILENAME: "lib-php-${CI_COMMIT_TAG}.tar.gz"
 
@@ -55,10 +54,26 @@ workflow:
     VERSION: '8.1'
 
 
+.php::tests:
+  variables:
+    ATOUM_COVERAGE_FILENAME: coverage-${TEST_ENV}-php${VERSION}-api${API_VERSION}.xml
+    ATOUM_XUNIT_FILENAME: xunit-${TEST_ENV}-php${VERSION}-api${API_VERSION}.xml
+
+  artifacts:
+    paths:
+      - $ATOUM_COVERAGE_FILENAME
+      - $ATOUM_XUNIT_FILENAME
+    reports:
+      coverage_report:
+        coverage_format: cobertura
+        path: $ATOUM_COVERAGE_FILENAME
+      junit: $ATOUM_XUNIT_FILENAME
+
 
 atoum-UT:
   extends:
     - .php::all-versions
+    - .php::tests
 
   stage: test
 
@@ -75,19 +90,11 @@ atoum-UT:
   script:
     - composer run test --  --max-children-number 1
 
-  coverage: '/Code coverage value: \d+\.\d+%/'
-
-  artifacts:
-    reports:
-      coverage_report:
-        coverage_format: cobertura
-        path: $ATOUM_COVERAGE_FILENAME
-      junit: $ATOUM_XUNIT_FILENAME
-
 
 atoum-functional:
   extends:
     - .php::all-versions
+    - .php::tests
 
   stage: functional-test
 
@@ -106,14 +113,35 @@ atoum-functional:
   script:
     - composer run test -- --max-children-number 1
 
-  coverage: '/Code coverage value: \d+\.\d+%/'
+
+Create cobertura report:
+  image: ${DOCKER_REGISTRY}/python:latest-uv
+
+  stage: coverage
+
+  script:
+    - uvx merge-cobertura coverage-* > cobertura.xml
+    - |
+      python -c '
+      from xml.etree.ElementTree import parse
+      tree = parse("cobertura.xml")
+      rate = float(tree.getroot().attrib["line-rate"])
+      print(f"Total coverage: {rate * 100:.2f}%")
+      '
+
+  needs:
+    - job: atoum-UT
+      artifacts: true
+    - job: atoum-functional
+      artifacts: true
+
+  coverage: '/Total coverage: \d+\.\d+%/'
 
   artifacts:
     reports:
       coverage_report:
         coverage_format: cobertura
-        path: $ATOUM_COVERAGE_FILENAME
-      junit: $ATOUM_XUNIT_FILENAME
+        path: cobertura.xml
 
 
 php-cs-fixer:
