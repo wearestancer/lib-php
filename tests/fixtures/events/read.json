@@ -1,0 +1,18 @@
+{
+  "id": "evt_9Om8qngWyslwRJizGObuXH5y",
+  "type": "customer.created",
+  "data": {
+    "id": "cust_Rm5yShB2eas3QD93nyRZaiix",
+    "country": null,
+    "created": "2026-10-20T10:43:00",
+    "date_birth": null,
+    "email": null,
+    "external_id": null,
+    "legal_id": null,
+    "mobile": "+33646464600",
+    "name": null,
+    "billing_address": null,
+    "shipping_address": null,
+    "deleted": false
+  }
+}
