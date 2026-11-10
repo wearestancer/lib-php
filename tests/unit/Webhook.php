@@ -7,6 +7,8 @@ use Stancer;
 
 class Webhook extends Stancer\Tests\atoum
 {
+    use Stancer\Tests\Provider\Events;
+
     /**
      * @tags Webhooks
      */
@@ -32,7 +34,7 @@ class Webhook extends Stancer\Tests\atoum
                         ->isNull
 
                 ->assert('Update value')
-                    ->object($this->testedInstance->setUrl($url))
+                    ->object($this->newTestedInstance->setUrl($url))
                         ->isTestedInstance
 
                     ->string($this->testedInstance->getUrl())
@@ -67,7 +69,7 @@ class Webhook extends Stancer\Tests\atoum
                         ->isNull
 
                 ->assert('Update value')
-                    ->object($this->newtestedInstance->setEnabled($enabled))
+                    ->object($this->newTestedInstance->setEnabled($enabled))
                         ->isTestedInstance
 
                     ->variable($this->testedInstance->getEnabled())
@@ -115,16 +117,15 @@ class Webhook extends Stancer\Tests\atoum
 
             ->if($location = $this->testedInstance->getUri())
 
-            ->assert('Getting a non populated value will hydrate the full object')
-                ->mock($client)
-                    ->call('request')
-                        ->withArguments('GET', $location)
-                            ->never
-                ->variable($this->testedInstance->getEnabled())
-                ->mock($client)
-                    ->call('request')
-                        ->withArguments('GET', $location)
-                            ->once
+            ->mock($client)
+                ->call('request')
+                    ->withArguments('GET', $location)
+                        ->never
+            ->variable($this->testedInstance->getEnabled())
+            ->mock($client)
+                ->call('request')
+                    ->withArguments('GET', $location)
+                        ->once
 
                 ->string($this->testedInstance->getSecret())
                     ->isIdenticalTo('15dc23af918e5dcf6b909166e9519d1bdfb9ea36792e9209')
@@ -136,14 +137,16 @@ class Webhook extends Stancer\Tests\atoum
 
     /**
      * @tags Webhooks
+     *
+     * @dataProvider signatureCheckProvider
      */
-    public function test_simpleHmac()
+    public function test_simpleHmac(array $eventData)
     {
         $this
-            ->if($hmac = '7996915bd0a63c0ad70956d7e43c5c0a788c2895c3cce3dd63c8391b834ef961')
-            ->and($timestamp = '946684800')
-            ->and($payload = 'foo')
-            ->and($this->newTestedInstance(['secret' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']))
+            ->if($hmac = $eventData['hmac'])
+            ->and($timestamp = $eventData['timestamp'])
+            ->and($payload = $eventData['payload'])
+            ->and($this->newTestedInstance(['secret' => $eventData['secret']]))
             ->then
                 ->variable($this->testedInstance->checkHmac($hmac, $timestamp, $payload))
                     ->isNull()
@@ -152,13 +155,15 @@ class Webhook extends Stancer\Tests\atoum
 
     /**
      * @tags Webhooks
+     *
+     * @dataProvider signatureCheckProvider
      */
-    public function test_verifyBody()
+    public function test_verifyBody(array $eventData)
     {
         $this
-            ->if($stancer_secret = 't=946684800,v1=7996915bd0a63c0ad70956d7e43c5c0a788c2895c3cce3dd63c8391b834ef961')
-            ->and($body = 'foo')
-            ->and($this->newTestedInstance(['secret' => 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa']))
+            ->if($stancer_secret = $eventData['signature'])
+            ->and($body = $eventData['payload'])
+            ->and($this->newTestedInstance(['secret' => $eventData['secret']]))
             ->then
                 ->variable($this->testedInstance->verifyBody($body, $stancer_secret, new \DateTimeImmutable('@946684800'), new \DateInterval('PT2M')))
                     ->isNull()
@@ -167,38 +172,39 @@ class Webhook extends Stancer\Tests\atoum
 
     /**
      * @tags Webhooks
+     *
+     * @dataProvider eventProvider
      */
-    public function test_realHmac()
+    public function test_realHmac(string $hmac, string $payload, string $secret, string $timestamp, string $signature)
     {
         $this
-        ->if($stancer_signature = 't=1792485781,v1=02f0efd40bcfdbf23fab999953cbdc0323b8817657947bd56966f1b0fe7dabde')
-        ->and($body = '{"id": "evt_9Om8qngWyslwRJizGObuXH5y", "type": "customer.created", "data": {"id": "cust_Rm5yShB2eas3QD93nyRZaiix", "country": null, "created": "2026-10-20T10:43:00", "date_birth": null, "email": null, "external_id": null, "legal_id": null, "mobile": "+33646464600", "name": null, "billing_address": null, "shipping_address": null, "deleted": false}}')
-        ->and($secret = 'f61e1955a003c1a9973ccf0cb849bd861a4452d0ead317bb')
+        ->if($time = new \DateTimeImmutable('@' . $timestamp))
+        ->and($two_minutes = new \DateInterval('PT2M'))
             ->then
-                ->variable($this->newTestedInstance(['secret' => $secret])->verifyBody($body, $stancer_signature, new \DateTimeImmutable('@1792485781'), new \DateInterval('PT2M')))
+                ->variable($this->newTestedInstance(['secret' => $secret])->verifyBody($payload, $signature, $time, $two_minutes))
 
         ->assert('wrong datetime does not validate')
-            ->exception(fn () => $this->newTestedInstance(['secret' => $secret])->verifyBody($body, $stancer_signature, new \DateTimeImmutable('@1801085781'), new \DateInterval('PT2M')))
+            ->exception(fn () => $this->newTestedInstance(['secret' => $secret])->verifyBody($payload, $signature, new \DateTimeImmutable('@1801085781'), $two_minutes))
                 ->isInstanceOf(\Stancer\Exceptions\InvalidSignatureException::class)
                     ->message
                         ->isIdenticalTo('Expired signature')
         ->assert('wrong timestamp does not validate')
-            ->if($bad_signature = 't=1792485771,v1=02f0efd40bcfdbf23fab999953cbdc0323b8817657947bd56966f1b0fe7dabde')
-            ->exception(fn () => $this->newTestedInstance(['secret' => $secret])->verifyBody($body, $bad_signature, new \DateTimeImmutable('@1792485781'), new \DateInterval('PT2M')))
+            ->if($bad_signature = 't=1792485771,v1=' . $hmac)
+            ->exception(fn () => $this->newTestedInstance(['secret' => $secret])->verifyBody($payload, $bad_signature, $time, $two_minutes))
                 ->isInstanceOf(\Stancer\Exceptions\InvalidSignatureException::class)
                     ->message
                         ->isIdenticalTo('Invalid signature')
         ->assert('wrong signaturedoes not validate')
-            ->if($bad_signature = 't=1792485781,v1=02f0efd40bcfdbf23fab999953cbdc0323b8817657947bd56966f1b0fe7dabaaa')
+            ->if($bad_signature = 't=' . $timestamp . ',v1=02f0efd40bcfdbf23fab999953cbdc0323b8817657947bd56966f1b0fe7dabaaa')
 
-            ->exception(fn () => $this->newTestedInstance(['secret' => $secret])->verifyBody($body, $bad_signature, new \DateTimeImmutable('@1792485781'), new \DateInterval('PT2M')))
+            ->exception(fn () => $this->newTestedInstance(['secret' => $secret])->verifyBody($payload, $bad_signature, $time, $two_minutes))
                 ->isInstanceOf(\Stancer\Exceptions\InvalidSignatureException::class)
                     ->message
                         ->isIdenticalTo('Invalid signature')
         ->assert('wrong secret does not validate')
             ->if($wrong_secret = 'f61e1955a003c1a9973ccf0cb849bd861a4452d0ead317ba')
 
-            ->exception(fn () => $this->newTestedInstance(['secret' => $secret])->verifyBody($body, $bad_signature, new \DateTimeImmutable('@1792485781'), new \DateInterval('PT2M')))
+            ->exception(fn () => $this->newTestedInstance(['secret' => $wrong_secret])->verifyBody($payload, $signature, $time, $two_minutes))
                 ->isInstanceOf(\Stancer\Exceptions\InvalidSignatureException::class)
                     ->message
                         ->isIdenticalTo('Invalid signature')
@@ -207,15 +213,15 @@ class Webhook extends Stancer\Tests\atoum
 
     /**
      * @tags Webhooks
+     *
+     * @dataProvider eventProvider
      */
-    public function test_getEvent()
+    public function test_getEvent(string $hmac, string $payload, string $secret, string $timestamp, string $signature)
     {
         $this
-            ->if($body = '{"id": "evt_9Om8qngWyslwRJizGObuXH5y", "type": "customer.created", "data": {"id": "cust_Rm5yShB2eas3QD93nyRZaiix", "country": null, "created": "2026-10-20T10:43:00", "date_birth": null, "email": null, "external_id": null, "legal_id": null, "mobile": "+33646464600", "name": null, "billing_address": null, "shipping_address": null, "deleted": false}}')
-            ->and($secret = 'f61e1955a003c1a9973ccf0cb849bd861a4452d0ead317bb')
-            ->and($this->newTestedInstance(['secret' => $secret]))
+            ->if($this->newTestedInstance(['secret' => $secret]))
             ->assert('goodJson return an event')
-                ->object($event = $this->testedInstance->getEvent($body))
+                ->object($event = $this->testedInstance->getEvent($payload))
                     ->isInstanceOf(Stancer\Event::class)
                 ->string($event->type)
                     ->isIdenticalTo('customer.created')
@@ -223,6 +229,11 @@ class Webhook extends Stancer\Tests\atoum
                     ->isIdenticalTo('evt_9Om8qngWyslwRJizGObuXH5y')
             ->assert('badjson throw')
                 ->exception(fn () => $this->newTestedInstance->getEvent('{ bar: "baz", }'))
+                    ->isInstanceOf(\Stancer\Exceptions\InvalidEventException::class)
+                    ->message
+                        ->isIdenticalTo('Data supplied are not valid event data,make sure that the data supplied come from an event request.')
+            ->assert('string as json throw')
+                ->exception(fn () => $this->newTestedInstance->getEvent('hello world!'))
                     ->isInstanceOf(\Stancer\Exceptions\InvalidEventException::class)
                     ->message
                         ->isIdenticalTo('Data supplied are not valid event data,make sure that the data supplied come from an event request.')

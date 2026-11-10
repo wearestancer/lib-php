@@ -107,7 +107,11 @@ class Webhook extends Stancer\Core\AbstractObject
      */
     public function getEvent(string $body): Event
     {
-        $jsonData = json_decode($body, true);
+        try {
+            $jsonData = json_decode($body, true, flags: JSON_THROW_ON_ERROR);
+        } catch (\JsonException $e) {
+            throw new InvalidEventException(previous: $e);
+        }
 
         if (!is_array($jsonData)) {
             throw new InvalidEventException();
