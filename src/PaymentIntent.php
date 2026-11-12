@@ -10,6 +10,7 @@ use Stancer;
 /**
  * Representation of an intent.
  *
+ * @method static set_cms_metadata(mixed $data) Set CMS metadata.
  * @method static add_methods_allowed($method) Add an allowed method.
  * @method static array<mixed> filter_list_params(array<mixed> $terms) Filter for list method.
  * @method ?\Stancer\ThreeDomainsSecure\Status get3DS() Get ask for an authenticated payment.
@@ -21,7 +22,6 @@ use Stancer;
  * @method ?\Stancer\Currency getCurrency() Get processed currency.
  * @method ?\Stancer\Customer getCustomer() Get customer object.
  * @method ?string getDescription() Get intent description.
- * @method ?mixed getMetadata() Get arbitrary metadata.
  * @method Stancer\Payment\MethodsAllowed[] getMethodsAllowed() Get list of payment methods allowed for this intent.
  * @method ?string getOrderId() Get order identifier.
  * @method ?\Stancer\Payment getPayment() Get finalized payment.
@@ -47,7 +47,7 @@ use Stancer;
  * @method string get_endpoint() Get API endpoint.
  * @method string get_entity_name() Return the entity name
  * @method ?string get_id() Get object ID.
- * @method ?mixed get_metadata() Get arbitrary metadata.
+ * @method mixed get_metadata() Get arbitrary metadata.
  * @method Stancer\Payment\MethodsAllowed[] get_methods_allowed() Get list of payment methods allowed for this intent.
  * @method ?string get_order_id() Get order identifier.
  * @method ?\Stancer\Payment get_payment() Get finalized payment.
@@ -100,7 +100,7 @@ use Stancer;
  * @property ?\Stancer\Currency $currency Processed currency.
  * @property ?\Stancer\Customer $customer Customer object.
  * @property ?string $description Intent description.
- * @property ?mixed $metadata Arbitrary metadata.
+ * @property mixed $metadata Arbitrary metadata.
  * @property Stancer\Payment\MethodsAllowed[] $methodsAllowed List of payment methods allowed for this intent.
  * @property Stancer\Payment\MethodsAllowed[] $methods_allowed List of payment methods allowed for this intent.
  * @property ?string $orderId Order identifier.
@@ -252,6 +252,18 @@ class PaymentIntent extends Stancer\Core\AbstractObject
             'type' => self::STRING,
         ],
     ];
+
+    public function __construct($id = null)
+    {
+        parent::__construct($id);
+        $this->dataModel['metadata']['value'] = [
+            'SDK' => [
+                'type' => 'PHP',
+                'version' => Config::VERSION,
+                'php-version' => phpversion(),
+            ],
+        ];
+    }
 
     /**
      * Handle getter and setter for every properties.
@@ -416,6 +428,20 @@ class PaymentIntent extends Stancer\Core\AbstractObject
     }
 
     /**
+     * Get metadata.
+     */
+    public function getMetadata(): mixed
+    {
+        $metadata = parent::getMetadata();
+
+        if (is_array($metadata) && $metadata['custom-metadata']) {
+            return $metadata['custom-metadata'];
+        }
+
+        return null;
+    }
+
+    /**
      * Set metadata.
      *
      * @param mixed $data Arbitrary data.
@@ -431,7 +457,30 @@ class PaymentIntent extends Stancer\Core\AbstractObject
             throw new Stancer\Exceptions\InvalidMetadataException($message);
         }
 
-        return parent::setMetadata($data);
+        $metadata = parent::getMetadata();
+
+        $metadata['custom-metadata'] = $data;
+
+        return parent::setMetadata($metadata);
+    }
+
+    /**
+     * Set CMS metadata.
+     *
+     * @param mixed $data CMS data.
+     */
+    public function setCmsMetadata(mixed $data): static
+    {
+        if (is_object($data) && !($data instanceof \JsonSerializable || $data instanceof \Stringable)) {
+            $message = 'Objects are not allowed if not JSON serializable or stringable.';
+
+            throw new Stancer\Exceptions\InvalidMetadataException($message);
+        }
+
+        $metadata = parent::getMetadata($data);
+        $metadata['CMS'] = $data;
+
+        return parent::setMetadata($metadata);
     }
 
     /**

@@ -1483,6 +1483,7 @@ class StubObject extends Stancer\Tests\atoum
                         ->isIdenticalTo($object)
 
                     ->boolean($object->testOnlyGetPopulated())
+                        ->isIdenticalTo(!$this->testedInstance->testOnlyGetPopulated())
                         ->isFalse
 
                     ->array($this->testedInstance->testOnlyGetModified())

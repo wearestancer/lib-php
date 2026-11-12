@@ -1359,13 +1359,13 @@ class Config extends Stancer\Tests\atoum
         $this
             ->assert('Default values')
                 ->string($this->newTestedInstance([])->getUri())
-                    ->isIdenticalTo('https://api.stancer.com/v1/')
+                    ->isIdenticalTo('https://api.stancer.com/v2/')
 
                 ->string($this->newTestedInstance([])->get_uri())
-                    ->isIdenticalTo('https://api.stancer.com/v1/')
+                    ->isIdenticalTo('https://api.stancer.com/v2/')
 
                 ->string($this->newTestedInstance([])->uri)
-                    ->isIdenticalTo('https://api.stancer.com/v1/')
+                    ->isIdenticalTo('https://api.stancer.com/v2/')
 
             ->assert('Random values / camelCase method')
                 ->if($host = uniqid())
@@ -1417,7 +1417,7 @@ class Config extends Stancer\Tests\atoum
     public function testGetVersion_SetVersion()
     {
         $this
-            ->if($defaultVersion = Stancer\Enum\ApiVersion::VERSION_1)
+            ->if($defaultVersion = Stancer\Enum\ApiVersion::VERSION_2)
             ->and($randomVersion = rand(1, 2))
             ->then
                 ->assert('camelCase method')

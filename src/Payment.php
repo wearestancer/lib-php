@@ -11,6 +11,7 @@ use Stancer\Core\SearchObject;
  * Representation of a payment.
  *
  * @method static add_methods_allowed($method) Add an allowed method.
+ * @method static populate_refunds() Populate refund list
  * @method static array<mixed> filter_list_params(array<mixed> $terms) Filter for list method.
  * @method ?integer getAmount() Get transaction amount.
  * @method ?\Stancer\Auth getAuth() Get auth object, must be set for 3-D Secure card payments.
@@ -146,6 +147,8 @@ use Stancer\Core\SearchObject;
  * @property-read boolean $is_not_success Alias for `Stancer\Payment::isNotSuccess()`.
  * @property-read boolean $is_success Alias for `Stancer\Payment::isSuccess()`.
  * @property-read ?string $method Payment method used.
+ * @property-read static $populateRefunds Alias for `Stancer\Payment::populateRefunds()`.
+ * @property-read static $populate_refunds Alias for `Stancer\Payment::populateRefunds()`.
  * @property-read Stancer\Refund[] $refunds Array of refund objects.
  * @property-read ?string $response Response of the bank processing.
  * @property-read ?string $responseAuthor

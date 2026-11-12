@@ -45,7 +45,7 @@ if (extension_loaded('xdebug') === true) {
         $runner->addReport($xunit);
     }
 
-    // clover report
+    // cobertura report
     $covFile = getenv('ATOUM_COVERAGE_FILENAME');
 
     if ($covFile) {
@@ -55,8 +55,8 @@ if (extension_loaded('xdebug') === true) {
             mkdir($path, 0777, true);
         }
 
-        $clover = new atoum\atoum\reports\cobertura();
-        $clover->addWriter(new atoum\atoum\writers\file(__DIR__ . '/' . $covFile));
-        $runner->addReport($clover);
+        $cobertura = new atoum\atoum\reports\cobertura();
+        $cobertura->addWriter(new atoum\atoum\writers\file(__DIR__ . '/' . $covFile));
+        $runner->addReport($cobertura);
     }
 }

@@ -93,7 +93,7 @@ class Config
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
     public const TEST_MODE = 'test';
     #[Stancer\WillChange\PHP8_3\TypedClassConstants]
-    public const VERSION = '2.1.2';
+    public const VERSION = '2.2.0';
 
     /** @var non-empty-array<string|null>[] */
     protected array $app = [];
@@ -127,7 +127,7 @@ class Config
 
     protected ?\DateTimeZone $timezone = null;
 
-    protected Stancer\Enum\ApiVersion $version = Stancer\Enum\ApiVersion::VERSION_1;
+    protected Stancer\Enum\ApiVersion $version = Stancer\Enum\ApiVersion::VERSION_2;
 
     /**
      * Create an API configuration.
@@ -490,7 +490,7 @@ class Config
     /**
      * Return API version.
      *
-     * Default : Stancer\Enum\ApiVersion::Version_1
+     * Default : Stancer\Enum\ApiVersion::Version_2
      */
     #[Stancer\Core\Documentation\FormatProperty(description: 'API version', nullable: false, type: '\\Stancer\\Enum\\ApiVersion')]
     public function getVersion(): Stancer\Enum\ApiVersion
